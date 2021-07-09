@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class RobotUser
+    public class RobotUserEntity
     {
         public int CustId { get; set; }
 
