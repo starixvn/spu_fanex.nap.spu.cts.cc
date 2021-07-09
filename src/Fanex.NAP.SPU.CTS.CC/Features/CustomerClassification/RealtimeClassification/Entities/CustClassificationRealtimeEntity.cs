@@ -5,7 +5,7 @@
     using Newtonsoft.Json;
     using System.Xml.Serialization;
 
-    [XName("Root")]
+    [XName("CustomerClassificationModel")]
     public class CustClassificationRealtimeEntity
     {
         [XmlIgnore, JsonIgnore]
