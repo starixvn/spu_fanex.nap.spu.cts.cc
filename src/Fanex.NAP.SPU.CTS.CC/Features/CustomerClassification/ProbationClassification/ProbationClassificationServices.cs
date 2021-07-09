@@ -15,6 +15,8 @@
         IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList);
 
         void UpdateLastScanDateForProbationCust();
+
+        IEnumerable<ProbationEntity> CustomerClassification { get; }
     }
 
     public class ProbationClassificationServices : IProbationClassificationServices
@@ -30,7 +32,10 @@
 
         public ProbationClassificationServices GetProbationCustForScanning(int batchSize)
         {
-            probationClassification = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+            if (batchSize > 0)
+            {
+                probationClassification = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+            }
 
             return this;
         }
@@ -73,5 +78,7 @@
                 probationClassificationDataAccess.UpdateLastScanDateForProbationCust(custJson);
             }
         }
+
+        public IEnumerable<ProbationEntity> CustomerClassification => probationClassification;
     }
 }

@@ -11,7 +11,7 @@
 
         IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList);
 
-        void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> resultList);
+        void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations);
 
         void UpdateLastScanDateForProbationCust(string custSport);
     }
@@ -45,13 +45,13 @@
             return repository.Fetch<ProbationEntity>(criteria);
         }
 
-        public void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> resultList)
+        public void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations)
         {
             var criteria = new ProbationNotificationInsertCriteria
             {
                 TotalScanned = scanList.Count(),
-                TotalFailed = resultList.Count(),
-                TotalGeneralFailed = resultList.Count(c => c.SportGroupId == 200)
+                TotalFailed = failProbations.Count(),
+                TotalGeneralFailed = failProbations.Count(c => c.SportGroupId == 200)
             };
 
             repository.Execute(criteria);

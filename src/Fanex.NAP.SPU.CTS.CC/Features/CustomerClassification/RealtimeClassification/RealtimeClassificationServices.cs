@@ -85,9 +85,6 @@
             return this;
         }
 
-        IEnumerable<CustClassificationRealtimeEntity> IRealtimeClassificationServices.CustomerClassification 
-        { 
-            get => customerClassification; 
-        }
+        IEnumerable<CustClassificationRealtimeEntity> IRealtimeClassificationServices.CustomerClassification => customerClassification;
     }
 }

@@ -31,8 +31,6 @@
         {
             try
             {
-                Utilities.LogSentryInfo(serviceName, $"{DateTime.Now}", string.Empty, true, sentryClient);
-
                 if (batchSize > 0)
                 {
                     JobRun(batchSize);
@@ -67,7 +65,7 @@
                     JobRun(batchSize);
                 }
             }
-            catch(TimeoutException ex)
+            catch (TimeoutException ex)
             {
                 Utilities.LogSentryError(serviceName, ex.Message, (batchSize), ex, sentryClient);
 
