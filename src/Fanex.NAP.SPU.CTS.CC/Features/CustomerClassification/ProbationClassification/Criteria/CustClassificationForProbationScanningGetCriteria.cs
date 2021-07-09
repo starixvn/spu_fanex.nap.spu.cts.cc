@@ -1,0 +1,21 @@
+﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProbationClassification
+{
+    using Fanex.Data;
+    using Fanex.Data.Repository;
+
+    public class CustClassificationForProbationScanningGetCriteria : CriteriaBase
+    {
+        [SpParam(SqlParamName = "ip_NoOfRecord")]
+        public int NumberOfRecord { get; set; }
+
+        public override string GetSettingKey()
+        {
+            return "CTS_DC_CustClassification_Probation_GetCustForScanning";
+        }
+
+        public override bool IsValid()
+        {
+            return NumberOfRecord > 0;
+        }
+    }
+}

@@ -1,0 +1,27 @@
+﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert
+{
+    using System;
+
+    public class CustomerEvidenceFromFileEntity
+    {
+        public long ID { get; set; }
+
+        public long CTSCustID { get; set; }
+
+        public int SubscriberID { get; set; }
+
+        public long CustID { get; set; }
+
+        public int EvidenceID { get; set; }
+
+        public string Remark { get; set; }
+
+        public bool IsOverwrite { get; set; }
+
+        public string FileKey { get; set; }
+
+        public int CreatedBy { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+    }
+}

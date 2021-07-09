@@ -1,0 +1,15 @@
+﻿namespace Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities
+{
+    using System;
+
+    public class LastUpdateValueModel
+    {
+        public DateTime LastUpdateTimeCustInfo { get; set; }
+
+        public Int64 LastUpdateCustIDCustInfo { get; set; }
+
+        public DateTime LastUpdateTimeCustomer { get; set; }
+
+        public Int64 LastUpdateCustIDCustomer { get; set; }
+    }
+}

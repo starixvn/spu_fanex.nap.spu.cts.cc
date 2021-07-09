@@ -1,0 +1,32 @@
+﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert
+{
+    using Fanex.Data.Repository;
+    using System;
+    using System.Collections.Generic;
+
+    public interface IRobotAccountInsertDataAccess
+    {
+        IEnumerable<RobotUser> GetRobotUsers(DateTime fromDate, string creditSiteList);
+    }
+
+    public class RobotAccountInsertDataAccess : IRobotAccountInsertDataAccess
+    {
+        private readonly IDynamicRepository repository;
+
+        public RobotAccountInsertDataAccess()
+        {
+            repository = new DynamicRepository();
+        }
+
+        public IEnumerable<RobotUser> GetRobotUsers(DateTime fromDate, string creditSiteList)
+        {
+            var criteria = new RobotUserGetCriteria
+            {
+                FromDate = fromDate,
+                CreditSite = creditSiteList
+            };
+
+            return repository.Fetch<RobotUser>(criteria);
+        }
+    }
+}
