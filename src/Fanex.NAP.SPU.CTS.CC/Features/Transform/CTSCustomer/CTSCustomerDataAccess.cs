@@ -4,6 +4,7 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -28,6 +29,9 @@
         TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
         IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
+        IEnumerable<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
+        IEnumerable<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
+        int UpdateUsername2(string customerJson);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -229,6 +233,37 @@
             var custInfos = repository.Fetch<CustomerMainDBModel>(criteria);
 
             return custInfos;
+        }
+
+        public IEnumerable<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
+        {
+            var criteria = new GetCustomersWithNullUsername2Criteria
+            {
+                Size = rowSize,
+                PreCTSCustID = preCTSCustId
+            };
+
+            return repository.Fetch<GetCustIdModel>(criteria);
+        }
+
+        public IEnumerable<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs)
+        {
+            var criteria = new GetCustomersWithHavingUsername2Criteria
+            {
+                CustomerXML = custs.ToXmlString()
+            };
+
+            return repository.Fetch<GetCustIdModel>(criteria);
+        }
+
+        public int UpdateUsername2(string customerJson)
+        {
+            var criteria = new UpdateUsername2Criteria
+            {
+                CustomerJson = customerJson
+            };
+
+            return repository.Execute(criteria);
         }
     }
 }

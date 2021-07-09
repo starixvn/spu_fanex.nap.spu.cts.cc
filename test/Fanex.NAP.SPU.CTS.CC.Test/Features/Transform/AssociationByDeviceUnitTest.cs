@@ -25,7 +25,7 @@
         {
             IEnumerable<RawAssociationModel> data = new List<RawAssociationModel>();
             dataAccess.GetRawAssociation(10, 1).Returns(data);
-            associationByDeviceService.TransformAssociationByDevice(10, 1);
+            associationByDeviceService.TransformAssociationByDevice(10, 1, false);
         }
     }
 }

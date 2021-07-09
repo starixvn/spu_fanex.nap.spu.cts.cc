@@ -35,6 +35,7 @@
         [HttpPost("TransformAssByDevice")]
         public async Task<bool> TransformAssociationByDevice([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
+            sentryClient.CaptureMessage("Start TransformAssociationByDevice");
             return await associationByDeviceJobService.TransformAssociationByDevice(batchSize, numberOfBatch);
         }
 

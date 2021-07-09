@@ -40,7 +40,11 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
-
+        string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog);
+        string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType);
+        List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
+        List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
+        int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -69,30 +73,30 @@
 
         public void UpdateCustomer(TranformCustModel custs, int sourceType, bool isWriteLog)
         {
-            //try
-            //{
-            //    if (custs == null || custs.LastCustId == null || custs.LastUpdatedTime == null)
-            //    {
-            //        return;
-            //    }
+            try
+            {
+                if (custs == null || custs.LastCustId == null || custs.LastUpdatedTime == null)
+                {
+                    return;
+                }
 
-            //    var updateCustomerType = (UpdateCustomer)sourceType;
+                var updateCustomerType = (UpdateCustomer)sourceType;
 
-            //    var custInfoToUpdate = GetCustInfoToUpdate(custs, updateCustomerType);
+                var custInfoToUpdate = GetCustInfoToUpdate(custs, updateCustomerType, isWriteLog);
 
-            //    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
+                UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
 
-            //    if (isWriteLog)
-            //        sentryClient.CaptureMessage($"Healing - done");
+                if (isWriteLog)
+                    sentryClient.CaptureMessage($"Healing - done");
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    Utilities.LogSentryError(serviceName, "UpdateCustomer has an error", custs, ex, sentryClient);
-            //}
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, "UpdateCustomer has an error", custs, ex, sentryClient);
+            }
         }
 
-        public string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType)
+        public string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog)
         {
             var custInfoToUpdate = JsonConvert.SerializeObject(string.Empty);
 
@@ -101,22 +105,71 @@
                 var custInfoFromMainDB = GetCustomerFromMainDBForUpdate(custs.CustIdList, sourceType);
                 var custInfoFromCTS = GetCustomerFromCTSForUpdate(custs.CustIdList, sourceType);
 
-                //    if (AppSettings.IsWriteLogInfo)
-                //    {
-                //        LogService.Info($"Healing - Get {((sourceType == UpdateCustomer.FROM_CUSTOMER) ? "Customer History" : "CustInfo")} from MainDB: {JsonConvert.SerializeObject(custInfoFromMainDB)}");
-                //        LogService.Info($"Healing - Get {((sourceType == UpdateCustomer.FROM_CUSTOMER) ? "Customer History" : "CustInfo")} from CTS: {JsonConvert.SerializeObject(custInfoFromCTS)}");
-                //    }
+                var messageLog = $"Healing - Get {((sourceType == Constants.UpdateCustomer.FromCustomer) ? "Customer History" : "CustInfo")} from MainDB";
+                var messageLog2 = $"Healing - Get {((sourceType == Constants.UpdateCustomer.FromCustomer) ? "Customer History" : "CustInfo")} from CTS";
 
-                //    if (custInfoFromMainDB != null && custInfoFromCTS != null)
-                //    {
-                //        custInfoToUpdate = CompareCustomerInfo(custInfoFromMainDB, custInfoFromCTS, sourceType);
-                //    }
+                Utilities.LogSentryInfo(serviceName, messageLog, custInfoFromMainDB, isWriteLog, sentryClient);
+                Utilities.LogSentryInfo(serviceName, messageLog2, custInfoFromCTS, isWriteLog, sentryClient);
+
+                if (custInfoFromMainDB != null && custInfoFromCTS != null)
+                {
+                    custInfoToUpdate = CompareCustomerInfo(custInfoFromMainDB, custInfoFromCTS, sourceType);
+                }
             }
 
-            //if (AppSettings.IsWriteLogInfo)
-            //    LogService.Info($"Healing - Cust to update data: {custInfoToUpdate}");
+            Utilities.LogSentryInfo(serviceName, "Healing - Cust to update data:", custInfoToUpdate, isWriteLog, sentryClient);
 
             return custInfoToUpdate;
+        }
+
+        public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType)
+        {
+            if (sourceType == Constants.UpdateCustomer.FromCustInfo)
+            {
+                var customerInfo = custInfoFromMainDB
+                    .Join(custInfoFromCTS, custMain => custMain.CustID,
+                                           custCTS => custCTS.CustID,
+                                           (custMain, custCTS) => custMain)
+                    .Where(c => !custInfoFromCTS.Contains(c, new CustomerInfoEqualityComparer()))
+                    .Select(c => new CustInfoModel
+                    {
+                        CustID = c.CustID,
+                        CustStatusID = c.CustStatusID,
+                        Danger1 = c.Danger1,
+                        Danger2 = c.Danger2,
+                        Danger3 = c.Danger3
+                    }).ToList();
+
+                return JsonConvert.SerializeObject(customerInfo);
+            }
+            else
+            {
+                var customerInfo = custInfoFromMainDB
+                    .Join(custInfoFromCTS, custMain => custMain.CustID,
+                                           custCTS => custCTS.CustID,
+                                           (custMain, custCTS) => custMain)
+                    .Where(c => !custInfoFromCTS.Contains(c, new CustomerEqualityComparer()))
+                    .Select(c => new CustomerInfoModel
+                    {
+                        CustID = c.CustID,
+                        UserName = c.UserName,
+                        UserName2 = c.UserName2,
+                        SiteID = c.SiteID,
+                        Site = c.Site,
+                        RoleID = c.RoleID,
+                        SRecommend = c.SRecommend,
+                        MRecommend = c.MRecommend,
+                        Recommend = c.Recommend,
+                        Currency = c.Currency,
+                        CurrencyID = c.CurrencyID,
+                        UpdateType = (custInfoFromCTS.Any(f => f.CustID == c.CustID &&
+                                                (!string.Equals(f.UserName, c.UserName)
+                                             || !string.Equals(f.UserName2, c.UserName2)
+                                             || f.SiteID != c.SiteID)) == true) ? 1 : 0
+                    }).ToList();
+
+                return JsonConvert.SerializeObject(customerInfo);
+            }
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
@@ -288,6 +341,23 @@
             }
 
             return false;
+        }
+
+        public List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
+        {
+            return dataAccess.GetCustWithNullUserName2(rowSize, preCTSCustId).ToList() ;
+        }
+
+        public List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs)
+        {
+            return dataAccess.GetCustWithHavingUserName2(custs).ToList();
+        }
+
+        public int UpdateUsername2(IEnumerable<GetCustIdModel> customerList)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+
+            return dataAccess.UpdateUsername2(customerJson);
         }
     }
 }

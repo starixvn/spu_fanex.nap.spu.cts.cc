@@ -124,5 +124,8 @@
     <Setting Key="CTS_CustomerHistory_GetUpdatedCustID" SpName="CTS_CustomerHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet"/>
     <Setting Key="CTS_DC_CTSCustomer_GetInfoByCustIDList" SpName="CTS_DC_CTSCustomer_GetInfoByCustIDList" DbName="MySQL.CTS_DataCenter.ctsService" />
     <Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList" DbName="SQL.bodb02.bodbSPUNet"/>
+    <Setting Key="CTS_DC_CTSCustomer_GetNULLUserName2" SpName="CTS_DC_CTSCustomer_GetNULLUserName2" DbName="MySQL.CTS_DataCenter.ctsService"/>
+    <Setting Key="CTS_Customer_GetNotNULLUserName2ByXML" SpName="CTS_Customer_GetNotNULLUserName2ByXML" DbName="SQL.bodb02.bodbSPUNet"/>
+    <Setting Key="CTS_DC_CTSCustomer_UpdateUserName2" SpName="CTS_DC_CTSCustomer_UpdateUserName2" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"/>
   </Function>
 </Functions>

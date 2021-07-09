@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerJobService
     {
@@ -57,16 +58,17 @@
 
             try
             {
+                var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
                 var output = ctscustomerService.GetLastUpdatedTime();
                 updatedCustFromCustInfo = ctscustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize);
                 updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize);
 
                 if (ctscustomerService.IsValidData(updatedCustFromCustInfo, updatedCustFromCustomer))
                 {
-                    //ctscustomerService.UpdateCustomer(custFromCusInfo, (int)Constants.UPDATECUSTOMER.FROM_CUSTINFO);
-                    //ctscustomerService.UpdateCustomer(custFromCustomer, (int)Constants.UPDATECUSTOMER.FROM_CUSTOMER);
+                    ctscustomerService.UpdateCustomer(updatedCustFromCustInfo, (int)UpdateCustomer.FromCustInfo, isWriteLog);
+                    ctscustomerService.UpdateCustomer(updatedCustFromCustomer, (int)UpdateCustomer.FromCustomer, isWriteLog);
                 }
-                
+
                 return Task.FromResult(true);
             }
             catch (Exception ex)
@@ -74,6 +76,29 @@
                 sentryClient.CaptureException(ex);
                 return Task.FromResult(false);
             }
+        }
+
+        public Task<bool> UpdateUsername2(int batchSize)
+        {
+            try
+            {
+                long preCTSCustId = 0;
+                var custsNullUsername2 = ctscustomerService.GetCustWithNullUserName2(batchSize, preCTSCustId);
+                if (custsNullUsername2 is not null && custsNullUsername2.Any())
+                {
+                    var custFromMainDB = ctscustomerService.GetCustWithHavingUserName2(custsNullUsername2);
+                    preCTSCustId = custsNullUsername2.Max(c => c.CTSCustID);
+                    ctscustomerService.UpdateUsername2(custFromMainDB);
+                }
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                return Task.FromResult(false);
+            }
+            
         }
     }
 }
