@@ -2,17 +2,17 @@ FROM registry.nexdev.net:5050/docker/dotnet/core/sdk:5.0.102-ca-patch-buster-sli
 
 WORKDIR /src
 
-COPY ["./src/Fanex.NAP.SPU.CTS", "Fanex.NAP.SPU.CTS/"]
+COPY ["./src/Fanex.NAP.SPU.CTS.CC", "Fanex.NAP.SPU.CTS.CC/"]
 
-COPY ["./src/Fanex.NAP.SPU.CTS.JobService/Fanex.NAP.SPU.CTS.JobService.csproj", "Fanex.NAP.SPU.CTS.JobService/"]
+COPY ["./src/Fanex.NAP.SPU.CTS.CC.JobService/Fanex.NAP.SPU.CTS.CC.JobService.csproj", "Fanex.NAP.SPU.CTS.CC.JobService/"]
 
-WORKDIR "/src/Fanex.NAP.SPU.CTS.JobService"
+WORKDIR "/src/Fanex.NAP.SPU.CTS.CC.JobService"
 
 RUN dotnet nuget add source http://nuget.nexdev.net/api/v2
 
 RUN dotnet restore -v n
 
-COPY ./src/Fanex.NAP.SPU.CTS.JobService .
+COPY ./src/Fanex.NAP.SPU.CTS.CC.JobService .
 
 RUN dotnet publish -r linux-x64 --self-contained false -o /app
 
@@ -27,4 +27,4 @@ RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /usr/lib/ssl/openssl.
 
 COPY --from=builder /app .
 
-ENTRYPOINT ["dotnet", "Fanex.NAP.SPU.CTS.JobService.dll"]
+ENTRYPOINT ["dotnet", "Fanex.NAP.SPU.CTS.CC.JobService.dll"]
