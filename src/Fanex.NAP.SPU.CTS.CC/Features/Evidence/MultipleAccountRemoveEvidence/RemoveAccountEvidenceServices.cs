@@ -58,7 +58,7 @@
         {
             updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
 
-            if (modifyResult.ErrorCode==0 && customerEvidence != null && customerEvidence.Any())
+            if (modifyResult.ErrorCode == 0 && customerEvidence != null && customerEvidence.Any())
             {
                 var processedIdList = customerEvidence.Select(x => x.Id);
 
@@ -76,9 +76,9 @@
             return this;
         }
 
-        public IEnumerable<long> PrepareCustRescanClassification ()
+        public IEnumerable<long> PrepareCustRescanClassification()
         {
-            if(updateResult.ErrorCode == 0 && modifyResult.OutParam.ContainsKey("custIds"))
+            if (updateResult.ErrorCode == 0 && modifyResult.OutParam.ContainsKey("custIds"))
             {
                 var custIds = modifyResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse);
 

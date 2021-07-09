@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RealtimeClassification
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using System;
     using Newtonsoft.Json;
+    using System;
     using System.Xml.Serialization;
 
     [XName("CustomerClassificationModel")]

@@ -15,6 +15,7 @@
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly IMatchMonitorJobService matchMonitorJobService;
+
         public ClassificationJobController(
             IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,

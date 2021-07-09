@@ -22,14 +22,6 @@
 
         bool NormalAccountIsWriteLog { get; }
 
-        int SiteId { get; }
-
-        bool UserPermissionIsWriteLog { get; }
-
-        int UpdateLastLoginBatchSize { get; }
-
-        bool IsDailyScanningInterrupt { get; }
-
         bool RobotAccountIsWriteLog { get; }
 
         string RobotAccountCreditSites { get; }
@@ -45,8 +37,6 @@
         int TransformCTSCustomerBatchSize { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
-
-        bool TransformAssByDeviceIsWriteLog { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -58,7 +48,6 @@
         private readonly string spName;
         private readonly int matchMonitorNumberOfThread;
         private readonly string soon88FeedDataAPI;
-        private readonly bool isDailyScanningInterrupt;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -99,17 +88,9 @@
 
         public int MatchMonitorNumberOfThread => matchMonitorNumberOfThread;
 
-        public bool IsDailyScanningInterrupt => isDailyScanningInterrupt;
-
         public bool MatchMonitorIsWriteLog => GetValue<bool>("MatchMonitor:IsWriteLog");
 
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
-
-        public int SiteId => GetValue<int>("UserPermission:SiteId");
-
-        public int UpdateLastLoginBatchSize => GetValue<int>("UpdateLastLoginTime:BatchSize");
-
-        public bool UserPermissionIsWriteLog => GetValue<bool>("UserPermission:IsWriteLog");
 
         public bool NormalAccountIsWriteLog => GetValue<bool>("NormalAccountInsert:IsWriteLog");
 
@@ -126,8 +107,6 @@
         public bool TransformCTSCustomerIsWriteLog => GetValue<bool>("TransformCTSCustomer:IsWriteLog");
 
         public int TransformCTSCustomerBatchSize => GetValue<int>("TransformCTSCustomer:BatchSize");
-
-        public bool TransformAssByDeviceIsWriteLog => GetValue<bool>("TransformAssociationByDevice:IsWriteLog");
 
         #endregion Variables
 

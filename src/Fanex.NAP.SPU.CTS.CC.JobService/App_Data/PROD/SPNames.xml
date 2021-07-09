@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <Functions>
-	<Function Name="JobSerice">
-		<Setting Key="DCS_DC_TransformToCTS_Account_GetPackage" SpName="DCS_DC_TransformToCTS_Account_GetPackage" DbName="MySQL.DCS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_TransformDCSAccountToCTSCustomer" SpName="CTS_DC_TransformDCSAccountToCTSCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	</Function>
-	<Function Name="Customer">
-		<Setting Key="CTS_DC_CustInfo_CheckCustNotExistedByCustIds" SpName="CTS_DC_CustInfo_CheckCustNotExistedByCustIds" DbName="MySQL.CTS_DataCenter.Reporter" />
-		<Setting Key="CTS_GetPlacedBetCustomers" SpName="CTS_GetPlacedBetCustomers" DbName="SQL.bodb02.bodbAdminNet"></Setting>
-	</Function>
 	<Function Name="MatchMonitor">
 		<Setting Key="CTS_DC_SystemParameter_Get" SpName="CTS_DC_SystemParameter_Get" DbName="MySQL.CTS_DataCenter.Reporter" />
 		<Setting Key="CTS_Rpt_MatchMonitor_TicketDetails" SpName="CTS_Rpt_MatchMonitor_TicketDetails" DbName="SQL.bodb02.bodbSPUNet"></Setting>
@@ -39,20 +31,6 @@
 		<Setting Key="CTS_NormalAccountsClassification_GetNewClassification" SpName="CTS_NormalAccountsClassification_GetNewClassification" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
-	</Function>
-	<Function Name="SyncUserPermisison">
-		<Setting Key="CTS_DC_Common_InsertUserPermission" SpName="CTS_DC_Common_InsertUserPermission" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	</Function>
-	<Function Name="UpdateLastLogin">
-		<Setting Key="CTS_DC_CustInfo_UpdateLastLoginTime" SpName="CTS_DC_CustInfo_UpdateLastLoginTime" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	</Function>
-	<Function Name="AssociationByDevice">
-		<Setting Key="DCS_DC_Transform_Association_GetPackage" SpName="DCS_DC_Transform_Association_GetPackage" DbName="MySQL.DCS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_Association_InsertAssociationByDevice" SpName="CTS_DC_Association_InsertAssociationByDevice" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	</Function>
-	<Function name="AffectedEvidence">
-		<Setting Key="NAP_BLControl_EvidenceFlagged" SpName="NAP_BLControl_EvidenceFlagged_UAT1" DbName="SQL.CustDB.bodbAdminNet" />
-		<Setting Key="CTS_DC_CustEvidence_InsertFromAssociation" SpName="CTS_DC_CustEvidence_InsertFromAssociation" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="DailyClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />

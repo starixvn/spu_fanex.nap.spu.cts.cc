@@ -81,6 +81,7 @@
         }
 
         #region Private Methods
+
         private void JobRun(int batchSize)
         {
             Int64 lastScannedTransId = GetLastScannedTransId();
@@ -169,6 +170,6 @@
             }
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

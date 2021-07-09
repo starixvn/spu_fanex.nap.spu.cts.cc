@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -34,15 +33,14 @@
         private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
-            ICustClassToMainDBDataAccess custClassToMainDBDataAccess, 
-            ISentryClient sentryClient, 
+            ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
+            ISentryClient sentryClient,
             IFeedSoon88Services feedSoon88Services)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
             this.feedSoon88Services = feedSoon88Services;
             this.sentryClient = sentryClient;
         }
-
 
         public void PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {

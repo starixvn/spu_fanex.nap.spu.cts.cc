@@ -22,7 +22,7 @@
 
     public class MatchMonitorDataAccess : IMatchMonitorDataAccess
     {
-        readonly IDynamicRepository repository;
+        private readonly IDynamicRepository repository;
 
         public MatchMonitorDataAccess()
         {
