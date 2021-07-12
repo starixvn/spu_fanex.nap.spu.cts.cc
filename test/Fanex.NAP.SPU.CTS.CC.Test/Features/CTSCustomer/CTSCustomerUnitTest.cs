@@ -1,9 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.Transform
+﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform
 {
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.JobService.Services.Transform;
     using NSubstitute;
     using Sentry;
 

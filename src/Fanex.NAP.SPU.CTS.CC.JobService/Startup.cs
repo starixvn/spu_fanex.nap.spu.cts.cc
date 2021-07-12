@@ -1,15 +1,13 @@
-namespace Fanex.NAP.SPU.CTS.JobService
+namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
     using Fanex.Data;
     using Fanex.Data.MySql;
     using Fanex.Data.SqlServer;
     using Fanex.NAP.Client;
     using Fanex.NAP.Client.AspNetCore.Configuration;
-    using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Configuration;
     using Fanex.NAP.Client.Helpers.Web;
-    using Fanex.NAP.Client.Services;
-    using Fanex.NAP.SPU.CTS.JobService.Services;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;

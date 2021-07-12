@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
     using Microsoft.Extensions.Configuration;
     using System;

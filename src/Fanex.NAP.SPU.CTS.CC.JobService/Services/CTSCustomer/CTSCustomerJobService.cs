@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services.Transform
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
@@ -11,6 +11,10 @@
     public interface ICTSCustomerJobService
     {
         Task<bool> InsertNewCustomer();
+
+        Task<bool> UpdateCTSCustomerInfo(int packageSize);
+
+        Task<bool> UpdateUsername2(int batchSize);
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService

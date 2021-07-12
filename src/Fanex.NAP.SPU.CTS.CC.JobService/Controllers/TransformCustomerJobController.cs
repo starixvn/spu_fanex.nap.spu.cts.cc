@@ -1,0 +1,37 @@
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
+{
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
+
+    [ApiController]
+    [Route("api/TransformCustomer")]
+    public class TransformCustomerJobController : ControllerBase
+    {
+        private readonly ICTSCustomerJobService ctsCustomerJobService;
+
+        public TransformCustomerJobController(
+            ICTSCustomerJobService ctsCustomerJobService)
+        {
+            this.ctsCustomerJobService = ctsCustomerJobService;
+        }
+
+        [HttpPost("InsertNewCustomer")]
+        public async Task<bool> InsertNewCustomer()
+        {
+            return await ctsCustomerJobService.InsertNewCustomer();
+        }
+
+        [HttpPost("UpdateCTSCustomerInfo")]
+        public async Task<bool> UpdateCTSCustomerInfo(int batchSize)
+        {
+            return await ctsCustomerJobService.UpdateCTSCustomerInfo(batchSize);
+        }
+        
+        [HttpPost("UpdateUsername2")]
+        public async Task<bool> UpdateUsername2(int batchSize)
+        {
+            return await ctsCustomerJobService.UpdateUsername2(batchSize);
+        }
+    }
+}

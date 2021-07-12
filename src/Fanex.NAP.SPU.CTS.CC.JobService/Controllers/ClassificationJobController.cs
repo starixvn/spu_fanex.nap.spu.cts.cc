@@ -1,6 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Controllers
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
-    using Fanex.NAP.SPU.CTS.JobService.Services;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
 

@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Features.Evidence.MultipleAccountRemoveEvidence;
