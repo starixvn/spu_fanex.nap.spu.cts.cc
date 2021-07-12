@@ -65,36 +65,35 @@
         {
             IEnumerable<CustomerEvidenceQueueEntity> customerEvidenceFromQueue;
 
-            do
+            customerEvidenceFromQueue = removeAccountEvidenceServices.GetCustomerEvidenceQueue();
+
+            if (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any())
             {
-                customerEvidenceFromQueue = removeAccountEvidenceServices.GetCustomerEvidenceQueue();
+                var custIds = removeAccountEvidenceServices
+                                .ModifyCustomerEvidence(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
+                                .UpdateCustomerEvidence(customerEvidenceFromQueue, serviceName)
+                                .PrepareCustRescanClassification();
 
-                if (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any())
+                if (custIds != null && custIds.Any())
                 {
-                    var custIds = removeAccountEvidenceServices
-                                    .ModifyCustomerEvidence(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
-                                    .UpdateCustomerEvidence(customerEvidenceFromQueue, serviceName)
-                                    .PrepareCustRescanClassification();
-
-                    if (custIds != null && custIds.Any())
+                    var paras = new RescanParametersEntity
                     {
-                        var paras = new RescanParametersEntity
-                        {
-                            CustIds = custIds,
-                            FlowTypeRescanCC = FlowTypeRescanCC.RemoveMultipleEvidence,
-                            IsCheckPAFromNAP = true,
-                            IsPushCCToSoon88 = true,
-                            ServiceName = serviceName,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
-                            InternalBatchSize = internalBatchSize,
-                            ExternalBatchSize = externalBatchSize
-                        };
+                        CustIds = custIds,
+                        FlowTypeRescanCC = FlowTypeRescanCC.RemoveMultipleEvidence,
+                        IsCheckPAFromNAP = true,
+                        IsPushCCToSoon88 = true,
+                        ServiceName = serviceName,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
+                        InternalBatchSize = internalBatchSize,
+                        ExternalBatchSize = externalBatchSize
+                    };
 
-                        rescanCustClassificationService.RescanCustomerClassify(paras);
-                    }
+                    rescanCustClassificationService.RescanCustomerClassify(paras);
                 }
-            } while (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any());
+
+                JobRun(internalBatchSize, externalBatchSize);
+            }
         }
 
         #endregion Private Methods

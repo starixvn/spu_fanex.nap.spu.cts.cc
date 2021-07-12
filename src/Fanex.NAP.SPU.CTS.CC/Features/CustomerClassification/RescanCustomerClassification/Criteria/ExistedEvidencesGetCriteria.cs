@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustEvidence_GetExistedEvidencesToSync";
+            return "CTS_DC_CustEvidence_GetByCustIDs";
         }
 
         public override bool IsValid()
