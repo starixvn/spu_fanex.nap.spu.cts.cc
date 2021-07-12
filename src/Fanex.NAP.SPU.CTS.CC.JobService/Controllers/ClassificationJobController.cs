@@ -14,7 +14,6 @@
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
-        private readonly IMatchMonitorJobService matchMonitorJobService;
 
         public ClassificationJobController(
             IProblemAccountJobService problemAccountInsertJobService,
@@ -22,7 +21,6 @@
             IDailyClassificationJobService dailyClassificationJobService,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
-            IMatchMonitorJobService matchMonitorJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService)
         {
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -31,7 +29,6 @@
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
-            this.matchMonitorJobService = matchMonitorJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -68,18 +65,6 @@
         public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.robotAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
-        }
-
-        [HttpPost("MatchMonitor")]
-        public async Task<bool> MatchMonitor([FromForm] int size)
-        {
-            return await this.matchMonitorJobService.Execute(size);
-        }
-
-        [HttpPost("UpdateMatchMonitorWriteLog")]
-        public async Task<bool> UpdateMatchMonitorWriteLog([FromForm] bool isWriteLog)
-        {
-            return await this.matchMonitorJobService.UpdateWriteLogSetting(isWriteLog);
         }
     }
 }

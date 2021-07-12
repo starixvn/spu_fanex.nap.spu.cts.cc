@@ -13,7 +13,6 @@
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.Features.Evidence.MultipleAccountRemoveEvidence;
-    using Fanex.NAP.SPU.CTS.Features.MatchMonitor;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Features.SystemParameter;
@@ -27,8 +26,6 @@
         public static void RegisterService(this IServiceCollection services)
         {
             RegisterNAPService(services);
-
-            RegisterMatchMonitor(services);
 
             RegisterProblemAccount(services);
 
@@ -56,13 +53,6 @@
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<INapSession, NapSession>();
             services.AddSingleton<ISecurityService, SecurityService>();
-        }
-
-        private static void RegisterMatchMonitor(this IServiceCollection services)
-        {
-            services.AddSingleton<IMatchMonitorDataAccess, MatchMonitorDataAccess>();
-            services.AddSingleton<IMatchMonitorServices, MatchMonitorServices>();
-            services.AddSingleton<IMatchMonitorJobService, MatchMonitorJobService>();
         }
 
         private static void RegisterProblemAccount(this IServiceCollection services)

@@ -14,10 +14,6 @@
 
         string Soon88FeedDataAPI { get; }
 
-        int MatchMonitorNumberOfThread { get; }
-
-        bool MatchMonitorIsWriteLog { get; }
-
         bool ProblemAccountIsWriteLog { get; }
 
         bool NormalAccountIsWriteLog { get; }
@@ -46,7 +42,6 @@
         private readonly string environment;
         private readonly string evironmentName;
         private readonly string spName;
-        private readonly int matchMonitorNumberOfThread;
         private readonly string soon88FeedDataAPI;
 
         public AppSettings(IConfiguration configuration)
@@ -57,7 +52,6 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
-            matchMonitorNumberOfThread = GetValue<int>("MatchMonitor:NumberOfThread");
         }
 
         #region Variables
@@ -85,10 +79,6 @@
         public string SPName => spName;
 
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
-
-        public int MatchMonitorNumberOfThread => matchMonitorNumberOfThread;
-
-        public bool MatchMonitorIsWriteLog => GetValue<bool>("MatchMonitor:IsWriteLog");
 
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 
