@@ -20,8 +20,6 @@
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
-        UpdateCustomerModel PrepareData(UpdateCustomerModel customers, List<CustomerMainDBModel> custSubs);
-
         bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url);
 
         LastUpdateValueModel GetLastUpdatedTime();
@@ -47,6 +45,8 @@
         List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
 
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
+
+        IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -224,41 +224,27 @@
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID, UpdateCustomer sourceType)
         {
-            //if (sourceType == UpdateCustomer.FromCustomer)
-            //{
-            //    dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
-            //}
-            //else
-            //{
-            //    dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
-            //}
-        }
-
-        public UpdateCustomerModel PrepareData(UpdateCustomerModel customers, List<CustomerMainDBModel> custSubs)
-        {
-            var custsToCTS = new UpdateCustomerModel()
+            if (sourceType == Constants.UpdateCustomer.FromCustomer)
             {
-                CustomerInfos = new List<CustomerMainDBModel>(),
-                LastInsertCustID = null
-            };
-
-            custsToCTS.CustomerInfos.AddRange(customers?.CustomerInfos);
-            custsToCTS.CustomerInfos.AddRange(custSubs);
-            custsToCTS.LastInsertCustID = customers?.LastInsertCustID;
-
-            return custsToCTS;
+                dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
+            }
+            else
+            {
+                dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
+            }
         }
 
         public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url)
         {
-            var customers = data.CustomerInfos;
-            var lastCustID = data.LastInsertCustID;
-
-            try
+            if (data is not null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", customers, isWriteLogInfo, sentryClient);
-                if (customers != null && customers.Any())
+                var customers = data.CustomerInfos;
+                var lastCustID = data.LastInsertCustID;
+
+                try
                 {
+                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", customers, isWriteLogInfo, sentryClient);
+
                     var customersChunk = customers.Distinct().Chunk(internalBatchSize);
 
                     foreach (var custs in customersChunk)
@@ -267,67 +253,72 @@
 
                         Utilities.LogSentryInfo(serviceName, "Insert", custs, isWriteLogInfo, sentryClient);
 
-                        if (custIdList != null && custIdList.Any())
-                        {
-                            var tasks = new List<Task>();
-
-                            tasks.Add(Task.Run(() =>
-                            {
-                                try
-                                {
-                                    var custToRescan = custIdList.Where(c => !c.IsExisting).Select(c => c.CustID).Distinct();
-                                    var rescanParam = new RescanParametersEntity
-                                    {
-                                        CustIds = custToRescan,
-                                        FlowTypeRescanCC = FlowTypeRescanCC.NewMember,
-                                        IsCheckPAFromNAP = true,
-                                        IsPushCCToSoon88 = true,
-                                        ServiceName = serviceName,
-                                        FeedSoon88API = soon88Url,
-                                        IsWriteLog = isWriteLogInfo,
-                                        InternalBatchSize = internalBatchSize,
-                                        ExternalBatchSize = internalBatchSize
-                                    };
-                                    rescanClassificationService.RescanCustomerClassify(rescanParam);
-
-                                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, isWriteLogInfo, sentryClient);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
-                                }
-                            }));
-
-                            tasks.Add(Task.Run(() =>
-                            {
-                                try
-                                {
-                                    dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID);
-
-                                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - Insert complete", custIdList, isWriteLogInfo, sentryClient);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Utilities.LogSentryError(serviceName, "InsertNewCustomer - RReTransformAccount throws exception", custIdList, ex, sentryClient);
-                                }
-                            }));
-
-                            Task.WhenAll(tasks.ToArray()).Wait();
-                        }
+                        RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID.Value);
                     }
+
+                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
+
+                    return true;
                 }
-
-                if (isWriteLogInfo)
-                    sentryClient.CaptureMessage(serviceName + " - InsertNewCustomer done");
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
+                }
             }
 
             return false;
+        }
+
+        public void RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long lastCustID)
+        {
+            if (custIdList != null && custIdList.Any())
+            {
+                var tasks = new List<Task>
+                {
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            var custToRescan = custIdList.Where(c => !c.IsExisting).Select(c => c.CustID).Distinct();
+                            var rescanParam = new RescanParametersEntity
+                            {
+                                CustIds = custToRescan,
+                                FlowTypeRescanCC = FlowTypeRescanCC.NewMember,
+                                IsCheckPAFromNAP = true,
+                                IsPushCCToSoon88 = true,
+                                ServiceName = serviceName,
+                                FeedSoon88API = soon88Url,
+                                IsWriteLog = isWriteLogInfo,
+                                InternalBatchSize = internalBatchSize,
+                                ExternalBatchSize = internalBatchSize
+                            };
+                            rescanClassificationService.RescanCustomerClassify(rescanParam);
+
+                            Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, isWriteLogInfo, sentryClient);
+                        }
+                        catch (Exception ex)
+                        {
+                            Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
+                        }
+                    }),
+
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID);
+
+                            Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - Insert complete", custIdList, isWriteLogInfo, sentryClient);
+                        }
+                        catch (Exception ex)
+                        {
+                            Utilities.LogSentryError(serviceName, "InsertNewCustomer - RReTransformAccount throws exception", custIdList, ex, sentryClient);
+                        }
+                    })
+                };
+
+                Task.WhenAll(tasks.ToArray()).Wait();
+            }
         }
 
         public bool IsValidData(TranformCustModel custFromCustInfo, TranformCustModel custFromCustomer)

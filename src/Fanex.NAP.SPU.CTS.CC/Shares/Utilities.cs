@@ -85,6 +85,16 @@ namespace Fanex.NAP.SPU.CTS.Shares
             }
         }
 
+        public static void LogSentryInfo(string serviceName, string message, bool isWriteLog, ISentryClient sentryClient)
+        {
+            if (isWriteLog)
+            {
+                var logMessage = $"{serviceName} - {message} - {DateTime.Now}";
+
+                sentryClient.CaptureMessage(logMessage);
+            }
+        }
+
         public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient)
         {
             var logMessage = new LogMessage(ex.Message)
@@ -92,6 +102,17 @@ namespace Fanex.NAP.SPU.CTS.Shares
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                 .AddMessage($"{message} - Data {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
+
+            sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+        }
+
+        public static void LogSentryError(string serviceName, string message, Exception ex, ISentryClient sentryClient)
+        {
+            var logMessage = new LogMessage(ex.Message)
+                .AddMessage($"{serviceName}")
+                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                .AddMessage($"{message} - { DateTime.Now}").ToString();
 
             sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
         }

@@ -41,9 +41,9 @@
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
                 var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID).ToList();
-                var custsToCTS = ctscustomerService.PrepareData(customers, custSubs);
+                customers.CustomerInfos.AddRange(custSubs);
 
-                var result = ctscustomerService.InsertNewCustomer(custsToCTS, isWriteLog, batchSize, soon88Url);
+                var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url);
                 return Task.FromResult(result);
             }
             catch (Exception ex)
