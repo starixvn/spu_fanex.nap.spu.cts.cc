@@ -26,12 +26,12 @@
         }
 
         //[Fact]
-        public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
-        {
-            var data = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
-            var result = ctsCustomerService.TransformCustomerFromMainDB(data);
-            //result.Should().BeFalse();
-        }
+        //public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
+        //{
+        //    var data = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+        //    var result = ctsCustomerService.TransformCustomerFromMainDB(data);
+        //    result.Should().BeFalse();
+        //}
 
         [Fact]
         public void InsertNewCustomer_WhenDataHasPropertyNull_RunSuccessfully()
@@ -95,7 +95,7 @@
 
             dataAccess.GetCustomerFromMainDBForInsertNew(100, 1).Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetLastInsertCust();
+            var realData = ctsCustomerService.GetCustomerFromMainDBForInsertNew(100, 1);
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
