@@ -99,6 +99,8 @@
     <Setting Key="CTS_DC_CTSCustomer_GetLastInsertCust" SpName="CTS_DC_CTSCustomer_GetLastInsertCust" DbName="MySQL.CTS_DataCenter.ctsService"/>
     <Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="SQL.bodb02.bodbSPUNet"/>
     <Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="SQL.bodb02.bodbSPUNet"/>
-    <Setting Key="CTS_DC_CTSCustomer_Insert" SpName="CTS_DC_CTSCustomer_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"/>
+    <Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"/>
+    <Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"/>
+    <Setting Key="CTS_DC_CustInfo_InsertComplete" SpName="CTS_DC_CustInfo_InsertComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"/>
   </Function>
 </Functions>

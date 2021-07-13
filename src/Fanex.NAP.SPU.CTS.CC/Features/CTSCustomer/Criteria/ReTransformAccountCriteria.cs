@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_InsertComplete";
+            return "CTS_DC_CustInfo_InsertComplete";
         }
 
         public override bool IsValid()

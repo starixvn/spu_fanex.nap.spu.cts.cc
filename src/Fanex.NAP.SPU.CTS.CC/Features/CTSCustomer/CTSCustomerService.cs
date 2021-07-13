@@ -85,8 +85,7 @@
 
                 UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
 
-                if (isWriteLog)
-                    sentryClient.CaptureMessage($"Healing - done");
+                Utilities.LogSentryInfo(serviceName, "Healing - done", isWriteLog, sentryClient);
             }
             catch (Exception ex)
             {

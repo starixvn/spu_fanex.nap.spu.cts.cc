@@ -57,24 +57,20 @@
         {
             var criteria = new GetLastUpdatedTimeCriteria();
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                using (var result = db.QueryMultiple(criteria))
-                {
-                    var LastUpdateTimeCustInfo = result.Read<DateTime>().FirstOrDefault();
-                    var LastUpdateCustIDCustInfo = result.Read<Int64>().FirstOrDefault();
-                    var LastUpdateTimeCustomer = result.Read<DateTime>().FirstOrDefault();
-                    var LastUpdateCustIDCustomer = result.Read<Int64>().FirstOrDefault();
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var LastUpdateTimeCustInfo = result.Read<DateTime>().FirstOrDefault();
+            var LastUpdateCustIDCustInfo = result.Read<Int64>().FirstOrDefault();
+            var LastUpdateTimeCustomer = result.Read<DateTime>().FirstOrDefault();
+            var LastUpdateCustIDCustomer = result.Read<Int64>().FirstOrDefault();
 
-                    return new LastUpdateValueModel()
-                    {
-                        LastUpdateCustIDCustInfo = LastUpdateCustIDCustInfo,
-                        LastUpdateTimeCustInfo = LastUpdateTimeCustInfo,
-                        LastUpdateCustIDCustomer = LastUpdateCustIDCustomer,
-                        LastUpdateTimeCustomer = LastUpdateTimeCustomer
-                    };
-                }
-            }
+            return new LastUpdateValueModel()
+            {
+                LastUpdateCustIDCustInfo = LastUpdateCustIDCustInfo,
+                LastUpdateTimeCustInfo = LastUpdateTimeCustInfo,
+                LastUpdateCustIDCustomer = LastUpdateCustIDCustomer,
+                LastUpdateTimeCustomer = LastUpdateTimeCustomer
+            };
         }
 
         public TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
@@ -86,15 +82,13 @@
                 RowSize = numOfAccount,
             };
 
-            var repository = new DynamicRepository();
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
 
-            var output = repository.FetchMultiple<TranformCustModel, string>(criteria);
-
-            return new TranformCustModel()
+            return new TranformCustModel
             {
-                LastUpdatedTime = output.firstResultSet.SingleOrDefault().LastUpdatedTime,
-                LastCustId = output.firstResultSet.SingleOrDefault().LastCustId,
-                CustIdList = output.secondResultSet.SingleOrDefault()
+                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                CustIdList = secondResultSet.SingleOrDefault()
             };
         }
 
@@ -107,15 +101,13 @@
                 RowSize = numOfAccount,
             };
 
-            var repository = new DynamicRepository();
-
-            var output = repository.FetchMultiple<TranformCustModel, string>(criteria);
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
 
             return new TranformCustModel()
             {
-                LastUpdatedTime = output.firstResultSet.SingleOrDefault().LastUpdatedTime,
-                LastCustId = output.firstResultSet.SingleOrDefault().LastCustId,
-                CustIdList = output.secondResultSet.SingleOrDefault()
+                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                CustIdList = secondResultSet.SingleOrDefault()
             };
         }
 
@@ -123,20 +115,16 @@
         {
             var criteria = new GetLastInsertCustCriteria();
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                using (var result = db.QueryMultiple(criteria))
-                {
-                    var LastCustID = result.Read<Int64>().FirstOrDefault();
-                    var LastCustSubID = result.Read<Int64>().FirstOrDefault();
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var LastCustID = result.Read<Int64>().FirstOrDefault();
+            var LastCustSubID = result.Read<Int64>().FirstOrDefault();
 
-                    return new LastScannedCustModel()
-                    {
-                        LastCustID = LastCustID,
-                        LastCustSubID = LastCustSubID
-                    };
-                }
-            }
+            return new LastScannedCustModel()
+            {
+                LastCustID = LastCustID,
+                LastCustSubID = LastCustSubID
+            };
         }
 
         public UpdateCustomerModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID)
@@ -147,20 +135,16 @@
                 RowSize = quantityPerBatch,
             };
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                using (var result = db.QueryMultiple(criteria))
-                {
-                    var customers = result?.Read<CustomerMainDBModel>();
-                    var LastCustID = result?.Read<Int64?>();
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var customers = result?.Read<CustomerMainDBModel>();
+            var LastCustID = result?.Read<Int64?>();
 
-                    return new UpdateCustomerModel()
-                    {
-                        CustomerInfos = customers.ToList(),
-                        LastInsertCustID = LastCustID?.FirstOrDefault()
-                    };
-                }
-            }
+            return new UpdateCustomerModel()
+            {
+                CustomerInfos = customers.ToList(),
+                LastInsertCustID = LastCustID?.FirstOrDefault()
+            };
         }
 
         public List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
@@ -171,16 +155,12 @@
                 RowSize = quantityPerBatch
             };
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                return db.Query<CustomerMainDBModel>(criteria).ToList();
-            }
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return db.Query<CustomerMainDBModel>(criteria).ToList();
         }
 
         public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson)
         {
-            var custInfos = new List<InsertCustomerModel>();
-
             var criteria = new TransformCustomerFromMainDbCriteria
             {
                 CustomerJson = customerJson
@@ -191,8 +171,6 @@
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
         {
-            var repository = new DynamicRepository();
-
             var criteria = new UpdateCustomerCompleteCriteria
             {
                 CustomerInfo = customers,
@@ -205,8 +183,6 @@
 
         public void UpdateCustInfoComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
         {
-            var repository = new DynamicRepository();
-
             var criteria = new UpdateCustInfoCompleteCriteria
             {
                 CustInfo = customers,
@@ -274,15 +250,8 @@
             return repository.Execute(criteria);
         }
 
-         public void ReTransformAccount(string jsonData, long? lastCustID)
+        public void ReTransformAccount(string jsonData, long? lastCustID)
         {
-            if (string.IsNullOrEmpty(jsonData))
-            {
-                return;
-            }
-
-            var repository = new DynamicRepository();
-
             var criteria = new ReTransformAccountCriteria
             {
                 CustomerInfo = jsonData,
