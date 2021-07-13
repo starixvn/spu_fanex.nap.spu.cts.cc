@@ -23,7 +23,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public void HandleLogError(IEnumerable<CustomerEvidenceFailedToProcessEntity> processErrorList, bool isSendMailToSPU, string envỉonmentName, int mailingToSPU)
+        public void HandleLogError(IEnumerable<CustomerEvidenceFailedToProcessEntity> processErrorList, bool isSendMailToSPU, string environmentName, int mailingToSPU)
         {
             if (processErrorList.Any())
             {
@@ -60,7 +60,7 @@
 
                     var body = GenerateMailBody(table);
 
-                    SendMailInternal(10278938, body, envỉonmentName, mailingToSPU);
+                    SendMailInternal(body, environmentName, mailingToSPU);
                 }
             }
         }
@@ -106,9 +106,9 @@
             return string.Empty;
         }
 
-        public void SendMailInternal(int usertId, string body, string envỉontmentName, int mailingToSPU)
+        public void SendMailInternal(string body, string environmentName, int mailingToSPU)
         {
-            var subject = $"CTS service Customer-Evidence failed to process ({ envỉontmentName }), UserId={ usertId } at { DateTime.Now }";
+            var subject = $"CTS service Customer-Evidence failed to process ({ environmentName }), UserId={ Constants.ImportEvidence_StarixITId } at { DateTime.Now }";
 
             try
             {
