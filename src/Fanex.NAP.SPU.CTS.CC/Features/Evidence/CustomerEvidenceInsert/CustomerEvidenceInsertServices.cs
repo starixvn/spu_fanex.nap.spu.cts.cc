@@ -1,10 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert
 {
     using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerEvidenceInsertServices
     {
@@ -14,10 +14,10 @@
 
         bool InsertNewCustomerEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isOverwrite, bool isPrevSuccess);
 
-        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, int actionType
+        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType
               , IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess);
 
-        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, int actionType, bool isPrevSuccess);
+        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, bool isPrevSuccess);
 
         ICustomerEvidenceInsertServices UpdateProcessedCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed);
 
@@ -52,9 +52,7 @@
 
             var jsonData = JsonConvert.SerializeObject(ctsCustIdList);
 
-            var sessionId = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-            var result = customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, sessionId, false, false);
+            var result = customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, false, false);
 
             if (result.CustEviRemovedList != null)
             {
@@ -75,7 +73,6 @@
         {
             if (isPrevSuccess)
             {
-                var starixITId = 10278938;
                 var count = 0;
                 var isSuccess = true;
                 var isDeadlock = false;
@@ -93,16 +90,19 @@
 
                 do
                 {
-                    var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, starixITId, isOverwrite);
+                    var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, isOverwrite);
 
                     isSuccess = dbResult.ErrorCode == 0;
                     errorMsg = dbResult.ErrorMsg;
                     isDeadlock = errorMsg != null && errorMsg.ToLower().Contains("deadlock");
 
                     if (isDeadlock)
-                        Thread.Sleep(2000);
+                    {
+                        Thread.Sleep(ImportEvidence_SleepTimes);
+                    }
+
                     count++;
-                } while (count < 3 && isDeadlock);
+                } while (count < InternalRetry && isDeadlock);
 
                 if (!isSuccess)
                 {
@@ -117,7 +117,7 @@
             return isPrevSuccess;
         }
 
-        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, int actionType,
+        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType,
             IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess)
         {
             if (isPrevSuccess)
@@ -128,7 +128,7 @@
                     CTSCustId = x.CTSCustID,
                     SubscriberId = x.SubscriberID,
                     EvidenceId = x.EvidenceID,
-                    ActionType = actionType
+                    ActionType = (int)actionType
                 }).ToList();
 
                 if (custEviRemovedList != null && custEviRemovedList.Any())
@@ -162,13 +162,7 @@
             return isPrevSuccess;
         }
 
-        /// <summary>
-        /// Sync To CTS Category
-        /// </summary>
-        /// <param name="custEvidences"></param>
-        /// <param name="actionType">0: Insert, 2: Remove</param>
-        /// <returns></returns>
-        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, int actionType, bool isPrevSuccess)
+        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, bool isPrevSuccess)
         {
             if (isPrevSuccess)
             {
@@ -178,7 +172,7 @@
                     CTSCustId = x.CTSCustID,
                     SubscriberId = x.SubscriberID,
                     EvidenceId = x.EvidenceID,
-                    ActionType = actionType
+                    ActionType = (int)actionType
                 });
 
                 var jsonData = JsonConvert.SerializeObject(objects);
@@ -223,9 +217,7 @@
         {
             var idList = string.Join(",", custEvidences.Select(x => x.ID));
 
-            var starixITId = 10278938;
-
-            var dbResult = customerEvidenceInsertDataAccess.UpdateProcessedCustEvidence(idList, isProcessed, starixITId);
+            var dbResult = customerEvidenceInsertDataAccess.UpdateProcessedCustEvidence(idList, isProcessed);
 
             if (dbResult.ErrorCode != 0)
             {

@@ -4,6 +4,8 @@
     {
         public const int RetryPushCCToExternal = 3;
 
+        public const int InternalRetry = 3;
+
         public const string InitialProblemAccounts = "0";
 
         public const string ProblemAccountByDateTime = "";
@@ -15,6 +17,10 @@
         public const int Realtime_SleepTimes = 3000;
 
         public const int RemoveEvidences_ClearActionId = 3;
+
+        public const int ImportEvidence_StarixITId = 10278938;
+
+        public const int ImportEvidence_SleepTimes = 2000;
 
         public enum MatchMonitorQueryTypes
         {
@@ -67,6 +73,12 @@
         {
             FromCustomer = 1,
             FromCustInfo = 2
+        };
+
+        public enum EvidenceActionType
+        {
+            Insert = 0,
+            Remove = 2
         };
     }
 }

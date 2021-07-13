@@ -90,9 +90,9 @@
 
             var result = new DBResult
             {
-               ErrorCode = 0,
-               ErrorMsg = string.Empty,
-               OutParam = new Hashtable {
+                ErrorCode = 0,
+                ErrorMsg = string.Empty,
+                OutParam = new Hashtable {
                     { "custIds", "1,2,3" }
                 }
             };
@@ -101,7 +101,7 @@
 
             removeAccountEvidenceDataAccess.ModifyCustomerEvidence(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(result);
 
-            Action action = ()=> removeAccountEvidenceServices.ModifyCustomerEvidence(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.ModifyCustomerEvidence(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
 
             action.Should().NotThrow<Exception>();
         }
@@ -118,7 +118,7 @@
                     CreatedBy = 1,
                     ActionId = 1,
                     EvidenceId = 1,
-                    Id = 1, 
+                    Id = 1,
                     SubscriberId = 1,
                     Remark = string.Empty
                 },
@@ -140,7 +140,6 @@
                 ErrorCode = 0,
                 ErrorMsg = string.Empty
             };
-
 
             var processedIdList = cusEvidences.Select(x => x.Id);
 
