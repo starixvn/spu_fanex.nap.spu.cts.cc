@@ -14,7 +14,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_GetNULLUserName2";
+            return "CTS_DC_CustInfo_GetNullUserName2";
         }
 
         public override bool IsValid()

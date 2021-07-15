@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform
+﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
@@ -11,27 +11,43 @@
     using System.Collections.Generic;
     using Xunit;
 
-    public class CTSCustomerServiceTests
+    public class InserNewCTSCustomerServiceTests
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly IRescanCustClassificationService rescanClassificationService;
         private readonly ISentryClient sentryClient;
 
-        public CTSCustomerServiceTests()
+        public InserNewCTSCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
             ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService);
         }
 
-        //[Fact]
-        //public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
-        //{
-        //    var data = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
-        //    var result = ctsCustomerService.TransformCustomerFromMainDB(data);
-        //    result.Should().BeFalse();
-        //}
+        [Fact]
+        public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
+        {
+            var expectedResult = new List<InsertCustomerModel>
+            {
+                new InsertCustomerModel
+                {
+                    CTSCustID = 1231,
+                    CustID = 123,
+                    CustSubID = 0,
+                    IsExisting = false,
+                    RegisterName = "ahaha",
+                    SubscriberID = 2,
+                    UserName = "super123"
+                }
+            };
+
+            var inputData = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+            dataAccess.TransformCustomerFromMainDB(string.Empty).Returns(expectedResult);
+            var result = ctsCustomerService.TransformCustomerFromMainDB(inputData);
+
+            result.Should().BeEquivalentTo(expectedResult);
+        }
 
         [Fact]
         public void InsertNewCustomer_WhenDataHasPropertyNull_RunSuccessfully()

@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_UpdateUserName2";
+            return "CTS_DC_CustInfo_UpdateUserName2";
         }
 
         public override bool IsValid()

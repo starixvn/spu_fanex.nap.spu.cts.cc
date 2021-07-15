@@ -36,8 +36,7 @@
             {
                 var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
                 var soon88Url = appSettings.Soon88FeedDataAPI;
-                //var batchSize = appSettings.TransformCTSCustomerBatchSize;
-                int batchSize = 5;
+                var batchSize = appSettings.TransformCTSCustomerBatchSize;
 
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);

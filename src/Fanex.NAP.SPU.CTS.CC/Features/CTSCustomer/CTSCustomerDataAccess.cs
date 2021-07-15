@@ -64,7 +64,7 @@
             var LastUpdateTimeCustomer = result.Read<DateTime>().FirstOrDefault();
             var LastUpdateCustIDCustomer = result.Read<Int64>().FirstOrDefault();
 
-            return new LastUpdateValueModel()
+            return new LastUpdateValueModel
             {
                 LastUpdateCustIDCustInfo = LastUpdateCustIDCustInfo,
                 LastUpdateTimeCustInfo = LastUpdateTimeCustInfo,
