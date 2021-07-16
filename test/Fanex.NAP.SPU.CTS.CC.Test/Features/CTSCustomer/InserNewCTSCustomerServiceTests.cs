@@ -28,21 +28,9 @@
         [Fact]
         public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
         {
-            var expectedResult = new List<InsertCustomerModel>
-            {
-                new InsertCustomerModel
-                {
-                    CTSCustID = 1231,
-                    CustID = 123,
-                    CustSubID = 0,
-                    IsExisting = false,
-                    RegisterName = "ahaha",
-                    SubscriberID = 2,
-                    UserName = "super123"
-                }
-            };
+            var expectedResult = new List<InsertCustomerModel>();
 
-            var inputData = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+            var inputData = new List<CustomerMainDBModel>();
             dataAccess.TransformCustomerFromMainDB(string.Empty).Returns(expectedResult);
             var result = ctsCustomerService.TransformCustomerFromMainDB(inputData);
 
