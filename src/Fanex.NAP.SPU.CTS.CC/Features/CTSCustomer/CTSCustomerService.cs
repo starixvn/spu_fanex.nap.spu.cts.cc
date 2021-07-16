@@ -74,18 +74,16 @@
         {
             try
             {
-                if (custs == null || custs.LastCustId == null || custs.LastUpdatedTime == null)
+                if (custs != null && custs.LastCustId != null && custs.LastUpdatedTime != null)
                 {
-                    return;
+                    var updateCustomerType = (UpdateCustomer)sourceType;
+
+                    var custInfoToUpdate = GetCustInfoToUpdate(custs, updateCustomerType, isWriteLog);
+
+                    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
+
+                    Utilities.LogSentryInfo(serviceName, "Healing - done", isWriteLog, sentryClient);
                 }
-
-                var updateCustomerType = (UpdateCustomer)sourceType;
-
-                var custInfoToUpdate = GetCustInfoToUpdate(custs, updateCustomerType, isWriteLog);
-
-                UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
-
-                Utilities.LogSentryInfo(serviceName, "Healing - done", isWriteLog, sentryClient);
             }
             catch (Exception ex)
             {
