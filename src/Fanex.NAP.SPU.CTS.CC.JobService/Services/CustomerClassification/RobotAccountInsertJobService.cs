@@ -72,9 +72,9 @@
 
         private void JobRun(int externalBatchSize, int internalBatchSize)
         {
-            var savedExecutionTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME);
-
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotAccountLastScannedTime);
+
+            var savedExecutionTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME);
 
             var robotUsers = robotAccountInsertServices.GetRobotUser(lastScannedTime, appSettings.RobotAccountCreditSites);
 

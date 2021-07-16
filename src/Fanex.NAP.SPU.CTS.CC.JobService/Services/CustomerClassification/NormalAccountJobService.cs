@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -23,7 +22,6 @@
         private readonly ISentryClient sentryClient;
         private readonly INormalAccountServices normalAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IFeedSoon88Services feedSoon88Services;
         private readonly IAppSettings appSettings;
         private readonly bool isWriteLog;
 
@@ -31,13 +29,11 @@
             ISentryClient sentryClient,
             INormalAccountServices normalAccountServices,
             ICustClassToMainDBService pushDataToExternalService,
-            IFeedSoon88Services feedSoon88Services,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.normalAccountServices = normalAccountServices;
             this.custClassToMainDBService = pushDataToExternalService;
-            this.feedSoon88Services = feedSoon88Services;
             this.appSettings = appSettings;
             this.isWriteLog = appSettings.NormalAccountIsWriteLog;
             this.serviceName = "NormalAccountInsert";

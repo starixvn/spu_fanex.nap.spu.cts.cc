@@ -85,6 +85,7 @@
                 }
 
                 HandleLogError();
+
             } while (custEvidenceFromFiles != null && custEvidenceFromFiles.Any());
         }
 
