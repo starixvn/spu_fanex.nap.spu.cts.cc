@@ -25,7 +25,6 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IAppSettings appSettings;
-        private readonly bool isWriteLog;
 
         public RobotAccountInsertJobService(
             ISentryClient sentryClient,
@@ -41,7 +40,6 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
             this.appSettings = appSettings;
-            this.isWriteLog = appSettings.RobotAccountIsWriteLog;
             this.serviceName = "RobotAccountInsert";
         }
 
@@ -86,7 +84,7 @@
                 {
                     var custCategory = robotAccountInsertServices.MappingRobotCategory(robot);
 
-                    var custIds = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, serviceName, isWriteLog);
+                    var custIds = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, serviceName, appSettings.RobotAccountIsWriteLog);
 
                     if (custIds != null && custIds.Any())
                     {
@@ -96,7 +94,7 @@
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = false,
-                            IsWriteLog = isWriteLog,
+                            IsWriteLog = appSettings.RobotAccountIsWriteLog,
                             ServiceName = serviceName
                         });
                     }

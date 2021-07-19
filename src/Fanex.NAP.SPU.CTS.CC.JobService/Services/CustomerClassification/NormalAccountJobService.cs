@@ -13,7 +13,7 @@
     {
         Task<bool> Execute(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> UpdateWriteLogSetting(bool isWriteLog);
+        Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog);
     }
 
     public class NormalAccountJobService : INormalAccountJobService
@@ -23,7 +23,6 @@
         private readonly INormalAccountServices normalAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAppSettings appSettings;
-        private readonly bool isWriteLog;
 
         public NormalAccountJobService(
             ISentryClient sentryClient,
@@ -35,7 +34,6 @@
             this.normalAccountServices = normalAccountServices;
             this.custClassToMainDBService = pushDataToExternalService;
             this.appSettings = appSettings;
-            this.isWriteLog = appSettings.NormalAccountIsWriteLog;
             this.serviceName = "NormalAccountInsert";
         }
 
@@ -62,7 +60,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> UpdateWriteLogSetting(bool isWriteLog)
+        public Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog)
         {
             try
             {
@@ -85,7 +83,7 @@
 
             do
             {
-                newClassification = normalAccountServices.GetNewClassification(serviceName, isWriteLog);
+                newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
 
                 if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
                 {
@@ -95,7 +93,7 @@
                     {
                         var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
 
-                        var custIds = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, isWriteLog);
+                        var custIds = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, appSettings.NormalAccountIsWriteLog);
 
                         custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
                         {
@@ -103,7 +101,7 @@
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
-                            IsWriteLog = isWriteLog,
+                            IsWriteLog = appSettings.NormalAccountIsWriteLog,
                             ServiceName = serviceName
                         });
                     }

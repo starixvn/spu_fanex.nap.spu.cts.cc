@@ -14,8 +14,6 @@
     public interface IProblemAccountJobService
     {
         Task<bool> Execute(int batchExternalSize, int batchInternalSize);
-
-        Task<bool> UpdateWriteLogSetting(bool isWriteLog);
     }
 
     public class ProblemAccountJobService : IProblemAccountJobService
@@ -27,7 +25,6 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAppSettings appSettings;
         private IEnumerable<ProblemAccountsEntity> logData;
-        private readonly bool isWriteLog;
 
         public ProblemAccountJobService(
             ISentryClient sentryClient,
@@ -41,7 +38,6 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = pushDataToExternalService;
             this.appSettings = appSettings;
-            this.isWriteLog = appSettings.ProblemAccountIsWriteLog;
             this.serviceName = "ProblemAccountInsert";
         }
 
@@ -68,21 +64,6 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> UpdateWriteLogSetting(bool isWriteLog)
-        {
-            try
-            {
-                bool result = appSettings.UpdateIsWriteLogSetting(serviceName, isWriteLog);
-
-                return Task.FromResult(result);
-            }
-            catch (Exception e)
-            {
-                sentryClient.CaptureException(e);
-                return Task.FromResult(false);
-            }
-        }
-
         #region Private Methods
 
         private void JobRun(int batchExternalSize, int batchInternalSize)
@@ -91,7 +72,7 @@
 
             var savedDataTime = DateTime.Now;
 
-            var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, isWriteLog);
+            var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -100,7 +81,7 @@
 
                 foreach (var items in problemAccountsChunk)
                 {
-                    var custIds = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, isWriteLog);
+                    var custIds = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
 
                     if (custIds != null && custIds.Any())
                     {
@@ -110,7 +91,7 @@
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = false,
-                            IsWriteLog = isWriteLog,
+                            IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
                         });
                     }

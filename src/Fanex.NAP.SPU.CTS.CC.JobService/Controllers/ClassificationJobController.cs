@@ -2,12 +2,15 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
+    using Sentry;
+    using System;
     using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/classificationJobs")]
     public class ClassificationJobController : ControllerBase
     {
+        private readonly ISentryClient sentryClient;
         private readonly IProblemAccountJobService problemAccountInsertJobService;
         private readonly INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyClassificationJobService dailyClassificationJobService;
@@ -15,7 +18,7 @@
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
 
-        public ClassificationJobController(
+        public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,
             IDailyClassificationJobService dailyClassificationJobService,
@@ -23,6 +26,7 @@
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService)
         {
+            this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
             this.dailyClassificationJobService = dailyClassificationJobService;
@@ -34,37 +38,48 @@
         [HttpPost("problemAccountInsert")]
         public async Task<bool> InsertProblemAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
+            sentryClient.CaptureMessage($"Problem Account Service is running at {DateTime.Now}");
             return await this.problemAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("insertNormalAccount")]
         public async Task<bool> InsertNormalAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
+        { 
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("scanningDailyClassification")]
         public async Task<bool> DailyScanningClassification([FromForm] int batchSize)
         {
+            sentryClient.CaptureMessage($"Daily Service is running at {DateTime.Now}");
             return await this.dailyClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("scanningRealtimeClassification")]
         public async Task<bool> RealtimeScanningClassification([FromForm] int batchSize)
         {
+            sentryClient.CaptureMessage($"Realtime Service is running at {DateTime.Now}");
             return await this.realtimeClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("probationClassification")]
         public async Task<bool> ProbationScanningClassification([FromForm] int batchSize)
         {
+            sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
             return await this.probationClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("robotClassification")]
         public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
+            sentryClient.CaptureMessage($"Robot Service is running at {DateTime.Now}");
             return await this.robotAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("updatewritelog")]
+        public async Task<bool> UpdateWriteLog([FromForm] string serviceName, [FromForm] bool isWriteLog)
+        {
+            return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
         }
     }
 }
