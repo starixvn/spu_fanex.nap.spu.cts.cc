@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -85,13 +86,18 @@
             try
             {
                 long preCTSCustId = 0;
-                var custsNullUsername2 = ctscustomerService.GetCustWithNullUserName2(batchSize, preCTSCustId);
-                if (custsNullUsername2 is not null && custsNullUsername2.Any())
+                List<GetCustIdModel> custsNullUsername2;
+
+                do
                 {
-                    var custFromMainDB = ctscustomerService.GetCustWithHavingUserName2(custsNullUsername2);
-                    preCTSCustId = custsNullUsername2.Max(c => c.CTSCustID);
-                    ctscustomerService.UpdateUsername2(custFromMainDB);
-                }
+                    custsNullUsername2 = ctscustomerService.GetCustWithNullUserName2(batchSize, preCTSCustId);
+                    if (custsNullUsername2 is not null && custsNullUsername2.Any())
+                    {
+                        var custFromMainDB = ctscustomerService.GetCustWithHavingUserName2(custsNullUsername2);
+                        preCTSCustId = custsNullUsername2.Max(c => c.CTSCustID);
+                        ctscustomerService.UpdateUsername2(custFromMainDB);
+                    }
+                } while (custsNullUsername2 is not null && custsNullUsername2.Any());        
 
                 return Task.FromResult(true);
             }
