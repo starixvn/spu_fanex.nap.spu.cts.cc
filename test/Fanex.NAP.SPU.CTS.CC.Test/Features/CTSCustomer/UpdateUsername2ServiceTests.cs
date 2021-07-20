@@ -40,7 +40,7 @@
             };
 
             dataAccess.GetCustWithNullUserName2(10,1).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustWithNullUserName2(100, 1);
+            var result = ctsCustomerService.GetCustWithNullUserName2(10, 1);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
