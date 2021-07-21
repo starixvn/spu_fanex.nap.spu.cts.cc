@@ -11,7 +11,7 @@
 
         public bool IsPushCCToSoon88 { get; set; }
 
-        public FlowTypeRescanCC FlowTypeRescanCC { get; set; }
+        public FunctionId FunctionId { get; set; }
 
         public int InternalBatchSize { get; set; }
 

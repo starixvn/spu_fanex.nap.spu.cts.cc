@@ -6,6 +6,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyClassificationJobService
     {
@@ -60,7 +61,7 @@
 
                 if (customers != null && customers.Any())
                 {
-                    dailyClassificationServices.ScanningDailyClassification(customers, true);
+                    dailyClassificationServices.ScanningDailyClassification(customers, FunctionId.Daily, true);
 
                     JobRun(batchSize);
                 }

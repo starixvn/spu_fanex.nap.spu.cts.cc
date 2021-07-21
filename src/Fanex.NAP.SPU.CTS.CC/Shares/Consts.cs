@@ -80,5 +80,19 @@
             Insert = 0,
             Remove = 2
         };
+
+        public enum FunctionId
+        {
+            Realtime = 1,
+            Probation = 2,
+            Daily = 3,
+            InsertNewCust = 4,
+            RemoveVIP = 5,
+            RemoveSpecialCC = 6,
+            RemovePA = 7,
+            RemoveFlaggedEvidence = 8,
+            RemoveMultiEvidences = 9,
+            ExcludeTaggingAssPA = 10,
+        };
     }
 }

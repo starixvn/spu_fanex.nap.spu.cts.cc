@@ -79,7 +79,7 @@
                     var paras = new RescanParametersEntity
                     {
                         CustIds = custIds,
-                        FlowTypeRescanCC = FlowTypeRescanCC.RemoveMultipleEvidence,
+                        FunctionId = FunctionId.RemoveMultiEvidences,
                         IsCheckPAFromNAP = true,
                         IsPushCCToSoon88 = true,
                         ServiceName = serviceName,

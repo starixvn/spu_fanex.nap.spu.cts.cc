@@ -110,7 +110,7 @@
 
         public RescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras)
         {
-            var isWriteLogRescan = paras.FlowTypeRescanCC != FlowTypeRescanCC.NewMember;
+            var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCust;
 
             if (existedEvidences != null && existedEvidences.Any())
             {
@@ -191,7 +191,7 @@
             {
                 var problemAccountsChunk = problemAccounts.Distinct().Chunk(paras.InternalBatchSize);
 
-                var isWriteLogRescan = paras.FlowTypeRescanCC != FlowTypeRescanCC.NewMember;
+                var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCust;
 
                 foreach (var problemAccs in problemAccountsChunk)
                 {
@@ -234,7 +234,7 @@
 
                     foreach (var custIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, false);
+                        dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, paras.FunctionId, false);
                     }
                 }
             }
