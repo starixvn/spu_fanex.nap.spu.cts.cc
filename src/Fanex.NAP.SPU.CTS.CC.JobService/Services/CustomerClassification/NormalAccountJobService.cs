@@ -79,23 +79,21 @@
 
         private void JobRun(int batchExternalSize, int batchInternalSize)
         {
-            GeneralCustomerClassificationEnity newClassification;
+            var newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
 
-            do
+            if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
             {
-                newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
+                var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
 
-                if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
+                foreach (var listClassification in generalClassificationChunk)
                 {
-                    var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
+                    var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
 
-                    foreach (var listClassification in generalClassificationChunk)
+                    var result = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, appSettings.NormalAccountIsWriteLog);
+
+                    if (string.IsNullOrEmpty(result.ErrorMessage))
                     {
-                        var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
-
-                        var custIds = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, appSettings.NormalAccountIsWriteLog);
-
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -104,9 +102,16 @@
                             IsWriteLog = appSettings.NormalAccountIsWriteLog,
                             ServiceName = serviceName
                         });
+
+                        normalAccountServices.UpdateAppliedStatusClassification(listClassification, isPushCCSuccess);
                     }
                 }
-            } while (newClassification.IsContinute);
+            }
+
+            if (newClassification.IsContinute)
+            {
+                JobRun(batchExternalSize, batchInternalSize);
+            }
         }
     }
 

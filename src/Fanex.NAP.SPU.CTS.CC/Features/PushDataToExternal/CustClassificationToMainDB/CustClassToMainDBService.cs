@@ -23,7 +23,7 @@
 
         bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, DangerLevel typeId, int retryTime, string serviceName);
 
-        void PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+        bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
     }
 
     public class CustClassToMainDBService : ICustClassToMainDBService
@@ -42,11 +42,11 @@
             this.sentryClient = sentryClient;
         }
 
-        public void PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
+        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {
             if (custIds == null || !custIds.Any())
             {
-                return;
+                return true;
             }
 
             var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
@@ -66,10 +66,14 @@
 
                     if (paras.IsUpdateDangerToMainDB && isSuccess)
                     {
-                        UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                        isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
                     }
+
+                    return isSuccess;
                 }
             }
+
+            return true;
         }
 
         public bool PushCustClassificationToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog)
