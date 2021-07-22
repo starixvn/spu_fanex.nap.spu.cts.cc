@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_GetInfoByCustIDList";
+            return "CTS_DC_CustInfo_GetByCustIDs";
         }
 
         public override bool IsValid()

@@ -6,7 +6,7 @@
     {
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_GetLastInsertCust";
+            return "CTS_DC_CustInfo_GetLastInsertCust";
         }
 
         public override bool IsValid()
