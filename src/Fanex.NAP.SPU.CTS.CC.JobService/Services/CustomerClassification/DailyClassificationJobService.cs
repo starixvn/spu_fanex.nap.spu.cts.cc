@@ -61,7 +61,7 @@
 
                 if (customers != null && customers.Any())
                 {
-                    dailyClassificationServices.ScanningDailyClassification(customers, FunctionId.Daily, true);
+                    dailyClassificationServices.ScanningDailyClassification(customers, FunctionId.DailyJob, true);
 
                     JobRun(batchSize);
                 }

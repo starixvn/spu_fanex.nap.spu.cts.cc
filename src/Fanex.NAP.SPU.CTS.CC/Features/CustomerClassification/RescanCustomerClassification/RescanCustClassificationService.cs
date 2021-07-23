@@ -68,7 +68,9 @@
             {
                 GetAgentCusts(paras.CustIds)
                .GetExistedCustEvidences(paras.CustIds).InsertCustEvidenceCategorToCTS(paras)
-               .GetRobotUsers(paras.CustIds).GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).InsertProblemAccountToCTS(paras)
+               .GetRobotUsers(paras.CustIds).LogRescanPAData(FunctionId.RescanRobotUser, "RescanPA_GetRobotUser")
+               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(FunctionId.RescanPAFromNAPPA, "RescanPA_GetPAFromNAPPA")
+               .InsertProblemAccountToCTS(paras)
                .RescanProblemAccount(paras)
                .RescanNormalAccount(paras);
             }
@@ -110,7 +112,7 @@
 
         public RescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras)
         {
-            var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCust;
+            var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
             if (existedEvidences != null && existedEvidences.Any())
             {
@@ -191,7 +193,7 @@
             {
                 var problemAccountsChunk = problemAccounts.Distinct().Chunk(paras.InternalBatchSize);
 
-                var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCust;
+                var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
                 foreach (var problemAccs in problemAccountsChunk)
                 {
@@ -238,6 +240,13 @@
                     }
                 }
             }
+
+            return this;
+        }
+
+        public RescanCustClassificationService LogRescanPAData(FunctionId funcId, string stageName)
+        {
+            custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, funcId, stageName);
 
             return this;
         }

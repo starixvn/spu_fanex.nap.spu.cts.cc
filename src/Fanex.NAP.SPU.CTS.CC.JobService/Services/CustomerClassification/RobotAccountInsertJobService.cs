@@ -7,6 +7,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -75,6 +76,8 @@
             var savedExecutionTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME);
 
             var robotUsers = robotAccountInsertServices.GetRobotUser(lastScannedTime, appSettings.RobotAccountCreditSites);
+
+            custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, FunctionId.RobotUserJob, serviceName);
 
             if (robotUsers != null && robotUsers.Any())
             {

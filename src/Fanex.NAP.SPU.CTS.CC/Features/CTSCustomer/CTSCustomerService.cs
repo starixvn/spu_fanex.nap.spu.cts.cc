@@ -337,7 +337,7 @@
                 var rescanParam = new RescanParametersEntity
                 {
                     CustIds = custToRescan,
-                    FunctionId = FunctionId.InsertNewCust,
+                    FunctionId = FunctionId.InsertNewCustJob,
                     IsCheckPAFromNAP = true,
                     IsPushCCToSoon88 = true,
                     ServiceName = serviceName,

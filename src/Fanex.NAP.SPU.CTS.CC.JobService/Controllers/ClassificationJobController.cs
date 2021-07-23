@@ -44,7 +44,7 @@
 
         [HttpPost("insertNormalAccount")]
         public async Task<bool> InsertNormalAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        { 
+        {
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 

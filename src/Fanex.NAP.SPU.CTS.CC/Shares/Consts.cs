@@ -83,16 +83,21 @@
 
         public enum FunctionId
         {
-            Realtime = 1,
-            Probation = 2,
-            Daily = 3,
-            InsertNewCust = 4,
-            RemoveVIP = 5,
-            RemoveSpecialCC = 6,
-            RemovePA = 7,
-            RemoveFlaggedEvidence = 8,
-            RemoveMultiEvidences = 9,
-            ExcludeTaggingAssPA = 10,
+            RealtimeJob = 1,
+            ProbationJob = 2,
+            DailyJob = 3,
+            InsertNewCustJob = 4,
+            RemoveVIPWeb = 5,
+            RemoveSpecialCCWeb = 6,
+            RemovePAAPI = 7,
+            RemoveFlaggedEvidenceWeb = 8,
+            RemoveMultiEvidencesWeb = 9,
+            ExcludeTaggingAssPAWeb = 10,
+            PlaceEvidenceForMultiCustAPI = 21,
+            PlaceMultiEvidencesForMultiCustAPI = 22,
+            RobotUserJob = 23,
+            RescanPAFromNAPPA = 24,
+            RescanRobotUser = 25
         };
     }
 }
