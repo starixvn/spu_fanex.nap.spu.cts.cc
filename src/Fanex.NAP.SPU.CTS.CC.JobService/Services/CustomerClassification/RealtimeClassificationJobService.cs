@@ -54,6 +54,7 @@
         private void JobRun(int batchSize)
         {
             realtimeClassificationServices
+                .Start()
                 .GetCustomerGeneralCategoryHasChangeForRunRealtime()
                 .ScanningRealtimeClassification(batchSize)
                 .RealtimeUpdateLastScanTime(true);

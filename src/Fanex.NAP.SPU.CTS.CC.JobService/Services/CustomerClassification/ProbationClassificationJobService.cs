@@ -54,6 +54,7 @@
         private void JobRun(int batchSize)
         {
             probationClassificationServices
+                .Start()
                 .GetProbationCustForScanning(batchSize)
                 .ScanningProbationClassification()
                 .UpdateLastScanDateForProbationCust();

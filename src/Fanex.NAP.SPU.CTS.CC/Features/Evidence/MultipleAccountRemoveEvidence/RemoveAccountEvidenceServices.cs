@@ -10,11 +10,13 @@
 
     public interface IRemoveAccountEvidenceServices
     {
+        IRemoveAccountEvidenceServices InitialData();
+
         IEnumerable<CustomerEvidenceQueueEntity> GetCustomerEvidenceQueue();
 
-        RemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName);
+        IRemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName);
 
-        RemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName);
+        IRemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName);
 
         IEnumerable<long> PrepareCustRescanClassification();
     }
@@ -30,8 +32,14 @@
         {
             this.removeAccountEvidenceDataAccess = removeAccountEvidenceDataAccess;
             this.sentryClient = sentryClient;
-            modifyResult = new DBResult();
-            updateResult = new DBResult();
+        }
+
+        public IRemoveAccountEvidenceServices InitialData()
+        {
+            modifyResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+            updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+
+            return this;
         }
 
         public IEnumerable<CustomerEvidenceQueueEntity> GetCustomerEvidenceQueue()
@@ -39,10 +47,9 @@
             return removeAccountEvidenceDataAccess.GetCustomerEvidenceQueue();
         }
 
-        public RemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName)
+        public IRemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName)
         {
             var customerEvidenceJson = JsonConvert.SerializeObject(customerEvidence);
-            modifyResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
 
             modifyResult = removeAccountEvidenceDataAccess.ModifyCustomerEvidence(customerEvidenceJson, actionId);
 
@@ -54,10 +61,8 @@
             return this;
         }
 
-        public RemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName)
+        public IRemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName)
         {
-            updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
-
             if (modifyResult.ErrorCode == 0 && customerEvidence != null && customerEvidence.Any())
             {
                 var processedIdList = customerEvidence.Select(x => x.Id);

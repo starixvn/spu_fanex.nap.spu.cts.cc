@@ -70,7 +70,7 @@
 
             do
             {
-                custEvidenceFromFiles = customerEvidenceInsertServices.GetCustomerEvidenceFromFile();
+                custEvidenceFromFiles = customerEvidenceInsertServices.Start().GetCustomerEvidenceFromFile();
 
                 if (custEvidenceFromFiles != null && custEvidenceFromFiles.Any())
                 {
@@ -85,6 +85,7 @@
                 }
 
                 HandleLogError();
+
             } while (custEvidenceFromFiles != null && custEvidenceFromFiles.Any());
         }
 

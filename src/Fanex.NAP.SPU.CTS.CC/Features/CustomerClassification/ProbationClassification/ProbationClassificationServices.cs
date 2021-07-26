@@ -6,9 +6,11 @@
 
     public interface IProbationClassificationServices
     {
-        ProbationClassificationServices GetProbationCustForScanning(int batchSize);
+        IProbationClassificationServices Start();
 
-        ProbationClassificationServices ScanningProbationClassification();
+        IProbationClassificationServices GetProbationCustForScanning(int batchSize);
+
+        IProbationClassificationServices ScanningProbationClassification();
 
         void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations);
 
@@ -27,10 +29,16 @@
         public ProbationClassificationServices(IProbationClassificationDataAccess probationClassificationDataAccess)
         {
             this.probationClassificationDataAccess = probationClassificationDataAccess;
-            probationClassification = new List<ProbationEntity>();
         }
 
-        public ProbationClassificationServices GetProbationCustForScanning(int batchSize)
+        public IProbationClassificationServices Start()
+        {
+            probationClassification = new List<ProbationEntity>();
+
+            return this;
+        }
+
+        public IProbationClassificationServices GetProbationCustForScanning(int batchSize)
         {
             if (batchSize > 0)
             {
@@ -53,7 +61,7 @@
             }
         }
 
-        public ProbationClassificationServices ScanningProbationClassification()
+        public IProbationClassificationServices ScanningProbationClassification()
         {
             if (probationClassification != null && probationClassification.Any())
             {

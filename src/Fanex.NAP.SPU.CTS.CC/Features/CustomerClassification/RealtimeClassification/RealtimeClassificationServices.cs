@@ -8,15 +8,17 @@
 
     public interface IRealtimeClassificationServices
     {
-        RealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
+        IRealtimeClassificationServices Start();
 
-        RealtimeClassificationServices ScanningRealtimeClassification(int batchSize);
+        IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
+
+        IRealtimeClassificationServices ScanningRealtimeClassification(int batchSize);
 
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(IEnumerable<CustClassificationRealtimeEntity> customerHasChanges);
 
         void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custClassification);
 
-        RealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
+        IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
         IEnumerable<CustClassificationRealtimeEntity> CustomerClassification { get; }
     }
@@ -29,17 +31,23 @@
         public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess)
         {
             this.realtimeClassificationDataAccess = realtimeClassificationDataAccess;
-            customerClassification = new List<CustClassificationRealtimeEntity>();
         }
 
-        public RealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
+        public IRealtimeClassificationServices Start()
+        {
+            customerClassification = new List<CustClassificationRealtimeEntity>();
+
+            return this;
+        }
+
+        public IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
         {
             this.customerClassification = realtimeClassificationDataAccess.GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
             return this;
         }
 
-        public RealtimeClassificationServices ScanningRealtimeClassification(int batchSize)
+        public IRealtimeClassificationServices ScanningRealtimeClassification(int batchSize)
         {
             if (customerClassification != null && customerClassification.Any())
             {
@@ -78,7 +86,7 @@
             }
         }
 
-        public RealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory)
+        public IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory)
         {
             realtimeClassificationDataAccess.RealtimeUpdateLastScanTime(isGeneralCategory);
 

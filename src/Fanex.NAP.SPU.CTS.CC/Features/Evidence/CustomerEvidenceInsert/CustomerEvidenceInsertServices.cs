@@ -8,6 +8,8 @@
 
     public interface ICustomerEvidenceInsertServices
     {
+        ICustomerEvidenceInsertServices Start();
+
         IEnumerable<CustomerEvidenceFromFileEntity> GetCustomerEvidenceFromFile();
 
         bool RemoveOldEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, out IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList);
@@ -31,12 +33,18 @@
     public class CustomerEvidenceInsertServices : ICustomerEvidenceInsertServices
     {
         private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
-        private readonly List<CustomerEvidenceFailedToProcessEntity> failedToProcessList;
+        private List<CustomerEvidenceFailedToProcessEntity> failedToProcessList;
 
         public CustomerEvidenceInsertServices(ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess)
         {
             this.customerEvidenceInsertDataAccess = customerEvidenceInsertDataAccess;
+        }
+
+        public ICustomerEvidenceInsertServices Start()
+        {
             this.failedToProcessList = new List<CustomerEvidenceFailedToProcessEntity>();
+
+            return this;
         }
 
         public IEnumerable<CustomerEvidenceFromFileEntity> GetCustomerEvidenceFromFile()

@@ -70,6 +70,7 @@
             if (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any())
             {
                 var custIds = removeAccountEvidenceServices
+                                .InitialData()
                                 .ModifyCustomerEvidence(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
                                 .UpdateCustomerEvidence(customerEvidenceFromQueue, serviceName)
                                 .PrepareCustRescanClassification();
