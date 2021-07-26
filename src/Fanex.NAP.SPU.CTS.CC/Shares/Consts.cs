@@ -97,7 +97,8 @@
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
             RescanPAFromNAPPA = 24,
-            RescanRobotUser = 25
+            RescanRobotUser = 25,
+            InsertPAJob = 26
         };
     }
 }

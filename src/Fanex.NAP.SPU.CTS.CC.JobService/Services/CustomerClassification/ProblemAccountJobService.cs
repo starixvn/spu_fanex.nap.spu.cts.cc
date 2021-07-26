@@ -77,6 +77,8 @@
             if (problemAccounts != null && problemAccounts.Any())
             {
                 logData = problemAccounts;
+                custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, FunctionId.InsertPAJob, serviceName);
+
                 var problemAccountsChunk = problemAccounts.Distinct().Chunk(batchInternalSize);
 
                 foreach (var items in problemAccountsChunk)
