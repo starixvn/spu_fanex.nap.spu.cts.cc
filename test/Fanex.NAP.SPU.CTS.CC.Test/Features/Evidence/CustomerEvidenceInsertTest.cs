@@ -437,7 +437,7 @@
         [Fact]
         public void GetFailCustomerEvidence_WhenSuccess_ReturnCustEvidenceList()
         {
-            var result = customerEvidenceInsertServices.GetLogError();
+            var result = customerEvidenceInsertServices.Start().GetLogError();
 
             result.Should().NotBeNull();
         }

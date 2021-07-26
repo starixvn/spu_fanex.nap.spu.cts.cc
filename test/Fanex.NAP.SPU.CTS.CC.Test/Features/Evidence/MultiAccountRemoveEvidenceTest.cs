@@ -145,7 +145,7 @@
 
             removeAccountEvidenceDataAccess.UpdateCustomerEvidence(string.Join(",", processedIdList)).Returns(result);
 
-            Action action = () => removeAccountEvidenceServices.UpdateCustomerEvidence(cusEvidences, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.InitialData().UpdateCustomerEvidence(cusEvidences, "MultiAccountRemoveEvidences");
 
             action.Should().NotThrow<Exception>();
         }

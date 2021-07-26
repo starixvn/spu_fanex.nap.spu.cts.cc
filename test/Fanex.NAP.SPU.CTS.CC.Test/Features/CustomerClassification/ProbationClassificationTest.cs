@@ -46,7 +46,7 @@
 
             probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(probationList);
 
-            probationClassificationServices.GetProbationCustForScanning(batchSize);
+            probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
             var result = probationClassificationServices.CustomerClassification;
 
             result.Should().BeEquivalentTo(probationList);
@@ -59,7 +59,7 @@
         {
             probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
 
-            probationClassificationServices.GetProbationCustForScanning(batchSize);
+            probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
             var result = probationClassificationServices.CustomerClassification;
 
             result.Should().BeEquivalentTo(new List<ProbationEntity>());

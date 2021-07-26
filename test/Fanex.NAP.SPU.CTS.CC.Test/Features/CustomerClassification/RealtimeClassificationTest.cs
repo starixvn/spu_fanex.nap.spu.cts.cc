@@ -47,7 +47,7 @@
             realtimeClassificationServices.GetCustomerGeneralCategoryHasChangeForRunRealtime();
             var result = realtimeClassificationServices.CustomerClassification;
 
-            result.Should().BeEquivalentTo(result);
+            result.Should().BeEquivalentTo(realtimeScanningList);
         }
 
         [Fact]

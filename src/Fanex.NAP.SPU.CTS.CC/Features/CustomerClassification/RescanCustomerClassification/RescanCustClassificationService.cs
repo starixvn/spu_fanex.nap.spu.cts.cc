@@ -13,6 +13,8 @@
 
     public interface IRescanCustClassificationService
     {
+        IRescanCustClassificationService Start();
+
         void RescanCustomerClassify(RescanParametersEntity paras);
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
@@ -34,6 +36,12 @@
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
         IRescanCustClassificationService LogRescanPAData(FunctionId funcId, string stageName);
+
+        IEnumerable<long> CustIdsToRescanPA { get; }
+
+        IEnumerable<ProblemAccountsEntity> ProblemAccounts { get; }
+
+        IEnumerable<CustEvidenceEntity> ExistedEvidences { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -259,5 +267,11 @@
 
             return this;
         }
+
+        public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
+
+        public IEnumerable<ProblemAccountsEntity> ProblemAccounts => problemAccounts;
+
+        public IEnumerable<CustEvidenceEntity> ExistedEvidences => existedEvidences;
     }
 }
