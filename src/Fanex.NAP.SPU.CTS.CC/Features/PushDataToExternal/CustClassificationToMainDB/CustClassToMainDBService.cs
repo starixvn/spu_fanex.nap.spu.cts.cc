@@ -246,12 +246,7 @@
         public void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName)
         {
             try
-            {
-                if (content == null)
-                {
-                    return;
-                }
-                
+            {               
                 var inputData = MappingLogInputData(content);
 
                 if (inputData != null && inputData.Any())
@@ -274,7 +269,7 @@
         {
             var logInputData = new List<LogInputDataEntity>();
 
-            if(content.RobotUser!=null && content.RobotUser.Any())
+            if(content != null && content.RobotUser!=null && content.RobotUser.Any())
             {
                 content.RobotUser.ToList().ForEach(c => 
                 {
@@ -285,7 +280,7 @@
                 });
             }
 
-            if (content.ProblemAccounts != null && content.ProblemAccounts.Any())
+            if (content != null && content.ProblemAccounts != null && content.ProblemAccounts.Any())
             {
                 content.ProblemAccounts.ToList().ForEach(c =>
                 {

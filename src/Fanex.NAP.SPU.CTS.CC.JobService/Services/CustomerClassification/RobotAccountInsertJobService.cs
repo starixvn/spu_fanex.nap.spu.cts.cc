@@ -76,7 +76,7 @@
             var savedExecutionTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME);
 
             var robotUsers = robotAccountInsertServices.GetRobotUser(lastScannedTime, appSettings.RobotAccountCreditSites);
-
+            
             custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, FunctionId.RobotUserJob, serviceName);
 
             if (robotUsers != null && robotUsers.Any())

@@ -96,9 +96,21 @@
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
-            RescanPAFromNAPPA = 24,
-            RescanRobotUser = 25,
-            InsertPAJob = 26
+            InsertNewCus_CheckPA = 24,
+            RemoveVVIP_CheckPA = 25,
+            RemoveSpecial_CheckPA = 26,
+            RemovePA_CheckPA = 27,
+            RemoveFlaggedEvidence_CheckPA = 28,
+            RemoveMultiEvidences_CheckPA = 29,
+            ExcludeTaggingByAss_CheckPA = 30,
+            InsertNewCus_CheckRobotUser = 34,
+            RemoveVVIP_CheckRobotUser = 35,
+            RemoveSpecial_CheckRobotUser = 36,
+            RemovePA_CheckRobotUser = 37,
+            RemoveFlaggedEvi_CheckRobotUser = 38,
+            RemoveMultiEvi_CheckRobotUser = 39,
+            ExcludeTaggingAss_CheckRobotUser = 40,
+            InsertPAJob = 41 
         };
     }
 }

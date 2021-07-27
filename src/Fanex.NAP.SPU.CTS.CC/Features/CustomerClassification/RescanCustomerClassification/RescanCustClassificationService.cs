@@ -85,8 +85,8 @@
                 Start()
                .GetAgentCusts(paras.CustIds)
                .GetExistedCustEvidences(paras.CustIds).InsertCustEvidenceCategorToCTS(paras)
-               .GetRobotUsers(paras.CustIds).LogRescanPAData(FunctionId.RescanRobotUser, "RescanPA_GetRobotUser")
-               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(FunctionId.RescanPAFromNAPPA, "RescanPA_GetPAFromNAPPA")
+               .GetRobotUsers(paras.CustIds).LogRescanPAData(paras.FuncId_CheckRobotUser, paras.ServiceName)
+               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(paras.FuncId_CheckPA, paras.ServiceName)
                .InsertProblemAccountToCTS(paras)
                .RescanProblemAccount(paras)
                .RescanNormalAccount(paras);
