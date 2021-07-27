@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert
 {
-    public class CustAssociationProblemAccountEntity
+    public class TaggedCustomerEntity
     {
         public int CustID { get; set; }
 

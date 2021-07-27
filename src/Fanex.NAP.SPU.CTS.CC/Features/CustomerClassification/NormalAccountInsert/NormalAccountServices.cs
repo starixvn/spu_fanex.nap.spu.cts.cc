@@ -12,15 +12,15 @@
     {
         GeneralCustomerClassificationEnity GetNewClassification(string serviceName, bool IsWriteLog);
 
-        IEnumerable<CustAssociationProblemAccountEntity> GetCustomerAssociationProblemAccount(IEnumerable<CustomerClassificationEntity> listClassification);
+        IEnumerable<TaggedCustomerEntity> GetCustomerAssociationProblemAccount(IEnumerable<CustomerClassificationEntity> listClassification);
 
         bool UpdateAppliedStatusClassification(IEnumerable<CustomerClassificationEntity> custClassifications, bool isSuccess);
 
-        InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
-                                                        , IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA
-                                                        , string serviceName, bool isWriteLog);
+        InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> listClassification, string serviceName, bool isWriteLog);
 
-        string MergeCustomerClassificationInfo(IEnumerable<CustomerClassificationEntity> custClassification, IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA);
+        List<CustomerClassificationEntity> MergeWithTaggedCust(IEnumerable<CustomerClassificationEntity> custClassification, IEnumerable<TaggedCustomerEntity> custAssociationPA);
+
+        IEnumerable<TaggedCustomerEntity> GetGroupBettingAndRejectCustomer(IEnumerable<CustomerClassificationEntity> listClassification);
     }
 
     public class NormalAccountServices : INormalAccountServices
@@ -52,7 +52,7 @@
             return newClassifications;
         }
 
-        public IEnumerable<CustAssociationProblemAccountEntity> GetCustomerAssociationProblemAccount(IEnumerable<CustomerClassificationEntity> listClassification)
+        public IEnumerable<TaggedCustomerEntity> GetCustomerAssociationProblemAccount(IEnumerable<CustomerClassificationEntity> listClassification)
         {
             if (listClassification != null && listClassification.Any())
             {
@@ -61,26 +61,34 @@
                 return normalAccountDataAccess.GetCustsAssociationProblemAccount(string.Join(",", custIds));
             }
 
-            return new List<CustAssociationProblemAccountEntity>();
+            return new List<TaggedCustomerEntity>();
+        }
+        
+        public IEnumerable<TaggedCustomerEntity> GetGroupBettingAndRejectCustomer(IEnumerable<CustomerClassificationEntity> listClassification)
+        {
+            if (listClassification != null && listClassification.Any())
+            {
+                var custIds = listClassification.Select(x => x.CustId).Distinct();
+
+                return normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(string.Join(",", custIds));
+            }
+
+            return new List<TaggedCustomerEntity>();
         }
 
-        public InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
-                                                                , IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA
-                                                                , string serviceName
-                                                                , bool isWriteLog)
+        public InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> listClassification, string serviceName, bool isWriteLog)
         {
+            var custClassJsonData = JsonConvert.SerializeObject(listClassification);
             var result = new InsertCategoryResultEntity();
 
-            string jsonClassification = MergeCustomerClassificationInfo(custClassifications, custAssociationPA);
-
-            if (!string.IsNullOrEmpty(jsonClassification))
+            if (!string.IsNullOrEmpty(custClassJsonData))
             {
-                result = normalAccountDataAccess.InsertMainCustomerClassification(jsonClassification);
-                Utilities.LogSentryInfo(serviceName, "InsertMainCustomerClassification done", jsonClassification, isWriteLog, sentryClient);
+                result = normalAccountDataAccess.InsertMainCustomerClassification(custClassJsonData);
+                Utilities.LogSentryInfo(serviceName, "InsertMainCustomerClassification done", custClassJsonData, isWriteLog, sentryClient);
 
                 if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccount throws Exception", jsonClassification, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccount throws Exception", custClassJsonData, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
 
@@ -99,20 +107,20 @@
             return true;
         }
 
-        public string MergeCustomerClassificationInfo(IEnumerable<CustomerClassificationEntity> custClassification, IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA)
+        public List<CustomerClassificationEntity> MergeWithTaggedCust(IEnumerable<CustomerClassificationEntity> custClassification, IEnumerable<TaggedCustomerEntity> taggedCustomers)
         {
-            if (custAssociationPA == null || !custAssociationPA.Any()
+            if (taggedCustomers == null || !taggedCustomers.Any()
                 || custClassification == null || !custClassification.Any())
             {
-                return string.Empty;
+                return new List<CustomerClassificationEntity>();
             }
 
-            var result = custClassification.GroupJoin(custAssociationPA,
+            var result = custClassification.GroupJoin(taggedCustomers,
                                custClass => custClass.CustId,
-                               custAss => custAss.CustID,
-                               (custClass, custPA) => new { custClass, custPA })
+                               taggedCust => taggedCust.CustID,
+                               (custClass, taggedCusts) => new { custClass, taggedCusts })
                                .SelectMany(
-                                    group => group.custPA.DefaultIfEmpty(),
+                                    group => group.taggedCusts.DefaultIfEmpty(),
                                     (group, temp) => new CustomerClassificationEntity
                                     {
                                         CustId = group.custClass.CustId,
@@ -130,7 +138,7 @@
                                         TaggingType = (temp != null) ? temp.TaggingType : 0
                                     });
 
-            return JsonConvert.SerializeObject(result);
+            return result.ToList();
         }
     }
 }
