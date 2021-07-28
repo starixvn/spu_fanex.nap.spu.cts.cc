@@ -141,7 +141,7 @@
             rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(custIdsToString);
 
             rescanCustClassificationService.Start().GetRobotUsers(custIds);
-            var result = rescanCustClassificationService.ProblemAccounts;
+            var result = rescanCustClassificationService.RobotUsers;
 
             result.Should().BeEquivalentTo(problemAccounts);
         }

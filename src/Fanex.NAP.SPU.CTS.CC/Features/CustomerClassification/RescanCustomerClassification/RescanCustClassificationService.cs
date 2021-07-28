@@ -35,11 +35,13 @@
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
-        IRescanCustClassificationService LogRescanPAData(FunctionId funcId, string stageName);
+        IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<ProblemAccountsEntity> ProblemAccounts { get; }
+
+        IEnumerable<ProblemAccountsEntity> RobotUsers { get; }
 
         IEnumerable<CustEvidenceEntity> ExistedEvidences { get; }
     }
@@ -51,7 +53,8 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
         private readonly IDailyClassificationServices dailyClassificationServices;
-        private List<ProblemAccountsEntity> problemAccounts;
+        private List<ProblemAccountsEntity> probAccountNAPPA;
+        private List<ProblemAccountsEntity> robotUsers;
         private List<CustEvidenceEntity> existedEvidences;
         private List<long> custIdsToRescanPA;
 
@@ -72,7 +75,8 @@
         public IRescanCustClassificationService Start()
         {
             this.custIdsToRescanPA = new List<long>();
-            this.problemAccounts = new List<ProblemAccountsEntity>();
+            this.probAccountNAPPA = new List<ProblemAccountsEntity>();
+            this.robotUsers = new List<ProblemAccountsEntity>();
             this.existedEvidences = new List<CustEvidenceEntity>();
 
             return this;
@@ -85,8 +89,8 @@
                 Start()
                .GetAgentCusts(paras.CustIds)
                .GetExistedCustEvidences(paras.CustIds).InsertCustEvidenceCategorToCTS(paras)
-               .GetRobotUsers(paras.CustIds).LogRescanPAData(paras.FuncId_CheckRobotUser, paras.ServiceName)
-               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(paras.FuncId_CheckPA, paras.ServiceName)
+               .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
+               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(probAccountNAPPA, paras.FuncId_CheckPA, paras.ServiceName)
                .InsertProblemAccountToCTS(paras)
                .RescanProblemAccount(paras)
                .RescanNormalAccount(paras);
@@ -154,13 +158,13 @@
         {
             if (custIds != null && custIds.Any())
             {
-                var robotUsers = SyncRobotUserToUpdateCategory(custIds);
+                var robots = SyncRobotUserToUpdateCategory(custIds);
 
-                if (robotUsers != null && robotUsers.Any())
+                if (robots != null && robots.Any())
                 {
-                    robotUsers.ToList().ForEach(c =>
+                    robots.ToList().ForEach(c =>
                     {
-                        problemAccounts.Add(new ProblemAccountsEntity
+                        robotUsers.Add(new ProblemAccountsEntity
                         {
                             CustID = c,
                             ReasonID = (int)Category.Robot
@@ -197,8 +201,8 @@
                 var problemAccountsNAPCM = problemAccountServices.GetProblemAccounts_IBC(custIdsToString, null);
                 var problemAccountsCN88 = problemAccountServices.GetProblemAccounts_CN88(custIdsToString, null);
 
-                problemAccounts.AddRange(problemAccountsNAPCM);
-                problemAccounts.AddRange(problemAccountsCN88);
+                probAccountNAPPA.AddRange(problemAccountsNAPCM);
+                probAccountNAPPA.AddRange(problemAccountsCN88);
             }
 
             return this;
@@ -206,9 +210,21 @@
 
         public IRescanCustClassificationService InsertProblemAccountToCTS(RescanParametersEntity paras)
         {
-            if (problemAccounts != null && problemAccounts.Any())
+            var insertProblemAccounts = new List<ProblemAccountsEntity>();
+
+            if (robotUsers != null && robotUsers.Any())
             {
-                var problemAccountsChunk = problemAccounts.Distinct().Chunk(paras.InternalBatchSize);
+                insertProblemAccounts.AddRange(robotUsers);
+            }
+
+            if (probAccountNAPPA != null && probAccountNAPPA.Any())
+            {
+                insertProblemAccounts.AddRange(probAccountNAPPA);
+            }
+
+            if (insertProblemAccounts.Any())
+            {
+                var problemAccountsChunk = insertProblemAccounts.Distinct().Chunk(paras.InternalBatchSize);
 
                 var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
@@ -261,7 +277,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService LogRescanPAData(FunctionId funcId, string stageName)
+        public IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName)
         {
             custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, funcId, stageName);
 
@@ -270,7 +286,9 @@
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
-        public IEnumerable<ProblemAccountsEntity> ProblemAccounts => problemAccounts;
+        public IEnumerable<ProblemAccountsEntity> ProblemAccounts => probAccountNAPPA;
+
+        public IEnumerable<ProblemAccountsEntity> RobotUsers => robotUsers;
 
         public IEnumerable<CustEvidenceEntity> ExistedEvidences => existedEvidences;
     }
