@@ -270,20 +270,14 @@
         {
             if (custIdList != null && custIdList.Any())
             {
-                var tasks = new List<Task>
+                Parallel.Invoke(() =>
                 {
-                    Task.Run(() =>
-                    {
-                        RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo);
-                    }),
-
-                    Task.Run(() =>
-                    {
-                        NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID);
-                    })
-                };
-
-                Task.WhenAll(tasks.ToArray()).Wait();
+                    RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo);
+                },
+                () =>
+                {
+                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID);
+                });
             }
         }
 
