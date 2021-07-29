@@ -57,6 +57,7 @@
             return new InsertCategoryResultEntity
             {
                 ErrorMessage = criteria.ErrorMessage,
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 CustIds = custIds ?? new List<long>()
             };
         }

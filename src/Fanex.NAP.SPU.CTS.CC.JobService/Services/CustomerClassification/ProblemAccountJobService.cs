@@ -43,11 +43,13 @@
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
+            bool response = true;
+            
             try
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
+                    response = JobRun(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -61,12 +63,12 @@
                 return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(response);
         }
 
         #region Private Methods
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ProblemAccountLastScannedTime);
 
@@ -74,6 +76,18 @@
 
             var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
+            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+
+            if (isSuccess)
+            {
+                systemParameterServices.UpdateTimingExecution(savedDataTime.ToString(Constants.CONVERT_TO_SQL_DATETIME), SystemParameters.ProblemAccountLastScannedTime);
+            }
+
+            return isSuccess;
+        }
+
+        private bool InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, int batchExternalSize, int batchInternalSize)
+        {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 logData = problemAccounts;
@@ -83,11 +97,12 @@
 
                 foreach (var items in problemAccountsChunk)
                 {
-                    var custIds = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+                    var result = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+                    var isSuccess = (result != null && result.ErrorCode == 0);
 
-                    if (custIds != null && custIds.Any())
+                    if (result != null && result.CustIds != null && result.CustIds.Any())
                     {
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        isSuccess = isSuccess && custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -97,10 +112,15 @@
                             ServiceName = serviceName
                         });
                     }
+
+                    if (!isSuccess)
+                    {
+                        return false;
+                    }
                 }
             }
 
-            systemParameterServices.UpdateTimingExecution(savedDataTime.ToString(Constants.CONVERT_TO_SQL_DATETIME), SystemParameters.ProblemAccountLastScannedTime);
+            return true;
         }
 
         #endregion Private Methods

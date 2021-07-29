@@ -16,6 +16,8 @@
 
         public const int Realtime_SleepTimes = 3000;
 
+        public const int RobotUsers_SleepTimes = 300;
+
         public const int RemoveEvidences_ClearActionId = 3;
 
         public const int ImportEvidence_StarixITId = 10278938;

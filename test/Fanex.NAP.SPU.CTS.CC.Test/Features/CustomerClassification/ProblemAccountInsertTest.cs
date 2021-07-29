@@ -109,6 +109,7 @@
             var dataResult = new InsertCategoryResultEntity
             {
                 ErrorMessage = string.Empty,
+                ErrorCode = 0,
                 CustIds = new List<long>() { 1, 2, 3, 4, 5 }
             };
 
@@ -119,7 +120,7 @@
             var result = problemAccountServices.InsertProblemAccountToCTS(problemAccounts, false, "ProblemAccountInsert", false);
 
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(dataResult.CustIds);
+            result.Should().BeEquivalentTo(dataResult);
         }
     }
 }

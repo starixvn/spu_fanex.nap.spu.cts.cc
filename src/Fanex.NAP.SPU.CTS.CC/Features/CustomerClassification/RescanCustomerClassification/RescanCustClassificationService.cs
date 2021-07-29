@@ -232,7 +232,7 @@
                 {
                     var problemCustIds = problemAccountServices.InsertProblemAccountToCTS(problemAccs, isWriteLogRescan, paras.ServiceName, paras.IsWriteLog);
 
-                    custIdsToRescanPA.AddRange(problemCustIds);
+                    custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }
             }
 

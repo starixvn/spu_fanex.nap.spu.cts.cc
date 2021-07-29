@@ -9,6 +9,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -46,11 +47,13 @@
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
+            var response = true;
+
             try
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
+                    response = JobRun(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -64,47 +67,66 @@
                 return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(response);
         }
 
         #region Private Methods
 
-        private void JobRun(int externalBatchSize, int internalBatchSize)
+        private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotAccountLastScannedTime);
 
             var savedExecutionTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME);
 
             var robotUsers = robotAccountInsertServices.GetRobotUser(lastScannedTime, appSettings.RobotAccountCreditSites);
-            
-            custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, FunctionId.RobotUserJob, serviceName);
 
+            var isSuccess = InsertRobotUsers(robotUsers, batchExternalSize, batchInternalSize);
+
+            if (isSuccess)
+            {
+                systemParameterServices.UpdateTimingExecution(savedExecutionTime, SystemParameters.RobotAccountLastScannedTime);
+            }
+
+            return isSuccess;
+        }
+
+        private bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, int batchExternalSize, int batchInternalSize)
+        {
             if (robotUsers != null && robotUsers.Any())
             {
-                var robotUsersChunks = robotUsers.Chunk(internalBatchSize).ToList();
+                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, FunctionId.RobotUserJob, serviceName);
+
+                var robotUsersChunks = robotUsers.Chunk(batchInternalSize).ToList();
 
                 foreach (var robot in robotUsersChunks)
                 {
                     var custCategory = robotAccountInsertServices.MappingRobotCategory(robot);
+                    var result = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, serviceName, appSettings.RobotAccountIsWriteLog);
+                    var isSuccess = (result != null && result.ErrorCode == 0);
 
-                    var custIds = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, serviceName, appSettings.RobotAccountIsWriteLog);
-
-                    if (custIds != null && custIds.Any())
+                    if (result != null && result.CustIds != null && result.CustIds.Any())
                     {
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        isSuccess = isSuccess && custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
-                            ExternalBatchSize = externalBatchSize,
+                            ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = false,
                             IsWriteLog = appSettings.RobotAccountIsWriteLog,
                             ServiceName = serviceName
                         });
+
+                        Thread.Sleep(RobotUsers_SleepTimes);
+                    }
+
+                    if (!isSuccess)
+                    {
+                        return false;
                     }
                 }
             }
 
-            systemParameterServices.UpdateTimingExecution(savedExecutionTime, SystemParameters.RobotAccountLastScannedTime);
+            return true;
         }
     }
 
