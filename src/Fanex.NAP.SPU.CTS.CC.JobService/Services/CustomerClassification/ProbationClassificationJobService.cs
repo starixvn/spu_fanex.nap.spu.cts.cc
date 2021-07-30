@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public interface IProbationClassificationJobService
@@ -58,6 +59,12 @@
                 .GetProbationCustForScanning(batchSize)
                 .ScanningProbationClassification()
                 .UpdateLastScanDateForProbationCust();
+
+            if(probationClassificationServices.CustomerClassification != null &&
+                probationClassificationServices.CustomerClassification.Any())
+            {
+                JobRun(batchSize);
+            }
         }
     }
 

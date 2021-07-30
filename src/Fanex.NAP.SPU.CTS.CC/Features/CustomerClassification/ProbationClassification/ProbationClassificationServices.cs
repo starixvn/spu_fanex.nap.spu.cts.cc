@@ -70,7 +70,7 @@
                 if (custs != null && custs.Any())
                 {
                     var failedCusts = custs.Where(cus => !cus.IsPassed);
-                    InsertProbationNotification(custs, failedCusts);
+                    InsertProbationNotification(probationClassification, failedCusts);
                 }
             }
 
