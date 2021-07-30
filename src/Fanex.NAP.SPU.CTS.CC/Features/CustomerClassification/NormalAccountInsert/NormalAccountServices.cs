@@ -109,9 +109,13 @@
 
         public List<CustomerClassificationEntity> MergeWithTaggedCust(IEnumerable<CustomerClassificationEntity> custClassification, IEnumerable<TaggedCustomerEntity> taggedCustomers)
         {
-            if (taggedCustomers == null || !taggedCustomers.Any()
-                || custClassification == null || !custClassification.Any())
+            if (custClassification == null || !custClassification.Any())
             {
+                if (taggedCustomers == null || !taggedCustomers.Any())
+                {
+                    return custClassification.ToList();
+                }
+
                 return new List<CustomerClassificationEntity>();
             }
 
