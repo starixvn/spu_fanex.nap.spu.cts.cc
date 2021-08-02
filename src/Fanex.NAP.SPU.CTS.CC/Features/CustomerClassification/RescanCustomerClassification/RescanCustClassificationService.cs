@@ -261,11 +261,12 @@
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
-                paras.CustIds.ToList().RemoveAll(x => custIdsToRescanPA.Contains(x));
+                var custToRescanNormal = paras.CustIds.ToList();
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Contains(x));
 
-                if (paras.CustIds != null && paras.CustIds.Any())
+                if (custToRescanNormal.Any())
                 {
-                    var custIdsChunk = paras.CustIds.Chunk(paras.InternalBatchSize);
+                    var custIdsChunk = custToRescanNormal.Chunk(paras.ExternalBatchSize);
 
                     foreach (var custIds in custIdsChunk)
                     {
