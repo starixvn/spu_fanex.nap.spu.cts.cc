@@ -28,16 +28,12 @@
                 {
                     CustId = 1,
                     CategoryId = 1,
-                    BatchID =1,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
                     SportGroupId =1
                 },
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 2,
                     CategoryId = 2,
-                    BatchID =2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
                     SportGroupId =2
                 },
             };
@@ -59,16 +55,12 @@
                 {
                     CustId = 1,
                     CategoryId = 1,
-                    BatchID =1,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
                     SportGroupId =1
                 },
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 2,
                     CategoryId = 2,
-                    BatchID =2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
                     SportGroupId =2
                 },
             };
@@ -84,29 +76,52 @@
         [Fact]
         public void ClassifyCustomerGeneralCategoryRealtime_WhenSuccess_ReturnNotException()
         {
-            var custClassificationList = new List<CustClassificationRealtimeEntity>
+            var custsHasChange = new List<CustClassificationRealtimeEntity>
             {
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 1,
-                    CategoryId = 1,
-                    BatchID =1,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
+                    CategoryId = 0,
                     SportGroupId =1
                 },
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 2,
-                    CategoryId = 2,
-                    BatchID =2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55"),
+                    CategoryId = 0,
                     SportGroupId =2
                 },
             };
 
-            realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custClassificationList);
+            var custCategory = new List<CustClassificationRealtimeEntity>
+            {
+                new CustClassificationRealtimeEntity
+                {
+                    CustId = 1,
+                    CategoryId = 1,
+                    SportGroupId =1
+                }
+            };
 
-            Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(custClassificationList);
+            var custClassification = new List<CustClassificationRealtimeEntity>
+            {
+                new CustClassificationRealtimeEntity
+                {
+                    CustId = 1,
+                    CategoryId = 1,
+                    SportGroupId =1
+                },
+                new CustClassificationRealtimeEntity
+                {
+                    CustId = 2,
+                    CategoryId = 0,
+                    SportGroupId =2
+                },
+            };
+
+
+            realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custClassification);
+
+            Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(custsHasChange, custCategory);
 
             action.Should().NotThrow<Exception>();
         }

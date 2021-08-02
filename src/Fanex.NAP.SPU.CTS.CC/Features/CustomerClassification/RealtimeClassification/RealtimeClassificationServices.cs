@@ -16,7 +16,7 @@
 
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(IEnumerable<CustClassificationRealtimeEntity> customerHasChanges);
 
-        void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custClassification);
+        void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custHasChanges, IEnumerable<CustClassificationRealtimeEntity> custClassification);
 
         IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
@@ -53,11 +53,11 @@
             {
                 var custChunks = customerClassification.Chunk(batchSize).ToList();
 
-                foreach (var item in custChunks)
+                foreach (var custHasChange in custChunks)
                 {
-                    var custClassification = GetCustomerGeneralCategoryForRunRealtime(item);
+                    var custClassification = GetCustomerGeneralCategoryForRunRealtime(custHasChange);
 
-                    ClassifyCustomerGeneralCategoryRealtime(custClassification);
+                    ClassifyCustomerGeneralCategoryRealtime(custHasChange, custClassification);
 
                     Thread.Sleep(Constants.Realtime_SleepTimes);
                 }
@@ -72,17 +72,30 @@
             {
                 var custSportJson = JsonConvert.SerializeObject(customerHasChanges);
 
-                return realtimeClassificationDataAccess.GetCustomerGeneralCategoryForRunRealtime(custSportJson);
+                return realtimeClassificationDataAccess.GetCustomerGeneralCategoryForRunRealtime(custSportJson) ?? new List<CustClassificationRealtimeEntity>();
             }
 
             return new List<CustClassificationRealtimeEntity>();
         }
 
-        public void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custClassification)
+        public void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custHasChanges, IEnumerable<CustClassificationRealtimeEntity> custClassification)
         {
-            if (custClassification != null && custClassification.Any())
+            if (custHasChanges != null && custHasChanges.Any())
             {
-                realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custClassification);
+                var custsClassify = custHasChanges.GroupJoin(custClassification,
+                                                    custsHaschanges => custsHaschanges.CustId,
+                                                    custsCategories => custsCategories.CustId,
+                                                    (custsHaschanges, custsCategories) => new { custsHaschanges, custsCategories })
+                                                    .SelectMany(
+                                                        group => group.custsCategories.DefaultIfEmpty(),
+                                                        (group, temp) => new CustClassificationRealtimeEntity
+                                                        {
+                                                            CustId = group.custsHaschanges.CustId,
+                                                            SportGroupId = group.custsHaschanges.SportGroupId,
+                                                            CategoryId = (temp != null) ? temp.CategoryId : 0
+                                                        });
+
+                realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custsClassify);
             }
         }
 
