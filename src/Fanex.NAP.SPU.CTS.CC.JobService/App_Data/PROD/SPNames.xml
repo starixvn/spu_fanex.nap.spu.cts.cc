@@ -40,7 +40,7 @@
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Notification_InsertProbationNotification" SpName="CTS_DC_Notification_InsertProbationNotification" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_NormalAccountsClassification_Probation" SpName="CTS_NormalAccountsClassification_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_NormalAccountsClassification_Probation" SpName="CTS_NormalAccountsClassification_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="900"/>
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_DC_SystemParameter_Get" SpName="CTS_DC_SystemParameter_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -49,7 +49,7 @@
 		<Setting Key="CTS_DC_CustClassification_InsertProblemAccount" SpName="CTS_DC_CustClassification_InsertProblemAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="1200" />
 		<Setting Key="CTS_DC_CustClassification_GetLatestClassification" SpName="CTS_DC_CustClassification_GetLatestClassification" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="Acc_CustomerUpdateCustomerClass" SpName="Acc_CustomerUpdateCustomerClass" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
-		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
 		<Setting Key="CTS_DC_CustClassification_GetForSoon88" SpName="CTS_DC_CustClassification_GetForSoon88" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="RemoveAccountEvidence">

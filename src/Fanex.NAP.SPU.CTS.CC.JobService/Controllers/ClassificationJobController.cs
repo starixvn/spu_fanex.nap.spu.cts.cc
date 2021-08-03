@@ -45,6 +45,7 @@
         [HttpPost("insertNormalAccount")]
         public async Task<bool> InsertNormalAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
+            sentryClient.CaptureMessage($"Normal Account Service is running at {DateTime.Now}");
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
