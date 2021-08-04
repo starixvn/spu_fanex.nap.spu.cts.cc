@@ -15,7 +15,7 @@
     {
         IRescanCustClassificationService Start();
 
-        void RescanCustomerClassify(RescanParametersEntity paras);
+        bool RescanCustomerClassify(RescanParametersEntity paras);
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
@@ -57,6 +57,7 @@
         private List<ProblemAccountsEntity> robotUsers;
         private List<CustEvidenceEntity> existedEvidences;
         private List<long> custIdsToRescanPA;
+        private bool isSuccess;
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -78,11 +79,12 @@
             this.probAccountNAPPA = new List<ProblemAccountsEntity>();
             this.robotUsers = new List<ProblemAccountsEntity>();
             this.existedEvidences = new List<CustEvidenceEntity>();
+            this.isSuccess = true;
 
             return this;
         }
 
-        public void RescanCustomerClassify(RescanParametersEntity paras)
+        public bool RescanCustomerClassify(RescanParametersEntity paras)
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
@@ -95,6 +97,8 @@
                .RescanProblemAccount(paras)
                .RescanNormalAccount(paras);
             }
+
+            return isSuccess;
         }
 
         public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
@@ -241,9 +245,10 @@
 
         public IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
         {
+
             if (custIdsToRescanPA != null && custIdsToRescanPA.Any())
             {
-                custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
+                isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
                 {
                     ExternalBatchSize = paras.ExternalBatchSize,
                     FeedSoon88API = paras.FeedSoon88API,
