@@ -270,14 +270,12 @@
         {
             if (custIdList != null && custIdList.Any())
             {
-                Parallel.Invoke(() =>
-                {
-                    RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo);
-                },
-                () =>
+                var isSuccess = RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo);
+
+                if (isSuccess)
                 {
                     NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID);
-                });
+                }
             }
         }
 
@@ -323,11 +321,12 @@
             }
         }
 
-        private void RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo)
+        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo)
         {
+            var result = false;
             try
             {
-                var custToRescan = custIdList.Where(c => !c.IsExisting).Select(c => c.CustID).Distinct();
+                var custToRescan = custIdList.Select(c => c.CustID).Distinct();
                 var rescanParam = new RescanParametersEntity
                 {
                     CustIds = custToRescan,
@@ -342,12 +341,15 @@
                 };
                 rescanClassificationService.RescanCustomerClassify(rescanParam);
 
+                result = true;
                 Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, isWriteLogInfo, sentryClient);
             }
             catch (Exception ex)
             {
                 Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
             }
+
+            return result;
         }
     }
 }
