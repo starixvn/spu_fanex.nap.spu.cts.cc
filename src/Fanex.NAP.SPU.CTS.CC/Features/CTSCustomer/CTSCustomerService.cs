@@ -250,7 +250,7 @@
 
                         Utilities.LogSentryInfo(serviceName, "Insert", custs, isWriteLogInfo, sentryClient);
 
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID.Value);
+                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID);
                     }
 
                     Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
@@ -266,7 +266,7 @@
             return false;
         }
 
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long lastCustID)
+        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID)
         {
             if (custIdList != null && custIdList.Any())
             {
@@ -309,7 +309,7 @@
             return dataAccess.UpdateUsername2(customerJson);
         }
 
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long lastCustID)
+        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID)
         {
             try
             {
