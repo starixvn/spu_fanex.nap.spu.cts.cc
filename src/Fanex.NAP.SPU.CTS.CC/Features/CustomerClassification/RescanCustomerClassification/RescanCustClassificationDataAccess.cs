@@ -14,7 +14,7 @@
 
         string GetExistedRobotUser(string custIds);
 
-        IEnumerable<int> GetCustByRobotSiteRule(string custIds);
+        IEnumerable<long> GetCustByRobotSiteRule(string custIds);
 
         DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
     }
@@ -73,14 +73,14 @@
             };
         }
 
-        public IEnumerable<int> GetCustByRobotSiteRule(string custIds)
+        public IEnumerable<long> GetCustByRobotSiteRule(string custIds)
         {
             var criteria = new CustByRobotSiteRuleGetCriteria
             {
                 CustIds = custIds
             };
 
-            return repository.Fetch<int>(criteria);
+            return repository.Fetch<long>(criteria);
         }
 
         public string GetExistedRobotUser(string custIds)

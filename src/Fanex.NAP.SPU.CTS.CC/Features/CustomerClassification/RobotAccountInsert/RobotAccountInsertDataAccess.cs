@@ -6,7 +6,7 @@
 
     public interface IRobotAccountInsertDataAccess
     {
-        IEnumerable<RobotUser> GetRobotUsers(DateTime fromDate, string creditSiteList);
+        IEnumerable<RobotUserEntity> GetRobotUsers(DateTime fromDate, string creditSiteList);
     }
 
     public class RobotAccountInsertDataAccess : IRobotAccountInsertDataAccess
@@ -18,7 +18,7 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<RobotUser> GetRobotUsers(DateTime fromDate, string creditSiteList)
+        public IEnumerable<RobotUserEntity> GetRobotUsers(DateTime fromDate, string creditSiteList)
         {
             var criteria = new RobotUserGetCriteria
             {
@@ -26,7 +26,7 @@
                 CreditSite = creditSiteList
             };
 
-            return repository.Fetch<RobotUser>(criteria);
+            return repository.Fetch<RobotUserEntity>(criteria);
         }
     }
 }

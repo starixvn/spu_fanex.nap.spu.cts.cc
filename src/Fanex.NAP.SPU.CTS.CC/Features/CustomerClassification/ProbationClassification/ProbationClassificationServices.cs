@@ -6,15 +6,19 @@
 
     public interface IProbationClassificationServices
     {
-        ProbationClassificationServices GetProbationCustForScanning(int batchSize);
+        IProbationClassificationServices Start();
 
-        ProbationClassificationServices ScanningProbationClassification();
+        IProbationClassificationServices GetProbationCustForScanning(int batchSize);
+
+        IProbationClassificationServices ScanningProbationClassification();
 
         void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations);
 
         IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList);
 
         void UpdateLastScanDateForProbationCust();
+
+        IEnumerable<ProbationEntity> CustomerClassification { get; }
     }
 
     public class ProbationClassificationServices : IProbationClassificationServices
@@ -25,12 +29,21 @@
         public ProbationClassificationServices(IProbationClassificationDataAccess probationClassificationDataAccess)
         {
             this.probationClassificationDataAccess = probationClassificationDataAccess;
-            probationClassification = new List<ProbationEntity>();
         }
 
-        public ProbationClassificationServices GetProbationCustForScanning(int batchSize)
+        public IProbationClassificationServices Start()
         {
-            probationClassification = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+            probationClassification = new List<ProbationEntity>();
+
+            return this;
+        }
+
+        public IProbationClassificationServices GetProbationCustForScanning(int batchSize)
+        {
+            if (batchSize > 0)
+            {
+                probationClassification = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+            }
 
             return this;
         }
@@ -48,7 +61,7 @@
             }
         }
 
-        public ProbationClassificationServices ScanningProbationClassification()
+        public IProbationClassificationServices ScanningProbationClassification()
         {
             if (probationClassification != null && probationClassification.Any())
             {
@@ -57,7 +70,7 @@
                 if (custs != null && custs.Any())
                 {
                     var failedCusts = custs.Where(cus => !cus.IsPassed);
-                    InsertProbationNotification(custs, failedCusts);
+                    InsertProbationNotification(probationClassification, failedCusts);
                 }
             }
 
@@ -73,5 +86,7 @@
                 probationClassificationDataAccess.UpdateLastScanDateForProbationCust(custJson);
             }
         }
+
+        public IEnumerable<ProbationEntity> CustomerClassification => probationClassification;
     }
 }

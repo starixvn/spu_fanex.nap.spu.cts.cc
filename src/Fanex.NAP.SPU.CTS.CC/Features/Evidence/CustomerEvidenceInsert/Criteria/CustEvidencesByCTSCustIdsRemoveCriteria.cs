@@ -21,7 +21,7 @@
         public string ErrorMessage { get; set; }
 
         public override string GetSettingKey()
-            => "CTS_DC_CustEvidence_RemoveOldEvidenceForInsertMultiple";
+            => "CTS_DC_CustEvidence_RemoveAllEvidenceByCTSCustIDs";
 
         public override bool IsValid()
             => true;

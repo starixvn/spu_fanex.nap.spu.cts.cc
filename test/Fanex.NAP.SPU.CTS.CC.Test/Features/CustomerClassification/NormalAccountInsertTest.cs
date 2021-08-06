@@ -178,7 +178,7 @@
             var custIds = listClassification.Select(x => x.CustId).Distinct();
             normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds), false);
 
-            var result = normalAccountServices.UpdateAppliedStatusClassification(listClassification);
+            var result = normalAccountServices.UpdateAppliedStatusClassification(listClassification, true);
 
             result.Should().BeTrue();
         }
@@ -252,7 +252,7 @@
 
             var result = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationWithPA, "NormalAccountInsert", false);
 
-            result.Should().BeEquivalentTo(ouput.CustIds);
+            result.Should().BeEquivalentTo(ouput);
         }
     }
 }

@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_RobotUser_CheckSiteByCustIds";
+            return "CTS_DC_CustInfo_FilterCustIDsBySite";
         }
 
         public override bool IsValid()

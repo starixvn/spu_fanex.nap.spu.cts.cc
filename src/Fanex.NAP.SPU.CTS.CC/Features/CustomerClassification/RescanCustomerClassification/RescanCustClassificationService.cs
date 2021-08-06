@@ -13,25 +13,37 @@
 
     public interface IRescanCustClassificationService
     {
-        void RescanCustomerClassify(RescanParametersEntity paras);
+        IRescanCustClassificationService Start();
 
-        RescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
+        bool RescanCustomerClassify(RescanParametersEntity paras);
 
-        RescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds);
+        IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
-        RescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras);
+        IRescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds);
 
-        RescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
+        IRescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras);
+
+        IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
 
         IEnumerable<long> SyncRobotUserToUpdateCategory(IEnumerable<long> custIds);
 
-        RescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP);
+        IRescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP);
 
-        RescanCustClassificationService InsertProblemAccountToCTS(RescanParametersEntity paras);
+        IRescanCustClassificationService InsertProblemAccountToCTS(RescanParametersEntity paras);
 
-        RescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras);
+        IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras);
 
-        RescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
+        IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
+
+        IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName);
+
+        IEnumerable<long> CustIdsToRescanPA { get; }
+
+        IEnumerable<ProblemAccountsEntity> ProblemAccounts { get; }
+
+        IEnumerable<ProblemAccountsEntity> RobotUsers { get; }
+
+        IEnumerable<CustEvidenceEntity> ExistedEvidences { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -41,9 +53,11 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
         private readonly IDailyClassificationServices dailyClassificationServices;
-        private readonly List<ProblemAccountsEntity> problemAccounts;
-        private readonly List<CustEvidenceEntity> existedEvidences;
-        private readonly List<long> custIdsToRescanPA;
+        private List<ProblemAccountsEntity> probAccountNAPPA;
+        private List<ProblemAccountsEntity> robotUsers;
+        private List<CustEvidenceEntity> existedEvidences;
+        private List<long> custIdsToRescanPA;
+        private bool isSuccess;
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -57,24 +71,37 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
             this.dailyClassificationServices = dailyClassificationServices;
-            this.custIdsToRescanPA = new List<long>();
-            this.problemAccounts = new List<ProblemAccountsEntity>();
-            this.existedEvidences = new List<CustEvidenceEntity>();
         }
 
-        public void RescanCustomerClassify(RescanParametersEntity paras)
+        public IRescanCustClassificationService Start()
+        {
+            this.custIdsToRescanPA = new List<long>();
+            this.probAccountNAPPA = new List<ProblemAccountsEntity>();
+            this.robotUsers = new List<ProblemAccountsEntity>();
+            this.existedEvidences = new List<CustEvidenceEntity>();
+            this.isSuccess = true;
+
+            return this;
+        }
+
+        public bool RescanCustomerClassify(RescanParametersEntity paras)
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
-                GetAgentCusts(paras.CustIds)
+                Start()
+               .GetAgentCusts(paras.CustIds)
                .GetExistedCustEvidences(paras.CustIds).InsertCustEvidenceCategorToCTS(paras)
-               .GetRobotUsers(paras.CustIds).GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).InsertProblemAccountToCTS(paras)
+               .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
+               .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(probAccountNAPPA, paras.FuncId_CheckPA, paras.ServiceName)
+               .InsertProblemAccountToCTS(paras)
                .RescanProblemAccount(paras)
                .RescanNormalAccount(paras);
             }
+
+            return isSuccess;
         }
 
-        public RescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
@@ -94,7 +121,7 @@
             return this;
         }
 
-        public RescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
@@ -108,9 +135,9 @@
             return this;
         }
 
-        public RescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras)
+        public IRescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras)
         {
-            var isWriteLogRescan = paras.FlowTypeRescanCC != FlowTypeRescanCC.NewMember;
+            var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
             if (existedEvidences != null && existedEvidences.Any())
             {
@@ -131,17 +158,17 @@
             return this;
         }
 
-        public RescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
-                var robotUsers = SyncRobotUserToUpdateCategory(custIds);
+                var robots = SyncRobotUserToUpdateCategory(custIds);
 
-                if (robotUsers != null && robotUsers.Any())
+                if (robots != null && robots.Any())
                 {
-                    robotUsers.ToList().ForEach(c =>
+                    robots.ToList().ForEach(c =>
                     {
-                        problemAccounts.Add(new ProblemAccountsEntity
+                        robotUsers.Add(new ProblemAccountsEntity
                         {
                             CustID = c,
                             ReasonID = (int)Category.Robot
@@ -169,7 +196,7 @@
             return robotUser;
         }
 
-        public RescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP)
+        public IRescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP)
         {
             if (custIds != null && custIds.Any() && isCheckPAFromNAP)
             {
@@ -178,37 +205,50 @@
                 var problemAccountsNAPCM = problemAccountServices.GetProblemAccounts_IBC(custIdsToString, null);
                 var problemAccountsCN88 = problemAccountServices.GetProblemAccounts_CN88(custIdsToString, null);
 
-                problemAccounts.AddRange(problemAccountsNAPCM);
-                problemAccounts.AddRange(problemAccountsCN88);
+                probAccountNAPPA.AddRange(problemAccountsNAPCM);
+                probAccountNAPPA.AddRange(problemAccountsCN88);
             }
 
             return this;
         }
 
-        public RescanCustClassificationService InsertProblemAccountToCTS(RescanParametersEntity paras)
+        public IRescanCustClassificationService InsertProblemAccountToCTS(RescanParametersEntity paras)
         {
-            if (problemAccounts != null && problemAccounts.Any())
-            {
-                var problemAccountsChunk = problemAccounts.Distinct().Chunk(paras.InternalBatchSize);
+            var insertProblemAccounts = new List<ProblemAccountsEntity>();
 
-                var isWriteLogRescan = paras.FlowTypeRescanCC != FlowTypeRescanCC.NewMember;
+            if (robotUsers != null && robotUsers.Any())
+            {
+                insertProblemAccounts.AddRange(robotUsers);
+            }
+
+            if (probAccountNAPPA != null && probAccountNAPPA.Any())
+            {
+                insertProblemAccounts.AddRange(probAccountNAPPA);
+            }
+
+            if (insertProblemAccounts.Any())
+            {
+                var problemAccountsChunk = insertProblemAccounts.Distinct().Chunk(paras.InternalBatchSize);
+
+                var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
                 foreach (var problemAccs in problemAccountsChunk)
                 {
                     var problemCustIds = problemAccountServices.InsertProblemAccountToCTS(problemAccs, isWriteLogRescan, paras.ServiceName, paras.IsWriteLog);
 
-                    custIdsToRescanPA.AddRange(problemCustIds);
+                    custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }
             }
 
             return this;
         }
 
-        public RescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
+        public IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
         {
+
             if (custIdsToRescanPA != null && custIdsToRescanPA.Any())
             {
-                custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
+                isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
                 {
                     ExternalBatchSize = paras.ExternalBatchSize,
                     FeedSoon88API = paras.FeedSoon88API,
@@ -222,24 +262,40 @@
             return this;
         }
 
-        public RescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras)
+        public IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras)
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
-                paras.CustIds.ToList().RemoveAll(x => custIdsToRescanPA.Contains(x));
+                var custToRescanNormal = paras.CustIds.ToList();
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Contains(x));
 
-                if (paras.CustIds != null && paras.CustIds.Any())
+                if (custToRescanNormal.Any())
                 {
-                    var custIdsChunk = paras.CustIds.Chunk(paras.InternalBatchSize);
+                    var custIdsChunk = custToRescanNormal.Chunk(paras.ExternalBatchSize);
 
                     foreach (var custIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, false);
+                        dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, paras.FunctionId, false);
                     }
                 }
             }
 
             return this;
         }
+
+        public IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName)
+        {
+            custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, funcId, stageName);
+
+            return this;
+        }
+
+        public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
+
+        public IEnumerable<ProblemAccountsEntity> ProblemAccounts => probAccountNAPPA;
+
+        public IEnumerable<ProblemAccountsEntity> RobotUsers => robotUsers;
+
+        public IEnumerable<CustEvidenceEntity> ExistedEvidences => existedEvidences;
     }
 }

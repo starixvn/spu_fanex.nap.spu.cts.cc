@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -14,8 +14,6 @@
     public interface IProblemAccountJobService
     {
         Task<bool> Execute(int batchExternalSize, int batchInternalSize);
-
-        Task<bool> UpdateWriteLogSetting(bool isWriteLog);
     }
 
     public class ProblemAccountJobService : IProblemAccountJobService
@@ -27,7 +25,6 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAppSettings appSettings;
         private IEnumerable<ProblemAccountsEntity> logData;
-        private readonly bool isWriteLog;
 
         public ProblemAccountJobService(
             ISentryClient sentryClient,
@@ -41,17 +38,18 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = pushDataToExternalService;
             this.appSettings = appSettings;
-            this.isWriteLog = appSettings.ProblemAccountIsWriteLog;
             this.serviceName = "ProblemAccountInsert";
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
+            bool response = true;
+            
             try
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
+                    response = JobRun(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -65,59 +63,64 @@
                 return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> UpdateWriteLogSetting(bool isWriteLog)
-        {
-            try
-            {
-                bool result = appSettings.UpdateIsWriteLogSetting(serviceName, isWriteLog);
-
-                return Task.FromResult(result);
-            }
-            catch (Exception e)
-            {
-                sentryClient.CaptureException(e);
-                return Task.FromResult(false);
-            }
+            return Task.FromResult(response);
         }
 
         #region Private Methods
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ProblemAccountLastScannedTime);
 
             var savedDataTime = DateTime.Now;
 
-            var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, isWriteLog);
+            var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
+            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+
+            if (isSuccess)
+            {
+                systemParameterServices.UpdateTimingExecution(savedDataTime.ToString(Constants.CONVERT_TO_SQL_DATETIME), SystemParameters.ProblemAccountLastScannedTime);
+            }
+
+            return isSuccess;
+        }
+
+        private bool InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, int batchExternalSize, int batchInternalSize)
+        {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 logData = problemAccounts;
+                custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, FunctionId.InsertPAJob, serviceName);
+
                 var problemAccountsChunk = problemAccounts.Distinct().Chunk(batchInternalSize);
 
                 foreach (var items in problemAccountsChunk)
                 {
-                    var custIds = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, isWriteLog);
+                    var result = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+                    var isSuccess = (result != null && result.ErrorCode == 0);
 
-                    if (custIds != null && custIds.Any())
+                    if (result != null && result.CustIds != null && result.CustIds.Any())
                     {
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        isSuccess = isSuccess && custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsUpdateDangerToMainDB = false,
                             IsPushCCToSoon88 = true,
-                            IsWriteLog = isWriteLog,
+                            IsUpdateDangerToMainDB = false,
+                            IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
                         });
+                    }
+
+                    if (!isSuccess)
+                    {
+                        return false;
                     }
                 }
             }
 
-            systemParameterServices.UpdateTimingExecution(savedDataTime.ToString(Constants.CONVERT_TO_SQL_DATETIME), SystemParameters.ProblemAccountLastScannedTime);
+            return true;
         }
 
         #endregion Private Methods

@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Sentry;
-using System;
-using System.IO;
-
-namespace Fanex.NAP.SPU.CTS.JobService
+namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Hosting;
+    using Sentry;
+    using System;
+    using System.IO;
+
     public static class Program
     {
         public static void Main(string[] args)

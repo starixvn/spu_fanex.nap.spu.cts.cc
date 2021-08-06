@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Xml.Serialization;
 
-    [XName("Root")]
+    [XName("ProbationModel")]
     public class ProbationEntity
     {
         [XName("CustId")]

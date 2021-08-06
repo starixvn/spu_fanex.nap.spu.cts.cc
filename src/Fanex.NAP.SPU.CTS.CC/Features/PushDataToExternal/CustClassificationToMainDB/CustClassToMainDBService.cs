@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -24,7 +23,9 @@
 
         bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, DangerLevel typeId, int retryTime, string serviceName);
 
-        void PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+        bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+
+        void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName);
     }
 
     public class CustClassToMainDBService : ICustClassToMainDBService
@@ -34,8 +35,8 @@
         private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
-            ICustClassToMainDBDataAccess custClassToMainDBDataAccess, 
-            ISentryClient sentryClient, 
+            ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
+            ISentryClient sentryClient,
             IFeedSoon88Services feedSoon88Services)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
@@ -43,12 +44,11 @@
             this.sentryClient = sentryClient;
         }
 
-
-        public void PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
+        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {
             if (custIds == null || !custIds.Any())
             {
-                return;
+                return true;
             }
 
             var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
@@ -68,10 +68,14 @@
 
                     if (paras.IsUpdateDangerToMainDB && isSuccess)
                     {
-                        UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                        isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
                     }
+
+                    return isSuccess;
                 }
             }
+
+            return true;
         }
 
         public bool PushCustClassificationToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog)
@@ -238,5 +242,57 @@
 
             return true;
         }
+
+        public void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName)
+        {
+            try
+            {               
+                var inputData = MappingLogInputData(content);
+
+                if (inputData != null && inputData.Any())
+                {
+                    var result = custClassToMainDBDataAccess.LogInputData(inputData, funcId);
+
+                    if (!string.IsNullOrEmpty(result.ErrorMsg))
+                    {
+                        Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), new Exception(result.ErrorMsg), sentryClient);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), ex, sentryClient);
+            }
+        }
+
+        private IEnumerable<LogInputDataEntity> MappingLogInputData(LogInputViewEntity content)
+        {
+            var logInputData = new List<LogInputDataEntity>();
+
+            if(content != null && content.RobotUser!=null && content.RobotUser.Any())
+            {
+                content.RobotUser.ToList().ForEach(c => 
+                {
+                    logInputData.Add(new LogInputDataEntity  {
+                        CustId = c.CustId,
+                        InputValue = c.RobotDate
+                    });
+                });
+            }
+
+            if (content != null && content.ProblemAccounts != null && content.ProblemAccounts.Any())
+            {
+                content.ProblemAccounts.ToList().ForEach(c =>
+                {
+                    logInputData.Add(new LogInputDataEntity
+                    {
+                        CustId = c.CustID,
+                        InputValue = c.ReasonID
+                    });
+                });
+            }
+
+            return logInputData;
+        }         
     }
 }

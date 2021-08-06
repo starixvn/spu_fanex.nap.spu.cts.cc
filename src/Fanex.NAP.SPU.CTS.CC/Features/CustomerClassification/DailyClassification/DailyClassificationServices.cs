@@ -3,16 +3,17 @@
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyClassificationServices
     {
         IEnumerable<CustClassificationDailyEntity> GetCustClassificationForDailyScanning(int batchQuantity, int rowQuantityPerBatch);
 
-        void ScanningDailyClassification(IEnumerable<CustClassificationDailyEntity> customers, bool isCheckLast14Days);
+        void ScanningDailyClassification(IEnumerable<CustClassificationDailyEntity> customers, FunctionId funcId, bool isCheckLast14Days);
 
-        void ClassifyCustomerGeneralCategoryDaily(IEnumerable<CustClassificationDailyEntity> customers, bool isCheckLast14Days);
+        void ClassifyCustomerGeneralCategoryDaily(IEnumerable<CustClassificationDailyEntity> customers, FunctionId funcId, bool isCheckLast14Days);
 
-        void ClassifyCustomerGeneralCategoryDaily(IEnumerable<long> customers, bool isCheckLast14Days);
+        void ClassifyCustomerGeneralCategoryDaily(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days);
 
         void UpdateDailyClassificationStatus(IEnumerable<CustClassificationDailyEntity> customers);
     }
@@ -31,7 +32,7 @@
             return dailyClassificationDataAccess.GetCustomerForDailyScanning(batchQuantity, rowQuantityPerBatch);
         }
 
-        public void ScanningDailyClassification(IEnumerable<CustClassificationDailyEntity> customers, bool isCheckLast14Days)
+        public void ScanningDailyClassification(IEnumerable<CustClassificationDailyEntity> customers, FunctionId funcId, bool isCheckLast14Days)
         {
             if (customers != null && customers.Any())
             {
@@ -39,29 +40,29 @@
 
                 foreach (var custGroup in custGroupByBatch)
                 {
-                    ClassifyCustomerGeneralCategoryDaily(custGroup, true);
+                    ClassifyCustomerGeneralCategoryDaily(custGroup, funcId, true);
                     UpdateDailyClassificationStatus(custGroup);
                 }
             }
         }
 
-        public void ClassifyCustomerGeneralCategoryDaily(IEnumerable<CustClassificationDailyEntity> customers, bool isCheckLast14Days)
+        public void ClassifyCustomerGeneralCategoryDaily(IEnumerable<CustClassificationDailyEntity> customers, FunctionId funcId, bool isCheckLast14Days)
         {
             if (customers != null && customers.Any())
             {
                 var custIds = string.Join(",", customers.Select(c => c.CustId));
 
-                dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(custIds, isCheckLast14Days);
+                dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(custIds, funcId, isCheckLast14Days);
             }
         }
 
-        public void ClassifyCustomerGeneralCategoryDaily(IEnumerable<long> customers, bool isCheckLast14Days)
+        public void ClassifyCustomerGeneralCategoryDaily(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days)
         {
             if (customers != null && customers.Any())
             {
                 var custIdToString = string.Join(",", customers);
 
-                dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(custIdToString, isCheckLast14Days);
+                dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(custIdToString, funcId, isCheckLast14Days);
             }
         }
 

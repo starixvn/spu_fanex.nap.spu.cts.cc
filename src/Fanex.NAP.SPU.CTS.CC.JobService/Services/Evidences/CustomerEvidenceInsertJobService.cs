@@ -1,14 +1,14 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerEvidenceInsertJobService
     {
@@ -22,22 +22,19 @@
         private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
         private readonly ICustomerEvidenceSendMailServices customerEvidenceSendMailServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IFeedSoon88Services feedSoon88Services;
         private readonly IAppSettings appSettings;
 
         public CustomerEvidenceInsertJobService(
             ISentryClient sentryClient,
             ICustomerEvidenceInsertServices customerEvidenceInsertServices,
             ICustomerEvidenceSendMailServices customerEvidenceSendMailServices,
-             ICustClassToMainDBService custClassToMainDBService,
-            IFeedSoon88Services feedSoon88Services,
+            ICustClassToMainDBService custClassToMainDBService,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.customerEvidenceInsertServices = customerEvidenceInsertServices;
             this.customerEvidenceSendMailServices = customerEvidenceSendMailServices;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.feedSoon88Services = feedSoon88Services;
             this.appSettings = appSettings;
             this.serviceName = "CustomerEvidenceInsert";
         }
@@ -73,7 +70,7 @@
 
             do
             {
-                custEvidenceFromFiles = customerEvidenceInsertServices.GetCustomerEvidenceFromFile();
+                custEvidenceFromFiles = customerEvidenceInsertServices.Start().GetCustomerEvidenceFromFile();
 
                 if (custEvidenceFromFiles != null && custEvidenceFromFiles.Any())
                 {
@@ -88,6 +85,7 @@
                 }
 
                 HandleLogError();
+
             } while (custEvidenceFromFiles != null && custEvidenceFromFiles.Any());
         }
 
@@ -108,11 +106,11 @@
                     if (isOverwrite)
                     {
                         isSuccess = customerEvidenceInsertServices.RemoveOldEvidence(custEvidences, out IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList);
-                        isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, 2, custEviRemovedList, isSuccess);
+                        isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Remove, custEviRemovedList, isSuccess);
                     }
 
                     isSuccess = customerEvidenceInsertServices.InsertNewCustomerEvidence(custEvidences, isOverwrite, isSuccess);
-                    isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, 0, isSuccess);
+                    isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Insert, isSuccess);
 
                     if (isSuccess)
                     {
@@ -140,6 +138,8 @@
                     IsWriteLog = false,
                     ServiceName = serviceName
                 });
+
+                customerEvidenceInsertServices.UpdateBetLimitOfFlaggedCustomer(custEvidenceProcesseds);
             }
         }
 

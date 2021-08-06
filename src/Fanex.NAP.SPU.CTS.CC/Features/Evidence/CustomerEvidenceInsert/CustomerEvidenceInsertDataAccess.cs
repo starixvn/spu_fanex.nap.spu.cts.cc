@@ -2,19 +2,21 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using System;
     using System.Collections.Generic;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerEvidenceInsertDataAccess
     {
         IEnumerable<CustomerEvidenceFromFileEntity> GetCustomerEvidenceFromFile();
 
-        ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, long sessionId, bool isRollBack, bool isClearLog);
+        ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog);
 
-        DBResult InsertCustomerEvidenceMuitiple(string jsonData, int userId, bool isOverwrite);
+        DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite);
 
         DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
 
-        DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed, int userId);
+        DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed);
 
         IEnumerable<int> GetAssociatedAccountByCTSCustIds(string ctsCustIds);
 
@@ -37,12 +39,12 @@
             return repository.Fetch<CustomerEvidenceFromFileEntity>(criteria);
         }
 
-        public ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, long sessionId, bool isRollBack, bool isClearLog)
+        public ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog)
         {
             var criteria = new CustEvidencesByCTSCustIdsRemoveCriteria
             {
                 NewAccountEvidences = jsonData,
-                SessionId = sessionId,
+                SessionId = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")),
                 IsRollBack = isRollBack,
                 IsClearLog = isClearLog
             };
@@ -60,12 +62,12 @@
             return result;
         }
 
-        public DBResult InsertCustomerEvidenceMuitiple(string jsonData, int userId, bool isOverwrite)
+        public DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite)
         {
             var criteria = new CustEvidencesInsertCriteria
             {
                 NewAccountEvidences = jsonData,
-                UserId = userId,
+                UserId = ImportEvidence_StarixITId,
                 IsOverride = isOverwrite
             };
 
@@ -98,13 +100,13 @@
             };
         }
 
-        public DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed, int userId)
+        public DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed)
         {
             var criteria = new ProcessedCustEvidenceUpdateCriteria
             {
                 IdList = idList,
                 IsProcessed = isProcessed,
-                UserId = userId
+                UserId = ImportEvidence_StarixITId
             };
 
             repository.Execute(criteria);

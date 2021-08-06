@@ -1,9 +1,7 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -14,7 +12,7 @@
     {
         Task<bool> Execute(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> UpdateWriteLogSetting(bool isWriteLog);
+        Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog);
     }
 
     public class NormalAccountJobService : INormalAccountJobService
@@ -23,23 +21,18 @@
         private readonly ISentryClient sentryClient;
         private readonly INormalAccountServices normalAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IFeedSoon88Services feedSoon88Services;
         private readonly IAppSettings appSettings;
-        private readonly bool isWriteLog;
 
         public NormalAccountJobService(
             ISentryClient sentryClient,
             INormalAccountServices normalAccountServices,
             ICustClassToMainDBService pushDataToExternalService,
-            IFeedSoon88Services feedSoon88Services,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.normalAccountServices = normalAccountServices;
             this.custClassToMainDBService = pushDataToExternalService;
-            this.feedSoon88Services = feedSoon88Services;
             this.appSettings = appSettings;
-            this.isWriteLog = appSettings.NormalAccountIsWriteLog;
             this.serviceName = "NormalAccountInsert";
         }
 
@@ -66,7 +59,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> UpdateWriteLogSetting(bool isWriteLog)
+        public Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog)
         {
             try
             {
@@ -85,34 +78,39 @@
 
         private void JobRun(int batchExternalSize, int batchInternalSize)
         {
-            GeneralCustomerClassificationEnity newClassification;
+            var newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
 
-            do
+            if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
             {
-                newClassification = normalAccountServices.GetNewClassification(serviceName, isWriteLog);
+                var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
 
-                if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
+                foreach (var listClassification in generalClassificationChunk)
                 {
-                    var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
+                    var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
 
-                    foreach (var listClassification in generalClassificationChunk)
+                    var result = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, appSettings.NormalAccountIsWriteLog);
+
+                    if (string.IsNullOrEmpty(result.ErrorMessage))
                     {
-                        var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
-
-                        var custIds = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationPA, serviceName, isWriteLog);
-
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
-                            IsWriteLog = isWriteLog,
+                            IsWriteLog = appSettings.NormalAccountIsWriteLog,
                             ServiceName = serviceName
                         });
+
+                        normalAccountServices.UpdateAppliedStatusClassification(listClassification, isPushCCSuccess);
                     }
                 }
-            } while (newClassification.IsContinute);
+            }
+
+            if (newClassification.IsContinute)
+            {
+                JobRun(batchExternalSize, batchInternalSize);
+            }
         }
     }
 

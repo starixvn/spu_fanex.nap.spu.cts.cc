@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.MultipleAccountRemoveEvidence
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System.Collections;
@@ -39,14 +38,14 @@
                 ActionId = actionId
             };
 
-            repository.Execute(criteria);    
+            repository.Execute(criteria);
 
             return new DBResult
             {
-                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage)? 0 : - 1,
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage,
-                OutParam = new Hashtable { 
-                    { "custIds", criteria.CustIdResultList } 
+                OutParam = new Hashtable {
+                    { "custIds", criteria.CustIdResultList }
                 }
             };
         }
@@ -60,10 +59,10 @@
 
             repository.Execute(criteria);
 
-            return new DBResult 
-            { 
-                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 :- 1, 
-                ErrorMsg = criteria.ErrorMessage 
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
             };
         }
     }

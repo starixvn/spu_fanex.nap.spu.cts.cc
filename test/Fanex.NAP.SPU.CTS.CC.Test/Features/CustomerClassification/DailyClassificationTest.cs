@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class DailyClassificationTest
     {
@@ -61,9 +62,9 @@
         {
             var custIds = new List<long> { 1, 2, 3 };
 
-            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), true);
+            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), FunctionId.DailyJob, true);
 
-            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, true);
+            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, FunctionId.DailyJob, true);
             action.Should().NotThrow<Exception>();
         }
 
@@ -92,9 +93,9 @@
 
             var custIds = string.Join(",", dailyScanningClassiifications.Select(c => c.CustId));
 
-            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), true);
+            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), FunctionId.DailyJob, true);
 
-            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(dailyScanningClassiifications, true);
+            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(dailyScanningClassiifications, FunctionId.DailyJob, true);
             action.Should().NotThrow<Exception>();
         }
 

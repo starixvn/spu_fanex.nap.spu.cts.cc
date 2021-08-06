@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -54,6 +54,7 @@
         private void JobRun(int batchSize)
         {
             realtimeClassificationServices
+                .Start()
                 .GetCustomerGeneralCategoryHasChangeForRunRealtime()
                 .ScanningRealtimeClassification(batchSize)
                 .RealtimeUpdateLastScanTime(true);

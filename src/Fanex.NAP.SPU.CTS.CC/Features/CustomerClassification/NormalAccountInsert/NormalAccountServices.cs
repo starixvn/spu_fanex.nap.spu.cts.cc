@@ -14,9 +14,9 @@
 
         IEnumerable<CustAssociationProblemAccountEntity> GetCustomerAssociationProblemAccount(IEnumerable<CustomerClassificationEntity> listClassification);
 
-        bool UpdateAppliedStatusClassification(IEnumerable<CustomerClassificationEntity> custClassifications);
+        bool UpdateAppliedStatusClassification(IEnumerable<CustomerClassificationEntity> custClassifications, bool isSuccess);
 
-        IEnumerable<long> InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
+        InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
                                                         , IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA
                                                         , string serviceName, bool isWriteLog);
 
@@ -64,35 +64,32 @@
             return new List<CustAssociationProblemAccountEntity>();
         }
 
-        public IEnumerable<long> InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
+        public InsertCategoryResultEntity InsertMainCustomerClassification(IEnumerable<CustomerClassificationEntity> custClassifications
                                                                 , IEnumerable<CustAssociationProblemAccountEntity> custAssociationPA
                                                                 , string serviceName
                                                                 , bool isWriteLog)
         {
+            var result = new InsertCategoryResultEntity();
+
             string jsonClassification = MergeCustomerClassificationInfo(custClassifications, custAssociationPA);
 
             if (!string.IsNullOrEmpty(jsonClassification))
             {
-                var result = normalAccountDataAccess.InsertMainCustomerClassification(jsonClassification);
+                result = normalAccountDataAccess.InsertMainCustomerClassification(jsonClassification);
                 Utilities.LogSentryInfo(serviceName, "InsertMainCustomerClassification done", jsonClassification, isWriteLog, sentryClient);
 
-                if (string.IsNullOrEmpty(result.ErrorMessage))
-                {
-                    UpdateAppliedStatusClassification(custClassifications);
-                    return result?.CustIds;
-                }
-                else
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
                     Utilities.LogSentryError(serviceName, "InsertProblemAccount throws Exception", jsonClassification, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
 
-            return new List<long>();
+            return result;
         }
 
-        public bool UpdateAppliedStatusClassification(IEnumerable<CustomerClassificationEntity> custClassifications)
+        public bool UpdateAppliedStatusClassification(IEnumerable<CustomerClassificationEntity> custClassifications, bool isSuccess)
         {
-            if (custClassifications != null && custClassifications.Any())
+            if (isSuccess && custClassifications != null && custClassifications.Any())
             {
                 var custIds = custClassifications.Select(x => x.CustId).Distinct();
 

@@ -1,9 +1,10 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
-    using Fanex.NAP.SPU.CTS.Features.AffectedEvidence;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProbationClassification;
@@ -13,15 +14,10 @@
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.Features.Evidence.MultipleAccountRemoveEvidence;
-    using Fanex.NAP.SPU.CTS.Features.ExistingCustomer;
-    using Fanex.NAP.SPU.CTS.Features.MatchMonitor;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Features.SystemParameter;
-    using Fanex.NAP.SPU.CTS.Features.Transform.Accounts;
-    using Fanex.NAP.SPU.CTS.Features.Transform.AssociationByDevice;
-    using Fanex.NAP.SPU.CTS.Features.UpdateLastLogin;
-    using Fanex.NAP.SPU.CTS.Features.UserPermission;
+    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -31,21 +27,7 @@
         {
             RegisterNAPService(services);
 
-            RegisterTransformAccount(services);
-
-            RegisterExistingCustomer(services);
-
-            RegisterMatchMonitor(services);
-
             RegisterProblemAccount(services);
-
-            RegisterUserPermission(services);
-
-            RegisterAssociationByDevice(services);
-
-            RegisterAffectedEvidence(services);
-
-            RegisterUpdateLastLogin(services);
 
             RegisterDataAccesLayer(services);
 
@@ -62,6 +44,8 @@
             RegisteCustomerEvidencesInsert(services);
 
             RegisteRemoveAccountEvidences(services);
+
+            RegisteCustomer(services);
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
@@ -71,60 +55,11 @@
             services.AddSingleton<ISecurityService, SecurityService>();
         }
 
-        private static void RegisterTransformAccount(this IServiceCollection services)
-        {
-            services.AddSingleton<IAccountDataAccess, AccountDataAccess>();
-            services.AddSingleton<IAccountServices, AccountServices>();
-            services.AddSingleton<IAccountJobService, AccountJobService>();
-        }
-
-        private static void RegisterExistingCustomer(this IServiceCollection services)
-        {
-            services.AddSingleton<IExistingCustomerDataAccess, ExistingCustomerDataAccess>();
-            services.AddSingleton<IExistingCustomerServices, ExistingCustomerServices>();
-            services.AddSingleton<IExistingCustomerJobService, ExistingCustomerJobService>();
-        }
-
-        private static void RegisterMatchMonitor(this IServiceCollection services)
-        {
-            services.AddSingleton<IMatchMonitorDataAccess, MatchMonitorDataAccess>();
-            services.AddSingleton<IMatchMonitorServices, MatchMonitorServices>();
-            services.AddSingleton<IMatchMonitorJobService, MatchMonitorJobService>();
-        }
-
         private static void RegisterProblemAccount(this IServiceCollection services)
         {
             services.AddSingleton<IProblemAccountDataAccess, ProblemAccountDataAccess>();
             services.AddSingleton<IProblemAccountServices, ProblemAccountServices>();
             services.AddSingleton<IProblemAccountJobService, ProblemAccountJobService>();
-        }
-
-        private static void RegisterUserPermission(this IServiceCollection services)
-        {
-            services.AddSingleton<IUserPermissionService, UserPermissionService>();
-            services.AddSingleton<IUserPermissionJobService, UserPermissionJobService>();
-            services.AddSingleton<IUserPermissionDataAccess, UserPermissionDataAccess>();
-        }
-
-        private static void RegisterAssociationByDevice(this IServiceCollection services)
-        {
-            services.AddSingleton<IAssociationByDeviceJobService, AssociationByDeviceJobService>();
-            services.AddSingleton<IAssociationByDeviceService, AssociationByDeviceService>();
-            services.AddSingleton<IAssociationByDeviceDataAccess, AssociationByDeviceDataAccess>();
-        }
-
-        private static void RegisterAffectedEvidence(this IServiceCollection services)
-        {
-            services.AddSingleton<IAffectedEvidenceJobService, AffectedEvidenceJobService>();
-            services.AddSingleton<IAffectedEvidenceService, AffectedEvidenceService>();
-            services.AddSingleton<IAffectedEvidenceDataAccess, AffectedEvidenceDataAccess>();
-        }
-
-        private static void RegisterUpdateLastLogin(this IServiceCollection services)
-        {
-            services.AddSingleton<IUpdateLastLoginJobService, UpdateLastLoginJobService>();
-            services.AddSingleton<IUpdateLastLoginService, UpdateLastLoginService>();
-            services.AddSingleton<IUpdateLastLoginDataAccess, UpdateLastLoginDataAccess>();
         }
 
         private static void RegisterNormalAccount(this IServiceCollection services)
@@ -175,6 +110,13 @@
             services.AddSingleton<ICustomerEvidenceInsertServices, CustomerEvidenceInsertServices>();
             services.AddSingleton<ICustomerEvidenceSendMailServices, CustomerEvidenceSendMailServices>();
             services.AddSingleton<ICustomerEvidenceInsertJobService, CustomerEvidenceInsertJobService>();
+        }
+
+        private static void RegisteCustomer(this IServiceCollection services)
+        {
+            services.AddSingleton<ICTSCustomerDataAccess, CTSCustomerDataAccess>();
+            services.AddSingleton<ICTSCustomerService, CTSCustomerService>();
+            services.AddSingleton<ICTSCustomerJobService, CTSCustomerJobService>();
         }
 
         private static void RegisterDataAccesLayer(this IServiceCollection services)

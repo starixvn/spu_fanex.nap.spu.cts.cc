@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Probation_UpdateLastScanDate";
+            return "CTS_DC_CustClassification_ProbationScan_UpdateScanDate";
         }
 
         public override bool IsValid()

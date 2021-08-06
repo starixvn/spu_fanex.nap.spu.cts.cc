@@ -8,9 +8,9 @@
 
     public interface IRobotAccountInsertServices
     {
-        IEnumerable<RobotUser> GetRobotUser(DateTime? fromDate, string creditSiteList);
+        IEnumerable<RobotUserEntity> GetRobotUser(DateTime? fromDate, string creditSiteList);
 
-        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUser> robotUsers);
+        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
     }
 
     public class RobotAccountInsertServices : IRobotAccountInsertServices
@@ -22,17 +22,17 @@
             this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
         }
 
-        public IEnumerable<RobotUser> GetRobotUser(DateTime? fromDate, string creditSiteList)
+        public IEnumerable<RobotUserEntity> GetRobotUser(DateTime? fromDate, string creditSiteList)
         {
             if (fromDate.HasValue)
             {
                 return robotAccountInsertDataAccess.GetRobotUsers(fromDate.Value, creditSiteList);
             }
 
-            return new List<RobotUser>();
+            return new List<RobotUserEntity>();
         }
 
-        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUser> robotUsers)
+        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
         {
             var custCategory = new List<ProblemAccountsEntity>();
 

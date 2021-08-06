@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -6,6 +6,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyClassificationJobService
     {
@@ -31,8 +32,6 @@
         {
             try
             {
-                Utilities.LogSentryInfo(serviceName, $"{DateTime.Now}", string.Empty, true, sentryClient);
-
                 if (batchSize > 0)
                 {
                     JobRun(batchSize);
@@ -62,12 +61,12 @@
 
                 if (customers != null && customers.Any())
                 {
-                    dailyClassificationServices.ScanningDailyClassification(customers, true);
+                    dailyClassificationServices.ScanningDailyClassification(customers, FunctionId.DailyJob, true);
 
                     JobRun(batchSize);
                 }
             }
-            catch(TimeoutException ex)
+            catch (TimeoutException ex)
             {
                 Utilities.LogSentryError(serviceName, ex.Message, (batchSize), ex, sentryClient);
 

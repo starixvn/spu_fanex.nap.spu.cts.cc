@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_GetCustomerRoles";
+            return "CTS_DC_CustInfo_GetCustIDsRole";
         }
 
         public override bool IsValid()

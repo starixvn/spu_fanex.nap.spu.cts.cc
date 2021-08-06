@@ -2,12 +2,13 @@
 {
     using Fanex.Data.Repository;
     using System.Collections.Generic;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyClassificationDataAccess
     {
         IEnumerable<CustClassificationDailyEntity> GetCustomerForDailyScanning(int batchQuantity, int rowQuantityPerBatch);
 
-        void ClassifyCustomerGeneralCategoryDaily(string customers, bool isCheckLast14Days = true);
+        void ClassifyCustomerGeneralCategoryDaily(string customers, FunctionId funcId, bool isCheckLast14Days = true);
 
         void ClassifyCustomerDailyDone(string custSportJson);
     }
@@ -32,14 +33,15 @@
             return repository.Fetch<CustClassificationDailyEntity>(criteria);
         }
 
-        public void ClassifyCustomerGeneralCategoryDaily(string customers, bool isCheckLast14Days = true)
+        public void ClassifyCustomerGeneralCategoryDaily(string customers, FunctionId funcId, bool isCheckLast14Days = true)
         {
             if (!string.IsNullOrEmpty(customers))
             {
                 var criteria = new NormalAccountsClassificationGeneralCategorizeDailyCriteria
                 {
                     ListCustIds = customers,
-                    IsCheckLast14Days = isCheckLast14Days
+                    IsCheckLast14Days = isCheckLast14Days,
+                    FunctionId = (int)funcId
                 };
 
                 repository.Execute(criteria);

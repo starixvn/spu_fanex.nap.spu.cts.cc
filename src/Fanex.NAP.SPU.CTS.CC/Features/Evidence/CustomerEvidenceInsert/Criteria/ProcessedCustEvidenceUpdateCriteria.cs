@@ -18,7 +18,7 @@
         public string ErrorMessage { get; set; }
 
         public override string GetSettingKey()
-            => "CTS_DC_CustEvidenceFromFile_UpdateProcessed";
+            => "CTS_DC_CustEvidenceFromFile_UpdateStatus";
 
         public override bool IsValid()
             => true;
