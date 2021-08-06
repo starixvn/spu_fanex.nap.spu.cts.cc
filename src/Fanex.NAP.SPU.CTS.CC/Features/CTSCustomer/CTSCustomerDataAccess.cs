@@ -25,11 +25,15 @@
 
         void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID);
 
+        void UpdateCustomerStatusComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID);
+
         LastUpdateValueModel GetLastUpdatedTime();
 
         TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
 
         TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
+
+        TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
 
@@ -63,13 +67,17 @@
             var LastUpdateCustIDCustInfo = result.Read<Int64>().FirstOrDefault();
             var LastUpdateTimeCustomer = result.Read<DateTime>().FirstOrDefault();
             var LastUpdateCustIDCustomer = result.Read<Int64>().FirstOrDefault();
+            var LastUpdateTimeCustomerStatus = result.Read<DateTime>().FirstOrDefault();
+            var LastUpdateCustIDCustomerStatus = result.Read<Int64>().FirstOrDefault();
 
             return new LastUpdateValueModel
             {
                 LastUpdateCustIDCustInfo = LastUpdateCustIDCustInfo,
                 LastUpdateTimeCustInfo = LastUpdateTimeCustInfo,
                 LastUpdateCustIDCustomer = LastUpdateCustIDCustomer,
-                LastUpdateTimeCustomer = LastUpdateTimeCustomer
+                LastUpdateTimeCustomer = LastUpdateTimeCustomer,
+                LastUpdateCustIDCustProductStatus = LastUpdateCustIDCustomerStatus,
+                LastUpdateTimeCustProductStatus = LastUpdateTimeCustomerStatus
             };
         }
 
@@ -103,7 +111,26 @@
 
             var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
 
-            return new TranformCustModel()
+            return new TranformCustModel
+            {
+                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                CustIdList = secondResultSet.SingleOrDefault()
+            };
+        }
+
+        public TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
+        {
+            var criteria = new GetUpdatedCustFromProductStatusHistoryCriteria
+            {
+                LastUpdateTime = lastUpdatedTime,
+                LastCustId = lastUpdatedCustId,
+                RowSize = numOfAccount,
+            };
+
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
+
+            return new TranformCustModel
             {
                 LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
                 LastCustId = firstResultSet.SingleOrDefault().LastCustId,
@@ -186,6 +213,18 @@
             var criteria = new UpdateCustInfoCompleteCriteria
             {
                 CustInfo = customers,
+                LastUpdateCustID = lastUpdateCustID,
+                LastUpdateTime = lastUpdateTime
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void UpdateCustomerStatusComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
+        {
+            var criteria = new UpdateCustomerStatusCompleteCriteria
+            {
+                CustProductStatus = customers,
                 LastUpdateCustID = lastUpdateCustID,
                 LastUpdateTime = lastUpdateTime
             };

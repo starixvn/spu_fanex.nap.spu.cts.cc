@@ -9,7 +9,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
@@ -28,9 +27,11 @@
 
         TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
 
-        bool IsValidData(TranformCustModel custFromCustInfo, TranformCustModel custFromCustomer);
+        TranformCustModel GetUpdatedCustFromProductStatusHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
 
-        void UpdateCustomer(TranformCustModel custs, int sourceType, bool isWriteLog);
+        bool IsValidData(TranformCustModel data);
+
+        void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog);
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
 
@@ -70,19 +71,17 @@
             return dataAccess.GetLastUpdatedTime();
         }
 
-        public void UpdateCustomer(TranformCustModel custs, int sourceType, bool isWriteLog)
+        public void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog)
         {
             try
             {
                 if (custs != null && custs.LastCustId != null && custs.LastUpdatedTime != null)
                 {
-                    var updateCustomerType = (UpdateCustomer)sourceType;
+                    var custInfoToUpdate = GetCustInfoToUpdate(custs, sourceType, isWriteLog);
 
-                    var custInfoToUpdate = GetCustInfoToUpdate(custs, updateCustomerType, isWriteLog);
+                    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, sourceType);
 
-                    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, updateCustomerType);
-
-                    Utilities.LogSentryInfo(serviceName, "Healing - done", isWriteLog, sentryClient);
+                    Utilities.LogSentryInfo(serviceName, "UpdateCustomer - done", isWriteLog, sentryClient);
                 }
             }
             catch (Exception ex)
@@ -119,51 +118,71 @@
 
         public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType)
         {
-            if (sourceType == Constants.UpdateCustomer.FromCustInfo)
+            switch (sourceType)
             {
-                var customerInfo = custInfoFromMainDB
-                    .Join(custInfoFromCTS, custMain => custMain.CustID,
-                                           custCTS => custCTS.CustID,
-                                           (custMain, custCTS) => custMain)
-                    .Where(c => !custInfoFromCTS.Contains(c, new CustomerInfoEqualityComparer()))
-                    .Select(c => new CustInfoModel
+                case Constants.UpdateCustomer.FromCustInfo:
                     {
-                        CustID = c.CustID,
-                        CustStatusID = c.CustStatusID,
-                        Danger1 = c.Danger1,
-                        Danger2 = c.Danger2,
-                        Danger3 = c.Danger3
-                    }).ToList();
+                        var customerInfo = custInfoFromMainDB
+                            .Join(custInfoFromCTS, custMain => custMain.CustID,
+                                                   custCTS => custCTS.CustID,
+                                                   (custMain, custCTS) => custMain)
+                            .Where(c => !custInfoFromCTS.Contains(c, new CustomerInfoEqualityComparer()))
+                            .Select(c => new CustInfoModel
+                            {
+                                CustID = c.CustID,
+                                CustStatusID = c.CustStatusID,
+                                Danger1 = c.Danger1,
+                                Danger2 = c.Danger2,
+                                Danger3 = c.Danger3
+                            }).ToList();
 
-                return JsonConvert.SerializeObject(customerInfo);
-            }
-            else
-            {
-                var customerInfo = custInfoFromMainDB
-                    .Join(custInfoFromCTS, custMain => custMain.CustID,
-                                           custCTS => custCTS.CustID,
-                                           (custMain, custCTS) => custMain)
-                    .Where(c => !custInfoFromCTS.Contains(c, new CustomerEqualityComparer()))
-                    .Select(c => new CustomerInfoModel
+                        return JsonConvert.SerializeObject(customerInfo);
+                    }
+                case Constants.UpdateCustomer.FromCustomer:
                     {
-                        CustID = c.CustID,
-                        UserName = c.UserName,
-                        UserName2 = c.UserName2,
-                        SiteID = c.SiteID,
-                        Site = c.Site,
-                        RoleID = c.RoleID,
-                        SRecommend = c.SRecommend,
-                        MRecommend = c.MRecommend,
-                        Recommend = c.Recommend,
-                        Currency = c.Currency,
-                        CurrencyID = c.CurrencyID,
-                        UpdateType = (custInfoFromCTS.Any(f => f.CustID == c.CustID &&
-                                                (!string.Equals(f.UserName, c.UserName)
-                                             || !string.Equals(f.UserName2, c.UserName2)
-                                             || f.SiteID != c.SiteID)) == true) ? 1 : 0
-                    }).ToList();
+                        var customerInfo = custInfoFromMainDB
+                            .Join(custInfoFromCTS, custMain => custMain.CustID,
+                                                   custCTS => custCTS.CustID,
+                                                   (custMain, custCTS) => custMain)
+                            .Where(c => !custInfoFromCTS.Contains(c, new CustomerEqualityComparer()))
+                            .Select(c => new CustomerInfoModel
+                            {
+                                CustID = c.CustID,
+                                UserName = c.UserName,
+                                UserName2 = c.UserName2,
+                                SiteID = c.SiteID,
+                                Site = c.Site,
+                                RoleID = c.RoleID,
+                                SRecommend = c.SRecommend,
+                                MRecommend = c.MRecommend,
+                                Recommend = c.Recommend,
+                                Currency = c.Currency,
+                                CurrencyID = c.CurrencyID,
+                                UpdateType = (custInfoFromCTS.Any(f => f.CustID == c.CustID &&
+                                                         (!string.Equals(f.UserName, c.UserName)
+                                                         || !string.Equals(f.UserName2, c.UserName2)
+                                                         || f.SiteID != c.SiteID))) ? 1 : 0
+                            }).ToList();
 
-                return JsonConvert.SerializeObject(customerInfo);
+                        return JsonConvert.SerializeObject(customerInfo);
+                    }
+                case Constants.UpdateCustomer.FromProductStatus:
+                    {
+                        var customerInfo = custInfoFromMainDB
+                            .Join(custInfoFromCTS, custMain => custMain.CustID,
+                                                   custCTS => custCTS.CustID,
+                                                   (custMain, custCTS) => custMain)
+                            .Where(c => !custInfoFromCTS.Contains(c, new CustomerStaticEqualityComparer()))
+                            .Select(c => new CustInfoModel
+                            {
+                                CustID = c.CustID,
+                                CustStatusID = c.CustStatusID
+                            }).ToList();
+
+                        return JsonConvert.SerializeObject(customerInfo);
+                    }
+                default:
+                    return JsonConvert.SerializeObject(string.Empty);
             }
         }
 
@@ -185,6 +204,11 @@
         public TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
         {
             return dataAccess.GetUpdatedCustFromCustomerHistory(lastUpdatedTime, lastUpdatedCustId, numOfAccount);
+        }
+
+        public TranformCustModel GetUpdatedCustFromProductStatusHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
+        {
+            return dataAccess.GetUpdatedCustFromProductStatus(lastUpdatedTime, lastUpdatedCustId, numOfAccount);
         }
 
         public LastScannedCustModel GetLastInsertCust()
@@ -221,13 +245,25 @@
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID, UpdateCustomer sourceType)
         {
-            if (sourceType == Constants.UpdateCustomer.FromCustomer)
+            switch (sourceType)
             {
-                dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
-            }
-            else
-            {
-                dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
+                case Constants.UpdateCustomer.FromCustomer:
+                    {
+                        dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        break;
+                    }
+                case Constants.UpdateCustomer.FromCustInfo:
+                    {
+                        dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        break;
+                    }
+                case Constants.UpdateCustomer.FromProductStatus:
+                    {
+                        dataAccess.UpdateCustomerStatusComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        break;
+                    }
+                default:
+                    return;
             }
         }
 
@@ -279,10 +315,9 @@
             }
         }
 
-        public bool IsValidData(TranformCustModel custFromCustInfo, TranformCustModel custFromCustomer)
+        public bool IsValidData(TranformCustModel data)
         {
-            if ((custFromCustInfo != null && custFromCustInfo.LastCustId != null && custFromCustInfo.LastUpdatedTime != null)
-                || (custFromCustomer != null && custFromCustomer.LastCustId != null && custFromCustomer.LastUpdatedTime != null))
+            if (data != null && data.LastCustId != null && data.LastUpdatedTime != null)
             {
                 return true;
             }

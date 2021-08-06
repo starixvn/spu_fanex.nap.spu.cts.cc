@@ -65,6 +65,7 @@
         {
             TranformCustModel updatedCustFromCustInfo;
             TranformCustModel updatedCustFromCustomer;
+            TranformCustModel updatedCustFromProductStatus;
 
             try
             {
@@ -72,11 +73,15 @@
                 var output = ctscustomerService.GetLastUpdatedTime();
                 updatedCustFromCustInfo = ctscustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize);
                 updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize);
+                updatedCustFromProductStatus = ctscustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize);
 
-                if (ctscustomerService.IsValidData(updatedCustFromCustInfo, updatedCustFromCustomer))
+                if (ctscustomerService.IsValidData(updatedCustFromCustomer) 
+                    || ctscustomerService.IsValidData(updatedCustFromCustInfo)
+                    || ctscustomerService.IsValidData(updatedCustFromProductStatus))
                 {
-                    ctscustomerService.UpdateCustomer(updatedCustFromCustInfo, (int)UpdateCustomer.FromCustInfo, isWriteLog);
-                    ctscustomerService.UpdateCustomer(updatedCustFromCustomer, (int)UpdateCustomer.FromCustomer, isWriteLog);
+                    ctscustomerService.UpdateCustomer(updatedCustFromCustInfo, UpdateCustomer.FromCustInfo, isWriteLog);
+                    ctscustomerService.UpdateCustomer(updatedCustFromCustomer, UpdateCustomer.FromCustomer, isWriteLog);
+                    ctscustomerService.UpdateCustomer(updatedCustFromProductStatus, UpdateCustomer.FromProductStatus, isWriteLog);
                 }
 
                 return Task.FromResult(true);
