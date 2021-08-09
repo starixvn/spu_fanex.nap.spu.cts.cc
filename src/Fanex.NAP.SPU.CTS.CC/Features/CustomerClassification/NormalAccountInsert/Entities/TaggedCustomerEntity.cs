@@ -7,5 +7,13 @@
         public int TaggingID { get; set; }
 
         public int TaggingType { get; set; }
+
+        public int TWBetCount { get; set; }
+
+        public decimal TWGroupBettingRate { get; set; }
+
+        public decimal TWTicketRejectRate { get; set; }
+
+        public decimal TWDesktopUsageRate { get; set; }
     }
 }

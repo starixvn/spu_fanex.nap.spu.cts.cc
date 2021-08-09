@@ -139,7 +139,11 @@
                                         ProbationPeriodWinloss = group.custClass.ProbationPeriodWinloss,
                                         IsGeneralCategory = group.custClass.IsGeneralCategory,
                                         TaggingID = (temp != null) ? temp.TaggingID : group.custClass.TaggingID,
-                                        TaggingType = (temp != null) ? temp.TaggingType : group.custClass.TaggingType
+                                        TaggingType = (temp != null) ? temp.TaggingType : group.custClass.TaggingType,
+                                        TWBetCount = (temp != null) ? temp.TWBetCount : 0,
+                                        TWDesktopUsageRate = (temp != null) ? temp.TWDesktopUsageRate : 0,
+                                        TWGroupBettingRate = (temp != null) ? temp.TWGroupBettingRate : 0,
+                                        TWTicketRejectRate = (temp != null) ? temp.TWTicketRejectRate: 0
                                     });
 
             return result.ToList();
