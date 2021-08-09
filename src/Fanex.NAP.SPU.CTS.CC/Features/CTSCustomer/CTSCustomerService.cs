@@ -99,11 +99,8 @@
                 var custInfoFromMainDB = GetCustomerFromMainDBForUpdate(custs.CustIdList, sourceType);
                 var custInfoFromCTS = GetCustomerFromCTSForUpdate(custs.CustIdList, sourceType);
 
-                var messageLog = $"Healing - Get {((sourceType == Constants.UpdateCustomer.FromCustomer) ? "Customer History" : "CustInfo")} from MainDB";
-                var messageLog2 = $"Healing - Get {((sourceType == Constants.UpdateCustomer.FromCustomer) ? "Customer History" : "CustInfo")} from CTS";
-
-                Utilities.LogSentryInfo(serviceName, messageLog, custInfoFromMainDB, isWriteLog, sentryClient);
-                Utilities.LogSentryInfo(serviceName, messageLog2, custInfoFromCTS, isWriteLog, sentryClient);
+                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from MainDB", custInfoFromMainDB, isWriteLog, sentryClient);
+                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from CTS", custInfoFromCTS, isWriteLog, sentryClient);
 
                 if (custInfoFromMainDB != null && custInfoFromCTS != null)
                 {
@@ -111,7 +108,7 @@
                 }
             }
 
-            Utilities.LogSentryInfo(serviceName, "Healing - Cust to update data:", custInfoToUpdate, isWriteLog, sentryClient);
+            Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Cust to update data:", custInfoToUpdate, isWriteLog, sentryClient);
 
             return custInfoToUpdate;
         }
@@ -290,16 +287,16 @@
                     }
 
                     Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
-
-                    return true;
                 }
                 catch (Exception ex)
                 {
                     Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
+
+                    return false;
                 }
             }
 
-            return false;
+            return true;
         }
 
         public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID)

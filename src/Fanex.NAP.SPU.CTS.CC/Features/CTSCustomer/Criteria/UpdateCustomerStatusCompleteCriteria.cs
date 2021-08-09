@@ -17,7 +17,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CTSCustomer_UpdateCustProductStatusComplete";
+            return "CTS_DC_CustInfo_UpdateCustProductStatusComplete";
         }
 
         public override bool IsValid()

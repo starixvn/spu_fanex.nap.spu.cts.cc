@@ -104,7 +104,7 @@
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_InsertComplete" SpName="CTS_DC_CustInfo_InsertComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CTSCustomer_UpdateCustProductStatusComplete" SpName="CTS_DC_CTSCustomer_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 	</Function>
 </Functions>
