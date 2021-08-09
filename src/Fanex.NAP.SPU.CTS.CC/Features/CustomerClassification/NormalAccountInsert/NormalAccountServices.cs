@@ -138,8 +138,8 @@
                                         LastXDaysMargin = group.custClass.LastXDaysMargin,
                                         ProbationPeriodWinloss = group.custClass.ProbationPeriodWinloss,
                                         IsGeneralCategory = group.custClass.IsGeneralCategory,
-                                        TaggingID = (temp != null) ? temp.TaggingID : 0,
-                                        TaggingType = (temp != null) ? temp.TaggingType : 0
+                                        TaggingID = (temp != null) ? temp.TaggingID : group.custClass.TaggingID,
+                                        TaggingType = (temp != null) ? temp.TaggingType : group.custClass.TaggingType
                                     });
 
             return result.ToList();
