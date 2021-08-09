@@ -79,18 +79,23 @@
         private void JobRun(int batchExternalSize, int batchInternalSize)
         {
             var newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
-
+            
             if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
             {
+                sentryClient.CaptureMessage($"GetNewClassification: {string.Join(",", newClassification.GeneralCustClassifications.Select(c => c.CustId))}");
                 var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
 
                 foreach (var listClassification in generalClassificationChunk)
                 {
                     var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
+                    sentryClient.CaptureMessage($"GetCustomerAssociationProblemAccount: {string.Join(",", custAssociationPA.Select(c => c.CustID))}");
                     var custClassificationAfterCheckPA = normalAccountServices.MergeWithTaggedCust(listClassification, custAssociationPA);
+                    sentryClient.CaptureMessage($"MergeWithTagID - PA: {string.Join(",", custClassificationAfterCheckPA.Select(c => c.CustId + "|" + c.TaggingID + "|" + c.TaggingType))}");
 
                     var custGroupBettingAndReject = normalAccountServices.GetGroupBettingAndRejectCustomer(custClassificationAfterCheckPA.Where(c => c.TaggingID == 0));
+                    sentryClient.CaptureMessage($"GetGroupBettingAndRejectCustomer: {string.Join(",", custGroupBettingAndReject.Select(c => c.CustID))}");
                     var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckPA, custGroupBettingAndReject);
+                    sentryClient.CaptureMessage($"MergeWithTagID - TW: {string.Join(",", finalCustClassification.Select(c => c.CustId + "|" + c.TaggingID + "|" + c.TaggingType))}");
 
                     var result = normalAccountServices.InsertMainCustomerClassification(finalCustClassification, serviceName, appSettings.NormalAccountIsWriteLog);
 
