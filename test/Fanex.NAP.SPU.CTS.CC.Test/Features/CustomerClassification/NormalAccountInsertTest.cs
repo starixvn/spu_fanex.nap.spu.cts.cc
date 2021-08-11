@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert.Entities;
     using FluentAssertions;
+    using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
@@ -111,15 +112,15 @@
                     },
                 };
 
-            var custAssociationWithPA = new List<CustAssociationProblemAccountEntity>
+            var custAssociationWithPA = new List<TaggedCustomerEntity>
             {
-                new CustAssociationProblemAccountEntity
+                new TaggedCustomerEntity
                 {
                     CustID = 1,
                     TaggingID = 1,
                     TaggingType = 1,
                 },
-                 new CustAssociationProblemAccountEntity
+                 new TaggedCustomerEntity
                 {
                     CustID = 2,
                     TaggingID = 2,
@@ -222,15 +223,15 @@
                     },
                 };
 
-            var custAssociationWithPA = new List<CustAssociationProblemAccountEntity>
+            var custAssociationWithPA = new List<TaggedCustomerEntity>
             {
-                new CustAssociationProblemAccountEntity
+                new TaggedCustomerEntity
                 {
                     CustID = 1,
                     TaggingID = 1,
                     TaggingType = 1,
                 },
-                 new CustAssociationProblemAccountEntity
+                 new TaggedCustomerEntity
                 {
                     CustID = 2,
                     TaggingID = 2,
@@ -244,13 +245,14 @@
                 ErrorMessage = string.Empty
             };
 
-            string jsonClassification = normalAccountServices.MergeCustomerClassificationInfo(listClassification, custAssociationWithPA);
+            var custClassificationAfterCheckPA = normalAccountServices.MergeWithTaggedCust(listClassification, custAssociationWithPA);
+            var jsonClassification = JsonConvert.SerializeObject(custClassificationAfterCheckPA);
             normalAccountDataAccess.InsertMainCustomerClassification(jsonClassification).Returns(ouput);
 
             var custIds = listClassification.Select(x => x.CustId).Distinct();
             normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds), false);
 
-            var result = normalAccountServices.InsertMainCustomerClassification(listClassification, custAssociationWithPA, "NormalAccountInsert", false);
+            var result = normalAccountServices.InsertMainCustomerClassification(custClassificationAfterCheckPA, "NormalAccountInsert", false);
 
             result.Should().BeEquivalentTo(ouput);
         }

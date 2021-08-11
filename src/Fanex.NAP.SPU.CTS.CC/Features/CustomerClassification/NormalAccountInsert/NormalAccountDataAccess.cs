@@ -7,11 +7,13 @@
     {
         IEnumerable<CustomerClassificationEntity> GetNewClassification();
 
-        IEnumerable<CustAssociationProblemAccountEntity> GetCustsAssociationProblemAccount(string custIds);
+        IEnumerable<TaggedCustomerEntity> GetCustsAssociationProblemAccount(string custIds);
 
         InsertCategoryResultEntity InsertMainCustomerClassification(string newClassification);
 
         void UpdateAppliedStatusClassification(string custIdList, bool isGeneralCategory);
+
+        IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds);
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -30,14 +32,24 @@
             return repository.Fetch<CustomerClassificationEntity>(criteria);
         }
 
-        public IEnumerable<CustAssociationProblemAccountEntity> GetCustsAssociationProblemAccount(string custIds)
+        public IEnumerable<TaggedCustomerEntity> GetCustsAssociationProblemAccount(string custIds)
         {
             var criteria = new TaggingByAssociationWithPAGetCriteria
             {
                 CustIdList = custIds
             };
 
-            return repository.Fetch<CustAssociationProblemAccountEntity>(criteria);
+            return repository.Fetch<TaggedCustomerEntity>(criteria);
+        }
+        
+        public IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds)
+        {
+            var criteria = new CheckGroupBettingAndRejectCriteria
+            {
+                CustIdList = custIds
+            };
+
+            return repository.Fetch<TaggedCustomerEntity>(criteria);
         }
 
         public InsertCategoryResultEntity InsertMainCustomerClassification(string newClassification)
