@@ -115,6 +115,18 @@
                     if (isSuccess)
                     {
                         custEvidenceProcesseds.AddRange(custEvidences);
+
+                        var custIds = custEvidences.Select(x => x.CustID).Distinct();
+
+                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = externalBatchSize,
+                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                            IsPushCCToSoon88 = true,
+                            IsUpdateDangerToMainDB = false,
+                            IsWriteLog = false,
+                            ServiceName = serviceName
+                        });
                     }
 
                     customerEvidenceInsertServices.UpdateProcessedCustEvidence(custEvidences, isSuccess);
@@ -127,18 +139,6 @@
 
             if (custEvidenceProcesseds.Any())
             {
-                var custIds = custEvidenceProcesseds.Select(x => x.CustID).Distinct();
-
-                custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
-                {
-                    ExternalBatchSize = externalBatchSize,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                    IsPushCCToSoon88 = true,
-                    IsUpdateDangerToMainDB = false,
-                    IsWriteLog = false,
-                    ServiceName = serviceName
-                });
-
                 customerEvidenceInsertServices.UpdateBetLimitOfFlaggedCustomer(custEvidenceProcesseds);
             }
         }
