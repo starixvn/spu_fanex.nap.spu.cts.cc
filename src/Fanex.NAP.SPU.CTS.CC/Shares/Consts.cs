@@ -74,7 +74,8 @@
         public enum UpdateCustomer
         {
             FromCustomer = 1,
-            FromCustInfo = 2
+            FromCustInfo = 2,
+            FromProductStatus = 3
         };
 
         public enum EvidenceActionType

@@ -78,6 +78,23 @@
         }
 
         [Fact]
+        public void GetUpdatedCustFromProductStatusHistory_WhenSuccess_ReturnData()
+        {
+            var expectedResult = new TranformCustModel
+            {
+                CustIdList = "4,5,6",
+                LastCustId = 3,
+                LastUpdatedTime = DateTime.Now.AddMinutes(-3)
+            };
+
+            var inputDateTime = DateTime.Now;
+            dataAccess.GetUpdatedCustFromProductStatus(inputDateTime, 1, 100).Returns(expectedResult);
+            var result = ctsCustomerService.GetUpdatedCustFromProductStatusHistory(inputDateTime, 1, 100);
+
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
         public void GetCustomerFromMainDBForUpdate_WhenSuccess_ReturnData()
         {
             var expectedResult = new List<CustomerMainDBModel>
