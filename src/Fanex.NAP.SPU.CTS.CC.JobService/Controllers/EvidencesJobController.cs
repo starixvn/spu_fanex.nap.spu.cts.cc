@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -26,14 +25,12 @@
         [HttpPost("removeAccountEvidence")]
         public async Task<bool> RemoveAccountEvidences([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            sentryClient.CaptureMessage($"RemoveAccountEvidence is running at {DateTime.Now}");
             return await this.removeAccountEvidenceJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("insertAccountEvidence")]
         public async Task<bool> CustomerAccountEvidences([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            sentryClient.CaptureMessage($"InsertAccountEvidence is running at {DateTime.Now}");
             return await this.customerEvidenceInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
     }
