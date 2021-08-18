@@ -38,14 +38,12 @@
         [HttpPost("problemAccountInsert")]
         public async Task<bool> InsertProblemAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            sentryClient.CaptureMessage($"Problem Account Service is running at {DateTime.Now}");
             return await this.problemAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("insertNormalAccount")]
         public async Task<bool> InsertNormalAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            sentryClient.CaptureMessage($"Normal Account Service is running at {DateTime.Now}");
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
@@ -59,7 +57,6 @@
         [HttpPost("scanningRealtimeClassification")]
         public async Task<bool> RealtimeScanningClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Realtime Service is running at {DateTime.Now}");
             return await this.realtimeClassificationJobService.Execute(batchSize);
         }
 
@@ -73,7 +70,6 @@
         [HttpPost("robotClassification")]
         public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            sentryClient.CaptureMessage($"Robot Service is running at {DateTime.Now}");
             return await this.robotAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
