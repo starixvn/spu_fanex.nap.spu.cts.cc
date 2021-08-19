@@ -429,7 +429,7 @@
             var idList = string.Join(",", cusEvidences.Select(x => x.ID));
             customerEvidenceInsertDataAccess.UpdateProcessedCustEvidence(idList, true).Returns(rs);
 
-            Action action = () => customerEvidenceInsertServices.UpdateProcessedCustEvidence(cusEvidences, true);
+            Action action = () => customerEvidenceInsertServices.UpdateCompleteCustEvidence(cusEvidences, true);
 
             action.Should().NotThrow<Exception>();
         }

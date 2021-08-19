@@ -91,7 +91,7 @@
 
         private void InsertCustomerEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidenceInFiles, bool isOverwrite, int internalBatchSize, int externalBatchSize)
         {
-            var custEvidenceProcesseds = new List<CustomerEvidenceFromFileEntity>();
+            var custEvidenceToUpdateComplete = new List<CustomerEvidenceFromFileEntity>();
 
             custEvidenceInFiles = custEvidenceInFiles.OrderBy(x => x.CTSCustID);
 
@@ -99,47 +99,42 @@
 
             foreach (var custEvidences in loopCustEvidences)
             {
-                bool isSuccess = true;
+                bool isImportSucess = true;
 
-                try
+                if (isOverwrite)
                 {
-                    if (isOverwrite)
-                    {
-                        isSuccess = customerEvidenceInsertServices.RemoveOldEvidence(custEvidences, out IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList);
-                        isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Remove, custEviRemovedList, isSuccess);
-                    }
-
-                    isSuccess = customerEvidenceInsertServices.InsertNewCustomerEvidence(custEvidences, isOverwrite, isSuccess);
-                    isSuccess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Insert, isSuccess);
-
-                    if (isSuccess)
-                    {
-                        custEvidenceProcesseds.AddRange(custEvidences);
-
-                        var custIds = custEvidences.Select(x => x.CustID).Distinct();
-
-                        custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
-                        {
-                            ExternalBatchSize = externalBatchSize,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = true,
-                            IsUpdateDangerToMainDB = false,
-                            IsWriteLog = false,
-                            ServiceName = serviceName
-                        });
-                    }
-
-                    customerEvidenceInsertServices.UpdateProcessedCustEvidence(custEvidences, isSuccess);
+                    isImportSucess = customerEvidenceInsertServices.RemoveOldEvidence(custEvidences, out IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList);
+                    isImportSucess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Remove, custEviRemovedList, isImportSucess);
                 }
-                catch (Exception ex)
+
+                isImportSucess = customerEvidenceInsertServices.InsertNewCustomerEvidence(custEvidences, isOverwrite, isImportSucess);
+                isImportSucess = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(custEvidences, EvidenceActionType.Insert, isImportSucess);
+
+                if (isImportSucess)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertCustomerEvidence throws exception:", custEvidences, ex, sentryClient);
+                    var custIds = custEvidences.Select(x => x.CustID).Distinct();
+
+                    var isPushSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = externalBatchSize,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsPushCCToSoon88 = true,
+                        IsUpdateDangerToMainDB = false,
+                        IsWriteLog = false,
+                        ServiceName = serviceName
+                    });
+
+                    if (isPushSuccess)
+                    {
+                        custEvidenceToUpdateComplete.AddRange(custEvidences);
+                    }
                 }
             }
 
-            if (custEvidenceProcesseds.Any())
+            if (custEvidenceToUpdateComplete.Any())
             {
-                customerEvidenceInsertServices.UpdateBetLimitOfFlaggedCustomer(custEvidenceProcesseds);
+                customerEvidenceInsertServices.UpdateBetLimitOfFlaggedCustomer(custEvidenceToUpdateComplete);
+                customerEvidenceInsertServices.UpdateCompleteCustEvidence(custEvidenceToUpdateComplete, true);
             }
         }
 
