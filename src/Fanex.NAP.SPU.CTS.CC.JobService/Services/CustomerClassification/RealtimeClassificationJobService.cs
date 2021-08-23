@@ -23,7 +23,7 @@
         {
             this.sentryClient = sentryClient;
             this.realtimeClassificationServices = realtimeClassificationServices;
-            this.serviceName = "DailyClassification";
+            this.serviceName = "RealtimeClassification";
         }
 
         public Task<bool> Execute(int batchSize)

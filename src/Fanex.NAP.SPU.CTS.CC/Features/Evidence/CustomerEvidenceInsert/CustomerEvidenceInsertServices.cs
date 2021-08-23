@@ -21,7 +21,7 @@
 
         bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, bool isPrevSuccess);
 
-        ICustomerEvidenceInsertServices UpdateProcessedCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed);
+        ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed);
 
         ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences);
 
@@ -221,7 +221,7 @@
             return this;
         }
 
-        public ICustomerEvidenceInsertServices UpdateProcessedCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed)
+        public ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed)
         {
             var idList = string.Join(",", custEvidences.Select(x => x.ID));
 
