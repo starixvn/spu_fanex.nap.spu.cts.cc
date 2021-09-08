@@ -184,9 +184,7 @@
         {
             IEnumerable<long> robotUser = new List<long>();
 
-            var custs = rescanCustClassificationDataAccess.GetCustByRobotSiteRule(string.Join(",", custIds));
-
-            var getRobotUser = rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custs));
+            var getRobotUser = rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds));
 
             if (!string.IsNullOrEmpty(getRobotUser))
             {

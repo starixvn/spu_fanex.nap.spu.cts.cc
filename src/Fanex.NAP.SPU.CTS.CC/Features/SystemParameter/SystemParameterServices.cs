@@ -23,9 +23,9 @@
 
         public Int64 GetLastScannedId(SystemParameters paraID)
         {
-            var lastScannedTransID = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            var lastScannedId = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
 
-            return lastScannedTransID != null ? Int64.Parse(lastScannedTransID?.ParameterValue) : 0;
+            return lastScannedId != null ? Int64.Parse(lastScannedId?.ParameterValue) : 0;
         }
 
         public DateTime? GetLastScannedDateTime(SystemParameters paraID)

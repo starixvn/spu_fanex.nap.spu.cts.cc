@@ -1,13 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class RobotUserGetCriteria : CriteriaBase
     {
-        public DateTime? FromDate { get; set; }
+        [SpParam(SqlParamName = "LastTstamp")]
+        public long? LastTimestamp { get; set; }
 
-        public string CreditSite { get; set; }
+        [SpParam(SqlParamName = "MaxTstamp")]
+        public long MaxTimestamp { get; set; }
 
         public override string GetSettingKey()
         {

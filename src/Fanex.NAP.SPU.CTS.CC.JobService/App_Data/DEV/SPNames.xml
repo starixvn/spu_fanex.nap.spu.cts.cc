@@ -40,7 +40,7 @@
 		<Setting Key="CTS_NormalAccountsClassification_Probation" SpName="CTS_NormalAccountsClassification_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="900" />
 	</Function>
 	<Function Name="RobotUsers">
-		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
+		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel_xtest" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
 	</Function>
 	<Function Name="RemoveAccountEvidence">
 		<Setting Key="CTS_DC_CustEvidenceQueue_Get" SpName="CTS_DC_CustEvidenceQueue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -50,10 +50,9 @@
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustEvidence_GetByCustIDs" SpName="CTS_DC_CustEvidence_GetByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustInfo_FilterCustIDsBySite" SpName="CTS_DC_CustInfo_FilterCustIDsBySite" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_LogInputData" SpName="CTS_DC_CustClassification_LogInputData" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 
-		<Setting Key="CTS_Customer_RobotCheckExist" SpName="CTS_Customer_RobotCheckExist" DbName="SQL.ON_USER.bodbSPUNet" />
+		<Setting Key="CTS_Customer_RobotCheckExist" SpName="CTS_Customer_RobotCheckExist_xtest" DbName="SQL.ON_USER.bodbSPUNet" />
 	</Function>
 	<Function Name="CustomerEvidenceInsert">
 		<Setting Key="CTS_DC_CustEvidenceFromFile_Get" SpName="CTS_DC_CustEvidenceFromFile_Get" DbName="MySQL.CTS_DataCenter.ctsService" />

@@ -38,25 +38,6 @@
         }
 
         [Fact]
-        public void InsertNewCustomer_WhenDataHasPropertyNull_RunSuccessfully()
-        {
-            var data = new UpdateCustomerModel
-            {
-                CustomerInfos = null,
-                LastInsertCustID = 123
-            };
-            var result = ctsCustomerService.InsertNewCustomer(data, false, 100, string.Empty);
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        public void InsertNewCustomer_WhenNullData_RunSuccessfully()
-        {
-            var result = ctsCustomerService.InsertNewCustomer(null, false, 100, string.Empty);
-            result.Should().BeFalse();
-        }
-
-        [Fact]
         public void GetCustSubFromMainDb_WhenSuccess_ReturnData()
         {
             var dataFromDB = new List<CustomerMainDBModel>()

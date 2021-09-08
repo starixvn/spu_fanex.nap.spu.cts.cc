@@ -137,7 +137,6 @@
             var custIds = new List<long> { 1, 2, 3 };
 
             string custIdsToString = string.Join(",", custIds);
-            rescanCustClassificationDataAccess.GetCustByRobotSiteRule(custIdsToString).Returns(custIds);
             rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(custIdsToString);
 
             rescanCustClassificationService.Start().GetRobotUsers(custIds);
@@ -152,7 +151,6 @@
             var custIds = new List<long> { 1, 2, 3 };
 
             string custIdsToString = string.Join(",", custIds);
-            rescanCustClassificationDataAccess.GetCustByRobotSiteRule(custIdsToString).Returns(custIds);
             rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(custIdsToString);
 
             var result = rescanCustClassificationService.Start().SyncRobotUserToUpdateCategory(custIds);

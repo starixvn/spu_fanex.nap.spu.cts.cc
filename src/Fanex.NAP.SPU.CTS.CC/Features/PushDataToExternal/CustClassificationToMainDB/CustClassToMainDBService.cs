@@ -275,7 +275,7 @@
                 {
                     logInputData.Add(new LogInputDataEntity  {
                         CustId = c.CustId,
-                        InputValue = c.RobotDate
+                        InputValue = c.Counter
                     });
                 });
             }
