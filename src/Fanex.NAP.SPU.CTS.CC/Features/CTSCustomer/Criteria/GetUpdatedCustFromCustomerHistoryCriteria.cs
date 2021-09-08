@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria
 {
     using Fanex.Data;
     using Fanex.Data.Repository;

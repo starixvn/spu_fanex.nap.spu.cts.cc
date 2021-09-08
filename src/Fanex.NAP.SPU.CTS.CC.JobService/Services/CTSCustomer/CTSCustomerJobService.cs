@@ -2,8 +2,8 @@
 {
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
-    using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Sentry;
     using System;
     using System.Collections.Generic;

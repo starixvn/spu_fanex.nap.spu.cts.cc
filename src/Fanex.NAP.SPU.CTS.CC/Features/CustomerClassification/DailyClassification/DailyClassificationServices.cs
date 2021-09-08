@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.DailyClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification
 {
     using Newtonsoft.Json;
     using System.Collections.Generic;

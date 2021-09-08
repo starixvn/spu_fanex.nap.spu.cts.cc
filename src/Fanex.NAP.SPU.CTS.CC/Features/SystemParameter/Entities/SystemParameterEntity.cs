@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.SystemParameter
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.SystemParameter
 {
     public class SystemParameterEntity
     {

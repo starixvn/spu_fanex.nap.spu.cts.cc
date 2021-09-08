@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88
 {
     using Fanex.Data.Repository;
     using System.Collections.Generic;

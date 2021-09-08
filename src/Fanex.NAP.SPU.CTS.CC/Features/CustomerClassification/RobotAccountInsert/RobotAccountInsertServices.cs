@@ -1,6 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using System;
     using System.Collections.Generic;
     using System.Linq;

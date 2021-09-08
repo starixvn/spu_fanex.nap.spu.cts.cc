@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.MultipleAccountRemoveEvidence
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.MultipleAccountRemoveEvidence
 {
     using Fanex.Data;
     using Fanex.Data.Repository;

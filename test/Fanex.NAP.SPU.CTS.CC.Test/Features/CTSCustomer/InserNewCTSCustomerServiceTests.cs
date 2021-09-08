@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
     using NSubstitute;
     using Sentry;
