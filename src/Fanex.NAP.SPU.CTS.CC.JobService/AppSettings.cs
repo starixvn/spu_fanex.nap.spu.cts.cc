@@ -20,8 +20,6 @@
 
         bool RobotAccountIsWriteLog { get; }
 
-        string RobotAccountCreditSites { get; }
-
         bool RemoveAccountEvidenceIsWriteLog { get; }
 
         bool CustomerEvidenceIsSendMailToSPU { get; }
@@ -85,8 +83,6 @@
         public bool NormalAccountIsWriteLog => GetValue<bool>("NormalAccountInsert:IsWriteLog");
 
         public bool RobotAccountIsWriteLog => GetValue<bool>("RobotAccountInsert:IsWriteLog");
-
-        public string RobotAccountCreditSites => GetValue<string>("RobotAccountInsert:Credit-Sites");
 
         public bool RemoveAccountEvidenceIsWriteLog => GetValue<bool>("RemoveAccountEvidence:IsWriteLog");
 
