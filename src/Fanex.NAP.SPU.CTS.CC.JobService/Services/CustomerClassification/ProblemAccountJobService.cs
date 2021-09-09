@@ -100,9 +100,9 @@
                     var result = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
                     var isSuccess = (result != null && result.ErrorCode == 0);
 
-                    if (result != null && result.CustIds != null && result.CustIds.Any())
+                    if (isSuccess && result.CustIds != null && result.CustIds.Any())
                     {
-                        isSuccess = isSuccess && custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                        isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchExternalSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
