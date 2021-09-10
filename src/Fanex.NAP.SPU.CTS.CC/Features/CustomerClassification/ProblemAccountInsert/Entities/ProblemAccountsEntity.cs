@@ -6,7 +6,7 @@
 
         public int ReasonID { get; set; }
 
-        //Default value = 0, except RobotUser job
+        //Default value = 0, except Check/Get RobotUser
         public int RobotCounter { get; set; }
     }
 }
