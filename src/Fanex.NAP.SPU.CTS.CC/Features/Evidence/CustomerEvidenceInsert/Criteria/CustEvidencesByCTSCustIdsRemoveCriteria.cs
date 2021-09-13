@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
     using Fanex.Data;
     using Fanex.Data.Repository;

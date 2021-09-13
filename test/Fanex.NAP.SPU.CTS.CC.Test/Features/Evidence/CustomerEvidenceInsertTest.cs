@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using FluentAssertions;
     using Newtonsoft.Json;

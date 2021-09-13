@@ -1,11 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
-    using System;
-
     public class RobotUserEntity
     {
         public int CustId { get; set; }
 
-        public DateTime RobotDate { get; set; }
+        public int Counter { get; set; }
     }
 }

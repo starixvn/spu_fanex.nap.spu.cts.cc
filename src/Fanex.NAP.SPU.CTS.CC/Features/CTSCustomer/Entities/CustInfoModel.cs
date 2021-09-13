@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities
 {
     public class CustInfoModel
     {

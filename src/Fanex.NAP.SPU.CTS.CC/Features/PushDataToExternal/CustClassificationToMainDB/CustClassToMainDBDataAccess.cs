@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares;

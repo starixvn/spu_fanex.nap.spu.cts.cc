@@ -1,10 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.DailyClassification;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using FluentAssertions;
     using NSubstitute;
     using System.Collections.Generic;
@@ -120,44 +121,39 @@
                 new ProblemAccountsEntity
                 {
                    CustID = 1,
+                   RobotCounter = 1,
                    ReasonID = (int)Category.Robot
                 },
                 new ProblemAccountsEntity
                 {
                    CustID = 2,
+                   RobotCounter = 2,
                    ReasonID = (int)Category.Robot
-                },
-                new ProblemAccountsEntity
+                }
+            };
+
+            var robotUsers = new List<RobotUserEntity>
+            {
+                new RobotUserEntity
                 {
-                   CustID = 3,
-                   ReasonID = (int)Category.Robot
+                    CustId =1,
+                    Counter = 1
+                },
+                new RobotUserEntity
+                {
+                    CustId = 2,
+                    Counter = 2
                 }
             };
 
             var custIds = new List<long> { 1, 2, 3 };
 
-            string custIdsToString = string.Join(",", custIds);
-            rescanCustClassificationDataAccess.GetCustByRobotSiteRule(custIdsToString).Returns(custIds);
-            rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(custIdsToString);
+            rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(robotUsers);
 
             rescanCustClassificationService.Start().GetRobotUsers(custIds);
             var result = rescanCustClassificationService.RobotUsers;
 
             result.Should().BeEquivalentTo(problemAccounts);
-        }
-
-        [Fact]
-        public void SyncRobotUserToUpdateCategory_WhenSuccess_ReturnProblemAccounts()
-        {
-            var custIds = new List<long> { 1, 2, 3 };
-
-            string custIdsToString = string.Join(",", custIds);
-            rescanCustClassificationDataAccess.GetCustByRobotSiteRule(custIdsToString).Returns(custIds);
-            rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(custIdsToString);
-
-            var result = rescanCustClassificationService.Start().SyncRobotUserToUpdateCategory(custIds);
-
-            result.Should().BeEquivalentTo(custIds);
         }
     }
 }

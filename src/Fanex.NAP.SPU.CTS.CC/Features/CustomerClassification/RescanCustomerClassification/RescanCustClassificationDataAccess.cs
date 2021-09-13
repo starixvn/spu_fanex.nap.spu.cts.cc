@@ -1,6 +1,7 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System.Collections;
     using System.Collections.Generic;
@@ -12,9 +13,7 @@
 
         IEnumerable<CustEvidenceEntity> GetExistedEvidences(string custIDs);
 
-        string GetExistedRobotUser(string custIds);
-
-        IEnumerable<long> GetCustByRobotSiteRule(string custIds);
+        IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds);
 
         DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
     }
@@ -73,26 +72,14 @@
             };
         }
 
-        public IEnumerable<long> GetCustByRobotSiteRule(string custIds)
-        {
-            var criteria = new CustByRobotSiteRuleGetCriteria
-            {
-                CustIds = custIds
-            };
-
-            return repository.Fetch<long>(criteria);
-        }
-
-        public string GetExistedRobotUser(string custIds)
+        public IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds)
         {
             var criteria = new ExistedRobotUserGetCriteria
             {
                 CustIds = custIds
             };
 
-            repository.Execute(criteria);
-
-            return criteria.RobotList;
+            return repository.Fetch<RobotUserEntity>(criteria);
         }
     }
 }

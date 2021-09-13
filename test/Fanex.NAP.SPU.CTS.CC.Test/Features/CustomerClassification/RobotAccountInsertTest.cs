@@ -1,7 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System;
@@ -11,48 +13,69 @@
 
     public class RobotAccountInsertTest
     {
+        private readonly ISystemParameterDataAccess systemParameterDataAccess;
+        private readonly ISystemParameterServices systemParameterServices;
+        private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly IProblemAccountServices problemAccountServices;
 
         public RobotAccountInsertTest()
         {
+            systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
+            systemParameterServices = new SystemParameterServices(systemParameterDataAccess);
+            custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
             robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
-            robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess);
+
+            robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
+                                                                        systemParameterServices,
+                                                                        custClassToMainDBService,
+                                                                        problemAccountServices);
         }
 
         [Fact]
         public void GetRobotUsers_WhenSuccess_ReturnRobotAccounts()
         {
-            var fromDate = DateTime.Now;
-
-            var robotAccounts = new List<RobotUserEntity>
+            var robotAccounts = new RobotUserViewEntity
             {
-                new RobotUserEntity
+                RobotUsers = new List<RobotUserEntity>
                 {
-                    CustId =1,
-                    RobotDate = DateTime.Parse("2021-07-05 22:50:55")
+                    new RobotUserEntity
+                    {
+                        CustId =1,
+                        Counter = 1
+                    },
+                    new RobotUserEntity
+                    {
+                        CustId = 2,
+                        Counter = 2
+                    }
                 },
-                new RobotUserEntity
-                {
-                    CustId = 2,
-                    RobotDate = DateTime.Parse("2021-07-07 22:50:55")
-                }
+                MaxTimestamp = 2
             };
 
-            robotAccountInsertDataAccess.GetRobotUsers(fromDate, "1234").Returns(robotAccounts);
+            var output = new SystemParameterEntity
+            {
+                ParameterDataType = "BIGINT UNSIGNED",
+                ParameterValue = "1"
+            };
 
-            var result = robotAccountInsertServices.GetRobotUser(fromDate, "1234");
+            long lastTimestamp = 1;
 
-            result.Should().BeEquivalentTo(robotAccounts);
+            robotAccountInsertDataAccess.GetRobotUsers(lastTimestamp).Returns(robotAccounts);
+
+            systemParameterDataAccess.GetPreviousTimingExecution(SystemParameters.RobotAccountLastScannedTime).Returns(output);
+
+            robotAccountInsertServices.Start().GetLastTimespan().GetRobotUser();
+
+            robotAccountInsertServices.RobotUserInfo.Should().BeEquivalentTo(robotAccounts);
         }
 
-        [Fact]
-        public void GetRobotUsers_WhenSuccess_ReturnEmptyList()
-        {
-            var result = robotAccountInsertServices.GetRobotUser(null, "1234");
-
-            result.Should().BeEquivalentTo(new List<RobotUserEntity>());
-        }
 
         [Fact]
         public void MappingRobotCategory_WhenSuccess_ReturnProblemAccounts()
@@ -62,12 +85,12 @@
                 new RobotUserEntity
                 {
                     CustId =1,
-                    RobotDate = DateTime.Parse("2021-07-05 22:50:55")
+                    Counter = 1
                 },
                 new RobotUserEntity
                 {
                     CustId = 2,
-                    RobotDate = DateTime.Parse("2021-07-07 22:50:55")
+                    Counter = 2
                 }
             };
 
@@ -76,12 +99,14 @@
                 new ProblemAccountsEntity
                 {
                     CustID=1,
-                    ReasonID=(int)Category.Robot
+                    ReasonID=(int)Category.Robot,
+                    RobotCounter = 1
                 },
                   new ProblemAccountsEntity
                 {
                     CustID=2,
-                    ReasonID=(int)Category.Robot
+                    ReasonID=(int)Category.Robot,
+                    RobotCounter = 2
                 }
             };
 
@@ -95,15 +120,17 @@
         {
             var problemAccounts = new List<ProblemAccountsEntity>
             {
-                new ProblemAccountsEntity
+               new ProblemAccountsEntity
                 {
                     CustID=1,
-                    ReasonID=(int)Category.Robot
+                    ReasonID=(int)Category.Robot,
+                    RobotCounter = 1
                 },
                   new ProblemAccountsEntity
                 {
                     CustID=2,
-                    ReasonID=(int)Category.Robot
+                    ReasonID=(int)Category.Robot,
+                    RobotCounter = 2
                 }
             };
 

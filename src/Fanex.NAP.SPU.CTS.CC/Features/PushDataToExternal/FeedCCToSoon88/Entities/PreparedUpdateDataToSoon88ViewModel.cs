@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.PushDataToExternal.FeedCCToSoon88
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88
 {
     public class PreparedUpdateDataToSoon88ViewModel
     {

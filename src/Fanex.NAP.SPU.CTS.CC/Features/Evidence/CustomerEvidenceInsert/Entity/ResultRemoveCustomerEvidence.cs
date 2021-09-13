@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Evidence.CustomerEvidenceInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System.Collections.Generic;

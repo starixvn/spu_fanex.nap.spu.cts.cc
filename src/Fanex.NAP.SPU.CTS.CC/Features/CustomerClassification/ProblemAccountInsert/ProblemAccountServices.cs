@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;

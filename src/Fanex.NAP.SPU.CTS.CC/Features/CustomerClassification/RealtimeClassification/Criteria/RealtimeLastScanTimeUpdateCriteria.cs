@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RealtimeClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
     using Fanex.Data.Repository;
 

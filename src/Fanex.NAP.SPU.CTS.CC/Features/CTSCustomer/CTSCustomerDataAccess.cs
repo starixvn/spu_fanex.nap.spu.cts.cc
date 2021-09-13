@@ -1,10 +1,10 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.Features.Transform.Accounts.Criteria;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Criteria;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using System.Collections.Generic;

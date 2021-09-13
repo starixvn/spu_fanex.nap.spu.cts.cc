@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.NormalAccountInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using System.Collections.Generic;
 

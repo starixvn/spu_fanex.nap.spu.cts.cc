@@ -1,12 +1,11 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RobotAccountInsert
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.Data.Repository;
-    using System;
     using System.Collections.Generic;
 
     public interface IRobotAccountInsertDataAccess
     {
-        IEnumerable<RobotUserEntity> GetRobotUsers(DateTime fromDate, string creditSiteList);
+        RobotUserViewEntity GetRobotUsers(long lastTimestamp);
     }
 
     public class RobotAccountInsertDataAccess : IRobotAccountInsertDataAccess
@@ -18,15 +17,23 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<RobotUserEntity> GetRobotUsers(DateTime fromDate, string creditSiteList)
+        public RobotUserViewEntity GetRobotUsers(long lastTimestamp)
         {
-            var criteria = new RobotUserGetCriteria
+            var result = new RobotUserViewEntity
             {
-                FromDate = fromDate,
-                CreditSite = creditSiteList
+                RobotUsers = new List<RobotUserEntity>(),
+                MaxTimestamp = 0
             };
 
-            return repository.Fetch<RobotUserEntity>(criteria);
+            var criteria = new RobotUserGetCriteria
+            {
+                LastTimestamp = lastTimestamp
+            };
+
+            result.RobotUsers = repository.Fetch<RobotUserEntity>(criteria);
+            result.MaxTimestamp = criteria.MaxTimestamp;
+
+            return result;
         }
     }
 }

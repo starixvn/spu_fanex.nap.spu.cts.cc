@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     public class RoleCustomerEntity
     {

@@ -1,8 +1,8 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.DailyClassification;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -24,8 +24,6 @@
         IRescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras);
 
         IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
-
-        IEnumerable<long> SyncRobotUserToUpdateCategory(IEnumerable<long> custIds);
 
         IRescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP);
 
@@ -162,7 +160,7 @@
         {
             if (custIds != null && custIds.Any())
             {
-                var robots = SyncRobotUserToUpdateCategory(custIds);
+                var robots = rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds));
 
                 if (robots != null && robots.Any())
                 {
@@ -170,7 +168,8 @@
                     {
                         robotUsers.Add(new ProblemAccountsEntity
                         {
-                            CustID = c,
+                            CustID = c.CustId,
+                            RobotCounter = c.Counter,
                             ReasonID = (int)Category.Robot
                         });
                     });
@@ -178,22 +177,6 @@
             }
 
             return this;
-        }
-
-        public IEnumerable<long> SyncRobotUserToUpdateCategory(IEnumerable<long> custIds)
-        {
-            IEnumerable<long> robotUser = new List<long>();
-
-            var custs = rescanCustClassificationDataAccess.GetCustByRobotSiteRule(string.Join(",", custIds));
-
-            var getRobotUser = rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custs));
-
-            if (!string.IsNullOrEmpty(getRobotUser))
-            {
-                robotUser = getRobotUser.Split(',').Select(long.Parse);
-            }
-
-            return robotUser;
         }
 
         public IRescanCustClassificationService GetProblemAccountFromNAPPA(IEnumerable<long> custIds, bool isCheckPAFromNAP)

@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.Features.CustomerClassification.RescanCustomerClassification;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
     using NSubstitute;
     using Sentry;
@@ -35,25 +35,6 @@
             var result = ctsCustomerService.TransformCustomerFromMainDB(inputData);
 
             result.Should().BeEquivalentTo(expectedResult);
-        }
-
-        [Fact]
-        public void InsertNewCustomer_WhenDataHasPropertyNull_RunSuccessfully()
-        {
-            var data = new UpdateCustomerModel
-            {
-                CustomerInfos = null,
-                LastInsertCustID = 123
-            };
-            var result = ctsCustomerService.InsertNewCustomer(data, false, 100, string.Empty);
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        public void InsertNewCustomer_WhenNullData_RunSuccessfully()
-        {
-            var result = ctsCustomerService.InsertNewCustomer(null, false, 100, string.Empty);
-            result.Should().BeFalse();
         }
 
         [Fact]

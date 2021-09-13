@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.Features.CustomerClassification.ProbationClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Xml.Serialization;
