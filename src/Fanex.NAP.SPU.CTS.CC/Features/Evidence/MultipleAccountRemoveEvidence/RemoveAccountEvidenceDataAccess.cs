@@ -9,9 +9,13 @@
     {
         IEnumerable<CustomerEvidenceQueueEntity> GetCustomerEvidenceQueue();
 
-        DBResult ModifyCustomerEvidence(string customerEvidence, int actionId);
+        DBResult RemoveCustEvidenceFromQueue(string customerEvidence, int actionId);
 
-        DBResult UpdateCustomerEvidence(string processedIdList);
+        DBResult UpdateCustomerEvidenceComplete(string processedIdList);
+
+        DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
+
+        IEnumerable<long> CheckCleanCustFlaggedEvidence(string ctsCustIds);
     }
 
     public class RemoveAccountEvidenceDataAccess : IRemoveAccountEvidenceDataAccess
@@ -30,7 +34,7 @@
             return repository.Fetch<CustomerEvidenceQueueEntity>(criteria);
         }
 
-        public DBResult ModifyCustomerEvidence(string customerEvidence, int actionId)
+        public DBResult RemoveCustEvidenceFromQueue(string customerEvidence, int actionId)
         {
             var criteria = new CustomerEvidenceFromQueueModifyCriteria
             {
@@ -50,7 +54,7 @@
             };
         }
 
-        public DBResult UpdateCustomerEvidence(string processedIdList)
+        public DBResult UpdateCustomerEvidenceComplete(string processedIdList)
         {
             var criteria = new CustomerEvidenceUpdateCriteria
             {
@@ -64,6 +68,32 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
+        }
+
+        public DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds)
+        {
+            var criteria = new BetLimitByEvidenceRemovingUpdateCriteria
+            {
+                CustIDList = custIds
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
+            };
+        }
+
+        public IEnumerable<long> CheckCleanCustFlaggedEvidence(string ctsCustIds)
+        {
+            var criteria = new CleanCustFlaggedEvidenceCheckCriteria
+            {
+                CTSCustIds = ctsCustIds
+            };
+
+            return repository.Fetch<long>(criteria);
         }
     }
 }

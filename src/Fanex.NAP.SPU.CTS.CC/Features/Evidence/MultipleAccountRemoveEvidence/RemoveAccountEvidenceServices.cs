@@ -14,11 +14,15 @@
 
         IEnumerable<CustomerEvidenceQueueEntity> GetCustomerEvidenceQueue();
 
-        IRemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName);
+        IRemoveAccountEvidenceServices RemoveCustEvidenceFromQueue(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName);
 
-        IRemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName);
+        IRemoveAccountEvidenceServices UpdateCustomerEvidenceComplete(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName);
 
-        IEnumerable<long> PrepareCustRescanClassification();
+        IEnumerable<long> GetCustomerToUpdateCC();
+
+        IRemoveAccountEvidenceServices CheckCleanCustFlaggedEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence);
+
+        IRemoveAccountEvidenceServices UpdateBetLimitOfUnflaggedCustomer(string serviceName);
     }
 
     public class RemoveAccountEvidenceServices : IRemoveAccountEvidenceServices
@@ -27,6 +31,7 @@
         private readonly ISentryClient sentryClient;
         private DBResult modifyResult;
         private DBResult updateResult;
+        private IEnumerable<long> custToUpdateBetlimit;
 
         public RemoveAccountEvidenceServices(IRemoveAccountEvidenceDataAccess removeAccountEvidenceDataAccess, ISentryClient sentryClient)
         {
@@ -38,6 +43,7 @@
         {
             modifyResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
             updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+            custToUpdateBetlimit = new List<long>();
 
             return this;
         }
@@ -47,11 +53,11 @@
             return removeAccountEvidenceDataAccess.GetCustomerEvidenceQueue();
         }
 
-        public IRemoveAccountEvidenceServices ModifyCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName)
+        public IRemoveAccountEvidenceServices RemoveCustEvidenceFromQueue(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, int actionId, string serviceName)
         {
             var customerEvidenceJson = JsonConvert.SerializeObject(customerEvidence);
 
-            modifyResult = removeAccountEvidenceDataAccess.ModifyCustomerEvidence(customerEvidenceJson, actionId);
+            modifyResult = removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, actionId);
 
             if (modifyResult.ErrorCode == -1)
             {
@@ -61,7 +67,7 @@
             return this;
         }
 
-        public IRemoveAccountEvidenceServices UpdateCustomerEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName)
+        public IRemoveAccountEvidenceServices UpdateCustomerEvidenceComplete(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName)
         {
             if (modifyResult.ErrorCode == 0 && customerEvidence != null && customerEvidence.Any())
             {
@@ -69,7 +75,7 @@
 
                 if (processedIdList != null && processedIdList.Any())
                 {
-                    updateResult = removeAccountEvidenceDataAccess.UpdateCustomerEvidence(string.Join(",", processedIdList));
+                    updateResult = removeAccountEvidenceDataAccess.UpdateCustomerEvidenceComplete(string.Join(",", processedIdList));
                 }
             }
 
@@ -81,9 +87,9 @@
             return this;
         }
 
-        public IEnumerable<long> PrepareCustRescanClassification()
+        public IEnumerable<long> GetCustomerToUpdateCC()
         {
-            if (updateResult.ErrorCode == 0 && modifyResult.OutParam.ContainsKey("custIds"))
+            if (modifyResult.ErrorCode == 0 && modifyResult.OutParam.ContainsKey("custIds"))
             {
                 var custIds = modifyResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse);
 
@@ -91,6 +97,35 @@
             }
 
             return new List<long>();
+        }
+
+        public IRemoveAccountEvidenceServices CheckCleanCustFlaggedEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence)
+        {
+            if (customerEvidence != null && customerEvidence.Any())
+            {
+                var ctsCustIds = string.Join(",", customerEvidence.Select(c => c.CTSCustId).Distinct());
+
+                custToUpdateBetlimit = removeAccountEvidenceDataAccess.CheckCleanCustFlaggedEvidence(ctsCustIds);
+            }
+
+            return this;
+        }
+
+        public IRemoveAccountEvidenceServices UpdateBetLimitOfUnflaggedCustomer(string serviceName)
+        {
+            if (custToUpdateBetlimit != null && custToUpdateBetlimit.Any())
+            {
+                var custIds = string.Join(",", custToUpdateBetlimit.Distinct());
+
+                var result = removeAccountEvidenceDataAccess.UpdateBetLimitOfUnflaggedCustomer(custIds);
+
+                if (result.ErrorCode == -1)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfUnflaggedCustomer", custIds, new Exception(result.ErrorMsg), sentryClient);
+                }
+            }
+
+            return this;
         }
     }
 }

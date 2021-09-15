@@ -69,11 +69,12 @@
 
             if (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any())
             {
+                var isSuccess = true;
+
                 var custIds = removeAccountEvidenceServices
                                 .InitialData()
-                                .ModifyCustomerEvidence(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
-                                .UpdateCustomerEvidence(customerEvidenceFromQueue, serviceName)
-                                .PrepareCustRescanClassification();
+                                .RemoveCustEvidenceFromQueue(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
+                                .GetCustomerToUpdateCC();
 
                 if (custIds != null && custIds.Any())
                 {
@@ -90,7 +91,14 @@
                         ExternalBatchSize = externalBatchSize
                     };
 
-                    rescanCustClassificationService.RescanCustomerClassify(paras);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);
+                }
+
+                if (isSuccess)
+                {
+                    removeAccountEvidenceServices.CheckCleanCustFlaggedEvidence(customerEvidenceFromQueue)
+                                                 .UpdateBetLimitOfUnflaggedCustomer(serviceName)
+                                                 .UpdateCustomerEvidenceComplete(customerEvidenceFromQueue, serviceName);
                 }
 
                 JobRun(internalBatchSize, externalBatchSize);
