@@ -202,15 +202,13 @@
 
         public ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences)
         {
-            var ctsCustIds = string.Join(",", custEvidences.Select(x => x.CTSCustID).Distinct());
+            var custIds = string.Join(",", custEvidences.Select(x => x.CustID).Distinct());
 
-            var associatedList = customerEvidenceInsertDataAccess.GetAssociatedAccountByCTSCustIds(ctsCustIds);
-
-            if (associatedList.Any())
+            if (custIds.Any())
             {
-                var custIds = string.Join(",", associatedList.Distinct());
+                var custIdsToString = string.Join(",", custIds);
 
-                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIds);
+                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIdsToString);
 
                 if (dbResult.ErrorCode != 0)
                 {
