@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using FluentAssertions;
     using Newtonsoft.Json;
@@ -76,52 +77,43 @@
         [Fact]
         public void ClassifyCustomerGeneralCategoryRealtime_WhenSuccess_ReturnNotException()
         {
-            var custsHasChange = new List<CustClassificationRealtimeEntity>
+            var classification = new CustClassificationRealtimeViewEntity()
             {
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 1,
-                    CategoryId = 0,
-                    SportGroupId =1
-                },
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 2,
-                    CategoryId = 0,
-                    SportGroupId =2
-                },
+                CustClassification = new List<CustClassificationRealtimeEntity>
+                                    {
+                                        new CustClassificationRealtimeEntity
+                                        {
+                                            CustId = 1,
+                                            CategoryId = 0,
+                                            SportGroupId =1
+                                        },
+                                        new CustClassificationRealtimeEntity
+                                        {
+                                            CustId = 2,
+                                            CategoryId = 0,
+                                            SportGroupId =2
+                                        },
+                                    },
+                CustCategories = new List<CustClassificationRealtimeEntity>
+                                    {
+                                        new CustClassificationRealtimeEntity
+                                        {
+                                            CustId = 1,
+                                            CategoryId = 1,
+                                            SportGroupId =1
+                                        },
+                                        new CustClassificationRealtimeEntity
+                                        {
+                                            CustId = 2,
+                                            CategoryId = 0,
+                                            SportGroupId =2
+                                        },
+                                    }
             };
 
-            var custCategory = new List<CustClassificationRealtimeEntity>
-            {
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 1,
-                    CategoryId = 1,
-                    SportGroupId =1
-                }
-            };
+            realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(classification.CustClassification);
 
-            var custClassification = new List<CustClassificationRealtimeEntity>
-            {
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 1,
-                    CategoryId = 1,
-                    SportGroupId =1
-                },
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 2,
-                    CategoryId = 0,
-                    SportGroupId =2
-                },
-            };
-
-
-            realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custClassification);
-
-            Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(custsHasChange, custCategory);
+            Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(classification);
 
             action.Should().NotThrow<Exception>();
         }
