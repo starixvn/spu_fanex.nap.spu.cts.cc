@@ -59,23 +59,38 @@
 
                 if (lastestClassifications != null && lastestClassifications.Any())
                 {
-                    bool isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, paras);
 
-                    if (paras.IsPushCCToSoon88)
+                    if (!isSuccess)
                     {
-                        feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName, paras.IsWriteLog);
+                        return false;
                     }
-
-                    if (paras.IsUpdateDangerToMainDB && isSuccess)
-                    {
-                        isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
-                    }
-
-                    return isSuccess;
                 }
             }
 
             return true;
+        }
+
+        public bool IsPushExternalSuccess(IEnumerable<LatestClassificationEntity> lastestClassifications, PushDataToExternalEntity paras)
+        {
+            bool isSuccess = true;
+
+            if (lastestClassifications != null && lastestClassifications.Any())
+            {
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+
+                if (paras.IsPushCCToSoon88)
+                {
+                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName, paras.IsWriteLog);
+                }
+
+                if (paras.IsUpdateDangerToMainDB && isSuccess)
+                {
+                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                }
+            }
+
+            return isSuccess;
         }
 
         public bool PushCustClassificationToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog)
