@@ -71,16 +71,16 @@
             {
                 var isSuccess = true;
 
-                var custIds = removeAccountEvidenceServices
+                var result = removeAccountEvidenceServices
                                 .InitialData()
                                 .RemoveCustEvidenceFromQueue(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
                                 .GetCustomerToUpdateCC();
 
-                if (custIds != null && custIds.Any())
+                if (result.IsRemoveSuccess && result.CustIds != null && result.CustIds.Any())
                 {
                     var paras = new RescanParametersEntity
                     {
-                        CustIds = custIds,
+                        CustIds = result.CustIds,
                         FunctionId = FunctionId.RemoveMultiEvidencesWeb,
                         IsCheckPAFromNAP = true,
                         IsPushCCToSoon88 = true,
@@ -94,7 +94,7 @@
                     isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);
                 }
 
-                if (isSuccess)
+                if (result.IsRemoveSuccess && isSuccess)
                 {
                     removeAccountEvidenceServices.CheckCleanCustFlaggedEvidence(customerEvidenceFromQueue)
                                                  .UpdateBetLimitOfUnflaggedCustomer(serviceName)

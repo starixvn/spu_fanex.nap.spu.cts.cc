@@ -18,7 +18,7 @@
 
         IRemoveAccountEvidenceServices UpdateCustomerEvidenceComplete(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName);
 
-        IEnumerable<long> GetCustomerToUpdateCC();
+        ResultRemoveCustEviFromQueueEntity GetCustomerToUpdateCC();
 
         IRemoveAccountEvidenceServices CheckCleanCustFlaggedEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence);
 
@@ -29,7 +29,7 @@
     {
         private readonly IRemoveAccountEvidenceDataAccess removeAccountEvidenceDataAccess;
         private readonly ISentryClient sentryClient;
-        private DBResult modifyResult;
+        private DBResult removeResult;
         private DBResult updateResult;
         private IEnumerable<long> custToUpdateBetlimit;
 
@@ -41,7 +41,7 @@
 
         public IRemoveAccountEvidenceServices InitialData()
         {
-            modifyResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+            removeResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
             updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
             custToUpdateBetlimit = new List<long>();
 
@@ -57,11 +57,11 @@
         {
             var customerEvidenceJson = JsonConvert.SerializeObject(customerEvidence);
 
-            modifyResult = removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, actionId);
+            removeResult = removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, actionId);
 
-            if (modifyResult.ErrorCode == -1)
+            if (removeResult.ErrorCode == -1)
             {
-                Utilities.LogSentryError(serviceName, "ModifyCustomerEvidence", customerEvidenceJson, new Exception(modifyResult.ErrorMsg), sentryClient);
+                Utilities.LogSentryError(serviceName, "ModifyCustomerEvidence", customerEvidenceJson, new Exception(removeResult.ErrorMsg), sentryClient);
             }
 
             return this;
@@ -69,7 +69,7 @@
 
         public IRemoveAccountEvidenceServices UpdateCustomerEvidenceComplete(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence, string serviceName)
         {
-            if (modifyResult.ErrorCode == 0 && customerEvidence != null && customerEvidence.Any())
+            if (removeResult.ErrorCode == 0 && customerEvidence != null && customerEvidence.Any())
             {
                 var processedIdList = customerEvidence.Select(x => x.Id);
 
@@ -87,16 +87,16 @@
             return this;
         }
 
-        public IEnumerable<long> GetCustomerToUpdateCC()
+        public ResultRemoveCustEviFromQueueEntity GetCustomerToUpdateCC()
         {
-            if (modifyResult.ErrorCode == 0 && modifyResult.OutParam.ContainsKey("custIds"))
+            if (removeResult.ErrorCode == 0 && removeResult.OutParam.ContainsKey("custIds"))
             {
-                var custIds = modifyResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse);
+                var custIds = removeResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse);
 
-                return custIds;
+                return new ResultRemoveCustEviFromQueueEntity { CustIds = custIds, IsRemoveSuccess = (removeResult.ErrorCode == 0) };
             }
 
-            return new List<long>();
+            return new ResultRemoveCustEviFromQueueEntity { CustIds = new List<long>(), IsRemoveSuccess = (removeResult.ErrorCode == 0) };
         }
 
         public IRemoveAccountEvidenceServices CheckCleanCustFlaggedEvidence(IEnumerable<CustomerEvidenceQueueEntity> customerEvidence)
