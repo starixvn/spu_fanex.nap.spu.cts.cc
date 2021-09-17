@@ -14,7 +14,7 @@
 
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
 
-        public const int Realtime_SleepTimes = 3000;
+        public const int Realtime_SleepTimes = 2000;
 
         public const int RobotUsers_SleepTimes = 300;
 

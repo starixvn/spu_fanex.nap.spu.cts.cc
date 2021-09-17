@@ -12,11 +12,11 @@
 
         IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
-        IRealtimeClassificationServices ScanningRealtimeClassification(int batchSize);
+        IRealtimeClassificationServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize);
 
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(IEnumerable<CustClassificationRealtimeEntity> customerHasChanges);
 
-        void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custHasChanges, IEnumerable<CustClassificationRealtimeEntity> custClassification);
+        void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification);
 
         IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
@@ -47,19 +47,38 @@
             return this;
         }
 
-        public IRealtimeClassificationServices ScanningRealtimeClassification(int batchSize)
+        public IRealtimeClassificationServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize)
         {
             if (customerClassification != null && customerClassification.Any())
             {
-                var custChunks = customerClassification.Chunk(batchSize).ToList();
+                var custExternalChunks = customerClassification.Chunk(externalBatchSize).ToList();
 
-                foreach (var custHasChange in custChunks)
+                var custToClassification = new CustClassificationRealtimeViewEntity
                 {
-                    var custClassification = GetCustomerGeneralCategoryForRunRealtime(custHasChange);
+                    CustClassification = new List<CustClassificationRealtimeEntity>(),
+                    CustCategories = new List<CustClassificationRealtimeEntity>()
+                };
 
-                    ClassifyCustomerGeneralCategoryRealtime(custHasChange, custClassification);
+                foreach (var custHasChange in custExternalChunks)
+                {
+                    var custInternalChunks = custHasChange.Chunk(internalBatchSize).ToList();
 
-                    Thread.Sleep(Constants.Realtime_SleepTimes);
+                    foreach (var custCategory in custInternalChunks)
+                    {
+                        custToClassification.CustCategories.AddRange(GetCustomerGeneralCategoryForRunRealtime(custCategory));
+
+                        Thread.Sleep(Constants.Realtime_SleepTimes);
+                    }
+
+                    custToClassification.CustClassification.AddRange(custHasChange);
+
+                    ClassifyCustomerGeneralCategoryRealtime(custToClassification);
+
+                    custToClassification = new CustClassificationRealtimeViewEntity
+                    {
+                        CustClassification = new List<CustClassificationRealtimeEntity>(),
+                        CustCategories = new List<CustClassificationRealtimeEntity>()
+                    };
                 }
             }
 
@@ -78,11 +97,11 @@
             return new List<CustClassificationRealtimeEntity>();
         }
 
-        public void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> custHasChanges, IEnumerable<CustClassificationRealtimeEntity> custClassification)
+        public void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification)
         {
-            if (custHasChanges != null && custHasChanges.Any())
+            if (classification.CustClassification != null && classification.CustClassification.Any())
             {
-                var custsClassify = custHasChanges.GroupJoin(custClassification,
+                var custsClassify = classification.CustClassification.GroupJoin(classification.CustCategories,
                                                     custsHaschanges => custsHaschanges.CustId,
                                                     custsCategories => custsCategories.CustId,
                                                     (custsHaschanges, custsCategories) => new { custsHaschanges, custsCategories })

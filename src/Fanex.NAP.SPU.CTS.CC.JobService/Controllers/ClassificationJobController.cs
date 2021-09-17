@@ -55,9 +55,9 @@
         }
 
         [HttpPost("scanningRealtimeClassification")]
-        public async Task<bool> RealtimeScanningClassification([FromForm] int batchSize)
+        public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.realtimeClassificationJobService.Execute(batchSize);
+            return await this.realtimeClassificationJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("probationClassification")]

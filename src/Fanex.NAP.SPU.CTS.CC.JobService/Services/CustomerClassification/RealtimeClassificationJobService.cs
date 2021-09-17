@@ -8,7 +8,7 @@
 
     public interface IRealtimeClassificationJobService
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
     }
 
     public class RealtimeClassificationJobService : IRealtimeClassificationJobService
@@ -26,17 +26,17 @@
             this.serviceName = "RealtimeClassification";
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
             try
             {
-                if (batchSize > 0)
+                if (batchExternalSize > 0 && batchInternalSize >0)
                 {
-                    JobRun(batchSize);
+                    JobRun(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new NullReferenceException(), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
                 }
             }
             catch (Exception ex)
@@ -51,12 +51,12 @@
 
         #region Private Methods
 
-        private void JobRun(int batchSize)
+        private void JobRun(int batchExternalSize, int batchInternalSize)
         {
             realtimeClassificationServices
                 .Start()
                 .GetCustomerGeneralCategoryHasChangeForRunRealtime()
-                .ScanningRealtimeClassification(batchSize)
+                .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
                 .RealtimeUpdateLastScanTime(true);
         }
     }
