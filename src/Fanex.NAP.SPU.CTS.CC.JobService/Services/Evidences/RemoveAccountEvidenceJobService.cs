@@ -73,7 +73,7 @@
 
                 var result = removeAccountEvidenceServices
                                 .InitialData()
-                                .RemoveCustEvidenceFromQueue(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
+                                .RemoveCustEvidenceFromQueue(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName, sentryClient)
                                 .GetCustomerToUpdateCC();
 
                 if (result.IsRemoveSuccess && result.CustIds != null && result.CustIds.Any())
@@ -97,8 +97,8 @@
                 if (result.IsRemoveSuccess && isSuccess)
                 {
                     removeAccountEvidenceServices.CheckCleanCustFlaggedEvidence(customerEvidenceFromQueue)
-                                                 .UpdateBetLimitOfUnflaggedCustomer(serviceName)
-                                                 .UpdateCustomerEvidenceComplete(customerEvidenceFromQueue, serviceName);
+                                                 .UpdateBetLimitOfUnflaggedCustomer(serviceName, sentryClient)
+                                                 .UpdateCustomerEvidenceComplete(customerEvidenceFromQueue, serviceName, sentryClient);
                 }
 
                 JobRun(internalBatchSize, externalBatchSize);

@@ -20,7 +20,7 @@
         public MultiAccountRemoveEvidenceTest()
         {
             removeAccountEvidenceDataAccess = Substitute.For<IRemoveAccountEvidenceDataAccess>();
-            removeAccountEvidenceServices = new RemoveAccountEvidenceServices(removeAccountEvidenceDataAccess, null);
+            removeAccountEvidenceServices = new RemoveAccountEvidenceServices(removeAccountEvidenceDataAccess);
         }
 
         [Fact]
@@ -101,7 +101,7 @@
 
             removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(result);
 
-            Action action = () => removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences", null);
 
             action.Should().NotThrow<Exception>();
         }
@@ -145,7 +145,7 @@
 
             removeAccountEvidenceDataAccess.UpdateCustomerEvidenceComplete(string.Join(",", processedIdList)).Returns(result);
 
-            Action action = () => removeAccountEvidenceServices.InitialData().UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.InitialData().UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences", null);
 
             action.Should().NotThrow<Exception>();
         }
@@ -198,10 +198,10 @@
             var processedIdList = cusEvidences.Select(x => x.Id);
 
             removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(dbResult);
-            removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
+            removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences", null);
 
             removeAccountEvidenceDataAccess.UpdateCustomerEvidenceComplete(string.Join(",", processedIdList)).Returns(dbResult);
-            removeAccountEvidenceServices.UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences");
+            removeAccountEvidenceServices.UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences", null);
 
             var result = removeAccountEvidenceServices.GetCustomerToUpdateCC();
             result.Should().BeEquivalentTo(custIdsToRescan);
