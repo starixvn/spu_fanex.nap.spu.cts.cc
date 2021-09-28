@@ -9,7 +9,7 @@
         public string CTSCustIds { get; set; }
 
         public override string GetSettingKey()
-            => "CTS_DC_CustEvidence_CheckCleanCustFlagged";
+            => "CTS_DC_CustEvidence_CheckCleanCust";
 
         public override bool IsValid()
             => true;
