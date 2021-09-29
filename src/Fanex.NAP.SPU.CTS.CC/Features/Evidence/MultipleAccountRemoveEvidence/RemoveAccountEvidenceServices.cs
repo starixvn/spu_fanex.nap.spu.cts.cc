@@ -30,7 +30,7 @@
         private readonly IRemoveAccountEvidenceDataAccess removeAccountEvidenceDataAccess;
         private DBResult removeResult;
         private DBResult updateResult;
-        private IEnumerable<long> custToUpdateBetlimit;
+        private IEnumerable<CheckCleanEntity> custToUpdateBetlimit;
 
         public RemoveAccountEvidenceServices(IRemoveAccountEvidenceDataAccess removeAccountEvidenceDataAccess)
         {
@@ -41,7 +41,7 @@
         {
             removeResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
             updateResult = new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
-            custToUpdateBetlimit = new List<long>();
+            custToUpdateBetlimit = new List<CheckCleanEntity>();
 
             return this;
         }
@@ -113,7 +113,7 @@
         {
             if (custToUpdateBetlimit != null && custToUpdateBetlimit.Any())
             {
-                var custIds = string.Join(",", custToUpdateBetlimit.Distinct());
+                var custIds = string.Join(",", custToUpdateBetlimit.Select(c=>c.CustID).Distinct());
 
                 var result = removeAccountEvidenceDataAccess.UpdateBetLimitOfUnflaggedCustomer(custIds);
 

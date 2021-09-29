@@ -15,7 +15,7 @@
 
         DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
 
-        IEnumerable<long> CheckCleanCustFlaggedEvidence(string ctsCustIds);
+        IEnumerable<CheckCleanEntity> CheckCleanCustFlaggedEvidence(string ctsCustIds);
     }
 
     public class RemoveAccountEvidenceDataAccess : IRemoveAccountEvidenceDataAccess
@@ -86,14 +86,14 @@
             };
         }
 
-        public IEnumerable<long> CheckCleanCustFlaggedEvidence(string ctsCustIds)
+        public IEnumerable<CheckCleanEntity> CheckCleanCustFlaggedEvidence(string ctsCustIds)
         {
             var criteria = new CleanCustFlaggedEvidenceCheckCriteria
             {
                 CTSCustIds = ctsCustIds
             };
 
-            return repository.Fetch<long>(criteria);
+            return repository.Fetch<CheckCleanEntity>(criteria);
         }
     }
 }
