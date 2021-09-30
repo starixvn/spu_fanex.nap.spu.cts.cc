@@ -374,13 +374,11 @@
                 ErrorMsg = string.Empty,
             };
 
-            var associatedCustIds = new List<int> { 1, 2, 3 };
+            var custIds = string.Join(",", cusEvidences.Select(x => x.CustID).Distinct());
 
-            var ctsCustIds = string.Join(",", cusEvidences.Select(x => x.CTSCustID).Distinct());
-            customerEvidenceInsertDataAccess.GetAssociatedAccountByCTSCustIds(ctsCustIds).Returns(associatedCustIds);
+            var custIdsToString = string.Join(",", custIds);
 
-            var associatedCustIdsToString = string.Join(",", associatedCustIds.Distinct());
-            customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(associatedCustIdsToString).Returns(rs);
+            customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIdsToString).Returns(rs);
 
             Action action = () => customerEvidenceInsertServices.UpdateBetLimitOfFlaggedCustomer(cusEvidences);
 

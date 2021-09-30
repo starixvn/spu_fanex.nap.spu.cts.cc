@@ -18,8 +18,6 @@
 
         DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed);
 
-        IEnumerable<int> GetAssociatedAccountByCTSCustIds(string ctsCustIds);
-
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
     }
 
@@ -116,16 +114,6 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
-        }
-
-        public IEnumerable<int> GetAssociatedAccountByCTSCustIds(string ctsCustIds)
-        {
-            var criteria = new AssociatedAccountByCTSCustIdsGetCriteria
-            {
-                CTSCustIdList = ctsCustIds
-            };
-
-            return repository.Fetch<int>(criteria);
         }
 
         public DBResult UpdateBetLimitOfFlaggedCustomer(string custIds)

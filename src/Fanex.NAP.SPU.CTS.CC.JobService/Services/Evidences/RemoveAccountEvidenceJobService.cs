@@ -69,17 +69,18 @@
 
             if (customerEvidenceFromQueue != null && customerEvidenceFromQueue.Any())
             {
-                var custIds = removeAccountEvidenceServices
-                                .InitialData()
-                                .ModifyCustomerEvidence(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName)
-                                .UpdateCustomerEvidence(customerEvidenceFromQueue, serviceName)
-                                .PrepareCustRescanClassification();
+                var isSuccess = true;
 
-                if (custIds != null && custIds.Any())
+                var result = removeAccountEvidenceServices
+                                .InitialData()
+                                .RemoveCustEvidenceFromQueue(customerEvidenceFromQueue, RemoveEvidences_ClearActionId, serviceName, sentryClient)
+                                .GetCustomerToUpdateCC();
+
+                if (result.IsRemoveSuccess && result.CustIds != null && result.CustIds.Any())
                 {
                     var paras = new RescanParametersEntity
                     {
-                        CustIds = custIds,
+                        CustIds = result.CustIds,
                         FunctionId = FunctionId.RemoveMultiEvidencesWeb,
                         IsCheckPAFromNAP = true,
                         IsPushCCToSoon88 = true,
@@ -90,7 +91,14 @@
                         ExternalBatchSize = externalBatchSize
                     };
 
-                    rescanCustClassificationService.RescanCustomerClassify(paras);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);
+                }
+
+                if (result.IsRemoveSuccess && isSuccess)
+                {
+                    removeAccountEvidenceServices.CheckCleanCustFlaggedEvidence(customerEvidenceFromQueue)
+                                                 .UpdateBetLimitOfUnflaggedCustomer(serviceName, sentryClient)
+                                                 .UpdateCustomerEvidenceComplete(customerEvidenceFromQueue, serviceName, sentryClient);
                 }
 
                 JobRun(internalBatchSize, externalBatchSize);

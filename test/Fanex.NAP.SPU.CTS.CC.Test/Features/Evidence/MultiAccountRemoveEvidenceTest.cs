@@ -20,7 +20,7 @@
         public MultiAccountRemoveEvidenceTest()
         {
             removeAccountEvidenceDataAccess = Substitute.For<IRemoveAccountEvidenceDataAccess>();
-            removeAccountEvidenceServices = new RemoveAccountEvidenceServices(removeAccountEvidenceDataAccess, null);
+            removeAccountEvidenceServices = new RemoveAccountEvidenceServices(removeAccountEvidenceDataAccess);
         }
 
         [Fact]
@@ -99,9 +99,9 @@
 
             var customerEvidenceJson = JsonConvert.SerializeObject(cusEvidences);
 
-            removeAccountEvidenceDataAccess.ModifyCustomerEvidence(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(result);
+            removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(result);
 
-            Action action = () => removeAccountEvidenceServices.ModifyCustomerEvidence(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences", null);
 
             action.Should().NotThrow<Exception>();
         }
@@ -143,9 +143,9 @@
 
             var processedIdList = cusEvidences.Select(x => x.Id);
 
-            removeAccountEvidenceDataAccess.UpdateCustomerEvidence(string.Join(",", processedIdList)).Returns(result);
+            removeAccountEvidenceDataAccess.UpdateCustomerEvidenceComplete(string.Join(",", processedIdList)).Returns(result);
 
-            Action action = () => removeAccountEvidenceServices.InitialData().UpdateCustomerEvidence(cusEvidences, "MultiAccountRemoveEvidences");
+            Action action = () => removeAccountEvidenceServices.InitialData().UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences", null);
 
             action.Should().NotThrow<Exception>();
         }
@@ -188,18 +188,22 @@
                 }
             };
 
-            var custIdsToRescan = dbResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse);
+            var custIdsToRescan = new ResultRemoveCustEviFromQueueEntity {
+                CustIds = dbResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse),
+                IsRemoveSuccess = true
+            };
+
 
             var customerEvidenceJson = JsonConvert.SerializeObject(cusEvidences);
             var processedIdList = cusEvidences.Select(x => x.Id);
 
-            removeAccountEvidenceDataAccess.ModifyCustomerEvidence(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(dbResult);
-            removeAccountEvidenceServices.ModifyCustomerEvidence(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences");
+            removeAccountEvidenceDataAccess.RemoveCustEvidenceFromQueue(customerEvidenceJson, Constants.RemoveEvidences_ClearActionId).Returns(dbResult);
+            removeAccountEvidenceServices.RemoveCustEvidenceFromQueue(cusEvidences, Constants.RemoveEvidences_ClearActionId, "MultiAccountRemoveEvidences", null);
 
-            removeAccountEvidenceDataAccess.UpdateCustomerEvidence(string.Join(",", processedIdList)).Returns(dbResult);
-            removeAccountEvidenceServices.UpdateCustomerEvidence(cusEvidences, "MultiAccountRemoveEvidences");
+            removeAccountEvidenceDataAccess.UpdateCustomerEvidenceComplete(string.Join(",", processedIdList)).Returns(dbResult);
+            removeAccountEvidenceServices.UpdateCustomerEvidenceComplete(cusEvidences, "MultiAccountRemoveEvidences", null);
 
-            var result = removeAccountEvidenceServices.PrepareCustRescanClassification();
+            var result = removeAccountEvidenceServices.GetCustomerToUpdateCC();
             result.Should().BeEquivalentTo(custIdsToRescan);
         }
     }
