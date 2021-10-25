@@ -20,6 +20,8 @@
 
         IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
+        IRealtimeClassificationServices UpdateLastTicketAssociationCustomer();
+
         IEnumerable<CustClassificationRealtimeEntity> CustomerClassification { get; }
     }
 
@@ -121,6 +123,12 @@
         public IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory)
         {
             realtimeClassificationDataAccess.RealtimeUpdateLastScanTime(isGeneralCategory);
+
+            return this;
+        }
+
+        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer()
+        {
 
             return this;
         }
