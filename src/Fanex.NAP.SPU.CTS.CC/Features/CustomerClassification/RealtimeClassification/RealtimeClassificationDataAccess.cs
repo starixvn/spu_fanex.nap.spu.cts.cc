@@ -14,6 +14,8 @@
         void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> customers);
 
         void RealtimeUpdateLastScanTime(bool isGeneralCategory);
+
+        void UpdateAssociationCustomerLastTicket(string custInfoJson);
     }
 
     public class RealtimeClassificationDataAccess : IRealtimeClassificationDataAccess

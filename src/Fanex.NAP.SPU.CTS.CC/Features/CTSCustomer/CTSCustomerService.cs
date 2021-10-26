@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -37,9 +38,9 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
-        string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog);
+        string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
-        string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType);
+        string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
         List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
 
@@ -77,9 +78,13 @@
             {
                 if (custs != null && custs.LastCustId != null && custs.LastUpdatedTime != null)
                 {
-                    var custInfoToUpdate = GetCustInfoToUpdate(custs, sourceType, isWriteLog);
+                    var assCustForRollbacks = Enumerable.Empty<UpdateAssociationCustomerForRollbackModel>();
+
+                    var custInfoToUpdate = GetCustInfoToUpdate(custs, sourceType, isWriteLog, out assCustForRollbacks);
 
                     UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, sourceType);
+
+                    UpdateAssociationCustomerForRollback(assCustForRollbacks);
 
                     Utilities.LogSentryInfo(serviceName, "UpdateCustomer - done", isWriteLog, sentryClient);
                 }
@@ -90,9 +95,13 @@
             }
         }
 
-        public string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog)
+        public string GetCustInfoToUpdate(TranformCustModel custs
+            , UpdateCustomer sourceType
+            , bool isWriteLog
+            , out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
         {
             var custInfoToUpdate = JsonConvert.SerializeObject(string.Empty);
+            assCustForRollbacks = new List<UpdateAssociationCustomerForRollbackModel>();
 
             if (!string.IsNullOrWhiteSpace(custs.CustIdList))
             {
@@ -104,7 +113,7 @@
 
                 if (custInfoFromMainDB != null && custInfoFromCTS != null)
                 {
-                    custInfoToUpdate = CompareCustomerInfo(custInfoFromMainDB, custInfoFromCTS, sourceType);
+                    custInfoToUpdate = CompareCustomerInfo(custInfoFromMainDB, custInfoFromCTS, sourceType, out assCustForRollbacks);
                 }
             }
 
@@ -113,8 +122,13 @@
             return custInfoToUpdate;
         }
 
-        public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType)
+        public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB
+            , IEnumerable<CustomerMainDBModel> custInfoFromCTS
+            , UpdateCustomer sourceType
+            , out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
         {
+            assCustForRollbacks = new List<UpdateAssociationCustomerForRollbackModel>();
+
             switch (sourceType)
             {
                 case Constants.UpdateCustomer.FromCustInfo:
@@ -132,6 +146,12 @@
                                 Danger2 = c.Danger2,
                                 Danger3 = c.Danger3
                             }).ToList();
+
+                        assCustForRollbacks = customerInfo.Select(x => new UpdateAssociationCustomerForRollbackModel
+                        {
+                            CustID = x.CustID,
+                            CustStatusID = x.CustStatusID
+                        });
 
                         return JsonConvert.SerializeObject(customerInfo);
                     }
@@ -175,6 +195,12 @@
                                 CustID = c.CustID,
                                 CustStatusID = c.CustStatusID
                             }).ToList();
+
+                        assCustForRollbacks = customerInfo.Select(x => new UpdateAssociationCustomerForRollbackModel
+                        {
+                            CustID = x.CustID,
+                            CustStatusID = x.CustStatusID
+                        });
 
                         return JsonConvert.SerializeObject(customerInfo);
                     }
@@ -238,7 +264,7 @@
             }
 
             return custInfos;
-        }
+        }        
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID, UpdateCustomer sourceType)
         {
@@ -266,7 +292,7 @@
 
         public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url)
         {
-            if (data is not null && data.CustomerInfos != null && data.CustomerInfos.Any())
+            if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
                 var customers = data.CustomerInfos;
                 var lastCustID = data.LastInsertCustID;
@@ -282,6 +308,8 @@
                         var custIdList = TransformCustomerFromMainDB(custs.ToList());
 
                         Utilities.LogSentryInfo(serviceName, "Insert", custs, isWriteLogInfo, sentryClient);
+
+                        UpdateAssociationCustomerForArchive(custIdList);
 
                         RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID);
                     }
@@ -382,6 +410,46 @@
             }
 
             return result;
+        }
+
+        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertCustomerModel> customerList)
+        {
+            if (customerList != null && customerList.Any())
+            {
+                try
+                {
+                    var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
+                    {
+                        CustID = x.CustID,
+                        CTSCustID = x.CTSCustID
+                    });
+
+                    var custInfoJson = JsonConvert.SerializeObject(custList);
+
+                    var updateResult = dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForArchive throws exception", customerList, ex, sentryClient);
+                }
+            }                
+        }
+
+        private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                try
+                {
+                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                    var updateResult = dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
+                }
+            }
         }
     }
 }

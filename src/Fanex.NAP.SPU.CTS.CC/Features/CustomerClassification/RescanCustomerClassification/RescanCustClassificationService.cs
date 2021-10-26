@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;    
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -21,7 +22,7 @@
 
         IRescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras);
+        IRescanCustClassificationService InsertCustEvidenceCategoryToCTS(RescanParametersEntity paras);
 
         IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
 
@@ -56,6 +57,7 @@
         private List<CustEvidenceEntity> existedEvidences;
         private List<long> custIdsToRescanPA;
         private bool isSuccess;
+        private const string ServiceNameRescan = "Rescan Customer Classification";
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -88,7 +90,8 @@
             {
                 Start()
                .GetAgentCusts(paras.CustIds)
-               .GetExistedCustEvidences(paras.CustIds).InsertCustEvidenceCategorToCTS(paras)
+               .GetExistedCustEvidences(paras.CustIds)
+               .InsertCustEvidenceCategoryToCTS(paras)
                .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
                .GetProblemAccountFromNAPPA(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(probAccountNAPPA, paras.FuncId_CheckPA, paras.ServiceName)
                .InsertProblemAccountToCTS(paras)
@@ -133,7 +136,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertCustEvidenceCategorToCTS(RescanParametersEntity paras)
+        public IRescanCustClassificationService InsertCustEvidenceCategoryToCTS(RescanParametersEntity paras)
         {
             var isWriteLogRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
 
@@ -144,11 +147,28 @@
                 foreach (var evidences in evidencesChunk)
                 {
                     var result = rescanCustClassificationDataAccess.SyncCustomerEvidenceToCategory(JsonConvert.SerializeObject(evidences), isWriteLogRescan);
-                    custIdsToRescanPA.AddRange((IEnumerable<long>)result.OutParam["custIds"]);
 
                     if (result.ErrorCode == -1)
                     {
                         Utilities.LogSentryError(paras.ServiceName, "RescanCC - SyncCustEvidence fail", evidences, new Exception(result.ErrorMsg), sentryClient);
+                    }
+                    else
+                    {
+                        var hashCustInfos = result.OutParam["custInfos"];
+
+                        if (hashCustInfos != null)
+                        {
+                            var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+
+                            if (custInfos.Any())
+                            {
+                                var custIds = custInfos.Select(x => (long)x.CustID);
+
+                                custIdsToRescanPA.AddRange(custIds);
+
+                                problemAccountServices.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameRescan);
+                            }
+                        }
                     }
                 }
             }

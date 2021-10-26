@@ -57,7 +57,7 @@
                 .Start()
                 .GetCustomerGeneralCategoryHasChangeForRunRealtime()
                 .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)   
-                .UpdateLastTicketAssociationCustomer()
+                .UpdateLastTicketAssociationCustomer(batchInternalSize)
                 .RealtimeUpdateLastScanTime(true);
         }
     }

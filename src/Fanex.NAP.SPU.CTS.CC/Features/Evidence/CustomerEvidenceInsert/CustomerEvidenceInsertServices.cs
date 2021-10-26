@@ -1,6 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
+    using Sentry;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -34,10 +38,13 @@
     {
         private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
         private List<CustomerEvidenceFailedToProcessEntity> failedToProcessList;
+        private readonly ISentryClient sentryClient;
+        private const string ServiceNameCustEviInsert = "Customer Evidence Insert";
 
-        public CustomerEvidenceInsertServices(ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess)
+        public CustomerEvidenceInsertServices(ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess, ISentryClient sentryClient)
         {
             this.customerEvidenceInsertDataAccess = customerEvidenceInsertDataAccess;
+            this.sentryClient = sentryClient;
         }
 
         public ICustomerEvidenceInsertServices Start()
@@ -163,6 +170,20 @@
 
                     return false;
                 }
+                else if(dbResult.OutParam != null)
+                {
+                    var hashCustInfos = dbResult.OutParam["custInfos"];
+
+                    if (hashCustInfos != null)
+                    {
+                        var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+
+                        if (custInfos.Any())
+                        {
+                            this.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameCustEviInsert);
+                        }
+                    }
+                }
 
                 return true;
             }
@@ -280,6 +301,23 @@
             }
 
             yield return queue;
+        }
+
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                try
+                {
+                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                    var updateResult = customerEvidenceInsertDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "CheckNewPAAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
+                }
+            }
         }
     }
 }

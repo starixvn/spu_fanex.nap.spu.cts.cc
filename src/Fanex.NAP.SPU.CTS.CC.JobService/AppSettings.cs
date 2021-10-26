@@ -30,6 +30,8 @@
 
         int TransformCTSCustomerBatchSize { get; }
 
+        string SentryDsn { get; }
+
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
     }
 
@@ -41,6 +43,7 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
+        private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -50,6 +53,7 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
+            sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
         #region Variables
@@ -77,6 +81,8 @@
         public string SPName => spName;
 
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
+
+        public string SentryDsn => sentryDsn;
 
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 

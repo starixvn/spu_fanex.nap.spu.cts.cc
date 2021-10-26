@@ -20,7 +20,7 @@
 
         IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
-        IRealtimeClassificationServices UpdateLastTicketAssociationCustomer();
+        IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize);
 
         IEnumerable<CustClassificationRealtimeEntity> CustomerClassification { get; }
     }
@@ -127,9 +127,22 @@
             return this;
         }
 
-        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer()
+        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize)
         {
+            if (this.customerClassification != null && this.customerClassification.Any())
+            {
+                var custIds = this.customerClassification.Select(x => new { CustID = x.CustId});
 
+                var custIdChunks = custIds.Chunk(internalBatchSize).ToList();
+
+                foreach (var custIdItems in custIdChunks)
+                {
+                    var jsonData = JsonConvert.SerializeObject(custIdItems);
+
+                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(jsonData);
+                }
+            }
+            
             return this;
         }
 

@@ -2,10 +2,11 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;        
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.Shares;
+    using Fanex.NAP.SPU.CTS.Shares;    
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,6 +21,10 @@
         List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID);
 
         IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson);
+
+        int UpdateAssociationCustomerForArchive(string custInfoJson);
+
+        int UpdateAssociationCustomerForRollback(string custInfoJson);
 
         void UpdateCustInfoComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID);
 
@@ -194,6 +199,25 @@
             };
 
             return repository.Fetch<InsertCustomerModel>(criteria);
+        }
+
+        public int UpdateAssociationCustomerForArchive(string custInfoJson)
+        {
+            var criteria = new UpdateAssociationCustomerForArchiveCriteria { 
+                 CustInfoJson = custInfoJson
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        public int UpdateAssociationCustomerForRollback(string custInfoJson)
+        {
+            var criteria = new UpdateAssociationCustomerForRollbackCriteria
+            {
+                CustInfoJson = custInfoJson
+            };
+
+            return repository.Execute(criteria);
         }
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
