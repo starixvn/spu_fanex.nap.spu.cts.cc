@@ -270,16 +270,16 @@
         {
             switch (sourceType)
             {
-                case Constants.UpdateCustomer.FromCustomer:
-                    {
-                        dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
-                        break;
-                    }
                 case Constants.UpdateCustomer.FromCustInfo:
                     {
                         dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
                         break;
                     }
+                case Constants.UpdateCustomer.FromCustomer:
+                    {
+                        dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        break;
+                    }             
                 case Constants.UpdateCustomer.FromProductStatus:
                     {
                         dataAccess.UpdateCustomerStatusComplete(customers, lastUpdateTime, lastUpdateCustID);
@@ -421,7 +421,8 @@
                     var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
                     {
                         CustID = x.CustID,
-                        CTSCustID = x.CTSCustID
+                        CTSCustID = x.CTSCustID,
+                        RoleID = x.RoleID
                     });
 
                     var custInfoJson = JsonConvert.SerializeObject(custList);
@@ -432,7 +433,7 @@
                 {
                     Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForArchive throws exception", customerList, ex, sentryClient);
                 }
-            }                
+            }
         }
 
         private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
