@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -29,10 +30,13 @@
     {
         private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
         private IEnumerable<CustClassificationRealtimeEntity> customerClassification;
+        private readonly ISentryClient sentryClient;
+        private const string ServiceName = "Realtime Classification Service";
 
-        public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess)
+        public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess, ISentryClient sentryClient)
         {
             this.realtimeClassificationDataAccess = realtimeClassificationDataAccess;
+            this.sentryClient = sentryClient;
         }
 
         public IRealtimeClassificationServices Start()
@@ -140,6 +144,8 @@
                     var jsonData = JsonConvert.SerializeObject(custIdItems);
 
                     realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(jsonData);
+
+                    Utilities.LogSentryInfo(ServiceName, "Update Last Ticket Association Customer", jsonData, true, sentryClient);
                 }
             }
             
