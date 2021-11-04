@@ -145,7 +145,7 @@
 
         public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
         {
-            var criteria = new CheckNewPAAssociationCustomerForRollbackCriteria();
+            var criteria = new CheckNewPAAssociationCustomerForRollbackCriteria {  CustInfoJson = custInfoJson };
 
             return repository.Execute(criteria);
         }

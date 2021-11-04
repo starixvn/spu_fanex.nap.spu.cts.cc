@@ -4,6 +4,6 @@
     {
         public int CustID { get; set; }
 
-        public int CTSCustID { get; set; }
+        public long CTSCustID { get; set; }
     }
 }

@@ -214,6 +214,20 @@
 
                     return false;
                 }
+                else if (dbResult.OutParam != null)
+                {
+                    var hashCustInfos = dbResult.OutParam["custInfos"];
+
+                    if (hashCustInfos != null)
+                    {
+                        var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+
+                        if (custInfos.Any())
+                        {
+                            this.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameCustEviInsert);
+                        }
+                    }
+                }
 
                 return true;
             }
