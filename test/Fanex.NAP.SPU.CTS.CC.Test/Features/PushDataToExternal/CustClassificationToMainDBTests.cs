@@ -233,7 +233,7 @@
             var jsonUpdateApplyCCs = JsonConvert.SerializeObject(dangerLevelEnity);
             custClassToMainDBDataAccess.UpdateAppliedDangerLevel(jsonUpdateApplyCCs, DangerLevel.Original);
 
-            var result = custClassToMainDBService.UpdateDangerLevelToMainDB(lastestCustomerClassification, "Update DangerLevel To MainDB", false);
+            var result = custClassToMainDBService.UpdateDangerLevelToMainDB(lastestCustomerClassification, DangerLevel.Original, "Update DangerLevel To MainDB", false);
 
             result.Should().BeTrue();
         }

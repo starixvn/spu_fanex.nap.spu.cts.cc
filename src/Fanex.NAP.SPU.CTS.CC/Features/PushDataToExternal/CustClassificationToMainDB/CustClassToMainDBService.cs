@@ -19,7 +19,7 @@
 
         bool UpdateAppliedCustClassification(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName);
 
-        bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog);
+        bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, DangerLevel dangerLevelType, string serviceName, bool isWriteLog);
 
         bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, DangerLevel typeId, int retryTime, string serviceName);
 
@@ -86,7 +86,7 @@
 
                 if (paras.IsUpdateDangerToMainDB && isSuccess)
                 {
-                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.DangerLevelType, paras.ServiceName, paras.IsWriteLog);
                 }
             }
 
@@ -145,25 +145,25 @@
             return true;
         }
 
-        public bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog)
+        public bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, DangerLevel dangerLevelType, string serviceName, bool isWriteLog)
         {
             if (lastestClassifications == null || !lastestClassifications.Any())
             {
                 return true;
             }
 
-            var dangerLevels = custClassToMainDBDataAccess.GetDangerLevel(string.Join(",", lastestClassifications.Select(c => c.CustId)), DangerLevel.Original);
+            var dangerLevels = custClassToMainDBDataAccess.GetDangerLevel(string.Join(",", lastestClassifications.Select(c => c.CustId)), dangerLevelType);
             Utilities.LogSentryInfo(serviceName, "Get GetDangerLevel", dangerLevels, isWriteLog, sentryClient);
 
             if (dangerLevels != null && dangerLevels.Any())
             {
-                var isUpdateSuccessful = RetryUpdateDangerLevelToMainDB(dangerLevels, DangerLevel.Original, Constants.RetryPushCCToExternal, serviceName);
+                var isUpdateSuccessful = RetryUpdateDangerLevelToMainDB(dangerLevels, dangerLevelType, Constants.RetryPushCCToExternal, serviceName);
 
                 if (isUpdateSuccessful)
                 {
                     var jsonUpdateApplyCCs = JsonConvert.SerializeObject(dangerLevels);
 
-                    custClassToMainDBDataAccess.UpdateAppliedDangerLevel(jsonUpdateApplyCCs, DangerLevel.Original);
+                    custClassToMainDBDataAccess.UpdateAppliedDangerLevel(jsonUpdateApplyCCs, dangerLevelType);
                 }
 
                 Utilities.LogSentryInfo(serviceName, "UpdateDangerLevelToMainDB done", (isUpdateSuccessful, lastestClassifications), isWriteLog, sentryClient);
