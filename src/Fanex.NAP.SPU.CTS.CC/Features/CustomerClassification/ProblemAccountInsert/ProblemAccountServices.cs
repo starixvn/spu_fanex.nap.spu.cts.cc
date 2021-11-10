@@ -90,8 +90,6 @@
                     var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
 
                     var updateResult = problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
-
-                    Utilities.LogSentryInfo(serviceName, "Check new PA association customer for rollback", custInfoJson, true, sentryClient);
                 }
                 catch (Exception ex)
                 {

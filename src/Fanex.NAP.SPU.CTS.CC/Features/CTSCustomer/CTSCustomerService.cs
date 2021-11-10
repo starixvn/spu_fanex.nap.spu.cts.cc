@@ -422,7 +422,8 @@
                     {
                         CustID = x.CustID,
                         CTSCustID = x.CTSCustID,
-                        RoleID = x.RoleID
+                        CustSubID = x.CustSubID,
+                        RoleID = x.RoleID                        
                     });
 
                     var custInfoJson = JsonConvert.SerializeObject(custList);

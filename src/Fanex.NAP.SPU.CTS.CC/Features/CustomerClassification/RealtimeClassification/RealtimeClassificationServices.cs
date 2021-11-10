@@ -143,9 +143,7 @@
                 {
                     var jsonData = JsonConvert.SerializeObject(custIdItems);
 
-                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(jsonData);
-
-                    Utilities.LogSentryInfo(ServiceName, "Update Last Ticket Association Customer", jsonData, true, sentryClient);
+                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(jsonData);                    
                 }
             }
             
