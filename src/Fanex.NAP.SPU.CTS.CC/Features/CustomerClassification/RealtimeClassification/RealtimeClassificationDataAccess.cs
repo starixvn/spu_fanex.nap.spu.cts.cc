@@ -15,7 +15,7 @@
 
         void RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
-        void UpdateAssociationCustomerLastTicket(string custInfoJson);
+        void UpdateAssociationCustomerLastTicket(string custIdList);
     }
 
     public class RealtimeClassificationDataAccess : IRealtimeClassificationDataAccess
@@ -64,11 +64,11 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateAssociationCustomerLastTicket(string custInfoJson)
+        public void UpdateAssociationCustomerLastTicket(string custIdList)
         {
             var criteria = new UpdateAssociationCustomerLastTicketCriteria
             {
-                CustInfoJson = custInfoJson
+                CustIdList = custIdList
             };
 
             repository.Execute(criteria);

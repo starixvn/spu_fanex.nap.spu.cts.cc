@@ -141,9 +141,9 @@
 
                 foreach (var custIdItems in custIdChunks)
                 {
-                    var jsonData = JsonConvert.SerializeObject(custIdItems);
+                    var custIdList = string.Join(",", custIdItems.Select(x => x.CustID));
 
-                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(jsonData);                    
+                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(custIdList);                    
                 }
             }
             

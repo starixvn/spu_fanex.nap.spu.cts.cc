@@ -6,7 +6,7 @@
     public class UpdateAssociationCustomerLastTicketCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustInfo")]
-        public string CustInfoJson { get; set; }
+        public string CustIdList { get; set; }
 
         public override string GetSettingKey()
         {
