@@ -1,9 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerEvidenceInsertDataAccess
@@ -19,6 +23,8 @@
         DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed);
 
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
+
+        int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
     }
 
     public class CustomerEvidenceInsertDataAccess : ICustomerEvidenceInsertDataAccess
@@ -80,6 +86,8 @@
 
         public DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan)
         {
+            var custInfos = new List<NewPAAssociationCustomerForRollbackEntity>();
+
             var criteria = new CustEvidenceToCTSCategorySyncCriteria
             {
                 CustEvidences = jsonData,
@@ -88,13 +96,16 @@
 
             if (!string.IsNullOrEmpty(jsonData))
             {
-                repository.Execute(criteria);
-            }
-
+                custInfos = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria).ToList();
+            }         
+           
             return new DBResult
             {
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                ErrorMsg = criteria.ErrorMessage
+                ErrorMsg = criteria.ErrorMessage,
+                OutParam = new Hashtable {
+                    { "custInfos", custInfos }
+                }
             };
         }
 
@@ -130,6 +141,13 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
+        }
+
+        public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
+        {
+            var criteria = new CheckNewPAAssociationCustomerForRollbackCriteria {  CustInfoJson = custInfoJson };
+
+            return repository.Execute(criteria);
         }
     }
 }

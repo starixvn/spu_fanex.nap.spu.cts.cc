@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -16,6 +17,8 @@
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
 
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime);
+
+        void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -50,11 +53,16 @@
                 var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
 
                 var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescan);
-                Utilities.LogSentryInfo(serviceName, "Insert ProblemAccount", result.CustIds, isWriteLog, sentryClient);
+
+                Utilities.LogSentryInfo(serviceName, "InsertProblemAccountToCTS", result.CustIds, isWriteLog, sentryClient);
 
                 if (result.ErrorCode == -1)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccount throws Exception", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                }
+                else
+                {
+                    CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback, serviceName);
                 }
 
                 return result;
@@ -72,5 +80,23 @@
         {
             return problemAccountDataAccess.GetProblemAccounts_CN88(custIDs, dateTime);
         }
+
+        public void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                try
+                {
+                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                    var updateResult = problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "CheckNewPAAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
+                }
+            }
+        }
+
     }
 }

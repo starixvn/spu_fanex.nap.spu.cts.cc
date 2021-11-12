@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Criteria;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
 
@@ -13,6 +14,8 @@
         void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> customers);
 
         void RealtimeUpdateLastScanTime(bool isGeneralCategory);
+
+        void UpdateAssociationCustomerLastTicket(string custIdList);
     }
 
     public class RealtimeClassificationDataAccess : IRealtimeClassificationDataAccess
@@ -56,6 +59,16 @@
             var criteria = new RealtimeLastScanTimeUpdateCriteria
             {
                 IsGeneralCategory = isGeneralCategory
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void UpdateAssociationCustomerLastTicket(string custIdList)
+        {
+            var criteria = new UpdateAssociationCustomerLastTicketCriteria
+            {
+                CustIdList = custIdList
             };
 
             repository.Execute(criteria);

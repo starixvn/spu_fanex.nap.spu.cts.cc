@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -188,7 +189,9 @@
             };
 
             var expectedResult = JsonConvert.SerializeObject(expectedData);
-            var result = ctsCustomerService.CompareCustomerInfo(custFromMain, custFromCTS, UpdateCustomer.FromCustInfo);
+            var assCustForRollbacks = Enumerable.Empty<UpdateAssociationCustomerForRollbackModel>();
+
+            var result = ctsCustomerService.CompareCustomerInfo(custFromMain, custFromCTS, UpdateCustomer.FromCustInfo, out assCustForRollbacks);
 
             result.Should().BeEquivalentTo(expectedResult);
         }

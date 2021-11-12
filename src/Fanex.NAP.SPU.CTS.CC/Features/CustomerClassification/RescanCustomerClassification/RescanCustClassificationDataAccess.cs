@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;    
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System.Collections;
@@ -49,7 +50,7 @@
 
         public DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan)
         {
-            var custIds = new List<long>();
+            var custInfos = new List<NewPAAssociationCustomerForRollbackEntity>();
 
             var criteria = new SyncCustEvidenceToCTSCategoryCriteria
             {
@@ -59,7 +60,7 @@
 
             if (!string.IsNullOrEmpty(jsonData))
             {
-                custIds = repository.Fetch<long>(criteria).ToList();
+                custInfos = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria).ToList();
             }
 
             return new DBResult
@@ -67,7 +68,7 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage,
                 OutParam = new Hashtable {
-                    { "custIds", custIds }
+                    { "custInfos", custInfos }
                 }
             };
         }

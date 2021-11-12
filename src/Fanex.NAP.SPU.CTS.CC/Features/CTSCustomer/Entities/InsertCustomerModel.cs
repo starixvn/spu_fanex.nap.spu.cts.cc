@@ -15,5 +15,7 @@
         public string UserName { get; set; }
 
         public string RegisterName { get; set; }
+
+        public int RoleID { get; set; }
     }
 }

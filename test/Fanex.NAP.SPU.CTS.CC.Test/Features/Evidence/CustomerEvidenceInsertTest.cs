@@ -19,7 +19,7 @@
         public CustomerEvidenceInsertTest()
         {
             customerEvidenceInsertDataAccess = Substitute.For<ICustomerEvidenceInsertDataAccess>();
-            customerEvidenceInsertServices = new CustomerEvidenceInsertServices(customerEvidenceInsertDataAccess);
+            customerEvidenceInsertServices = new CustomerEvidenceInsertServices(customerEvidenceInsertDataAccess, null);
         }
 
         [Fact]

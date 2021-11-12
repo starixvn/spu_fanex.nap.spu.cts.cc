@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -20,6 +21,8 @@
 
         IRealtimeClassificationServices RealtimeUpdateLastScanTime(bool isGeneralCategory);
 
+        IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize);
+
         IEnumerable<CustClassificationRealtimeEntity> CustomerClassification { get; }
     }
 
@@ -27,10 +30,13 @@
     {
         private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
         private IEnumerable<CustClassificationRealtimeEntity> customerClassification;
+        private readonly ISentryClient sentryClient;
+        private const string ServiceName = "Realtime Classification Service";
 
-        public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess)
+        public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess, ISentryClient sentryClient)
         {
             this.realtimeClassificationDataAccess = realtimeClassificationDataAccess;
+            this.sentryClient = sentryClient;
         }
 
         public IRealtimeClassificationServices Start()
@@ -122,6 +128,25 @@
         {
             realtimeClassificationDataAccess.RealtimeUpdateLastScanTime(isGeneralCategory);
 
+            return this;
+        }
+
+        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize)
+        {
+            if (this.customerClassification != null && this.customerClassification.Any())
+            {
+                var custIds = this.customerClassification.Select(x => new { CustID = x.CustId});
+
+                var custIdChunks = custIds.Chunk(internalBatchSize).ToList();
+
+                foreach (var custIdItems in custIdChunks)
+                {
+                    var custIdList = string.Join(",", custIdItems.Select(x => x.CustID));
+
+                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(custIdList);                    
+                }
+            }
+            
             return this;
         }
 

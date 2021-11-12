@@ -17,7 +17,7 @@
         public RealtimeClassificationTest()
         {
             realtimeClassificationDataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
-            realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess);
+            realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess, null);
         }
 
         [Fact]

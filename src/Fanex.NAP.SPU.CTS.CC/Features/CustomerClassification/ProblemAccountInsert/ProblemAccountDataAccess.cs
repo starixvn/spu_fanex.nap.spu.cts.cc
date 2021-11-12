@@ -1,8 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
-    using Fanex.Data.Repository;
+    using Fanex.Data.Repository;    
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Entities;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IProblemAccountDataAccess
     {
@@ -11,6 +15,8 @@
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime);
 
         InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescan);
+
+        int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
     }
 
     public class ProblemAccountDataAccess : IProblemAccountDataAccess
@@ -52,14 +58,27 @@
                 IsRescan = isRescan
             };
 
-            var custIds = repository.Fetch<long>(criteria);
+            var assCustForRollback = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria);
+
+            var custIds = assCustForRollback.Select(x => (long)x.CustID);
 
             return new InsertCategoryResultEntity
             {
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                CustIds = custIds ?? new List<long>()
+                CustIds = custIds,
+                NewPAAssociationCustomerForRollback = assCustForRollback
             };
+        }
+
+        public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
+        {
+            var criteria = new CheckNewPAAssociationCustomerForRollbackCriteria
+            {
+                CustInfoJson = custInfoJson
+            };
+
+            return repository.Execute(criteria);
         }
     }
 }
