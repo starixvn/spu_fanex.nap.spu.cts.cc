@@ -254,8 +254,8 @@
                     ExternalBatchSize = paras.ExternalBatchSize,
                     FeedSoon88API = paras.FeedSoon88API,
                     IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                    IsUpdateDangerToMainDB = true,
-                    DangerLevelType = DangerLevel.ABI,
+                    IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
+                    DangerLevelType = paras.DangerLevelType,
                     IsWriteLog = paras.IsWriteLog,
                     ServiceName = paras.ServiceName                    
                 });
