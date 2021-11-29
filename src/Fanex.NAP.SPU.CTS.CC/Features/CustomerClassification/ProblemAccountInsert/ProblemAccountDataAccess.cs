@@ -1,9 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
-    using Fanex.Data.Repository;    
+    using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -11,8 +10,6 @@
     public interface IProblemAccountDataAccess
     {
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
-
-        IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime);
 
         InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescan);
 
@@ -31,17 +28,6 @@
         public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
         {
             var criteria = new ProblemAccountsGetCriteria
-            {
-                CustIds = custIDs,
-                Datetime = dateTime
-            };
-
-            return repository.Fetch<ProblemAccountsEntity>(criteria);
-        }
-
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime)
-        {
-            var criteria = new ProblemAccountsCN88GetCriteria
             {
                 CustIds = custIDs,
                 Datetime = dateTime

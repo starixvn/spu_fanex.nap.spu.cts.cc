@@ -16,8 +16,6 @@
 
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
 
-        IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime);
-
         void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName);
     }
 
@@ -34,16 +32,13 @@
 
         public IEnumerable<ProblemAccountsEntity> GetProblemAccounts(DateTime? dateTime, string serviceName, bool isWriteLog)
         {
-            var problemAccounts = new List<ProblemAccountsEntity>();
-
             string custIDs = (dateTime == null) ? Constants.InitialProblemAccounts : Constants.ProblemAccountByDateTime;
 
-            problemAccounts.AddRange(GetProblemAccounts_IBC(custIDs, dateTime));
-
-            problemAccounts.AddRange(GetProblemAccounts_CN88(custIDs, dateTime));
+            var problemAccounts = GetProblemAccounts_IBC(custIDs, dateTime);
 
             Utilities.LogSentryInfo(serviceName, "Get ProblemAccount", problemAccounts, isWriteLog, sentryClient);
-            return problemAccounts;
+
+            return problemAccounts ?? new List<ProblemAccountsEntity>();
         }
 
         public InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescan, string serviceName, bool isWriteLog)
@@ -74,11 +69,6 @@
         public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
         {
             return problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
-        }
-
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_CN88(string custIDs, DateTime? dateTime)
-        {
-            return problemAccountDataAccess.GetProblemAccounts_CN88(custIDs, dateTime);
         }
 
         public void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName)

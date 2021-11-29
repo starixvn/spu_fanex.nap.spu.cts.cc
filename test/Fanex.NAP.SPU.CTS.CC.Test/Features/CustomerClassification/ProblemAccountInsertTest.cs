@@ -22,34 +22,6 @@
         }
 
         [Fact]
-        public void GetProblemAccountsFromCN88_WhenSuccess_ReturnProblemAccountList()
-        {
-            var problemAccounts = new List<ProblemAccountsEntity> {
-                new ProblemAccountsEntity
-                {
-                  CustID = 1,
-                  ReasonID=1
-                },
-                 new ProblemAccountsEntity
-                {
-                      CustID = 2,
-                  ReasonID=2
-                },
-                  new ProblemAccountsEntity
-                {
-                     CustID = 3,
-                  ReasonID=3
-                },
-            };
-
-            problemAccountDataAccess.GetProblemAccounts_CN88(Constants.ProblemAccountByDateTime, null).Returns(problemAccounts);
-
-            var result = problemAccountServices.GetProblemAccounts_CN88(Constants.ProblemAccountByDateTime, null);
-
-            result.Should().BeEquivalentTo(problemAccounts);
-        }
-
-        [Fact]
         public void GetProblemAccountsFromIBC_WhenSuccess_ReturnProblemAccountList()
         {
             var problemAccounts = new List<ProblemAccountsEntity> {
