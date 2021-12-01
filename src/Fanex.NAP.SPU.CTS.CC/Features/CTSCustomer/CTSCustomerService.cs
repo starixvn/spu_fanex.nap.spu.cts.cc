@@ -393,6 +393,8 @@
                     FunctionId = FunctionId.InsertNewCustJob,
                     IsCheckPAFromNAP = true,
                     IsPushCCToSoon88 = true,
+                    IsUpdateDangerToMainDB = true,
+                    DangerLevelType = DangerLevel.ABI,
                     ServiceName = serviceName,
                     FeedSoon88API = soon88Url,
                     IsWriteLog = isWriteLogInfo,

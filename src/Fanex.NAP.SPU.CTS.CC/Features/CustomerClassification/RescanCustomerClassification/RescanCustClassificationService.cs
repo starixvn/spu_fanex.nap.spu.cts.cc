@@ -206,10 +206,8 @@
                 string custIdsToString = string.Join(",", custIds);
 
                 var problemAccountsNAPCM = problemAccountServices.GetProblemAccounts_IBC(custIdsToString, null);
-                var problemAccountsCN88 = problemAccountServices.GetProblemAccounts_CN88(custIdsToString, null);
 
                 probAccountNAPPA.AddRange(problemAccountsNAPCM);
-                probAccountNAPPA.AddRange(problemAccountsCN88);
             }
 
             return this;
@@ -256,9 +254,10 @@
                     ExternalBatchSize = paras.ExternalBatchSize,
                     FeedSoon88API = paras.FeedSoon88API,
                     IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                    IsUpdateDangerToMainDB = false,
+                    IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
+                    DangerLevelType = paras.DangerLevelType,
                     IsWriteLog = paras.IsWriteLog,
-                    ServiceName = paras.ServiceName
+                    ServiceName = paras.ServiceName                    
                 });
             }
 

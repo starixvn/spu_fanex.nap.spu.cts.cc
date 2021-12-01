@@ -84,6 +84,8 @@
                         FunctionId = FunctionId.RemoveMultiEvidencesWeb,
                         IsCheckPAFromNAP = true,
                         IsPushCCToSoon88 = true,
+                        IsUpdateDangerToMainDB = true,
+                        DangerLevelType = DangerLevel.ABI,
                         ServiceName = serviceName,
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
                         IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
