@@ -7,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -85,6 +86,8 @@
                 }
 
                 HandleLogError();
+
+                Thread.Sleep(ImportEvidence_SleepTimes);
 
             } while (custEvidenceFromFiles != null && custEvidenceFromFiles.Any());
         }

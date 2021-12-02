@@ -22,7 +22,7 @@
 
         public const int ImportEvidence_StarixITId = 10278938;
 
-        public const int ImportEvidence_SleepTimes = 2000;
+        public const int ImportEvidence_SleepTimes = 5000; //5s
 
         public enum MatchMonitorQueryTypes
         {
