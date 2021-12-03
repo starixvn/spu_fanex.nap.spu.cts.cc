@@ -435,9 +435,11 @@
         private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo)
         {
             var result = false;
+
             try
             {
                 var custToRescan = custIdList.Select(c => c.CustID).Distinct();
+
                 var rescanParam = new RescanParametersEntity
                 {
                     CustIds = custToRescan,
@@ -452,9 +454,9 @@
                     InternalBatchSize = internalBatchSize,
                     ExternalBatchSize = internalBatchSize
                 };
-                rescanClassificationService.RescanCustomerClassify(rescanParam);
+                
+                result = rescanClassificationService.RescanCustomerClassify(rescanParam);
 
-                result = true;
                 Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, isWriteLogInfo, sentryClient);
             }
             catch (Exception ex)
