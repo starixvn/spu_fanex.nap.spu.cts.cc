@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -23,6 +24,7 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IAppSettings appSettings;
         private IEnumerable<ProblemAccountsEntity> logData;
 
@@ -31,12 +33,14 @@
             IProblemAccountServices problemAccountServices,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService pushDataToExternalService,
+            IAntiFraudCenterServices antiFraudCenterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.problemAccountServices = problemAccountServices;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = pushDataToExternalService;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.appSettings = appSettings;
             this.serviceName = "ProblemAccountInsert";
         }
@@ -102,15 +106,22 @@
 
                     if (isSuccess && result.CustIds != null && result.CustIds.Any())
                     {
-                        isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                        Parallel.Invoke(() =>
                         {
-                            ExternalBatchSize = batchExternalSize,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = true,
-                            IsUpdateDangerToMainDB = true,
-                            DangerLevelType = DangerLevel.ABI,
-                            IsWriteLog = appSettings.ProblemAccountIsWriteLog,
-                            ServiceName = serviceName
+                            isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                            {
+                                ExternalBatchSize = batchExternalSize,
+                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsPushCCToSoon88 = true,
+                                IsUpdateDangerToMainDB = true,
+                                DangerLevelType = DangerLevel.ABI,
+                                IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                                ServiceName = serviceName
+                            });
+                        },
+                        () =>
+                        {
+                            antiFraudCenterServices.InsertAFCAccounts(result.CustIds, appSettings.AFCInsertAccountsAPI);
                         });
                     }
 

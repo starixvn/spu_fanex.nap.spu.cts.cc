@@ -11,5 +11,7 @@
         public bool IsWriteLog { get; set; }
 
         public string Soon88FeedDataAPI { get; set; }
+
+        public string AFCInsertAccountsAPI { get; set; }
     }
 }

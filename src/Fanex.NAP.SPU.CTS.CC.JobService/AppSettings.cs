@@ -14,6 +14,10 @@
 
         string Soon88FeedDataAPI { get; }
 
+        string AFCInsertAccountsAPI { get; }
+
+        string AFCDeleteAccountsAPI { get; }
+
         bool ProblemAccountIsWriteLog { get; }
 
         bool NormalAccountIsWriteLog { get; }
@@ -45,6 +49,8 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
+        private readonly string afcInsertAccountsAPI;
+        private readonly string afcDeleteAccountsAPI;
         private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
@@ -55,6 +61,8 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
+            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
+            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
@@ -83,6 +91,10 @@
         public string SPName => spName;
 
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
+
+        public string AFCInsertAccountsAPI => afcInsertAccountsAPI;
+
+        public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
 
         public string SentryDsn => sentryDsn;
 

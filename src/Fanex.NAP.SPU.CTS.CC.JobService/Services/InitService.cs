@@ -3,7 +3,7 @@
     using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
@@ -18,6 +18,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -135,6 +136,9 @@
 
             services.AddSingleton<IRescanCustClassificationDataAccess, RescanCustClassificationDataAccess>();
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
+
+            services.AddSingleton<IAntiFraudCenterDataAccess, AntiFraudCenterDataAccess>();
+            services.AddSingleton<IAntiFraudCenterServices, AntiFraudCenterServices>();
         }
     }
 }

@@ -27,6 +27,10 @@
 
         public string FeedSoon88API { get; set; }
 
+        public string AFCInsertAccountsAPI { get; set; }
+
+        public string AFCDeleteAccountsAPI { get; set; }
+
         public FunctionId FuncId_CheckPA
         {
             get

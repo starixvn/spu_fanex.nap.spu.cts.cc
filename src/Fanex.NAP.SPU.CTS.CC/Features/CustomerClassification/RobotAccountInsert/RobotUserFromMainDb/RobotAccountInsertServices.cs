@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -7,6 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IRobotAccountInsertServices
@@ -18,8 +20,6 @@
         IRobotAccountInsertServices GetRobotUser();
 
         bool Process(InsertRobotParaEntity paras);
-
-        bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
 
         IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
 
@@ -34,6 +34,7 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private long lastScannedTimespan;
         private RobotUserViewEntity robotInfo;
 
@@ -41,6 +42,7 @@
             IRobotAccountInsertDataAccess robotAccountInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
+            IAntiFraudCenterServices antiFraudCenterServices,
             IProblemAccountServices problemAccountServices)
 
         {
@@ -48,6 +50,7 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
+            this.antiFraudCenterServices = antiFraudCenterServices;
         }
 
         public IRobotAccountInsertServices Start()
@@ -115,15 +118,22 @@
 
                 if (isSuccess && result.CustIds != null && result.CustIds.Any())
                 {
-                    isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                    Parallel.Invoke(() =>
                     {
-                        ExternalBatchSize = paras.BatchExternalSize,
-                        FeedSoon88API = paras.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
-                        IsUpdateDangerToMainDB = true,
-                        DangerLevelType = DangerLevel.ABI,
-                        IsWriteLog = paras.IsWriteLog,
-                        ServiceName = paras.ServiceName
+                        isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = paras.BatchExternalSize,
+                            FeedSoon88API = paras.Soon88FeedDataAPI,
+                            IsPushCCToSoon88 = true,
+                            IsUpdateDangerToMainDB = true,
+                            DangerLevelType = DangerLevel.ABI,
+                            IsWriteLog = paras.IsWriteLog,
+                            ServiceName = paras.ServiceName
+                        });
+                    },
+                    () =>
+                    {
+                        antiFraudCenterServices.InsertAFCAccounts(result.CustIds, paras.AFCInsertAccountsAPI);
                     });
 
                     Thread.Sleep(RobotUsers_SleepTimes);

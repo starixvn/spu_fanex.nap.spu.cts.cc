@@ -12,6 +12,8 @@
 
         public const string FeedSoon88_Salt = "!%HGDwweHqw#";
 
+        public const string AFCInternalKey = "4824D237091879E4F2E0C02E61362D8F";
+
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
 
         public const int Realtime_SleepTimes = 2000;

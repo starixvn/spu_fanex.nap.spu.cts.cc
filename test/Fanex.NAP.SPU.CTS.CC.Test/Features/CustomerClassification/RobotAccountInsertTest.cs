@@ -1,12 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
-    using System;
     using System.Collections.Generic;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -21,6 +21,8 @@
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly IAntiFraudCenterDataAccess antiFraudCenterDataAccess;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
         public RobotAccountInsertTest()
         {
@@ -30,11 +32,14 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-            robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
+            antiFraudCenterDataAccess = Substitute.For<IAntiFraudCenterDataAccess>();
+            antiFraudCenterServices = new AntiFraudCenterServices(antiFraudCenterDataAccess, null);
 
+            robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
                                                                         systemParameterServices,
                                                                         custClassToMainDBService,
+                                                                        antiFraudCenterServices,
                                                                         problemAccountServices);
         }
 

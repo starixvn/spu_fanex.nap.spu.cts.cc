@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -29,6 +30,9 @@
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
+        private readonly IAntiFraudCenterDataAccess antiFraudCenterDataAccess;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
+
         public RescanCustomerClassificationTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
@@ -43,10 +47,15 @@
             dailyClassificationDataAccess = Substitute.For<IDailyClassificationDataAccess>();
             dailyClassificationServices = new DailyClassificationServices(dailyClassificationDataAccess);
 
+            antiFraudCenterDataAccess = Substitute.For<IAntiFraudCenterDataAccess>();
+            antiFraudCenterServices = new AntiFraudCenterServices(antiFraudCenterDataAccess, null);
+
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
                 rescanCustClassificationDataAccess,null,
-                problemAccountServices,custClassToMainDBService,
+                problemAccountServices,
+                antiFraudCenterServices,
+                custClassToMainDBService,
                 dailyClassificationServices);
         }
 

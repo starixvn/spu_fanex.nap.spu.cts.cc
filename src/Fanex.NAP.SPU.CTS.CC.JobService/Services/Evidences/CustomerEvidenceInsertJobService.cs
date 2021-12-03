@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -23,6 +24,7 @@
         private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
         private readonly ICustomerEvidenceSendMailServices customerEvidenceSendMailServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IAppSettings appSettings;
 
         public CustomerEvidenceInsertJobService(
@@ -30,12 +32,14 @@
             ICustomerEvidenceInsertServices customerEvidenceInsertServices,
             ICustomerEvidenceSendMailServices customerEvidenceSendMailServices,
             ICustClassToMainDBService custClassToMainDBService,
+            IAntiFraudCenterServices antiFraudCenterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.customerEvidenceInsertServices = customerEvidenceInsertServices;
             this.customerEvidenceSendMailServices = customerEvidenceSendMailServices;
             this.custClassToMainDBService = custClassToMainDBService;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.appSettings = appSettings;
             this.serviceName = "CustomerEvidenceInsert";
         }
@@ -117,21 +121,28 @@
                 {
                     var custIds = custEvidences.Select(x => x.CustID).Distinct();
 
-                    var isPushSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                    Parallel.Invoke(() =>
                     {
-                        ExternalBatchSize = externalBatchSize,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
-                        IsUpdateDangerToMainDB = true,
-                        DangerLevelType = DangerLevel.ABI,
-                        IsWriteLog = false,
-                        ServiceName = serviceName
-                    });
+                        var isPushSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = externalBatchSize,
+                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                            IsPushCCToSoon88 = true,
+                            IsUpdateDangerToMainDB = true,
+                            DangerLevelType = DangerLevel.ABI,
+                            IsWriteLog = false,
+                            ServiceName = serviceName
+                        });
 
-                    if (isPushSuccess)
+                        if (isPushSuccess)
+                        {
+                            custEvidenceToUpdateComplete.AddRange(custEvidences);
+                        }
+                    },
+                    () =>
                     {
-                        custEvidenceToUpdateComplete.AddRange(custEvidences);
-                    }
+                        antiFraudCenterServices.InsertAFCAccounts(custIds, appSettings.AFCInsertAccountsAPI);
+                    });
                 }
             }
 
