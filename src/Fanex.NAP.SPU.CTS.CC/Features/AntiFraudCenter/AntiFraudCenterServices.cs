@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -49,7 +48,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "Service - Insert Accounts fail", custIds, ex, sentryClient);
+                Utilities.LogSentryError(ServiceName, "CT.CC Service - Insert Accounts fail", custIds, ex, sentryClient);
             }
         }
 
@@ -75,7 +74,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "Service - Delete Accounts fail", custIds, ex, sentryClient);
+                Utilities.LogSentryError(ServiceName, "CTS.CC Service - Delete Accounts fail", custIds, ex, sentryClient);
             }
         }
 
@@ -103,7 +102,7 @@
             return new List<GetAccountViewEntity>();
         }
 
-        private IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAFCAccountModel> accountInfo
+        private IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountEntity> accountInfo
                                                       , IEnumerable<FilterCustToSyncAFCKEntity> fraudIDs
                                                       , IEnumerable<GetB2CEntity> b2cCustIDs)
         {
@@ -174,7 +173,6 @@
             return new List<string>();
         }
 
-
         /// <summary>
         /// Insert or Update AFC account
         /// </summary>
@@ -196,7 +194,7 @@
 
         private async Task SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
         {
-            if(accountInfo != null && accountInfo.Any())
+            if (accountInfo != null && accountInfo.Any())
             {
                 var tasks = new List<Task>();
 
@@ -206,22 +204,22 @@
 
                     accountInfo.ToList().RemoveAll(x => accToInsert.Contains(x));
 
-                    tasks.Add(Task.Run( async () =>
-                    {
-                        await CallAPIAsync(accToInsert, insertURL);
-                    }));
+                    tasks.Add(Task.Run(async () =>
+                   {
+                       await CallAPIAsync(accToInsert, insertURL);
+                   }));
                 }
 
                 if (accountInfo.Any())
                 {
-                    tasks.Add(Task.Run(async  () =>
+                    tasks.Add(Task.Run(async () =>
                     {
                         await CallAPIAsync(accountInfo, updateURL);
                     }));
                 }
 
                 await Task.WhenAll(tasks.ToArray());
-            } 
+            }
         }
     }
 }

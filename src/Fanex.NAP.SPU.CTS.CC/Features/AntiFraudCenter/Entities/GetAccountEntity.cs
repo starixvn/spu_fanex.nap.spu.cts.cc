@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
-    public class GetAFCAccountModel
+    public class GetAccountEntity
     {
         //B2CustId
         public string CustId { get; set; }
