@@ -29,6 +29,8 @@
 
         public string AFCInsertAccountsAPI { get; set; }
 
+        public string AFCUpdateAccountsAPI { get; set; }
+
         public string AFCDeleteAccountsAPI { get; set; }
 
         public FunctionId FuncId_CheckPA

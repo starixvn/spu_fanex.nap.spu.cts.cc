@@ -21,7 +21,7 @@
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
-        bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust);
+        bool InsertNewCustomer(UpdateCustomerModel data, InsertNewCustRescanEntity paras);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -307,7 +307,7 @@
             }
         }
 
-        public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust)
+        public bool InsertNewCustomer(UpdateCustomerModel data, InsertNewCustRescanEntity paras)
         {
             if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
@@ -316,22 +316,22 @@
 
                 try
                 {
-                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", customers, isWriteLogInfo, sentryClient);
+                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", customers, paras.IsWriteLog, sentryClient);
 
-                    var customersChunk = customers.Distinct().Chunk(internalBatchSize);
+                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);
 
                     foreach (var custs in customersChunk)
                     {
                         var custIdList = TransformCustomerFromMainDB(custs.ToList());
 
-                        Utilities.LogSentryInfo(serviceName, "Insert", custs, isWriteLogInfo, sentryClient);
+                        Utilities.LogSentryInfo(serviceName, "Insert", custs, paras.IsWriteLog, sentryClient);
 
                         UpdateAssociationCustomerForArchive(custIdList);
 
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID, isInsertMissingCust);
+                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, paras, lastCustID);
                     }
 
-                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
+                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", paras.IsWriteLog, sentryClient);
                 }
                 catch (Exception ex)
                 {
@@ -344,15 +344,15 @@
             return true;
         }
 
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
+        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras, long? lastCustID)
         {
             if (custIdList != null && custIdList.Any())
             {
-                var isSuccess = RescanCCForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo);
+                var isSuccess = RescanCCForNewCustomer(custIdList, paras);
 
                 if (isSuccess)
                 {
-                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID, isInsertMissingCust);
+                    NotifyCompleteForNewCustomer(custIdList, paras.IsWriteLog, lastCustID, paras.IsInsertMissingCust);
                 }
             }
         }
@@ -432,7 +432,7 @@
             }
         }
 
-        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo)
+        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras)
         {
             var result = false;
 
@@ -449,15 +449,18 @@
                     IsUpdateDangerToMainDB = true,
                     DangerLevelType = DangerLevel.ABI,
                     ServiceName = serviceName,
-                    FeedSoon88API = soon88Url,
-                    IsWriteLog = isWriteLogInfo,
-                    InternalBatchSize = internalBatchSize,
-                    ExternalBatchSize = internalBatchSize
+                    FeedSoon88API = paras.FeedSoon88API,
+                    IsWriteLog = paras.IsWriteLog,
+                    InternalBatchSize = paras.InternalBatchSize,
+                    ExternalBatchSize = paras.ExternalBatchSize,
+                    AFCInsertAccountsAPI = paras.AFCInsertAccountsAPI,
+                    AFCUpdateAccountsAPI = paras.AFCUpdateAccountsAPI,
+                    AFCDeleteAccountsAPI = paras.AFCDeleteAccountsAPI
                 };
                 
                 result = rescanClassificationService.RescanCustomerClassify(rescanParam);
 
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, isWriteLogInfo, sentryClient);
+                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
             }
             catch (Exception ex)
             {

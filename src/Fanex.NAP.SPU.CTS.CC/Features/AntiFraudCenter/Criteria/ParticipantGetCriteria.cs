@@ -1,16 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class FilterB2CLicenseeGetCriteria : CriteriaBase
+    public class ParticipantGetCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDs { get; set; }
-
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_ProblemAccount_FilterByB2C";
+            return "AFC_DC_Participant_Get";
         }
 
         public override bool IsValid()

@@ -98,4 +98,9 @@
     <Setting Key="CTS_DC_CustInfo_Monitoring_CompareData" SpName="CTS_DC_CustInfo_Monitoring_CompareData" DbName="MySQL.CTS_DataCenter.ctsService" />
     <Setting Key="CTS_DC_CustInfo_Monitoring_InsertMissingCust" SpName="CTS_DC_CustInfo_Monitoring_InsertMissingCust" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
   </Function>
+	<Function name="AntiFraudCase">
+		<Setting Key="API_CustomerExtraInfo_Get" SpName="API_CustomerExtraInfo_Get" DbName="MySQL.LicenseDB.Siebog" />
+		<Setting Key="AFC_Get_B2CCustId" SpName="AFC_Get_B2CCustId_xtest" DbName="DBAGE.bodb02.bodbAdminNet" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccount_FilterByB2C" SpName="CTS_DC_CustClassification_ProblemAccount_FilterByB2C" DbName="MySQL.CTS_DataCenter.Reporter" />
+	</Function>
 </Functions>

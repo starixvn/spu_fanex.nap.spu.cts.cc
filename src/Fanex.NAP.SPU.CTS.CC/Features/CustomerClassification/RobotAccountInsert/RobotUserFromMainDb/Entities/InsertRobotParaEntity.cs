@@ -13,5 +13,7 @@
         public string Soon88FeedDataAPI { get; set; }
 
         public string AFCInsertAccountsAPI { get; set; }
+
+        public string AFCUpdateAccountsAPI { get; set; }
     }
 }

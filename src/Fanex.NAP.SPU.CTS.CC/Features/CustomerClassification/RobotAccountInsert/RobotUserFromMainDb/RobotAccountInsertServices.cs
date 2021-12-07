@@ -133,7 +133,7 @@
                     },
                     () =>
                     {
-                        antiFraudCenterServices.InsertAFCAccounts(result.CustIds, paras.AFCInsertAccountsAPI);
+                        antiFraudCenterServices.InsertAFCAccountsAsync(result.CustIds, paras.AFCInsertAccountsAPI, paras.AFCUpdateAccountsAPI);
                     });
 
                     Thread.Sleep(RobotUsers_SleepTimes);

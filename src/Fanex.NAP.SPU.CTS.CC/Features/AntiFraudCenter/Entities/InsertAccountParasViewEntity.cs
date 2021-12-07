@@ -6,6 +6,6 @@
     {
         public string Key { get; set; }
 
-        public IEnumerable<InsertAccountParasEntity> Data { get; set; }
+        public IEnumerable<GetAccountViewEntity> Data { get; set; }
     }
 }

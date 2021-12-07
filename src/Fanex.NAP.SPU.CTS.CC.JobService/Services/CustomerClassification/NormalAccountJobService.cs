@@ -119,7 +119,7 @@
                         },
                         () =>
                         {
-                            antiFraudCenterServices.InsertAFCAccounts(result.CustIds, appSettings.AFCDeleteAccountsAPI);
+                            antiFraudCenterServices.DeleteAFCAccountsAsync(result.CustIds, appSettings.AFCDeleteAccountsAPI);
                         });
 
                     }

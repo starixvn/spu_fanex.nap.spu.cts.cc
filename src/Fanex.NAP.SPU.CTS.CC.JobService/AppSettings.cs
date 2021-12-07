@@ -16,6 +16,8 @@
 
         string AFCInsertAccountsAPI { get; }
 
+        string AFCUpdateAccountsAPI { get; }
+
         string AFCDeleteAccountsAPI { get; }
 
         bool ProblemAccountIsWriteLog { get; }
@@ -50,6 +52,7 @@
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
         private readonly string afcInsertAccountsAPI;
+        private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
         private readonly string sentryDsn;
 
@@ -62,6 +65,7 @@
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
             afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
+            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
             afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
@@ -93,6 +97,8 @@
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
 
         public string AFCInsertAccountsAPI => afcInsertAccountsAPI;
+
+        public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
 
         public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
 

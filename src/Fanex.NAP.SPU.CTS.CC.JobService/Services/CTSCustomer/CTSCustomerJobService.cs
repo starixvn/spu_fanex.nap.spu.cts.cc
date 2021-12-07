@@ -53,8 +53,18 @@
                 customers.CustomerInfos.AddRange(custSubs);
                 logContent += $"Quantity of total list: {customers.CustomerInfos.Count}\n";
 
-                var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url, false);
-                //sentryClient.CaptureMessage(logContent, Sentry.Protocol.SentryLevel.Info);
+                var result = ctscustomerService.InsertNewCustomer(customers, new InsertNewCustRescanEntity
+                {
+                    InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                    ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                    IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                    AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
+                    AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
+                    AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
+                    IsInsertMissingCust = false
+                });
+                
                 return Task.FromResult(result);
             }
             catch (Exception ex)
@@ -142,9 +152,6 @@
         {
             try
             {
-                var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
-                var soon88Url = appSettings.Soon88FeedDataAPI;
-                var batchSize = appSettings.TransformCTSCustomerBatchSize;
                 var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
 
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);

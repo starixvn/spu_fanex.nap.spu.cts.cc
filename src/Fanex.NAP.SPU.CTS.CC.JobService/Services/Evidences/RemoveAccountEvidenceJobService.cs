@@ -90,7 +90,10 @@
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
                         IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
                         InternalBatchSize = internalBatchSize,
-                        ExternalBatchSize = externalBatchSize
+                        ExternalBatchSize = externalBatchSize,
+                        AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
+                        AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
+                        AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI
                     };
 
                     isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);

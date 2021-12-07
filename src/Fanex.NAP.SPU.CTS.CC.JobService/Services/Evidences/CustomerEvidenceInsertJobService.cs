@@ -141,7 +141,7 @@
                     },
                     () =>
                     {
-                        antiFraudCenterServices.InsertAFCAccounts(custIds, appSettings.AFCInsertAccountsAPI);
+                        antiFraudCenterServices.InsertAFCAccountsAsync(custIds, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI);
                     });
                 }
             }
