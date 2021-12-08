@@ -11,7 +11,7 @@
 
     public interface IAntiFraudCenterServices
     {
-        Task InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL);
+        void InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL);
 
         Task DeleteAFCAccountsAsync(IEnumerable<long> custIds, string url);
     }
@@ -30,7 +30,7 @@
             this.antiFraudCenterDataAccess = antiFraudCenterDataAccess;
         }
 
-        public async Task InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL)
+        public void InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL)
         {
             try
             {
@@ -42,13 +42,13 @@
                     {
                         var notExistedAccount = CheckAccountExist(accountInfo);
 
-                        await SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL);
+                       SyncAccountToAFCDB(accountInfo, notExistedAccount, insertURL, updateURL);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "CT.CC Service - Insert Accounts fail", custIds, ex, sentryClient);
+                Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", custIds, ex, sentryClient);
             }
         }
 
@@ -86,7 +86,7 @@
 
                 if (filterB2CLicensee != null && filterB2CLicensee.Any())
                 {
-                    var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", filterB2CLicensee));
+                    var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", filterB2CLicensee.Select(c=>c.CustID).Distinct()));
 
                     if (b2cCustIds != null && b2cCustIds.Any())
                     {
@@ -178,7 +178,7 @@
         /// </summary>
         /// <param name="accInfo"></param>
         /// <param name="isInsertAction"></param>
-        private async Task CallAPIAsync(IEnumerable<GetAccountViewEntity> accInfo, string url)
+        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url)
         {
             if (accInfo != null && accInfo.Any())
             {
@@ -192,33 +192,35 @@
             }
         }
 
-        private async Task SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
+        private void SyncAccountToAFCDB(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
         {
             if (accountInfo != null && accountInfo.Any())
             {
-                var tasks = new List<Task>();
+                var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
+                var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;
 
-                if (notExistedAccount.Any())
+                Parallel.Invoke(async () =>
                 {
-                    var accToInsert = accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId));
-
-                    accountInfo.ToList().RemoveAll(x => accToInsert.Contains(x));
-
-                    tasks.Add(Task.Run(async () =>
-                   {
-                       await CallAPIAsync(accToInsert, insertURL);
-                   }));
-                }
-
-                if (accountInfo.Any())
-                {
-                    tasks.Add(Task.Run(async () =>
+                    try
                     {
-                        await CallAPIAsync(accountInfo, updateURL);
-                    }));
-                }
-
-                await Task.WhenAll(tasks.ToArray());
+                        await SyncAFCData(accToInsert, insertURL);
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
+                    }
+                },
+                async () =>
+                {
+                    try
+                    {
+                        await SyncAFCData(accToUpdate, updateURL);
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.LogSentryError(ServiceName, "CTS.CC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
+                    }
+                });
             }
         }
     }
