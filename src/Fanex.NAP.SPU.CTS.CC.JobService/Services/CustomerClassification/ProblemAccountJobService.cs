@@ -80,7 +80,7 @@
 
             var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
-            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+          var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
 
             if (isSuccess)
             {
@@ -121,7 +121,7 @@
                         },
                         () =>
                         {
-                            antiFraudCenterServices.InsertAFCAccountsAsync(result.CustIds, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI);
+                            antiFraudCenterServices.InsertAFCAccounts(result.CustIds, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI);
                         });
                     }
 

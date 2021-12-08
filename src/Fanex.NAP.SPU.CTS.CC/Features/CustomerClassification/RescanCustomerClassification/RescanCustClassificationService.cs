@@ -269,7 +269,7 @@
                 },
                 () =>
                 {
-                    antiFraudCenterServices.InsertAFCAccountsAsync(custIdsToRescanPA.Distinct(), paras.AFCInsertAccountsAPI, paras.AFCUpdateAccountsAPI);
+                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), paras.AFCInsertAccountsAPI, paras.AFCUpdateAccountsAPI);
                 });
             }
 

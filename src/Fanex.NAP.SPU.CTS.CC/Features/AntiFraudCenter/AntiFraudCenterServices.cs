@@ -11,9 +11,9 @@
 
     public interface IAntiFraudCenterServices
     {
-        void InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL);
+        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL);
 
-        Task DeleteAFCAccountsAsync(IEnumerable<long> custIds, string url);
+        void DeleteAFCAccounts(IEnumerable<long> custIds, string url);
     }
 
     public class AntiFraudCenterServices : IAntiFraudCenterServices
@@ -30,7 +30,7 @@
             this.antiFraudCenterDataAccess = antiFraudCenterDataAccess;
         }
 
-        public void InsertAFCAccountsAsync(IEnumerable<long> custIds, string insertURL, string updateURL)
+        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL)
         {
             try
             {
@@ -42,7 +42,7 @@
                     {
                         var notExistedAccount = CheckAccountExist(accountInfo);
 
-                       SyncAccountToAFCDB(accountInfo, notExistedAccount, insertURL, updateURL);
+                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL);
                     }
                 }
             }
@@ -52,7 +52,7 @@
             }
         }
 
-        public async Task DeleteAFCAccountsAsync(IEnumerable<long> custIds, string url)
+        public async void DeleteAFCAccounts(IEnumerable<long> custIds, string url)
         {
             try
             {
@@ -192,7 +192,7 @@
             }
         }
 
-        private void SyncAccountToAFCDB(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
+        private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
         {
             if (accountInfo != null && accountInfo.Any())
             {
