@@ -20,6 +20,8 @@
 
         string AFCDeleteAccountsAPI { get; }
 
+        bool IsSyncAFCData { get; }
+
         bool ProblemAccountIsWriteLog { get; }
 
         bool NormalAccountIsWriteLog { get; }
@@ -54,6 +56,7 @@
         private readonly string afcInsertAccountsAPI;
         private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
+        private readonly bool isSyncAFCData;
         private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
@@ -64,9 +67,10 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
-            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
-            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
-            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
+            afcInsertAccountsAPI = GetValue<string>("AntiFraudCenter:AFCInsertAccountsAPI");
+            afcUpdateAccountsAPI = GetValue<string>("AntiFraudCenter:AFCUpdateAccountsAPI");
+            afcDeleteAccountsAPI = GetValue<string>("AntiFraudCenter:AFCDeleteAccountsAPI");
+            isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
@@ -101,6 +105,8 @@
         public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
 
         public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
+
+        public bool IsSyncAFCData => isSyncAFCData;
 
         public string SentryDsn => sentryDsn;
 

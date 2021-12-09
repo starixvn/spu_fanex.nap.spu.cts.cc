@@ -453,6 +453,7 @@
                     IsWriteLog = paras.IsWriteLog,
                     InternalBatchSize = paras.InternalBatchSize,
                     ExternalBatchSize = paras.ExternalBatchSize,
+                    IsSyncAFCData = paras.IsSyncAFCData,
                     AFCInsertAccountsAPI = paras.AFCInsertAccountsAPI,
                     AFCUpdateAccountsAPI = paras.AFCUpdateAccountsAPI,
                     AFCDeleteAccountsAPI = paras.AFCDeleteAccountsAPI

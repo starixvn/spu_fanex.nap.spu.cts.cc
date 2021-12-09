@@ -12,9 +12,9 @@
 
     public interface IAntiFraudCenterServices
     {
-        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL);
+        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData);
 
-        void DeleteAFCAccounts(IEnumerable<long> custIds, string url);
+        void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData);
     }
 
     public class AntiFraudCenterServices : IAntiFraudCenterServices
@@ -31,11 +31,11 @@
             this.antiFraudCenterDataAccess = antiFraudCenterDataAccess;
         }
 
-        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL)
+        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData)
         {
             try
             {
-                if (custIds != null && custIds.Any())
+                if (custIds != null && custIds.Any() && isSyncAFCData)
                 {
                     var accountInfo = GetAccountInfo(string.Join(",", custIds));
 
@@ -53,11 +53,11 @@
             }
         }
 
-        public async void DeleteAFCAccounts(IEnumerable<long> custIds, string url)
+        public async void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData)
         {
             try
             {
-                if (custIds != null && custIds.Any())
+                if (custIds != null && custIds.Any() && isSyncAFCData)
                 {
                     var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", custIds));
 

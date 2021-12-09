@@ -91,6 +91,7 @@
                         IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
                         InternalBatchSize = internalBatchSize,
                         ExternalBatchSize = externalBatchSize,
+                        IsSyncAFCData = appSettings.IsSyncAFCData,
                         AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
                         AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
                         AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI

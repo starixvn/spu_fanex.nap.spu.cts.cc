@@ -59,6 +59,7 @@
                     ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                     IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
                     FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                    IsSyncAFCData = appSettings.IsSyncAFCData,
                     AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
                     AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
                     AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,

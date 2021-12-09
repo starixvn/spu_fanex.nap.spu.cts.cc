@@ -27,6 +27,8 @@
 
         public string FeedSoon88API { get; set; }
 
+        public bool IsSyncAFCData { get; set; }
+
         public string AFCInsertAccountsAPI { get; set; }
 
         public string AFCUpdateAccountsAPI { get; set; }

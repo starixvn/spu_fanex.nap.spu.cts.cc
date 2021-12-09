@@ -102,6 +102,7 @@
                                                           ServiceName = robotAccountServiceName,
                                                           Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
                                                           IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                          IsSyncAFCData = appSettings.IsSyncAFCData,
                                                           AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
                                                           AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI
                                                       });
