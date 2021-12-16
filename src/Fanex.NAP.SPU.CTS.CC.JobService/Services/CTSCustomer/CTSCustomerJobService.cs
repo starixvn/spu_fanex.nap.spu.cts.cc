@@ -4,6 +4,7 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.Notification.Services;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -18,6 +19,8 @@
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
         Task<bool> UpdateUsername2(int batchSize);
+
+        Task<bool> MonitorInsertNewCustomer();
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService
@@ -75,7 +78,7 @@
                 updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize);
                 updatedCustFromProductStatus = ctscustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize);
 
-                if (ctscustomerService.IsValidData(updatedCustFromCustomer) 
+                if (ctscustomerService.IsValidData(updatedCustFromCustomer)
                     || ctscustomerService.IsValidData(updatedCustFromCustInfo)
                     || ctscustomerService.IsValidData(updatedCustFromProductStatus))
                 {
@@ -114,7 +117,7 @@
                         preCTSCustId = custsNullUsername2.Max(c => c.CTSCustID);
                         ctscustomerService.UpdateUsername2(custFromMainDB);
                     }
-                } while (custsNullUsername2 is not null && custsNullUsername2.Any());        
+                } while (custsNullUsername2 is not null && custsNullUsername2.Any());
 
                 return Task.FromResult(true);
             }
@@ -128,6 +131,58 @@
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
             }
+        }
+
+        public Task<bool> MonitorInsertNewCustomer()
+        {
+            try
+            {
+                //var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
+                //var toDate = fromDate.AddDays(0.5);
+                var fromDate = new DateTime(2003,7,30);
+                var toDate = new DateTime(2005, 7, 30);
+                toDate = toDate > DateTime.Now ? DateTime.Now.AddHours(-4) : toDate;
+                var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
+                custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
+                var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(custList);
+                if (missingCusts.Any())
+                {
+                    var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
+                    $"{missingCusts.Count()} missing customers \n" +
+                    $"Username: {string.Join(",", missingCusts.Select(c => c.UserName))}";
+
+                    NotifyTelegramMessage(mess);
+                }
+                else
+                {
+                    var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
+                    $"There is no missing customer.";
+                    NotifyTelegramMessage(mess);
+                }
+
+                ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
+        private void NotifyTelegramMessage(string message)
+        {
+            var telegramService = new NotificationService();
+            telegramService
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+               .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
+               .SendWithoutDelay(isInfo: true);
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -49,6 +50,16 @@
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
 
         IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
+
+        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList);
+
+        DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID);
+
+        void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -56,14 +67,18 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ISystemParameterDataAccess systemParameterDataAccess;
+
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
-            IRescanCustClassificationService rescanClassificationService)
+            IRescanCustClassificationService rescanClassificationService,
+            ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
             this.rescanClassificationService = rescanClassificationService;
+            this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
 
@@ -365,6 +380,34 @@
             var customerJson = JsonConvert.SerializeObject(customerList);
 
             return dataAccess.UpdateUsername2(customerJson);
+        }
+
+        public DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID)
+        {
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            var minDateInMainDB = new DateTime(2003, 1, 1);
+            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : minDateInMainDB;
+        }
+
+        public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate , SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString(), paraID);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            return dataAccess.CompareCustomerDataForMonitor(customerJson);
         }
 
         private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID)

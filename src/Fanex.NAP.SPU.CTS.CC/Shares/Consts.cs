@@ -34,7 +34,8 @@
         {
             ProblemAccountLastScannedTime = 2,
             RobotAccountLastScannedTime = 3,
-            MatchMonitorLastScannedTrans = 20
+            MatchMonitorLastScannedTrans = 20,
+            InsertNewCustomerMonitoring = 67
         };
 
         public enum DangerLevel

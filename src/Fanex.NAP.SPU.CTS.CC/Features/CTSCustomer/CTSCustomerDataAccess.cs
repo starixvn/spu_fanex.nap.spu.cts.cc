@@ -51,6 +51,12 @@
         int UpdateUsername2(string customerJson);
 
         void ReTransformAccount(string jsonData, long? lastCustID);
+
+        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -322,6 +328,38 @@
             };
 
             repository.Execute(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetCustomerInfoFromMainDBForMonitorCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson)
+        {
+            var criteria = new CompareCustomerDataForMonitorCriteria
+            {
+                CustomerListJson = custDataJson
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
         }
     }
 }

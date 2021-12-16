@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetCustomerInfoFromMainDBCriteria : NonQueryCommand
+    public class GetCustomerInfoFromMainDBCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "custIdList")]
         public string CustIds { get; set; }

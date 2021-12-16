@@ -90,4 +90,10 @@
 		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByCustStatus" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByCustStatus" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 	</Function>
+
+  <Function Name="MonitorInsertNewCTSCustomer">
+    <Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
+    <Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
+    <Setting Key="CTS_DC_CustInfo_Monitoring_CompareData" SpName="CTS_DC_CustInfo_Monitoring_CompareData" DbName="MySQL.CTS_DataCenter.ctsService" />
+  </Function>
 </Functions>
