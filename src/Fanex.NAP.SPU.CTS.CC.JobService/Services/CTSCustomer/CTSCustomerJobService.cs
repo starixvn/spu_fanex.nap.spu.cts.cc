@@ -137,10 +137,10 @@
         {
             try
             {
-                //var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
-                //var toDate = fromDate.AddDays(0.5);
-                var fromDate = new DateTime(2003,7,30);
-                var toDate = new DateTime(2005, 7, 30);
+                var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
+                var toDate = fromDate.AddDays(0.5);
+                //var fromDate = new DateTime(2003,7,30);
+                //var toDate = new DateTime(2005, 7, 30);
                 toDate = toDate > DateTime.Now ? DateTime.Now.AddHours(-4) : toDate;
                 var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
                 custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
