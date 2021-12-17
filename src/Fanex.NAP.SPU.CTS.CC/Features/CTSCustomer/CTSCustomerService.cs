@@ -391,7 +391,7 @@
 
         public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate , SystemParameters paraID)
         {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString(), paraID);
+            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)

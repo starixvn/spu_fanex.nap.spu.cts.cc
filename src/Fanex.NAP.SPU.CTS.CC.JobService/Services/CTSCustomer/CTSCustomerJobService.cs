@@ -145,18 +145,18 @@
                 var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(custList);
                 if (missingCusts.Any())
                 {
-                    var mess = $"Scan from {fromDate} to {toDate} \n" +
+                    var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
                     $"{missingCusts.Count()} missing customers \n" +
                     $"Username: {string.Join(",", missingCusts.Select(c => c.UserName))}";
 
                     NotifyTelegramMessage(mess);
                 }
-                else
-                {
-                    var mess = $"Scan from {fromDate} to {toDate} \n" +
-                    $"There is no missing customer.";
-                    NotifyTelegramMessage(mess);
-                }
+                //else
+                //{
+                //    var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
+                //    $"There is no missing customer.";
+                //    NotifyTelegramMessage(mess);
+                //}
 
                 ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
 
