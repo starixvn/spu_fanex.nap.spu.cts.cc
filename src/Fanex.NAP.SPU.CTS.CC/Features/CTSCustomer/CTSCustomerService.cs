@@ -60,6 +60,8 @@
         DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID);
 
         void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID);
+
+        void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -408,6 +410,12 @@
         {
             var customerJson = JsonConvert.SerializeObject(customerList);
             return dataAccess.CompareCustomerDataForMonitor(customerJson);
+        }
+
+        public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            dataAccess.InsertMissingCust(customerJson, scannedDate);
         }
 
         private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID)

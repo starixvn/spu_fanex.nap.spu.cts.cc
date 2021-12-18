@@ -57,6 +57,8 @@
         IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
         IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson);
+
+        void InsertMissingCust(string custDataJson, DateTime scannedDate);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -360,6 +362,17 @@
             };
 
             return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public void InsertMissingCust(string custDataJson, DateTime scannedDate)
+        {
+            var criteria = new InsertMissingCustCriteria
+            {
+                CustomerListJson = custDataJson,
+                ScannedDate = scannedDate
+            };
+
+            repository.Execute(criteria);
         }
     }
 }

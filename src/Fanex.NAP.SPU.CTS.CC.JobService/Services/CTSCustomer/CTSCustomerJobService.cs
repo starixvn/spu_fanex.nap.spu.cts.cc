@@ -146,17 +146,11 @@
                 if (missingCusts.Any())
                 {
                     var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
-                    $"{missingCusts.Count()} missing customers \n" +
-                    $"Username: {string.Join(",", missingCusts.Select(c => c.UserName))}";
+                    $"{missingCusts.Count()} missing customers \n";
 
                     NotifyTelegramMessage(mess);
+                    ctscustomerService.InsertMissingCust(missingCusts, toDate);
                 }
-                //else
-                //{
-                //    var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
-                //    $"There is no missing customer.";
-                //    NotifyTelegramMessage(mess);
-                //}
 
                 ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
 
