@@ -21,7 +21,7 @@
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
-        bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url);
+        bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -307,7 +307,7 @@
             }
         }
 
-        public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url)
+        public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust)
         {
             if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
@@ -328,7 +328,7 @@
 
                         UpdateAssociationCustomerForArchive(custIdList);
 
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID);
+                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID, isInsertMissingCust);
                     }
 
                     Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
@@ -344,7 +344,7 @@
             return true;
         }
 
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID)
+        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
         {
             if (custIdList != null && custIdList.Any())
             {
@@ -352,7 +352,7 @@
 
                 if (isSuccess)
                 {
-                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID);
+                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID, isInsertMissingCust);
                 }
             }
         }
@@ -418,11 +418,11 @@
             dataAccess.InsertMissingCust(customerJson, scannedDate);
         }
 
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID)
+        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
         {
             try
             {
-                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID);
+                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
 
                 Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - Insert complete", custIdList, isWriteLogInfo, sentryClient);
             }

@@ -17,7 +17,7 @@
 
         public override bool IsValid()
         {
-            return FromDate != null && ToDate != null;
+            return FromDate != DateTime.MinValue && ToDate != DateTime.MinValue;
         }
     }
 }

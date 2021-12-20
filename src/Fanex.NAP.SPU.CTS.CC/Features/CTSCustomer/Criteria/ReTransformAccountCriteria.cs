@@ -10,6 +10,9 @@
 
         [SpParam(SqlParamName = "ip_LastInsertCustID")]
         public long? LastInsertCustID { get; set; }
+        
+        [SpParam(SqlParamName = "ip_IsInsertMissing")]
+        public bool IsInsertMissingCust { get; set; }
 
         public override string GetSettingKey()
         {

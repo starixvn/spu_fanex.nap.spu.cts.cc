@@ -49,7 +49,7 @@
                 var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID).ToList();
                 customers.CustomerInfos.AddRange(custSubs);
 
-                var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url);
+                var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url, false);
                 return Task.FromResult(result);
             }
             catch (Exception ex)
@@ -137,6 +137,11 @@
         {
             try
             {
+                var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
+                var soon88Url = appSettings.Soon88FeedDataAPI;
+                var batchSize = appSettings.TransformCTSCustomerBatchSize;
+                var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
+
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
                 var toDate = fromDate.AddDays(0.5);
                 toDate = toDate > DateTime.Now ? DateTime.Now.AddHours(-4) : toDate;
@@ -146,10 +151,24 @@
                 if (missingCusts.Any())
                 {
                     var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
-                    $"{missingCusts.Count()} missing customers \n";
+                    $"{missingCusts.Count()} missing customers";
 
                     NotifyTelegramMessage(mess);
-                    ctscustomerService.InsertMissingCust(missingCusts, toDate);
+                    if (isAutoInsertMissing)
+                    {
+                        var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID) 
+                                                                && missingCusts.Select(a => a.CustSubID).Contains(c.CustSubID));
+                        var data = new UpdateCustomerModel
+                        {
+                            CustomerInfos = missingCustData.ToList(),
+                            LastInsertCustID = -1
+                        };
+                        ctscustomerService.InsertNewCustomer(data, isWriteLog, batchSize, soon88Url, true);
+                    }
+                    else
+                    {
+                        ctscustomerService.InsertMissingCust(missingCusts, toDate);
+                    }                    
                 }
 
                 ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);

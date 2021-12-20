@@ -50,7 +50,7 @@
 
         int UpdateUsername2(string customerJson);
 
-        void ReTransformAccount(string jsonData, long? lastCustID);
+        void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust);
 
         IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
@@ -321,12 +321,13 @@
             return repository.Execute(criteria);
         }
 
-        public void ReTransformAccount(string jsonData, long? lastCustID)
+        public void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust)
         {
             var criteria = new ReTransformAccountCriteria
             {
                 CustomerInfo = jsonData,
-                LastInsertCustID = lastCustID
+                LastInsertCustID = lastCustID,
+                IsInsertMissingCust = isInsertMissingCust
             };
 
             repository.Execute(criteria);
