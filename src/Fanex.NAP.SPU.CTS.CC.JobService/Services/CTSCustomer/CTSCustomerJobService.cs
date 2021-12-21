@@ -161,7 +161,7 @@
                         var data = new UpdateCustomerModel
                         {
                             CustomerInfos = missingCustData.ToList(),
-                            LastInsertCustID = -1
+                            LastInsertCustID = 0
                         };
                         ctscustomerService.InsertNewCustomer(data, isWriteLog, batchSize, soon88Url, true);
                     }
