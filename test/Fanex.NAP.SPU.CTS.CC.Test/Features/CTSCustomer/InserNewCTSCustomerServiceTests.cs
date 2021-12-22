@@ -12,7 +12,7 @@
     using System.Collections.Generic;
     using Xunit;
 
-    public class InserNewCTSCustomerServiceTests
+    public class MonitorInserNewCustomerServiceTests
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
@@ -20,7 +20,7 @@
         private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
-        public InserNewCTSCustomerServiceTests()
+        public MonitorInserNewCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
