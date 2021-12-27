@@ -153,7 +153,7 @@
                     var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
                     $"{missingCusts.Count()} missing customers";
 
-                    NotifyTelegramMessage(mess);
+                    //NotifyTelegramMessage(mess);
                     if (isAutoInsertMissing)
                     {
                         var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID) 
