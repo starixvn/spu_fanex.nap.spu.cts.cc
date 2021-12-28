@@ -24,6 +24,7 @@
     <PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
     <PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
     <PackageReference Include="Fanex.NAP.Client.AspNetCore" Version="1.0.0.7" />
+    <PackageReference Include="Fanex.NAP.SPU.AspNetCore.Notification" Version="1.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.6" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.6" NoWarn="NU1605" />
     <PackageReference Include="Sentry.AspNetCore" Version="2.1.8" />

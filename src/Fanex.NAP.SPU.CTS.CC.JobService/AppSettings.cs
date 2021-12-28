@@ -30,6 +30,8 @@
 
         int TransformCTSCustomerBatchSize { get; }
 
+        bool MonitorInsertNewCustIsAutoInsertMissingCust { get; }
+
         string SentryDsn { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
@@ -99,6 +101,8 @@
         public bool TransformCTSCustomerIsWriteLog => GetValue<bool>("TransformCTSCustomer:IsWriteLog");
 
         public int TransformCTSCustomerBatchSize => GetValue<int>("TransformCTSCustomer:BatchSize");
+
+        public bool MonitorInsertNewCustIsAutoInsertMissingCust => GetValue<bool>("MonitorInsertNewCustomer:IsAutoInsertMissingCust");
 
         #endregion Variables
 

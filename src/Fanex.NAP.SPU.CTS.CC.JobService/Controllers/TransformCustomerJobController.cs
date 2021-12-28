@@ -37,5 +37,11 @@
         {
             return await ctsCustomerJobService.UpdateUsername2(batchSize);
         }
+
+        [HttpPost("MonitorInsertNewCustomer")]
+        public async Task<bool> MonitorInsertNewCustomer()
+        {
+            return await ctsCustomerJobService.MonitorInsertNewCustomer();
+        }
     }
 }

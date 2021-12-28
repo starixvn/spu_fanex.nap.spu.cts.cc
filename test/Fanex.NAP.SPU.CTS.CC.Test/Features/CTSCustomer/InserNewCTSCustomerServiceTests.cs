@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
@@ -11,18 +12,19 @@
     using System.Collections.Generic;
     using Xunit;
 
-    public class InserNewCTSCustomerServiceTests
+    public class MonitorInserNewCustomerServiceTests
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly IRescanCustClassificationService rescanClassificationService;
         private readonly ISentryClient sentryClient;
+        private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
-        public InserNewCTSCustomerServiceTests()
+        public MonitorInserNewCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, systemParameterDataAccess);
         }
 
         [Fact]

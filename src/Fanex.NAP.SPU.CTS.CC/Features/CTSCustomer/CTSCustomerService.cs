@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -20,7 +21,7 @@
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
-        bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url);
+        bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -49,6 +50,18 @@
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
 
         IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
+
+        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+
+        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList);
+
+        DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID);
+
+        void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID);
+
+        void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -56,14 +69,18 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ISystemParameterDataAccess systemParameterDataAccess;
+
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
-            IRescanCustClassificationService rescanClassificationService)
+            IRescanCustClassificationService rescanClassificationService,
+            ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
             this.rescanClassificationService = rescanClassificationService;
+            this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
 
@@ -290,7 +307,7 @@
             }
         }
 
-        public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url)
+        public bool InsertNewCustomer(UpdateCustomerModel data, bool isWriteLogInfo, int internalBatchSize, string soon88Url, bool isInsertMissingCust)
         {
             if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
@@ -311,7 +328,7 @@
 
                         UpdateAssociationCustomerForArchive(custIdList);
 
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID);
+                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, soon88Url, internalBatchSize, isWriteLogInfo, lastCustID, isInsertMissingCust);
                     }
 
                     Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", isWriteLogInfo, sentryClient);
@@ -327,7 +344,7 @@
             return true;
         }
 
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID)
+        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, string soon88Url, int internalBatchSize, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
         {
             if (custIdList != null && custIdList.Any())
             {
@@ -335,7 +352,7 @@
 
                 if (isSuccess)
                 {
-                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID);
+                    NotifyCompleteForNewCustomer(custIdList, isWriteLogInfo, lastCustID, isInsertMissingCust);
                 }
             }
         }
@@ -367,11 +384,45 @@
             return dataAccess.UpdateUsername2(customerJson);
         }
 
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID)
+        public DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID)
+        {
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            var minDateInMainDB = new DateTime(2003, 1, 1);
+            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : minDateInMainDB;
+        }
+
+        public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate , SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            return dataAccess.CompareCustomerDataForMonitor(customerJson);
+        }
+
+        public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            dataAccess.InsertMissingCust(customerJson, scannedDate);
+        }
+
+        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
         {
             try
             {
-                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID);
+                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
 
                 Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - Insert complete", custIdList, isWriteLogInfo, sentryClient);
             }
