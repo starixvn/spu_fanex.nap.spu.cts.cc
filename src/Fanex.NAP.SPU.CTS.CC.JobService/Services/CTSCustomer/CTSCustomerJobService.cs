@@ -143,7 +143,7 @@
                 var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
 
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
-                var toDate = fromDate.AddDays(0.5);
+                var toDate = fromDate.AddHours(2);
                 toDate = toDate > DateTime.Now ? DateTime.Now.AddHours(-4) : toDate;
                 var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
                 custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
