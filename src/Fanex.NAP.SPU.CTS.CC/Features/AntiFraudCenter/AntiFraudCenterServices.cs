@@ -59,17 +59,24 @@
             {
                 if (custIds != null && custIds.Any() && isSyncAFCData)
                 {
-                    var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", custIds));
+                    var filterB2CLicensee = antiFraudCenterDataAccess.FilterLicenseeCust(string.Join(",", custIds));
 
-                    if (b2cCustIds != null && b2cCustIds.Any())
+                    if (filterB2CLicensee != null && filterB2CLicensee.Any())
                     {
-                        var para = new DeleteAccountParasViewEntity
-                        {
-                            Key = AFCInternalKey,
-                            Data = b2cCustIds
-                        };
+                        var custIdsToDelete = filterB2CLicensee.Select(c => c.CustID).Distinct();
 
-                        await ApiHelper.Post<bool>(url, para);
+                        var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", custIdsToDelete));
+
+                        if (b2cCustIds != null && b2cCustIds.Any())
+                        {
+                            var para = new DeleteAccountParasViewEntity
+                            {
+                                Key = AFCInternalKey,
+                                Data = b2cCustIds
+                            };
+
+                            await ApiHelper.Post<bool>(url, para);
+                        }
                     }
                 }
             }
