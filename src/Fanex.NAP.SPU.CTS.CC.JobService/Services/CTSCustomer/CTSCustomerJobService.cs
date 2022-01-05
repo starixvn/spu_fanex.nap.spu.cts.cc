@@ -40,6 +40,7 @@
         {
             try
             {
+                var logContent = $"Start InsertNewCustomer - {DateTime.Now} \n";
                 var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
                 var soon88Url = appSettings.Soon88FeedDataAPI;
                 var batchSize = appSettings.TransformCTSCustomerBatchSize;
@@ -47,9 +48,13 @@
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
                 var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID).ToList();
+                logContent += $"LastCustID: {lastScanned.LastCustID} - Quantity of customer list: {customers.CustomerInfos.Count}\n";
+                logContent += $"LastCustSubID: {lastScanned.LastCustSubID} - Quantity of custsub list: {custSubs.Count}\n";
                 customers.CustomerInfos.AddRange(custSubs);
+                logContent += $"Quantity of total list: {customers.CustomerInfos.Count}\n";
 
                 var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url, false);
+                sentryClient.CaptureMessage(logContent, Sentry.Protocol.SentryLevel.Info);
                 return Task.FromResult(result);
             }
             catch (Exception ex)
