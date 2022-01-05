@@ -63,6 +63,7 @@
                     AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
                     AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
                     AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
+                    AFCInternalKey = appSettings.AFCInternalKey,
                     IsInsertMissingCust = false
                 });
                 

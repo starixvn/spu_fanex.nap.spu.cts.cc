@@ -19,5 +19,7 @@
         public string AFCDeleteAccountsAPI { get; set; }
 
         public bool IsInsertMissingCust { get; set; }
+
+        public string AFCInternalKey { get; set; }
     }
 }

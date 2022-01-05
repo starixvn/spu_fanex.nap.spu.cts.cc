@@ -22,6 +22,8 @@
 
         bool IsSyncAFCData { get; }
 
+        string AFCInternalKey { get; }
+
         bool ProblemAccountIsWriteLog { get; }
 
         bool NormalAccountIsWriteLog { get; }
@@ -57,6 +59,7 @@
         private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
         private readonly bool isSyncAFCData;
+        private readonly string afcInternalKey;
         private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
@@ -71,6 +74,7 @@
             afcUpdateAccountsAPI = GetValue<string>("AntiFraudCenter:AFCUpdateAccountsAPI");
             afcDeleteAccountsAPI = GetValue<string>("AntiFraudCenter:AFCDeleteAccountsAPI");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
+            afcInternalKey = GetValue<string>("AntiFraudCenter:AFCInternalKey");
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
@@ -107,6 +111,8 @@
         public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
 
         public bool IsSyncAFCData => isSyncAFCData;
+
+        public string AFCInternalKey => afcInternalKey;
 
         public string SentryDsn => sentryDsn;
 

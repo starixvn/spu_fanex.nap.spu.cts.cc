@@ -104,7 +104,8 @@
                                                           IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                           IsSyncAFCData = appSettings.IsSyncAFCData,
                                                           AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
-                                                          AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI
+                                                          AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
+                                                          AFCInternalKey = appSettings.AFCInternalKey
                                                       });
 
 

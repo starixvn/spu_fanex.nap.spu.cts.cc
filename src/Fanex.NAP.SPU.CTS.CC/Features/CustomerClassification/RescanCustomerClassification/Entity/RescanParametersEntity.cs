@@ -35,6 +35,8 @@
 
         public string AFCDeleteAccountsAPI { get; set; }
 
+        public string AFCInternalKey { get; set; }
+
         public FunctionId FuncId_CheckPA
         {
             get

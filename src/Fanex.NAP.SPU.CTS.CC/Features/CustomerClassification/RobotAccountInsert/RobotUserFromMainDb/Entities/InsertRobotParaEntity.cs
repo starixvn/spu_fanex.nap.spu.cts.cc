@@ -17,5 +17,7 @@
         public string AFCInsertAccountsAPI { get; set; }
 
         public string AFCUpdateAccountsAPI { get; set; }
+
+        public string AFCInternalKey { get; set; }
     }
 }

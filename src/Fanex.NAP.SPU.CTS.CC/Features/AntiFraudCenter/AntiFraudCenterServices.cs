@@ -12,9 +12,9 @@
 
     public interface IAntiFraudCenterServices
     {
-        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData);
+        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData, string internalKey);
 
-        void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData);
+        void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData, string internalKey);
     }
 
     public class AntiFraudCenterServices : IAntiFraudCenterServices
@@ -31,7 +31,7 @@
             this.antiFraudCenterDataAccess = antiFraudCenterDataAccess;
         }
 
-        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData)
+        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData, string internalKey)
         {
             try
             {
@@ -41,9 +41,9 @@
 
                     if (accountInfo != null && accountInfo.Any())
                     {
-                        var notExistedAccount = CheckAccountExist(accountInfo);
+                        var notExistedAccount = CheckAccountExist(accountInfo, internalKey);
 
-                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL);
+                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL, internalKey);
                     }
                 }
             }
@@ -53,7 +53,7 @@
             }
         }
 
-        public async void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData)
+        public async void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData, string internalKey)
         {
             try
             {
@@ -63,20 +63,23 @@
 
                     if (filterB2CLicensee != null && filterB2CLicensee.Any())
                     {
-                        var custIdsToDelete = filterB2CLicensee.Select(c => c.CustID).Distinct();
+                        var custIdsToDelete = filterB2CLicensee.Where(c=>c.FraudIDList== null || !c.FraudIDList.Any())?.Select(c => c.CustID)?.Distinct();
 
-                        var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", custIdsToDelete));
-
-                        if (b2cCustIds != null && b2cCustIds.Any())
+                        if(custIdsToDelete!= null && custIdsToDelete.Any())
                         {
-                            var para = new DeleteAccountParasViewEntity
-                            {
-                                Key = AFCInternalKey,
-                                Data = b2cCustIds
-                            };
+                            var b2cCustIds = antiFraudCenterDataAccess.GetB2CCustIds(string.Join(",", custIdsToDelete));
 
-                            await ApiHelper.Post<bool>(url, para);
-                        }
+                            if (b2cCustIds != null && b2cCustIds.Any())
+                            {
+                                var para = new DeleteAccountParasViewEntity
+                                {
+                                    Key = internalKey,
+                                    Data = b2cCustIds
+                                };
+
+                                await ApiHelper.Post<bool>(url, para);
+                            }
+                        }               
                     }
                 }
             }
@@ -159,7 +162,7 @@
             return new List<GetAccountViewEntity>();
         }
 
-        private IEnumerable<string> CheckAccountExist(IEnumerable<GetAccountViewEntity> accInfo)
+        private IEnumerable<string> CheckAccountExist(IEnumerable<GetAccountViewEntity> accInfo, string internalKey)
         {
             if (accInfo != null && accInfo.Any())
             {
@@ -167,7 +170,7 @@
 
                 if (participants != null && participants.Any())
                 {
-                    var internalInfo = participants.SingleOrDefault(c => string.Equals(c.SecretKey, AFCInternalKey));
+                    var internalInfo = participants.SingleOrDefault(c => string.Equals(c.SecretKey, internalKey));
 
                     if (internalInfo == null)
                     {
@@ -193,13 +196,13 @@
         /// </summary>
         /// <param name="accInfo"></param>
         /// <param name="isInsertAction"></param>
-        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url)
+        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url, string internalKey)
         {
             if (accInfo != null && accInfo.Any())
             {
                 var para = new InsertAccountParasViewEntity
                 {
-                    Key = AFCInternalKey,
+                    Key = internalKey,
                     Data = accInfo
                 };
 
@@ -207,7 +210,7 @@
             }
         }
 
-        private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
+        private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL, string internalKey)
         {
             if (accountInfo != null && accountInfo.Any())
             {
@@ -218,7 +221,7 @@
                 {
                     try
                     {
-                        await SyncAFCData(accToInsert, insertURL);
+                        await SyncAFCData(accToInsert, insertURL, internalKey);
                     }
                     catch (Exception ex)
                     {
@@ -229,7 +232,7 @@
                 {
                     try
                     {
-                        await SyncAFCData(accToUpdate, updateURL);
+                        await SyncAFCData(accToUpdate, updateURL, internalKey);
                     }
                     catch (Exception ex)
                     {

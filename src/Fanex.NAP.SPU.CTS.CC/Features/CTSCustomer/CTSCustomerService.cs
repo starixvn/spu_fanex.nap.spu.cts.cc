@@ -456,7 +456,8 @@
                     IsSyncAFCData = paras.IsSyncAFCData,
                     AFCInsertAccountsAPI = paras.AFCInsertAccountsAPI,
                     AFCUpdateAccountsAPI = paras.AFCUpdateAccountsAPI,
-                    AFCDeleteAccountsAPI = paras.AFCDeleteAccountsAPI
+                    AFCDeleteAccountsAPI = paras.AFCDeleteAccountsAPI,
+                    AFCInternalKey = paras.AFCInternalKey
                 };
                 
                 result = rescanClassificationService.RescanCustomerClassify(rescanParam);

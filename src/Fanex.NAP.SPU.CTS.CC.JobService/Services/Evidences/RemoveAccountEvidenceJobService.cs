@@ -94,7 +94,8 @@
                         IsSyncAFCData = appSettings.IsSyncAFCData,
                         AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
                         AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
-                        AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI
+                        AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
+                        AFCInternalKey = appSettings.AFCInternalKey
                     };
 
                     isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);
