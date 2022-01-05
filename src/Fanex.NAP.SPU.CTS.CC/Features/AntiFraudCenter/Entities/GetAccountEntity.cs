@@ -18,5 +18,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
         public string AccountName { get; set; }
 
         public IEnumerable<int> FraudID { get; set; }
+
+        public string FullName { get; set; }
     }
 }
