@@ -6,7 +6,7 @@
 
     public interface IAntiFraudCenterDataAccess
     {
-        IEnumerable<GetAccountEntity> GetAccountInfo(string custIdJson);
+        IEnumerable<GetAccountEntity> GetB2CInfo(string custIdJson);
 
         IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
@@ -26,7 +26,7 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<GetAccountEntity> GetAccountInfo(string custIdJson)
+        public IEnumerable<GetAccountEntity> GetB2CInfo(string custIdJson)
         {
             var criteria = new GetAFCAccountInfoCriteria
             {
