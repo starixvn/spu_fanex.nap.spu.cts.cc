@@ -8,6 +8,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAntiFraudCenterServices
     {
@@ -70,7 +71,12 @@
                             Data = b2cCustIds
                         };
 
-                        await ApiHelper.Post<AccountDBResult>(url, para);
+                        var result = await ApiHelper.Post<AccountDBResult>(url, para);
+
+                        if (result.StatusCode != (int)HttpStatus.OK)
+                        {
+                            Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
+                        }
                     }
                 }
             }
@@ -207,7 +213,7 @@
         /// </summary>
         /// <param name="accInfo"></param>
         /// <param name="isInsertAction"></param>
-        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url, string internalKey)
+        private async Task<AccountDBResult> SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url, string internalKey)
         {
             if (accInfo != null && accInfo.Any())
             {
@@ -217,40 +223,54 @@
                     Data = accInfo
                 };
 
-                await ApiHelper.Post<AccountDBResult>(url, para);
+                return await ApiHelper.Post<AccountDBResult>(url, para);
             }
+
+            return new AccountDBResult { StatusCode = (int)HttpStatus.OK, ErrorMessage = string.Empty };
         }
 
         private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL, string internalKey)
         {
-            if (accountInfo != null && accountInfo.Any())
+            if (accountInfo == null || !accountInfo.Any())
             {
-                var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
-                var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;
+                return;
+            }    
 
-                Parallel.Invoke(async () =>
+            var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
+            var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;
+
+            Parallel.Invoke(async () =>
+            {
+                try
                 {
-                    try
+                    var result = await SyncAFCData(accToInsert, insertURL, internalKey);
+
+                    if (result.StatusCode != (int)HttpStatus.OK)
                     {
-                        await SyncAFCData(accToInsert, insertURL, internalKey);
+                        Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
                     }
-                    catch (Exception ex)
-                    {
-                        Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
-                    }
-                },
-                async () =>
+                }
+                catch (Exception ex)
                 {
-                    try
+                    Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
+                }
+            },
+            async () =>
+            {
+                try
+                {
+                    var result = await SyncAFCData(accToUpdate, updateURL, internalKey);
+
+                    if (result.StatusCode != (int)HttpStatus.OK)
                     {
-                        await SyncAFCData(accToUpdate, updateURL, internalKey);
+                        Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Update Accounts fail", accToUpdate, new Exception(result.ErrorMessage), sentryClient);
                     }
-                    catch (Exception ex)
-                    {
-                        Utilities.LogSentryError(ServiceName, "CTS.CC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
-                    }
-                });
-            }
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(ServiceName, "CTS.CC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
+                }
+            });
         }
 
         private static bool IsValid(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<FilterCustToSyncAFCKEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
