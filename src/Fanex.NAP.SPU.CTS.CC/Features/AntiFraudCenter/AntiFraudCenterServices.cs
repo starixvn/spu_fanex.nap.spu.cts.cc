@@ -52,6 +52,8 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", custIds, ex, sentryClient);
+
+                antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
             }
         }
 
@@ -83,6 +85,8 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(ServiceName, "CTS.CC Service - Delete Accounts fail", custIds, ex, sentryClient);
+
+                antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
             }
         }
 
@@ -251,10 +255,12 @@
                     }
 
                     Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
+                    antiFraudCenterDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(accToInsert));
                 }
                 catch (Exception ex)
                 {
                     Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
+                    antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accToInsert));
                 }
             },
             async () =>
@@ -266,11 +272,13 @@
                     if (result.StatusCode != (int)HttpStatus.OK)
                     {
                         Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Update Accounts fail", accToUpdate, new Exception(result.ErrorMessage), sentryClient);
+                        antiFraudCenterDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(accToUpdate));
                     }
                 }
                 catch (Exception ex)
                 {
                     Utilities.LogSentryError(ServiceName, "CTS.CC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
+                    antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accToUpdate));
                 }
             });
         }

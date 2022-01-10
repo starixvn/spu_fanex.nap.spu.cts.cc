@@ -15,6 +15,8 @@
         IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
 
         IEnumerable<ParticipantEntity> GetParticipant();
+
+        void InsertErrorLog(int? participantID, string errorMessage, string dataJson);
     }
 
     public class AntiFraudCenterDataAccess : IAntiFraudCenterDataAccess
@@ -72,6 +74,18 @@
             var criteria = new ParticipantGetCriteria();
 
             return repository.Fetch<ParticipantEntity>(criteria);
+        }
+
+        public void InsertErrorLog(int? participantID, string errorMessage, string dataJson)
+        {
+            var criteria = new ErrorLogInsertCriteria
+            {
+                ErrorMessage = errorMessage,
+                DataJson = dataJson,
+                ParticipantID = participantID
+            };
+
+            repository.Execute(criteria);
         }
     }
 }
