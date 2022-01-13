@@ -73,18 +73,16 @@
                             Data = b2cCustIds
                         };
 
-                        var result = await ApiHelper.Post<AccountDBResult>(url, para);
-
-                        if (result.StatusCode != (int)HttpStatus.OK && IsLogError(result.ErrorMessage))
-                        {
-                            Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
-                        }
+                        await ApiHelper.Post<AccountDBResult>(url, para);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "CTS.CC Service - Delete Accounts fail", custIds, ex, sentryClient);
+                if (IsLogError(ex.Message))
+                {
+                    Utilities.LogSentryError(ServiceName, "CTS.CC Service - Delete Accounts fail", custIds, ex, sentryClient);
+                }
 
                 antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
             }
