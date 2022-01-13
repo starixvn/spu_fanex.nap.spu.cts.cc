@@ -75,7 +75,7 @@
 
                         var result = await ApiHelper.Post<AccountDBResult>(url, para);
 
-                        if (result.StatusCode != (int)HttpStatus.OK)
+                        if (result.StatusCode != (int)HttpStatus.OK && IsLogError(result.ErrorMessage))
                         {
                             Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
                         }
@@ -291,6 +291,16 @@
             }
 
             return false;
+        }
+
+        private static bool IsLogError(string errorMessage)
+        {
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return !errorMessage.Contains("Not Exist");
+            }
+
+            return true;
         }
 
         #endregion Private methods
