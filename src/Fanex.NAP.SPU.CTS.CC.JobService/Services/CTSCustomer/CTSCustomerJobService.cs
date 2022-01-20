@@ -54,7 +54,7 @@
                 logContent += $"Quantity of total list: {customers.CustomerInfos.Count}\n";
 
                 var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url, false);
-                sentryClient.CaptureMessage(logContent, Sentry.Protocol.SentryLevel.Info);
+                //sentryClient.CaptureMessage(logContent, Sentry.Protocol.SentryLevel.Info);
                 return Task.FromResult(result);
             }
             catch (Exception ex)
@@ -160,7 +160,7 @@
                         var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
                         $"{missingCusts.Count()} missing customers";
 
-                        //NotifyTelegramMessage(mess);
+                        NotifyTelegramMessage(mess);
                         if (isAutoInsertMissing)
                         {
                             var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID)
