@@ -149,8 +149,7 @@
 
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
                 var toDate = fromDate.AddHours(2);
-                toDate = toDate > DateTime.Now.AddHours(-0.5) ? DateTime.Now.AddHours(-4) : toDate;
-                if (toDate <= DateTime.Now.AddHours(0.5))
+                if (toDate <= DateTime.Now.AddHours(-0.5))
                 {
                     var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
                     custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
