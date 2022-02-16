@@ -41,6 +41,7 @@
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel_xtest" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
+		<Setting Key="CTS_DC_RobotClassification_Scan" SpName="CTS_DC_RobotClassification_Scan" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="RemoveAccountEvidence">
 		<Setting Key="CTS_DC_CustEvidenceQueue_Get" SpName="CTS_DC_CustEvidenceQueue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />

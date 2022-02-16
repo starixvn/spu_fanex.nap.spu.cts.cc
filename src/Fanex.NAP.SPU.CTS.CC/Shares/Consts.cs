@@ -35,7 +35,8 @@
             ProblemAccountLastScannedTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
-            InsertNewCustomerMonitoring = 67
+            InsertNewCustomerMonitoring = 67,
+            RobotAIClassificationLastScannedID = 69
         };
 
         public enum DangerLevel

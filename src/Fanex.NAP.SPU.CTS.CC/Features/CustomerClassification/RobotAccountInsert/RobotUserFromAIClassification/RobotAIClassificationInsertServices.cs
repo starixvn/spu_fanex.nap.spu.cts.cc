@@ -9,87 +9,69 @@
     using System.Threading;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface IRobotAccountInsertServices
+    public interface IRobotAIClassificationInsertServices
     {
-        IRobotAccountInsertServices Start();
+        IRobotAIClassificationInsertServices Start();
 
-        IRobotAccountInsertServices GetLastTimespan();
-
-        IRobotAccountInsertServices GetRobotUser();
+        IRobotAIClassificationInsertServices GetRobotUserFromAIClassification();
 
         bool Process(InsertRobotParaEntity paras);
 
-        bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
+        IRobotAIClassificationInsertServices UpdateLastScannedId(SystemParameters index);
 
-        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
+        bool InsertPAToCTS(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras);
 
-        void UpdateLastTimespan();
-
-        RobotUserViewEntity RobotUserInfo { get; }
+        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers);
     }
 
-    public class RobotAccountInsertServices : IRobotAccountInsertServices
+    public class RobotAIClassificationInsertServices : IRobotAIClassificationInsertServices
     {
-        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
+        private readonly IRobotAIClassificationInsertDataAccess robotAIClassificationInsertDataAccess;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private long lastScannedTimespan;
-        private RobotUserViewEntity robotInfo;
+        private RobotAIViewEntity robotAIInfo;
 
-        public RobotAccountInsertServices(
-            IRobotAccountInsertDataAccess robotAccountInsertDataAccess,
+        public RobotAIClassificationInsertServices(
+            IRobotAIClassificationInsertDataAccess robotAIClassificationInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IProblemAccountServices problemAccountServices)
 
         {
-            this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
+            this.robotAIClassificationInsertDataAccess = robotAIClassificationInsertDataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
         }
 
-        public IRobotAccountInsertServices Start()
+        public IRobotAIClassificationInsertServices Start()
         {
-            lastScannedTimespan = 0;
-
-            robotInfo = new RobotUserViewEntity
+            robotAIInfo = new RobotAIViewEntity
             {
-                RobotUsers = new List<RobotUserEntity>(),
-                MaxTimestamp = 0
+                LastScannedId = 0,
+                RobotAIClassification = Enumerable.Empty<RobotAIEntity>()
             };
 
             return this;
         }
 
-        public IRobotAccountInsertServices GetLastTimespan()
+        public IRobotAIClassificationInsertServices GetRobotUserFromAIClassification()
         {
-            lastScannedTimespan = systemParameterServices.GetLastScannedId(SystemParameters.RobotAccountLastScannedTime);
-
-            return this;
-        }
-
-        public IRobotAccountInsertServices GetRobotUser()
-        {
-            robotInfo = robotAccountInsertDataAccess.GetRobotUsers(lastScannedTimespan);
+            robotAIInfo = robotAIClassificationInsertDataAccess.GetRobotUsersFromAIClassification();
 
             return this;
         }
 
         public bool Process(InsertRobotParaEntity paras)
         {
-            if (robotInfo != null
-                && robotInfo.RobotUsers != null
-                && robotInfo.RobotUsers.Any())
+            if (robotAIInfo != null && robotAIInfo.RobotAIClassification != null && robotAIInfo.RobotAIClassification.Any())
             {
-                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotInfo.RobotUsers }, FunctionId.RobotUserJob, paras.ServiceName);
-
-                var robotUsersChunks = robotInfo.RobotUsers.Chunk(paras.BatchInternalSize).ToList();
+                var robotUsersChunks = robotAIInfo.RobotAIClassification.Chunk(paras.BatchInternalSize).ToList();
 
                 foreach (var robot in robotUsersChunks)
                 {
-                    bool isSuccess = InsertRobotUsers(robot, paras);
+                    bool isSuccess = InsertPAToCTS(robot, paras);
 
                     if (!isSuccess)
                     {
@@ -101,7 +83,7 @@
             return true;
         }
 
-        public bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
+        public bool InsertPAToCTS(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras)
         {
             bool isSuccess = true;
 
@@ -110,7 +92,7 @@
                 var custCategory = MappingRobotCategory(robotUsers);
 
                 var result = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, paras.ServiceName, paras.IsWriteLog);
-               
+
                 isSuccess = (result != null && result.ErrorCode == 0);
 
                 if (isSuccess && result.CustIds != null && result.CustIds.Any())
@@ -133,7 +115,7 @@
             return isSuccess;
         }
 
-        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
+        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers)
         {
             var custCategory = new List<ProblemAccountsEntity>();
 
@@ -141,27 +123,27 @@
             {
                 custCategory = robotUsers.Select(c => new ProblemAccountsEntity
                 {
-                    CustID = c.CustId,
-                    ReasonID = (int)Category.Robot,
-                    RobotCounter = c.Counter
+                    CustID = c.CustID,
+                    ReasonID = c.ReasonID,
+                    RobotCounter = 0
                 }).ToList();
             }
 
             return custCategory;
         }
 
-        public void UpdateLastTimespan()
+        public IRobotAIClassificationInsertServices UpdateLastScannedId(SystemParameters index)
         {
-            if (robotInfo != null
-                && robotInfo.RobotUsers != null
-                && robotInfo.RobotUsers.Any())
+            if (robotAIInfo != null && robotAIInfo.LastScannedId != 0)
             {
-                string lastTimespan = robotInfo.MaxTimestamp.ToString();
+                string lastScannedId = robotAIInfo.LastScannedId.ToString();
 
-                systemParameterServices.UpdateTimingExecution(lastTimespan, SystemParameters.RobotAccountLastScannedTime);
+                systemParameterServices.UpdateTimingExecution(lastScannedId, index);
             }
+
+            return this;
         }
 
-        public RobotUserViewEntity RobotUserInfo => robotInfo;
+        public RobotAIViewEntity RobotUserInfo => robotAIInfo;
     }
 }
