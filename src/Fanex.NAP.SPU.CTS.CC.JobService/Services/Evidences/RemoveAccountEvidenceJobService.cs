@@ -92,9 +92,10 @@
                         InternalBatchSize = internalBatchSize,
                         ExternalBatchSize = externalBatchSize,
                         IsSyncAFCData = appSettings.IsSyncAFCData,
-                        AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
-                        AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
-                        AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
+                        AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                        AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
+                        AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
+                        AFCGetAccountURL = appSettings.AFCGetAccountURL,
                         AFCInternalKey = appSettings.AFCInternalKey
                     };
 

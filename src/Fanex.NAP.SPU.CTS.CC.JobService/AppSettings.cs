@@ -14,11 +14,13 @@
 
         string Soon88FeedDataAPI { get; }
 
-        string AFCInsertAccountsAPI { get; }
+        string AFCInsertAccountURL { get; }
 
-        string AFCUpdateAccountsAPI { get; }
+        string AFCUpdateAccountURL { get; }
 
-        string AFCDeleteAccountsAPI { get; }
+        string AFCDeleteAccountURL { get; }
+
+        string AFCGetAccountURL { get; }
 
         bool IsSyncAFCData { get; }
 
@@ -55,9 +57,10 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
-        private readonly string afcInsertAccountsAPI;
-        private readonly string afcUpdateAccountsAPI;
-        private readonly string afcDeleteAccountsAPI;
+        private readonly string afcInsertAccountURL;
+        private readonly string afcUpdateAccountURL;
+        private readonly string afcDeleteAccountURL;
+        private readonly string afcGetAccountURL;
         private readonly bool isSyncAFCData;
         private readonly string afcInternalKey;
         private readonly string sentryDsn;
@@ -70,9 +73,10 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
-            afcInsertAccountsAPI = GetValue<string>("AntiFraudCenter:AFCInsertAccountsAPI");
-            afcUpdateAccountsAPI = GetValue<string>("AntiFraudCenter:AFCUpdateAccountsAPI");
-            afcDeleteAccountsAPI = GetValue<string>("AntiFraudCenter:AFCDeleteAccountsAPI");
+            afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
+            afcUpdateAccountURL = GetValue<string>("AntiFraudCenter:AFCUpdateAccountURL");
+            afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
+            afcGetAccountURL = GetValue<string>("AntiFraudCenter:AFCGetAccountURL");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
             afcInternalKey = GetValue<string>("AntiFraudCenter:AFCInternalKey");
             sentryDsn = GetValue<string>("Sentry:Dsn");
@@ -104,11 +108,13 @@
 
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
 
-        public string AFCInsertAccountsAPI => afcInsertAccountsAPI;
+        public string AFCInsertAccountURL => afcInsertAccountURL;
 
-        public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
+        public string AFCUpdateAccountURL => afcUpdateAccountURL;
 
-        public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
+        public string AFCDeleteAccountURL => afcDeleteAccountURL;
+
+        public string AFCGetAccountURL => afcGetAccountURL;
 
         public bool IsSyncAFCData => isSyncAFCData;
 

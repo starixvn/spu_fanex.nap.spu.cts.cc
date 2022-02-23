@@ -12,11 +12,13 @@
 
         public bool IsSyncAFCData { get; set; }
 
-        public string AFCInsertAccountsAPI { get; set; }
+        public string AFCInsertAccountURL { get; set; }
 
-        public string AFCUpdateAccountsAPI { get; set; }
+        public string AFCUpdateAccountURL { get; set; }
 
-        public string AFCDeleteAccountsAPI { get; set; }
+        public string AFCDeleteAccountURL { get; set; }
+
+        public string AFCGetAccountURL { get; set; }
 
         public bool IsInsertMissingCust { get; set; }
 

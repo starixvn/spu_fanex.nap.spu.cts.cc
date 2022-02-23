@@ -6,8 +6,6 @@
 
     public interface IAntiFraudCenterDataAccess
     {
-        IEnumerable<GetAccountEntity> GetB2CInfo(string custIdJson);
-
         IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
         IEnumerable<FilterCustToSyncAFCKEntity> FilterLicenseeCust(string custIds);
@@ -26,16 +24,6 @@
         public AntiFraudCenterDataAccess()
         {
             repository = new DynamicRepository();
-        }
-
-        public IEnumerable<GetAccountEntity> GetB2CInfo(string custIdJson)
-        {
-            var criteria = new GetAFCAccountInfoCriteria
-            {
-                B2CCustIdJson = custIdJson
-            };
-
-            return repository.Fetch<GetAccountEntity>(criteria);
         }
 
         public IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds)

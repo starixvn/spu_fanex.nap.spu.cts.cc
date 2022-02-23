@@ -454,9 +454,10 @@
                     InternalBatchSize = paras.InternalBatchSize,
                     ExternalBatchSize = paras.ExternalBatchSize,
                     IsSyncAFCData = paras.IsSyncAFCData,
-                    AFCInsertAccountsAPI = paras.AFCInsertAccountsAPI,
-                    AFCUpdateAccountsAPI = paras.AFCUpdateAccountsAPI,
-                    AFCDeleteAccountsAPI = paras.AFCDeleteAccountsAPI,
+                    AFCInsertAccountURL = paras.AFCInsertAccountURL,
+                    AFCUpdateAccountURL = paras.AFCUpdateAccountURL,
+                    AFCDeleteAccountURL = paras.AFCDeleteAccountURL,
+                    AFCGetAccountURL = paras.AFCGetAccountURL,
                     AFCInternalKey = paras.AFCInternalKey
                 };
                 

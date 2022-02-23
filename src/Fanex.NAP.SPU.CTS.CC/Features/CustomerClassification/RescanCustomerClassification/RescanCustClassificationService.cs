@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -269,7 +270,14 @@
                 },
                 () =>
                 {
-                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), paras.AFCInsertAccountsAPI, paras.AFCUpdateAccountsAPI, paras.IsSyncAFCData, paras.AFCInternalKey);
+                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), new AFCParaModel
+                    {
+                        IsSyncAFCData = paras.IsSyncAFCData,
+                        InternalKey = paras.AFCInternalKey,
+                        InsertURL = paras.AFCInsertAccountURL,
+                        UpdateURL = paras.AFCUpdateAccountURL,
+                        GetURL = paras.AFCGetAccountURL
+                    });
                 });
             }
 

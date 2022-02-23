@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
+    using System.Collections.Generic;
+
     public class GetAccountEntity
     {
         //B2CustId

@@ -55,14 +55,15 @@
 
                 var result = ctscustomerService.InsertNewCustomer(customers, new InsertNewCustRescanEntity
                 {
-                    InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                    ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                    IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                    InternalBatchSize = batchSize,
+                    ExternalBatchSize = batchSize,
+                    IsWriteLog = isWriteLog,
+                    FeedSoon88API = soon88Url,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
-                    AFCDeleteAccountsAPI = appSettings.AFCDeleteAccountsAPI,
-                    AFCInsertAccountsAPI = appSettings.AFCInsertAccountsAPI,
-                    AFCUpdateAccountsAPI = appSettings.AFCUpdateAccountsAPI,
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                    AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
+                    AFCGetAccountURL = appSettings.AFCGetAccountURL,
                     AFCInternalKey = appSettings.AFCInternalKey,
                     IsInsertMissingCust = false
                 });
@@ -178,7 +179,21 @@
                                 CustomerInfos = missingCustData.ToList(),
                                 LastInsertCustID = 0
                             };
-                            ctscustomerService.InsertNewCustomer(data, isWriteLog, batchSize, soon88Url, true);
+
+                            ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
+                            {
+                                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsSyncAFCData = appSettings.IsSyncAFCData,
+                                AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
+                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
+                                AFCGetAccountURL = appSettings.AFCGetAccountURL,
+                                AFCInternalKey = appSettings.AFCInternalKey,
+                                IsInsertMissingCust = true
+                            });
                         }
                         else
                         {

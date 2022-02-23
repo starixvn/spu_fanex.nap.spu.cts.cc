@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -12,7 +13,7 @@
 
     public interface IAntiFraudCenterServices
     {
-        void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData, string internalKey);
+        void InsertAFCAccounts(IEnumerable<long> custIds, AFCParaModel para);
 
         void DeleteAFCAccounts(IEnumerable<long> custIds, string url, bool isSyncAFCData, string internalKey);
     }
@@ -33,19 +34,19 @@
 
         #region Public methods
 
-        public void InsertAFCAccounts(IEnumerable<long> custIds, string insertURL, string updateURL, bool isSyncAFCData, string internalKey)
+        public void InsertAFCAccounts(IEnumerable<long> custIds, AFCParaModel para)
         {
             try
             {
-                if (custIds != null && custIds.Any() && isSyncAFCData)
+                if (custIds != null && custIds.Any() && para.IsSyncAFCData)
                 {
-                    var accountInfo = GetAccountForInsert(string.Join(",", custIds));
+                    var accountInfo = GetAccountForInsert(string.Join(",", custIds), para.GetURL);
 
                     if (accountInfo != null && accountInfo.Any())
                     {
-                        var notExistedAccount = CheckAccountExist(accountInfo, internalKey);
+                        var notExistedAccount = CheckAccountExist(accountInfo, para.InternalKey);
 
-                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL, internalKey);
+                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, para.InsertURL, para.UpdateURL, para.InternalKey);
                     }
                 }
             }
@@ -73,7 +74,7 @@
                             Data = b2cCustIds
                         };
 
-                        await ApiHelper.Post<AccountDBResult>(url, para);
+                        await ApiHelper.Post<AccountDBResult>(url, para, 200);
                     }
                 }
             }
@@ -109,7 +110,7 @@
             return Enumerable.Empty<GetB2CEntity>();
         }
 
-        private IEnumerable<GetAccountViewEntity> GetAccountForInsert(string custIds)
+        private IEnumerable<GetAccountViewEntity> GetAccountForInsert(string custIds, string url)
         {
             if (!string.IsNullOrEmpty(custIds))
             {
@@ -123,11 +124,9 @@
 
                     if (b2cCustIds != null && b2cCustIds.Any())
                     {
-                        var b2cCustJson = JsonConvert.SerializeObject(b2cCustIds.Select(c => c.B2CCustId));
+                        var accountInfo = GetB2CAccount(b2cCustIds.Select(c => c.B2CCustId), url);
 
-                        var accountInfo = antiFraudCenterDataAccess.GetB2CInfo(b2cCustJson);
-
-                        return MappingFrauIDs(accountInfo, filterB2CLicensee, b2cCustIds);
+                        return MappingFrauIDs(accountInfo.Result, filterB2CLicensee, b2cCustIds);
                     }
                 }
             }
@@ -225,10 +224,36 @@
                     Data = accInfo
                 };
 
-                return await ApiHelper.Post<AccountDBResult>(url, para);
+                return await ApiHelper.Post<AccountDBResult>(url, para, 200);
             }
 
             return new AccountDBResult { StatusCode = (int)HttpStatus.OK, ErrorMessage = string.Empty };
+        }
+
+        private async Task<IEnumerable<GetAccountEntity>> GetB2CAccount(IEnumerable<string> b2cCustIds, string url)
+        {
+            try
+            {
+                if (b2cCustIds != null && b2cCustIds.Any())
+                {
+                    var result = await ApiHelper.Post<B2CAccountResultEntity>(url, b2cCustIds, 200);
+
+                    if (result.StatusCode == HttpStatus.OK)
+                    {
+                        return result.B2CAccounts;
+                    }
+
+                    Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Get B2CAccounts from AFC.Nova88.API  - Exception", b2cCustIds, new Exception(result.ErrorMessage), sentryClient);
+                    antiFraudCenterDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(b2cCustIds));
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Get B2CAccounts from AFC.Nova88.API  - Exception", b2cCustIds, ex, sentryClient);
+                antiFraudCenterDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(b2cCustIds));
+            }
+
+            return Enumerable.Empty<GetAccountEntity>();
         }
 
         private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL, string internalKey)
@@ -236,7 +261,7 @@
             if (accountInfo == null || !accountInfo.Any())
             {
                 return;
-            }    
+            }
 
             var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
             var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;

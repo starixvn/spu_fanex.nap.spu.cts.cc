@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -120,8 +121,7 @@
                 {
                     Parallel.Invoke(() =>
                     {
-                        isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                        {
+                        isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity {
                             ExternalBatchSize = paras.BatchExternalSize,
                             FeedSoon88API = paras.Soon88FeedDataAPI,
                             IsPushCCToSoon88 = true,
@@ -133,7 +133,14 @@
                     },
                     () =>
                     {
-                        antiFraudCenterServices.InsertAFCAccounts(result.CustIds, paras.AFCInsertAccountsAPI, paras.AFCUpdateAccountsAPI, paras.IsSyncAFCData, paras.AFCInternalKey);
+                        antiFraudCenterServices.InsertAFCAccounts(result.CustIds, new AFCParaModel
+                        {
+                            IsSyncAFCData = paras.IsSyncAFCData,
+                            InternalKey = paras.AFCInternalKey,
+                            InsertURL = paras.AFCInsertAccountURL,
+                            UpdateURL = paras.AFCUpdateAccountURL,
+                            GetURL = paras.AFCGetAccountURL
+                        });
                     });
 
                     Thread.Sleep(RobotUsers_SleepTimes);

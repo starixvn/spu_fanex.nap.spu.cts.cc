@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -141,7 +142,14 @@
                     },
                     () =>
                     {
-                        antiFraudCenterServices.InsertAFCAccounts(custIds, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI, appSettings.IsSyncAFCData, appSettings.AFCInternalKey);
+                        antiFraudCenterServices.InsertAFCAccounts(custIds, new AFCParaModel
+                        {
+                            IsSyncAFCData = appSettings.IsSyncAFCData,
+                            InternalKey = appSettings.AFCInsertAccountURL,
+                            InsertURL = appSettings.AFCInternalKey,
+                            UpdateURL = appSettings.AFCUpdateAccountURL,
+                            GetURL = appSettings.AFCGetAccountURL
+                        });
                     });
                 }
             }
