@@ -122,7 +122,8 @@
                         ExternalBatchSize = externalBatchSize,
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
                         IsPushCCToSoon88 = true,
-                        IsUpdateDangerToMainDB = false,
+                        IsUpdateDangerToMainDB = true,
+                        DangerLevelType = DangerLevel.ABI,
                         IsWriteLog = false,
                         ServiceName = serviceName
                     });
