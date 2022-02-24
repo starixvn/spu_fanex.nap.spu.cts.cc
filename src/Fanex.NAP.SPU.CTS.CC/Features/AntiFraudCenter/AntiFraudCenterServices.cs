@@ -115,7 +115,7 @@
             if (!string.IsNullOrEmpty(custIds))
             {
                 var filterB2CLicensee = antiFraudCenterDataAccess.FilterLicenseeCust(custIds);
-
+               
                 if (filterB2CLicensee != null && filterB2CLicensee.Any())
                 {
                     var probAccouts = filterB2CLicensee.Where(c => c.FraudIDList != null && c.FraudIDList.Any()).Select(c => c.CustID).Distinct();
@@ -134,12 +134,12 @@
             return Enumerable.Empty<GetAccountViewEntity>();
         }
 
-        private static IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<FilterCustToSyncAFCKEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
+        private static IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<FilteSubscriberAccountEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
         {
             if (IsValid(accountInfo, fraudIDs, b2cCustIDs))
             {
                 var accInfo = accountInfo.GroupJoin(b2cCustIDs,
-                                   a => a.CustId,
+                                   a => a.AccountID,
                                    b => b.B2CCustId,
                                    (a, b) => new { a, b })
                                .SelectMany(
@@ -147,11 +147,11 @@
                                     (group, temp) => new GetAccountViewEntity
                                     {
                                         CustId = temp?.CustId,
-                                        B2CustId = group.a.CustId,
+                                        AccountID = group.a.AccountID,
                                         CountryCode = group.a.CountryCode,
-                                        PhoneNo = group.a.PhoneNo,
-                                        AccountName = group.a.AccountName,
-                                        AccountNum = group.a.AccountNum,
+                                        Phone = group.a.Phone,
+                                        BankName = group.a.BankName,
+                                        BankAccountID = group.a.BankAccountID,
                                         Email = group.a.Email,
                                         FullName = group.a.FullName
                                     })
@@ -164,11 +164,11 @@
                                    (group, temp) => new GetAccountViewEntity
                                    {
                                        CustId = group.a.CustId,
-                                       B2CustId = group.a.B2CustId,
+                                       AccountID = group.a.AccountID,
                                        CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
-                                       PhoneNo = group.a.PhoneNo,
-                                       AccountName = group.a.AccountName,
-                                       AccountNum = group.a.AccountNum,
+                                       Phone = group.a.Phone,
+                                       BankName = group.a.BankName,
+                                       BankAccountID = group.a.BankAccountID,
                                        Email = group.a.Email,
                                        FullName = group.a.FullName,
                                        FraudID = temp?.FraudIDList
@@ -195,7 +195,7 @@
                         throw new Exception("AFC - Internal Key is Invalid");
                     }
 
-                    var result = antiFraudCenterDataAccess.CheckAccountValidation(internalInfo.ParticipantID, accInfo.Select(c => new CheckAccountExistEntity { AccountID = c.B2CustId }));
+                    var result = antiFraudCenterDataAccess.CheckAccountValidation(internalInfo.ParticipantID, accInfo.Select(c => new CheckAccountExistEntity { AccountID = c.AccountID }));
 
                     if (result != null && result.Any())
                     {
@@ -263,8 +263,8 @@
                 return;
             }
 
-            var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
-            var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;
+            var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.AccountID)) : null;
+            var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.AccountID)) : accountInfo;
 
             Parallel.Invoke(async () =>
             {
@@ -306,7 +306,7 @@
             });
         }
 
-        private static bool IsValid(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<FilterCustToSyncAFCKEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
+        private static bool IsValid(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<FilteSubscriberAccountEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
         {
             if (accountInfo != null && fraudIDs != null && b2cCustIDs != null)
             {

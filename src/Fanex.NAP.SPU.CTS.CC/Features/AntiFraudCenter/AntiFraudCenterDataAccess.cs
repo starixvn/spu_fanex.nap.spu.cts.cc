@@ -8,7 +8,7 @@
     {
         IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
-        IEnumerable<FilterCustToSyncAFCKEntity> FilterLicenseeCust(string custIds);
+        IEnumerable<FilteSubscriberAccountEntity> FilterLicenseeCust(string custIds);
 
         IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
 
@@ -36,14 +36,14 @@
             return repository.Fetch<GetB2CEntity>(criteria);
         }
 
-        public IEnumerable<FilterCustToSyncAFCKEntity> FilterLicenseeCust(string custIds)
+        public IEnumerable<FilteSubscriberAccountEntity> FilterLicenseeCust(string custIds)
         {
             var criteria = new LicenseeCustFilterCriteria
             {
                 CustIDs = custIds
             };
 
-            return repository.Fetch<FilterCustToSyncAFCKEntity>(criteria);
+            return repository.Fetch<FilteSubscriberAccountEntity>(criteria);
         }
 
         public IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs)

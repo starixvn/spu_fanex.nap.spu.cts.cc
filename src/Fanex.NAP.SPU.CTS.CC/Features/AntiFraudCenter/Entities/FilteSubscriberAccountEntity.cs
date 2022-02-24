@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class FilterCustToSyncAFCKEntity
+    public class FilteSubscriberAccountEntity
     {
         public int CustID { get; set; }
 
