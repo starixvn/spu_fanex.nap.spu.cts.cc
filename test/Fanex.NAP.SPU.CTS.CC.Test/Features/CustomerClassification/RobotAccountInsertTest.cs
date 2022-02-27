@@ -21,7 +21,6 @@
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterDataAccess antiFraudCenterDataAccess;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
         public RobotAccountInsertTest()
@@ -32,8 +31,7 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-            antiFraudCenterDataAccess = Substitute.For<IAntiFraudCenterDataAccess>();
-            antiFraudCenterServices = new AntiFraudCenterServices(antiFraudCenterDataAccess, null);
+            antiFraudCenterServices = new AntiFraudCenterServices(null);
 
             robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,

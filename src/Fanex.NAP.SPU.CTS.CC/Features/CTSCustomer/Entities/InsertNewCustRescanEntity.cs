@@ -10,18 +10,11 @@
 
         public string FeedSoon88API { get; set; }
 
+        public bool IsInsertMissingCust { get; set; }
+
         public bool IsSyncAFCData { get; set; }
 
         public string AFCInsertAccountURL { get; set; }
 
-        public string AFCUpdateAccountURL { get; set; }
-
-        public string AFCDeleteAccountURL { get; set; }
-
-        public string AFCGetAccountURL { get; set; }
-
-        public bool IsInsertMissingCust { get; set; }
-
-        public string AFCInternalKey { get; set; }
     }
 }

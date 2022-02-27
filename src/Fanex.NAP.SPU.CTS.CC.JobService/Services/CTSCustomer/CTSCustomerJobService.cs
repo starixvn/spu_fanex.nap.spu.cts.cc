@@ -55,13 +55,9 @@
                     ExternalBatchSize = batchSize,
                     IsWriteLog = isWriteLog,
                     FeedSoon88API = soon88Url,
+                    IsInsertMissingCust = false,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
-                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
-                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                    AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
-                    AFCGetAccountURL = appSettings.AFCGetAccountURL,
-                    AFCInternalKey = appSettings.AFCInternalKey,
-                    IsInsertMissingCust = false
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                 });
 
                 return Task.FromResult(result);
@@ -182,13 +178,9 @@
                                 ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                                 IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
                                 FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsInsertMissingCust = true,
                                 IsSyncAFCData = appSettings.IsSyncAFCData,
-                                AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
-                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
-                                AFCGetAccountURL = appSettings.AFCGetAccountURL,
-                                AFCInternalKey = appSettings.AFCInternalKey,
-                                IsInsertMissingCust = true
+                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                             });
                         }
                         else

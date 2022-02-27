@@ -30,7 +30,6 @@
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
-        private readonly IAntiFraudCenterDataAccess antiFraudCenterDataAccess;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
         public RescanCustomerClassificationTest()
@@ -47,8 +46,7 @@
             dailyClassificationDataAccess = Substitute.For<IDailyClassificationDataAccess>();
             dailyClassificationServices = new DailyClassificationServices(dailyClassificationDataAccess);
 
-            antiFraudCenterDataAccess = Substitute.For<IAntiFraudCenterDataAccess>();
-            antiFraudCenterServices = new AntiFraudCenterServices(antiFraudCenterDataAccess, null);
+            antiFraudCenterServices = new AntiFraudCenterServices(null);
 
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(

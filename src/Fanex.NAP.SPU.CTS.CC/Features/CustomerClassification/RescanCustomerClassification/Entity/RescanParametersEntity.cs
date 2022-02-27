@@ -31,14 +31,6 @@
 
         public string AFCInsertAccountURL { get; set; }
 
-        public string AFCUpdateAccountURL { get; set; }
-
-        public string AFCDeleteAccountURL { get; set; }
-
-        public string AFCGetAccountURL { get; set; }
-
-        public string AFCInternalKey { get; set; }
-
         public FunctionId FuncId_CheckPA
         {
             get

@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -252,7 +251,6 @@
 
         public IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
         {
-
             if (custIdsToRescanPA != null && custIdsToRescanPA.Any())
             {
                 Parallel.Invoke(() =>
@@ -265,19 +263,12 @@
                         IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
                         DangerLevelType = paras.DangerLevelType,
                         IsWriteLog = paras.IsWriteLog,
-                        ServiceName = paras.ServiceName                    
+                        ServiceName = paras.ServiceName
                     });
                 },
                 () =>
                 {
-                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), new AFCParaModel
-                    {
-                        IsSyncAFCData = paras.IsSyncAFCData,
-                        InternalKey = paras.AFCInternalKey,
-                        InsertURL = paras.AFCInsertAccountURL,
-                        UpdateURL = paras.AFCUpdateAccountURL,
-                        GetURL = paras.AFCGetAccountURL
-                    });
+                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
                 });
             }
 

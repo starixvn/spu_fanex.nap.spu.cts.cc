@@ -92,11 +92,7 @@
                         InternalBatchSize = internalBatchSize,
                         ExternalBatchSize = externalBatchSize,
                         IsSyncAFCData = appSettings.IsSyncAFCData,
-                        AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                        AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
-                        AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,
-                        AFCGetAccountURL = appSettings.AFCGetAccountURL,
-                        AFCInternalKey = appSettings.AFCInternalKey
+                        AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                     };
 
                     isSuccess = rescanCustClassificationService.RescanCustomerClassify(paras);

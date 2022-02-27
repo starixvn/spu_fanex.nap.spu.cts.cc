@@ -8,6 +8,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountJobService
     {
@@ -119,7 +120,7 @@
                         },
                         () =>
                         {
-                            antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, appSettings.AFCDeleteAccountURL, appSettings.IsSyncAFCData, appSettings.AFCInternalKey);
+                            antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
                         });
 
                     }

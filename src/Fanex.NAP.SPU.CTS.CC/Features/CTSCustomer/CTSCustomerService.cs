@@ -454,11 +454,7 @@
                     InternalBatchSize = paras.InternalBatchSize,
                     ExternalBatchSize = paras.ExternalBatchSize,
                     IsSyncAFCData = paras.IsSyncAFCData,
-                    AFCInsertAccountURL = paras.AFCInsertAccountURL,
-                    AFCUpdateAccountURL = paras.AFCUpdateAccountURL,
-                    AFCDeleteAccountURL = paras.AFCDeleteAccountURL,
-                    AFCGetAccountURL = paras.AFCGetAccountURL,
-                    AFCInternalKey = paras.AFCInternalKey
+                    AFCInsertAccountURL = paras.AFCInsertAccountURL
                 };
                 
                 result = rescanClassificationService.RescanCustomerClassify(rescanParam);

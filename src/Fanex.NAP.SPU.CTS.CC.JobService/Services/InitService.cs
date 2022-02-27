@@ -137,7 +137,6 @@
             services.AddSingleton<IRescanCustClassificationDataAccess, RescanCustClassificationDataAccess>();
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
 
-            services.AddSingleton<IAntiFraudCenterDataAccess, AntiFraudCenterDataAccess>();
             services.AddSingleton<IAntiFraudCenterServices, AntiFraudCenterServices>();
         }
     }

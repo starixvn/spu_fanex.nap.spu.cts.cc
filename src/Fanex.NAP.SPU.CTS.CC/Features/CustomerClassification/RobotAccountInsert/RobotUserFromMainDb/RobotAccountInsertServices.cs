@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -133,14 +132,7 @@
                     },
                     () =>
                     {
-                        antiFraudCenterServices.InsertAFCAccounts(result.CustIds, new AFCParaModel
-                        {
-                            IsSyncAFCData = paras.IsSyncAFCData,
-                            InternalKey = paras.AFCInternalKey,
-                            InsertURL = paras.AFCInsertAccountURL,
-                            UpdateURL = paras.AFCUpdateAccountURL,
-                            GetURL = paras.AFCGetAccountURL
-                        });
+                       antiFraudCenterServices.InsertAFCAccounts(result.CustIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
                     });
 
                     Thread.Sleep(RobotUsers_SleepTimes);

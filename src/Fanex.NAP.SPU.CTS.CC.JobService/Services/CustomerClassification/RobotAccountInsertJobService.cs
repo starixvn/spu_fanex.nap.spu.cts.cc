@@ -103,10 +103,7 @@
                                                           Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
                                                           IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                           IsSyncAFCData = appSettings.IsSyncAFCData,
-                                                          AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                                          AFCUpdateAccountURL = appSettings.AFCUpdateAccountURL,
-                                                          AFCGetAccountURL = appSettings.AFCGetAccountURL,
-                                                          AFCInternalKey = appSettings.AFCInternalKey
+                                                          AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                                                       });
 
 

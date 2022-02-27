@@ -16,15 +16,9 @@
 
         string AFCInsertAccountURL { get; }
 
-        string AFCUpdateAccountURL { get; }
-
         string AFCDeleteAccountURL { get; }
 
-        string AFCGetAccountURL { get; }
-
         bool IsSyncAFCData { get; }
-
-        string AFCInternalKey { get; }
 
         bool ProblemAccountIsWriteLog { get; }
 
@@ -58,11 +52,8 @@
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
         private readonly string afcInsertAccountURL;
-        private readonly string afcUpdateAccountURL;
         private readonly string afcDeleteAccountURL;
-        private readonly string afcGetAccountURL;
         private readonly bool isSyncAFCData;
-        private readonly string afcInternalKey;
         private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
@@ -74,11 +65,8 @@
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
             afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
-            afcUpdateAccountURL = GetValue<string>("AntiFraudCenter:AFCUpdateAccountURL");
             afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
-            afcGetAccountURL = GetValue<string>("AntiFraudCenter:AFCGetAccountURL");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
-            afcInternalKey = GetValue<string>("AntiFraudCenter:AFCInternalKey");
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
@@ -110,15 +98,9 @@
 
         public string AFCInsertAccountURL => afcInsertAccountURL;
 
-        public string AFCUpdateAccountURL => afcUpdateAccountURL;
-
         public string AFCDeleteAccountURL => afcDeleteAccountURL;
 
-        public string AFCGetAccountURL => afcGetAccountURL;
-
         public bool IsSyncAFCData => isSyncAFCData;
-
-        public string AFCInternalKey => afcInternalKey;
 
         public string SentryDsn => sentryDsn;
 
