@@ -70,7 +70,13 @@
         [HttpPost("robotClassification")]
         public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningRobotClassification(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("robotAIClassification")]
+        public async Task<bool> RobotAIScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("updatewritelog")]

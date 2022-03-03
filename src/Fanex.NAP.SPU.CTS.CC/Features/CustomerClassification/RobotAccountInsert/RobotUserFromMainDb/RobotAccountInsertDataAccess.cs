@@ -5,7 +5,7 @@
 
     public interface IRobotAccountInsertDataAccess
     {
-        RobotUserViewEntity GetRobotUsers(long lastTimestamp);
+        RobotUserViewEntity GetRobotUsersFromMainDb(long lastTimestamp);
     }
 
     public class RobotAccountInsertDataAccess : IRobotAccountInsertDataAccess
@@ -17,7 +17,7 @@
             repository = new DynamicRepository();
         }
 
-        public RobotUserViewEntity GetRobotUsers(long lastTimestamp)
+        public RobotUserViewEntity GetRobotUsersFromMainDb(long lastTimestamp)
         {
             var result = new RobotUserViewEntity
             {

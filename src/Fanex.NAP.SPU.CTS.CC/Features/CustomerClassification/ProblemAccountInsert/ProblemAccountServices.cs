@@ -12,7 +12,7 @@
     {
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts(DateTime? dateTime, string serviceName, bool isWriteLog);
 
-        InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescan, string serviceName, bool isWriteLog);
+        InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName, bool isWriteLog);
 
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
 
@@ -41,13 +41,13 @@
             return problemAccounts ?? new List<ProblemAccountsEntity>();
         }
 
-        public InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescan, string serviceName, bool isWriteLog)
+        public InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName, bool isWriteLog)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
 
-                var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescan);
+                var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescanFlow);
 
                 Utilities.LogSentryInfo(serviceName, "InsertProblemAccountToCTS", result.CustIds, isWriteLog, sentryClient);
 

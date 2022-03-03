@@ -67,7 +67,7 @@
 
             long lastTimestamp = 1;
 
-            robotAccountInsertDataAccess.GetRobotUsers(lastTimestamp).Returns(robotAccounts);
+            robotAccountInsertDataAccess.GetRobotUsersFromMainDb(lastTimestamp).Returns(robotAccounts);
 
             systemParameterDataAccess.GetPreviousTimingExecution(SystemParameters.RobotAccountLastScannedTime).Returns(output);
 

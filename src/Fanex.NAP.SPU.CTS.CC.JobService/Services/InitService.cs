@@ -94,6 +94,9 @@
         {
             services.AddSingleton<IRobotAccountInsertDataAccess, RobotAccountInsertDataAccess>();
             services.AddSingleton<IRobotAccountInsertServices, RobotAccountInsertServices>();
+
+            services.AddSingleton<IRobotAIClassificationInsertDataAccess, RobotAIClassificationInsertDataAccess>();
+            services.AddSingleton<IRobotAIClassificationInsertServices, RobotAIClassificationInsertServices>();
             services.AddSingleton<IRobotAccountInsertJobService, RobotAccountInsertJobService>();
         }
 

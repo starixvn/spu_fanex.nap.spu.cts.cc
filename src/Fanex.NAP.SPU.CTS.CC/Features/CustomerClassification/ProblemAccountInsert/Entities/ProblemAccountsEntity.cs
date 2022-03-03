@@ -6,7 +6,7 @@
 
         public int ReasonID { get; set; }
 
-        //Default value = 0, except Check/Get RobotUser
+        //Default value = 0, except Check/Get RobotUser From MainDB
         public int RobotCounter { get; set; }
     }
 }
