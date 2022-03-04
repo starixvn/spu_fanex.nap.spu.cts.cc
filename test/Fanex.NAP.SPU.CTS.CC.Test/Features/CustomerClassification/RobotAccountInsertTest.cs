@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -21,7 +20,6 @@
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
         public RobotAccountInsertTest()
         {
@@ -31,13 +29,11 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-            antiFraudCenterServices = new AntiFraudCenterServices(null);
 
             robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
                                                                         systemParameterServices,
                                                                         custClassToMainDBService,
-                                                                        antiFraudCenterServices,
                                                                         problemAccountServices);
         }
 
