@@ -14,6 +14,12 @@
 
         string Soon88FeedDataAPI { get; }
 
+        string AFCInsertAccountURL { get; }
+
+        string AFCDeleteAccountURL { get; }
+
+        bool IsSyncAFCData { get; }
+
         bool ProblemAccountIsWriteLog { get; }
 
         bool NormalAccountIsWriteLog { get; }
@@ -45,6 +51,9 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string soon88FeedDataAPI;
+        private readonly string afcInsertAccountURL;
+        private readonly string afcDeleteAccountURL;
+        private readonly bool isSyncAFCData;
         private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
@@ -55,6 +64,9 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
+            afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
+            afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
+            isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
             sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
@@ -83,6 +95,12 @@
         public string SPName => spName;
 
         public string Soon88FeedDataAPI => soon88FeedDataAPI;
+
+        public string AFCInsertAccountURL => afcInsertAccountURL;
+
+        public string AFCDeleteAccountURL => afcDeleteAccountURL;
+
+        public bool IsSyncAFCData => isSyncAFCData;
 
         public string SentryDsn => sentryDsn;
 

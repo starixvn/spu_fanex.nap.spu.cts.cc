@@ -1,8 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;    
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -10,6 +11,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IRescanCustClassificationService
@@ -50,6 +52,7 @@
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
         private readonly IDailyClassificationServices dailyClassificationServices;
         private List<ProblemAccountsEntity> probAccountNAPPA;
@@ -63,6 +66,7 @@
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
+            IAntiFraudCenterServices antiFraudCenterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IDailyClassificationServices dailyClassificationServices)
         {
@@ -70,6 +74,7 @@
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.dailyClassificationServices = dailyClassificationServices;
         }
 
@@ -246,18 +251,24 @@
 
         public IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
         {
-
             if (custIdsToRescanPA != null && custIdsToRescanPA.Any())
             {
-                isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
+                Parallel.Invoke(() =>
                 {
-                    ExternalBatchSize = paras.ExternalBatchSize,
-                    FeedSoon88API = paras.FeedSoon88API,
-                    IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                    IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
-                    DangerLevelType = paras.DangerLevelType,
-                    IsWriteLog = paras.IsWriteLog,
-                    ServiceName = paras.ServiceName                    
+                    isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = paras.ExternalBatchSize,
+                        FeedSoon88API = paras.FeedSoon88API,
+                        IsPushCCToSoon88 = paras.IsPushCCToSoon88,
+                        IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
+                        DangerLevelType = paras.DangerLevelType,
+                        IsWriteLog = paras.IsWriteLog,
+                        ServiceName = paras.ServiceName
+                    });
+                },
+                () =>
+                {
+                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
                 });
             }
 

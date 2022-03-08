@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
-    using System;
     using System.Collections.Generic;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -30,8 +29,8 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-            robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
 
+            robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
                                                                         systemParameterServices,
                                                                         custClassToMainDBService,

@@ -19,8 +19,6 @@
 
         bool Process(InsertRobotParaEntity paras);
 
-        bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
-
         IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
 
         void UpdateLastTimespan();

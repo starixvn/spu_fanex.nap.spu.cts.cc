@@ -43,18 +43,23 @@
                 var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
                 var soon88Url = appSettings.Soon88FeedDataAPI;
                 var batchSize = appSettings.TransformCTSCustomerBatchSize;
-                var logContent = $"Start InsertNewCustomer - Batch size: {batchSize} - Time: {DateTime.Now} \n";
-
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
                 var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID).ToList();
-                logContent += $"LastCustID: {lastScanned.LastCustID} - Quantity of customer list: {customers.CustomerInfos.Count}\n";
-                logContent += $"LastCustSubID: {lastScanned.LastCustSubID} - Quantity of custsub list: {custSubs.Count}\n";
-                customers.CustomerInfos.AddRange(custSubs);
-                logContent += $"Quantity of total list: {customers.CustomerInfos.Count}\n";
 
-                var result = ctscustomerService.InsertNewCustomer(customers, isWriteLog, batchSize, soon88Url, false);
-                //sentryClient.CaptureMessage(logContent, Sentry.Protocol.SentryLevel.Info);
+                customers.CustomerInfos.AddRange(custSubs);
+
+                var result = ctscustomerService.InsertNewCustomer(customers, new InsertNewCustRescanEntity
+                {
+                    InternalBatchSize = batchSize,
+                    ExternalBatchSize = batchSize,
+                    IsWriteLog = isWriteLog,
+                    FeedSoon88API = soon88Url,
+                    IsInsertMissingCust = false,
+                    IsSyncAFCData = appSettings.IsSyncAFCData,
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                });
+
                 return Task.FromResult(result);
             }
             catch (Exception ex)
@@ -142,9 +147,6 @@
         {
             try
             {
-                var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
-                var soon88Url = appSettings.Soon88FeedDataAPI;
-                var batchSize = appSettings.TransformCTSCustomerBatchSize;
                 var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
 
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
@@ -169,7 +171,17 @@
                                 CustomerInfos = missingCustData.ToList(),
                                 LastInsertCustID = 0
                             };
-                            ctscustomerService.InsertNewCustomer(data, isWriteLog, batchSize, soon88Url, true);
+
+                            ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
+                            {
+                                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsInsertMissingCust = true,
+                                IsSyncAFCData = appSettings.IsSyncAFCData,
+                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                            });
                         }
                         else
                         {
@@ -179,7 +191,6 @@
 
                     ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
                 }
-                
 
                 return Task.FromResult(true);
             }
