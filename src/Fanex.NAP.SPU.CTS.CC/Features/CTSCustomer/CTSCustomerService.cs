@@ -17,11 +17,13 @@
     {
         LastScannedCustModel GetLastInsertCust();
 
-        UpdateCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
+        InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
-        bool InsertNewCustomer(UpdateCustomerModel data, InsertNewCustRescanEntity paras);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
+
+        bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -62,6 +64,8 @@
         void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID);
 
         void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
+
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -88,6 +92,213 @@
         {
             return dataAccess.GetLastUpdatedTime();
         }
+
+        #region Insert New Customers
+
+        public LastScannedCustModel GetLastInsertCust()
+        {
+            return dataAccess.GetLastInsertCust();
+        }
+
+        public InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID)
+        {
+            return dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
+        }
+
+        public List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID)
+        {
+            return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
+        }
+
+        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList)
+        {
+            var custInfos = new List<InsertCustomerModel>();
+            var customerJson = JsonConvert.SerializeObject(customerList);
+
+            try
+            {
+                custInfos = dataAccess.TransformCustomerFromMainDB(customerJson)?.ToList();
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError("InsertNewCustomer", "TransformCustomerFromMainDB exception:", customerJson, ex, sentryClient);
+            }
+
+            return custInfos;
+        }
+
+        public bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
+        {
+            if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
+            {
+                var customers = data.CustomerInfos;
+                var lastCustID = data.LastInsertCustID;
+
+                try
+                {
+                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);
+
+                    foreach (var custs in customersChunk)
+                    {
+                        var custIdList = TransformCustomerFromMainDB(custs.ToList());
+
+                        UpdateAssociationCustomerForArchive(custIdList);
+
+                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, paras, lastCustID);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras, long? lastCustID)
+        {
+            if (custIdList != null && custIdList.Any())
+            {
+                var isSuccess = RescanCCForNewCustomer(custIdList, paras);
+
+                if (isSuccess)
+                {
+                    NotifyCompleteForNewCustomer(custIdList, paras.IsWriteLog, lastCustID, paras.IsInsertMissingCust);
+                }
+            }
+        }
+
+        public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            dataAccess.InsertMissingCust(customerJson, scannedDate);
+        }
+
+        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
+        {
+            try
+            {
+                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RReTransformAccount throws exception", custIdList, ex, sentryClient);
+            }
+        }
+
+        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras)
+        {
+            var result = false;
+
+            try
+            {
+                var custToRescan = custIdList.Select(c => c.CustID).Distinct();
+
+                var rescanParam = new RescanParametersEntity
+                {
+                    CustIds = custToRescan,
+                    FunctionId = FunctionId.InsertNewCustJob,
+                    IsCheckPAFromNAP = true,
+                    IsPushCCToSoon88 = true,
+                    IsUpdateDangerToMainDB = true,
+                    DangerLevelType = DangerLevel.ABI,
+                    ServiceName = serviceName,
+                    FeedSoon88API = paras.FeedSoon88API,
+                    IsWriteLog = paras.IsWriteLog,
+                    InternalBatchSize = paras.InternalBatchSize,
+                    ExternalBatchSize = paras.ExternalBatchSize,
+                    IsSyncAFCData = paras.IsSyncAFCData,
+                    AFCInsertAccountURL = paras.AFCInsertAccountURL
+                };
+
+                result = rescanClassificationService.RescanCustomerClassify(rescanParam);
+
+                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
+            }
+
+            return result;
+        }
+
+        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertCustomerModel> customerList)
+        {
+            if (customerList != null && customerList.Any())
+            {
+                try
+                {
+                    var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
+                    {
+                        CustID = x.CustID,
+                        CTSCustID = x.CTSCustID,
+                        CustSubID = x.CustSubID,
+                        RoleID = x.RoleID
+                    });
+
+                    var custInfoJson = JsonConvert.SerializeObject(custList);
+
+                    var updateResult = dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForArchive throws exception", customerList, ex, sentryClient);
+                }
+            }
+        }
+
+        private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                try
+                {
+                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                    var updateResult = dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
+                }
+            }
+        }
+
+        public DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID)
+        {
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            var minDateInMainDB = new DateTime(2003, 1, 1);
+            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : minDateInMainDB;
+        }
+
+        public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
+        }
+
+        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
+        {
+            var customerJson = JsonConvert.SerializeObject(customerList);
+            return dataAccess.CompareCustomerDataForMonitor(customerJson);
+        }
+
+        #endregion Insert New Customers
+
+        #region Update Customers Info
 
         public void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog)
         {
@@ -251,38 +462,6 @@
             return dataAccess.GetUpdatedCustFromProductStatus(lastUpdatedTime, lastUpdatedCustId, numOfAccount);
         }
 
-        public LastScannedCustModel GetLastInsertCust()
-        {
-            return dataAccess.GetLastInsertCust();
-        }
-
-        public UpdateCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID)
-        {
-            return dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-        }
-
-        public List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID)
-        {
-            return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
-        }
-
-        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList)
-        {
-            var custInfos = new List<InsertCustomerModel>();
-            var customerJson = JsonConvert.SerializeObject(customerList);
-
-            try
-            {
-                custInfos = dataAccess.TransformCustomerFromMainDB(customerJson)?.ToList();
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError("InsertNewCustomer", "TransformCustomerFromMainDB exception:", customerJson, ex, sentryClient);
-            }
-
-            return custInfos;
-        }        
-
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID, UpdateCustomer sourceType)
         {
             switch (sourceType)
@@ -296,7 +475,7 @@
                     {
                         dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
                         break;
-                    }             
+                    }
                 case Constants.UpdateCustomer.FromProductStatus:
                     {
                         dataAccess.UpdateCustomerStatusComplete(customers, lastUpdateTime, lastUpdateCustID);
@@ -307,55 +486,9 @@
             }
         }
 
-        public bool InsertNewCustomer(UpdateCustomerModel data, InsertNewCustRescanEntity paras)
-        {
-            if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
-            {
-                var customers = data.CustomerInfos;
-                var lastCustID = data.LastInsertCustID;
+        #endregion Update Customers Info
 
-                try
-                {
-                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", customers, paras.IsWriteLog, sentryClient);
-
-                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);
-
-                    foreach (var custs in customersChunk)
-                    {
-                        var custIdList = TransformCustomerFromMainDB(custs.ToList());
-
-                        Utilities.LogSentryInfo(serviceName, "Insert", custs, paras.IsWriteLog, sentryClient);
-
-                        UpdateAssociationCustomerForArchive(custIdList);
-
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, paras, lastCustID);
-                    }
-
-                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer start", paras.IsWriteLog, sentryClient);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
-
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras, long? lastCustID)
-        {
-            if (custIdList != null && custIdList.Any())
-            {
-                var isSuccess = RescanCCForNewCustomer(custIdList, paras);
-
-                if (isSuccess)
-                {
-                    NotifyCompleteForNewCustomer(custIdList, paras.IsWriteLog, lastCustID, paras.IsInsertMissingCust);
-                }
-            }
-        }
+        #region Update UserName2
 
         public bool IsValidData(TranformCustModel data)
         {
@@ -384,131 +517,25 @@
             return dataAccess.UpdateUsername2(customerJson);
         }
 
-        public DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID)
-        {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            var minDateInMainDB = new DateTime(2003, 1, 1);
-            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : minDateInMainDB;
-        }
+        #endregion Update UserName2
 
-        public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate , SystemParameters paraID)
-        {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
-        }
+        #region Insert Reactivated Customers
 
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate)
         {
-            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-            return dataAccess.CompareCustomerDataForMonitor(customerJson);
-        }
-
-        public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-            dataAccess.InsertMissingCust(customerJson, scannedDate);
-        }
-
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
-        {
-            try
+            if (lastScannedDate != null)
             {
-                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
-
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - Insert complete", custIdList, isWriteLogInfo, sentryClient);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RReTransformAccount throws exception", custIdList, ex, sentryClient);
-            }
-        }
-
-        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras)
-        {
-            var result = false;
-
-            try
-            {
-                var custToRescan = custIdList.Select(c => c.CustID).Distinct();
-
-                var rescanParam = new RescanParametersEntity
-                {
-                    CustIds = custToRescan,
-                    FunctionId = FunctionId.InsertNewCustJob,
-                    IsCheckPAFromNAP = true,
-                    IsPushCCToSoon88 = true,
-                    IsUpdateDangerToMainDB = true,
-                    DangerLevelType = DangerLevel.ABI,
-                    ServiceName = serviceName,
-                    FeedSoon88API = paras.FeedSoon88API,
-                    IsWriteLog = paras.IsWriteLog,
-                    InternalBatchSize = paras.InternalBatchSize,
-                    ExternalBatchSize = paras.ExternalBatchSize,
-                    IsSyncAFCData = paras.IsSyncAFCData,
-                    AFCInsertAccountURL = paras.AFCInsertAccountURL
-                };
-                
-                result = rescanClassificationService.RescanCustomerClassify(rescanParam);
-
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
+                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value);
             }
 
-            return result;
+            return Enumerable.Empty<ReactivatedCustModel>();
         }
 
-        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertCustomerModel> customerList)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
         {
-            if (customerList != null && customerList.Any())
-            {
-                try
-                {
-                    var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
-                    {
-                        CustID = x.CustID,
-                        CTSCustID = x.CTSCustID,
-                        CustSubID = x.CustSubID,
-                        RoleID = x.RoleID                        
-                    });
-
-                    var custInfoJson = JsonConvert.SerializeObject(custList);
-
-                    var updateResult = dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForArchive throws exception", customerList, ex, sentryClient);
-                }
-            }
+            return dataAccess.GetCustSubFromMainDB(custIds);
         }
 
-        private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
-        {
-            if (assCustForRollbacks != null && assCustForRollbacks.Any())
-            {
-                try
-                {
-                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
-
-                    var updateResult = dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
-                }
-            }
-        }
+        #endregion Insert Reactivated Customers
     }
 }

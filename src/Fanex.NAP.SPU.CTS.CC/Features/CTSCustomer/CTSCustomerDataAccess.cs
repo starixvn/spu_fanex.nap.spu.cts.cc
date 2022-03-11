@@ -2,12 +2,13 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;        
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.Shares;    
+    using Fanex.NAP.SPU.CTS.Shares;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -16,9 +17,11 @@
     {
         LastScannedCustModel GetLastInsertCust();
 
-        UpdateCustomerModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
+        InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
 
         List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID);
+
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
         IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson);
 
@@ -59,6 +62,8 @@
         IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson);
 
         void InsertMissingCust(string custDataJson, DateTime scannedDate);
+
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -93,6 +98,145 @@
                 LastUpdateTimeCustProductStatus = LastUpdateTimeCustomerStatus
             };
         }
+
+        #region Insert New Customers
+
+        public LastScannedCustModel GetLastInsertCust()
+        {
+            var criteria = new GetLastInsertCustCriteria();
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var LastCustID = result.Read<Int64>().FirstOrDefault();
+            var LastCustSubID = result.Read<Int64>().FirstOrDefault();
+
+            return new LastScannedCustModel()
+            {
+                LastCustID = LastCustID,
+                LastCustSubID = LastCustSubID
+            };
+        }
+
+        public InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID)
+        {
+            var criteria = new GetCustomersFromMainDbCriteria
+            {
+                LastCustId = lastScannedCustID,
+                RowSize = quantityPerBatch,
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var customers = result?.Read<CustomerMainDBModel>();
+            var LastCustID = result?.Read<Int64?>();
+
+            return new InsertCustomerViewModel()
+            {
+                CustomerInfos = customers.ToList(),
+                LastInsertCustID = LastCustID?.FirstOrDefault()
+            };
+        }
+
+        public List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
+        {
+            var criteria = new GetCustSubFromMainDbCriteria
+            {
+                LastCustSubId = lastScannedCustID,
+                RowSize = quantityPerBatch
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return db.Query<CustomerMainDBModel>(criteria).ToList();
+        }
+
+        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson)
+        {
+            var criteria = new TransformCustomerFromMainDbCriteria
+            {
+                CustomerJson = customerJson
+            };
+
+            return repository.Fetch<InsertCustomerModel>(criteria);
+        }
+
+        public int UpdateAssociationCustomerForArchive(string custInfoJson)
+        {
+            var criteria = new UpdateAssociationCustomerForArchiveCriteria
+            {
+                CustInfoJson = custInfoJson
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        public int UpdateAssociationCustomerForRollback(string custInfoJson)
+        {
+            var criteria = new UpdateAssociationCustomerForRollbackCriteria
+            {
+                CustInfoJson = custInfoJson
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        public void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust)
+        {
+            var criteria = new ReTransformAccountCriteria
+            {
+                CustomerInfo = jsonData,
+                LastInsertCustID = lastCustID,
+                IsInsertMissingCust = isInsertMissingCust
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetCustomerInfoFromMainDBForMonitorCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson)
+        {
+            var criteria = new CompareCustomerDataForMonitorCriteria
+            {
+                CustomerListJson = custDataJson
+            };
+
+            return repository.Fetch<CustomerMainDBModel>(criteria);
+        }
+
+        public void InsertMissingCust(string custDataJson, DateTime scannedDate)
+        {
+            var criteria = new InsertMissingCustCriteria
+            {
+                CustomerListJson = custDataJson,
+                ScannedDate = scannedDate
+            };
+
+            repository.Execute(criteria);
+        }
+
+        #endregion Insert New Customers
+
+        #region Update Customers Info
 
         public TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
         {
@@ -149,83 +293,6 @@
                 LastCustId = firstResultSet.SingleOrDefault().LastCustId,
                 CustIdList = secondResultSet.SingleOrDefault()
             };
-        }
-
-        public LastScannedCustModel GetLastInsertCust()
-        {
-            var criteria = new GetLastInsertCustCriteria();
-
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            using var result = db.QueryMultiple(criteria);
-            var LastCustID = result.Read<Int64>().FirstOrDefault();
-            var LastCustSubID = result.Read<Int64>().FirstOrDefault();
-
-            return new LastScannedCustModel()
-            {
-                LastCustID = LastCustID,
-                LastCustSubID = LastCustSubID
-            };
-        }
-
-        public UpdateCustomerModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID)
-        {
-            var criteria = new GetCustomersFromMainDbCriteria
-            {
-                LastCustId = lastScannedCustID,
-                RowSize = quantityPerBatch,
-            };
-
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            using var result = db.QueryMultiple(criteria);
-            var customers = result?.Read<CustomerMainDBModel>();
-            var LastCustID = result?.Read<Int64?>();
-
-            return new UpdateCustomerModel()
-            {
-                CustomerInfos = customers.ToList(),
-                LastInsertCustID = LastCustID?.FirstOrDefault()
-            };
-        }
-
-        public List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
-        {
-            var criteria = new GetCustSubFromMainDbCriteria
-            {
-                LastCustSubId = lastScannedCustID,
-                RowSize = quantityPerBatch
-            };
-
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<CustomerMainDBModel>(criteria).ToList();
-        }
-
-        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson)
-        {
-            var criteria = new TransformCustomerFromMainDbCriteria
-            {
-                CustomerJson = customerJson
-            };
-
-            return repository.Fetch<InsertCustomerModel>(criteria);
-        }
-
-        public int UpdateAssociationCustomerForArchive(string custInfoJson)
-        {
-            var criteria = new UpdateAssociationCustomerForArchiveCriteria { 
-                 CustInfoJson = custInfoJson
-            };
-
-            return repository.Execute(criteria);
-        }
-
-        public int UpdateAssociationCustomerForRollback(string custInfoJson)
-        {
-            var criteria = new UpdateAssociationCustomerForRollbackCriteria
-            {
-                CustInfoJson = custInfoJson
-            };
-
-            return repository.Execute(criteria);
         }
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
@@ -290,6 +357,10 @@
             return custInfos;
         }
 
+        #endregion Update Customers Info
+
+        #region Update UserName2
+
         public IEnumerable<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
         {
             var criteria = new GetCustomersWithNullUsername2Criteria
@@ -321,59 +392,31 @@
             return repository.Execute(criteria);
         }
 
-        public void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust)
+        #endregion Update UserName2
+
+        #region Insert Reactivated Customers
+
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate)
         {
-            var criteria = new ReTransformAccountCriteria
+            var criteria = new ReactivatedCustomerGetCriteria
             {
-                CustomerInfo = jsonData,
-                LastInsertCustID = lastCustID,
-                IsInsertMissingCust = isInsertMissingCust
+                LastScannedDate = lastScannedDate
             };
 
-            repository.Execute(criteria);
+            return repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
         {
-            var criteria = new GetCustomerInfoFromMainDBForMonitorCriteria
+            var criteria = new GetCustSubFromMainDbCriteria
             {
-                FromDate = fromDate,
-                ToDate = toDate
+                CustIdList = custIds,
+                QueryType = (int) QueryType.GetByCustId
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria);
+            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty< CustomerMainDBModel>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return repository.Fetch<CustomerMainDBModel>(criteria);
-        }
-
-        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson)
-        {
-            var criteria = new CompareCustomerDataForMonitorCriteria
-            {
-                CustomerListJson = custDataJson
-            };
-
-            return repository.Fetch<CustomerMainDBModel>(criteria);
-        }
-
-        public void InsertMissingCust(string custDataJson, DateTime scannedDate)
-        {
-            var criteria = new InsertMissingCustCriteria
-            {
-                CustomerListJson = custDataJson,
-                ScannedDate = scannedDate
-            };
-
-            repository.Execute(criteria);
-        }
+        #endregion Insert Reactivated Customers
     }
 }

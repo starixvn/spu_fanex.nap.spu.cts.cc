@@ -12,6 +12,12 @@
         [SpParam(SqlParamName = "rowSize")]
         public int RowSize { get; set; }
 
+        [SpParam(SqlParamName = "CustIdList")]
+        public string CustIdList { get; set; }
+
+        [SpParam(SqlParamName = "QueryType")]
+        public int QueryType { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_Customer_GetNewCustSubInfo";

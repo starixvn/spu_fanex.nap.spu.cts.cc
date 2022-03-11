@@ -43,5 +43,11 @@
         {
             return await ctsCustomerJobService.MonitorInsertNewCustomer();
         }
+
+        [HttpPost("InsertReactivatedCustomer")]
+        public async Task<bool> InsertReactivatedCustomer()
+        {
+            return await ctsCustomerJobService.InsertReactivatedCustomers();
+        }
     }
 }
