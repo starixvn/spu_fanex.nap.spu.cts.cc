@@ -8,7 +8,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -19,7 +18,7 @@
 
         InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
 
-        List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID);
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
@@ -132,21 +131,22 @@
 
             return new InsertCustomerViewModel()
             {
-                CustomerInfos = customers.ToList(),
+                CustomerInfos = customers?.ToList() ?? new List<CustomerMainDBModel>(),
                 LastInsertCustID = LastCustID?.FirstOrDefault()
             };
         }
 
-        public List<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
         {
             var criteria = new GetCustSubFromMainDbCriteria
             {
                 LastCustSubId = lastScannedCustID,
-                RowSize = quantityPerBatch
+                RowSize = quantityPerBatch,
+                QueryType = (int) QueryType.GetByRange,
+                CustIdList = ""
             };
 
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<CustomerMainDBModel>(criteria).ToList();
+            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
         public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson)
@@ -411,10 +411,10 @@
             var criteria = new GetCustSubFromMainDbCriteria
             {
                 CustIdList = custIds,
-                QueryType = (int) QueryType.GetByCustId
+                QueryType = (int)QueryType.GetByCustId
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty< CustomerMainDBModel>();
+            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
         #endregion Insert Reactivated Customers

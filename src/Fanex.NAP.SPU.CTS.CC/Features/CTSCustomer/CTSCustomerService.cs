@@ -9,6 +9,7 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -19,7 +20,7 @@
 
         InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
 
-        List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
@@ -105,7 +106,7 @@
             return dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
         }
 
-        public List<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID)
         {
             return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
         }
@@ -166,7 +167,7 @@
 
                 if (isSuccess)
                 {
-                    NotifyCompleteForNewCustomer(custIdList, paras.IsWriteLog, lastCustID, paras.IsInsertMissingCust);
+                    NotifyCompleteForNewCustomer(custIdList, lastCustID, paras.IsInsertMissingCust);
                 }
             }
         }
@@ -177,7 +178,7 @@
             dataAccess.InsertMissingCust(customerJson, scannedDate);
         }
 
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, bool isWriteLogInfo, long? lastCustID, bool isInsertMissingCust)
+        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, long? lastCustID, bool isInsertMissingCust)
         {
             try
             {
@@ -439,7 +440,7 @@
 
         public IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
         {
-            return dataAccess.GetCustomerFromMainDBForUpdate(custIds, sourceType);
+            return dataAccess.GetCustomerFromMainDBForUpdate(custIds, sourceType) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType)
@@ -533,7 +534,7 @@
 
         public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
         {
-            return dataAccess.GetCustSubFromMainDB(custIds);
+            return dataAccess.GetCustSubFromMainDB(custIds) ?? Enumerable.Empty< CustomerMainDBModel>();
         }
 
         #endregion Insert Reactivated Customers
