@@ -25,6 +25,8 @@
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
 
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
+
+        IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(string custInfoJson);
     }
 
     public class CustomerEvidenceInsertDataAccess : ICustomerEvidenceInsertDataAccess
@@ -149,5 +151,16 @@
 
             return repository.Execute(criteria);
         }
+
+        public IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(string custInfoJson)
+        {
+            var criteria = new CustEvidenceGetByReasonIdCriteria
+            {
+                CustInfoJson = custInfoJson
+            };
+
+            return repository.Fetch<CustEvidenceByReasonIdEntity>(criteria);
+        }
+
     }
 }

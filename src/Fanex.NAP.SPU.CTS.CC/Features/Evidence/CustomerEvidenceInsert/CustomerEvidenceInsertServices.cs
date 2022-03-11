@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -32,6 +33,10 @@
         List<CustomerEvidenceFailedToProcessEntity> GetLogError();
 
         IEnumerable<IEnumerable<CustomerEvidenceFromFileEntity>> ChunkSize(List<CustomerEvidenceFromFileEntity> custEvidenceInFiles, int internalBatchSize);
+
+        IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(IEnumerable<ProblemAccountsEntity> problemAccounts);
+
+        void InsertCustEvidenceFromProblemAccount(IEnumerable<CustEvidenceByReasonIdEntity> custEvidences);
     }
 
     public class CustomerEvidenceInsertServices : ICustomerEvidenceInsertServices
@@ -333,5 +338,36 @@
                 }
             }
         }
+
+        public IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(IEnumerable<ProblemAccountsEntity> problemAccounts)
+        {
+            var custReasons = problemAccounts.Select(x => new CustReasonEntity
+            {
+                CustID = x.CustID,
+                ReasonID = x.ReasonID
+            });
+
+            var custInfoJson = JsonConvert.SerializeObject(custReasons);
+
+            return customerEvidenceInsertDataAccess.GetCustEvidenceByReasonId(custInfoJson);
+        }
+
+        public void InsertCustEvidenceFromProblemAccount(IEnumerable<CustEvidenceByReasonIdEntity> custEvidences)
+        {
+            var CreatedBy = ImportEvidence_StarixITId;
+
+            var objects = custEvidences.Select(x => new
+            {
+                x.CTSCustID,
+                x.EvidenceID,
+                x.Remark,
+                CreatedBy
+            });
+
+            var jsonData = JsonConvert.SerializeObject(objects);
+
+            var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false);
+        }
     }
 }
+
