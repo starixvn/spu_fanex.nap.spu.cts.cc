@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Sentry;
     using System;
@@ -251,7 +252,7 @@
 
                     if (isSuccess)
                     {
-                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(), SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
