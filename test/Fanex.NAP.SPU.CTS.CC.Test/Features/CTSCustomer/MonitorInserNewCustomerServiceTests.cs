@@ -68,7 +68,7 @@
             var toDate = new DateTime(2022, 1, 1);
             var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
 
-            dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
+            dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
             var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
 
             result.Should().BeEquivalentTo(expectedResult);

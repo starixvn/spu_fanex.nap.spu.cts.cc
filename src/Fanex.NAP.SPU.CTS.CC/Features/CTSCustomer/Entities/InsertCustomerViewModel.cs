@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class UpdateCustomerModel
+    public class InsertCustomerViewModel
     {
         public List<CustomerMainDBModel> CustomerInfos { get; set; }
 

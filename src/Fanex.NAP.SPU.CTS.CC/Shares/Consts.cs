@@ -36,7 +36,8 @@
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
             InsertNewCustomerMonitoring = 67,
-            RobotAIClassificationLastScannedID = 69
+            RobotAIClassificationLastScannedID = 69,
+            ReactivatedCustomerLastScannedDate = 76,
         };
 
         public enum DangerLevel
@@ -75,6 +76,7 @@
 
         public enum UpdateCustomer
         {
+            ForNewCustomer = 0,
             FromCustomer = 1,
             FromCustInfo = 2,
             FromProductStatus = 3
@@ -137,6 +139,12 @@
             CTSServices = 3,
             AFCSerivce = 4,
             ManualTrigger = 5
+        };
+
+        public enum QueryType
+        {
+            GetByRange = 1,
+            GetByCustId = 2
         };
     }
 }

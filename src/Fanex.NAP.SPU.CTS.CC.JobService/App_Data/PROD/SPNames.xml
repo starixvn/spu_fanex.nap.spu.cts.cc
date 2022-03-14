@@ -99,4 +99,8 @@
 		<Setting Key="CTS_DC_CustInfo_Monitoring_CompareData" SpName="CTS_DC_CustInfo_Monitoring_CompareData" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_Monitoring_InsertMissingCust" SpName="CTS_DC_CustInfo_Monitoring_InsertMissingCust" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
+
+	<Function Name="InsertReactivatedCustomer">
+		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
+	</Function>
 </Functions>

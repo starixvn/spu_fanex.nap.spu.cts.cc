@@ -71,7 +71,7 @@
         [Fact]
         public void GetCustomerFromMainDBForInsertNew_WhenSuccess_ReturnData()
         {
-            var dataFromDB = new UpdateCustomerModel()
+            var dataFromDB = new InsertCustomerViewModel()
             {
                 CustomerInfos = new List<CustomerMainDBModel>
                 {

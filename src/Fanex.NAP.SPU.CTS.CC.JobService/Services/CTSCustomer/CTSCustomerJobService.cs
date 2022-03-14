@@ -3,10 +3,14 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Sentry;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -21,18 +25,25 @@
         Task<bool> UpdateUsername2(int batchSize);
 
         Task<bool> MonitorInsertNewCustomer();
+
+        Task<bool> InsertReactivatedCustomers();
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
         private readonly ICTSCustomerService ctscustomerService;
+        private readonly ISystemParameterServices systemParameterServices;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
-        public CTSCustomerJobService(ISentryClient sentryClient, ICTSCustomerService ctscustomerService, IAppSettings appSettings)
+        public CTSCustomerJobService(ISentryClient sentryClient, 
+            ICTSCustomerService ctscustomerService,
+            ISystemParameterServices systemParameterServices,
+            IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.ctscustomerService = ctscustomerService;
+            this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
         }
 
@@ -40,8 +51,6 @@
         {
             try
             {
-                var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
-                var soon88Url = appSettings.Soon88FeedDataAPI;
                 var batchSize = appSettings.TransformCTSCustomerBatchSize;
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
@@ -53,8 +62,8 @@
                 {
                     InternalBatchSize = batchSize,
                     ExternalBatchSize = batchSize,
-                    IsWriteLog = isWriteLog,
-                    FeedSoon88API = soon88Url,
+                    IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsInsertMissingCust = false,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
                     AFCInsertAccountURL = appSettings.AFCInsertAccountURL
@@ -166,7 +175,7 @@
                         {
                             var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID)
                                                                     && missingCusts.Select(a => a.CustSubID).Contains(c.CustSubID));
-                            var data = new UpdateCustomerModel
+                            var data = new InsertCustomerViewModel
                             {
                                 CustomerInfos = missingCustData.ToList(),
                                 LastInsertCustID = 0
@@ -206,6 +215,62 @@
             }
         }
 
+        public Task<bool> InsertReactivatedCustomers()
+        {
+            try
+            {
+                var isSuccess = true;
+
+                var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ReactivatedCustomerLastScannedDate);
+
+                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
+
+                if (custToReactive != null && custToReactive.Any())
+                {
+                    var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
+                    string custIds = string.Join(",", custToReactive.Select(c=>c.CustID).Distinct());
+
+                    var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(custIds, UpdateCustomer.ForNewCustomer);
+                    var subCusts = ctscustomerService.GetCustSubFromMainDB(custIds);
+
+                    custInfo.CustomerInfos.AddRange(mainCusts);
+                    custInfo.CustomerInfos.AddRange(subCusts);
+
+                    if (custInfo != null && custInfo.CustomerInfos.Any())
+                    {
+                        isSuccess = ctscustomerService.InsertNewCustomer(custInfo, new InsertNewCustRescanEntity
+                        {
+                            InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                            ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                            IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                            IsInsertMissingCust = false,
+                            IsSyncAFCData = appSettings.IsSyncAFCData,
+                            AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                        });
+                    }
+
+                    if (isSuccess)
+                    {
+                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.ReactivatedCustomerLastScannedDate);
+                    }
+                }
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
+        #region Private Methods
         private void NotifyTelegramMessage(string message)
         {
             var telegramService = new NotificationService();
@@ -214,5 +279,7 @@
                .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
                .SendWithoutDelay(isInfo: true);
         }
+
+        #endregion
     }
 }
