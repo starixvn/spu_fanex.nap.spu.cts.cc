@@ -101,6 +101,6 @@
 	</Function>
 
 	<Function Name="InsertReactivatedCustomer">
-		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.sputeam" />
+		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
 	</Function>
 </Functions>
