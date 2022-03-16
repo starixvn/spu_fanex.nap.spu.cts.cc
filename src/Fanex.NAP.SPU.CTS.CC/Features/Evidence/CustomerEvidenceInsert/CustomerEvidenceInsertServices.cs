@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
+    using Fanex.Logging;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -29,6 +30,8 @@
         ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed);
 
         ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences);
+
+        void UpdateBetLimitOfFlaggedCustomer(string custIds);
 
         List<CustomerEvidenceFailedToProcessEntity> GetLogError();
 
@@ -257,6 +260,19 @@
             }
 
             return this;
+        }
+
+        public void UpdateBetLimitOfFlaggedCustomer(string custIds)
+        {
+            if (!string.IsNullOrEmpty(custIds))
+            {
+                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIds);
+
+                if (dbResult.ErrorCode != 0)
+                {
+                    LogService.Error("CTS.CC Update Bet Limit Of Flagged Customer with error message: " + dbResult.ErrorMsg);
+                }
+            }
         }
 
         public ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed)

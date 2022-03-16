@@ -128,6 +128,11 @@
                                 ServiceName = serviceName
                             });
                         },
+                        () => {
+                            var custIds = string.Join(",", result.CustIds);
+                          
+                            custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
+                        },
                         () =>
                         {
                             antiFraudCenterServices.InsertAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCInsertAccountURL);
