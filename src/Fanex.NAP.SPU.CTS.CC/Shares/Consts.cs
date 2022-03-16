@@ -38,6 +38,8 @@
             InsertNewCustomerMonitoring = 67,
             RobotAIClassificationLastScannedID = 69,
             ReactivatedCustomerLastScannedDate = 76,
+            TWGroupBetting_LastScanTime = 77,
+            TWGroupBetting_LastTimeCountTotalTicket = 78
         };
 
         public enum DangerLevel
