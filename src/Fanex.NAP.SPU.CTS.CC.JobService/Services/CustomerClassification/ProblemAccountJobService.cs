@@ -2,13 +2,15 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Linq;    
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -25,6 +27,7 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly ICustomerEvidenceInsertServices custEvidenceServices;
         private readonly IAppSettings appSettings;
         private IEnumerable<ProblemAccountsEntity> logData;
 
@@ -34,6 +37,7 @@
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService pushDataToExternalService,
             IAntiFraudCenterServices antiFraudCenterServices,
+            ICustomerEvidenceInsertServices custEvidenceServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
@@ -41,6 +45,7 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = pushDataToExternalService;
             this.antiFraudCenterServices = antiFraudCenterServices;
+            this.custEvidenceServices = custEvidenceServices;
             this.appSettings = appSettings;
             this.serviceName = "ProblemAccountInsert";
         }
@@ -106,6 +111,10 @@
 
                     if (isSuccess && result.CustIds != null && result.CustIds.Any())
                     {
+                        var custEvidences = custEvidenceServices.GetCustEvidenceByReasonId(items);
+
+                        custEvidenceServices.InsertCustEvidenceFromProblemAccount(custEvidences);
+
                         Parallel.Invoke(() =>
                         {
                             isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
@@ -118,6 +127,11 @@
                                 IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                                 ServiceName = serviceName
                             });
+                        },
+                        () => {
+                            var custIds = string.Join(",", result.CustIds);
+                          
+                            custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
                         },
                         () =>
                         {

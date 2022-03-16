@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
+    using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -29,9 +31,15 @@
 
         ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences);
 
+        void UpdateBetLimitOfFlaggedCustomer(string custIds);
+
         List<CustomerEvidenceFailedToProcessEntity> GetLogError();
 
         IEnumerable<IEnumerable<CustomerEvidenceFromFileEntity>> ChunkSize(List<CustomerEvidenceFromFileEntity> custEvidenceInFiles, int internalBatchSize);
+
+        IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(IEnumerable<ProblemAccountsEntity> problemAccounts);
+
+        void InsertCustEvidenceFromProblemAccount(IEnumerable<CustEvidenceByReasonIdEntity> custEvidences);
     }
 
     public class CustomerEvidenceInsertServices : ICustomerEvidenceInsertServices
@@ -254,6 +262,19 @@
             return this;
         }
 
+        public void UpdateBetLimitOfFlaggedCustomer(string custIds)
+        {
+            if (!string.IsNullOrEmpty(custIds))
+            {
+                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIds);
+
+                if (dbResult.ErrorCode != 0)
+                {
+                    LogService.Error("CTS.CC Update Bet Limit Of Flagged Customer with error message: " + dbResult.ErrorMsg);
+                }
+            }
+        }
+
         public ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed)
         {
             var idList = string.Join(",", custEvidences.Select(x => x.ID));
@@ -333,5 +354,36 @@
                 }
             }
         }
+
+        public IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(IEnumerable<ProblemAccountsEntity> problemAccounts)
+        {
+            var custReasons = problemAccounts.Select(x => new CustReasonEntity
+            {
+                CustID = x.CustID,
+                ReasonID = x.ReasonID
+            });
+
+            var custInfoJson = JsonConvert.SerializeObject(custReasons);
+
+            return customerEvidenceInsertDataAccess.GetCustEvidenceByReasonId(custInfoJson);
+        }
+
+        public void InsertCustEvidenceFromProblemAccount(IEnumerable<CustEvidenceByReasonIdEntity> custEvidences)
+        {
+            var CreatedBy = ImportEvidence_StarixITId;
+
+            var objects = custEvidences.Select(x => new
+            {
+                x.CTSCustID,
+                x.EvidenceID,
+                x.Remark,
+                CreatedBy
+            });
+
+            var jsonData = JsonConvert.SerializeObject(objects);
+
+            var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false);
+        }
     }
 }
+
