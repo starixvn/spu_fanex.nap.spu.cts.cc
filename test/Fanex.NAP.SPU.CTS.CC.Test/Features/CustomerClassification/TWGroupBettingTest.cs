@@ -1,10 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
     using FluentAssertions;
-    using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
@@ -42,6 +41,17 @@
         [Fact]
         public void GetAllRule_WhenSuccess_RunSuccessfully()
         {
+            var listRule = new List<TWGroupBettingRule>
+            {
+                new TWGroupBettingRule()
+                {
+                    RuleId = 1,
+                    RuleName = "RuleType1",
+                    LimitSecond = 5
+                }
+            };
+            twGroupBettingDataAccess.GetAllRules().Returns(listRule);
+
             var result = twGroupbettingServices.GetAllRules();
             result.Should().NotBeEmpty();
         }
@@ -50,8 +60,10 @@
         public void CountTotalTicket_WhenSuccess_RunSuccessfully()
         {
             var lastUpdatedTotalTicketTime = DateTime.Now;
+            var expectedResult = DateTime.Now.AddDays(1);
+            twGroupBettingDataAccess.CountTotalTicket(lastUpdatedTotalTicketTime).Returns(expectedResult);
             var result = twGroupbettingServices.CountTotalTicket(lastUpdatedTotalTicketTime);
-            result.Should().BeAfter(DateTime.MinValue);
+            result.Should().BeOnOrAfter(lastUpdatedTotalTicketTime);
         }
 
         //public void Abc()
