@@ -132,8 +132,6 @@
                             var custIds = string.Join(",", result.CustIds);
                           
                             custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
-
-                            Logging.LogService.Info($"Update bet limit of flagged for Customers: {custIds} successful");
                         },
                         () =>
                         {
