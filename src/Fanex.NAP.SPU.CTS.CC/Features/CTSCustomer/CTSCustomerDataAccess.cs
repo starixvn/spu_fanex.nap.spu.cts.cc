@@ -3,6 +3,8 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InactivateNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -63,6 +65,10 @@
         void InsertMissingCust(string custDataJson, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
+
+        InactivateNewCustomer GetInactivateNewCustomers();
+
+        int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -418,5 +424,42 @@
         }
 
         #endregion Insert Reactivated Customers
+
+        #region Inactive New Customers
+        public InactivateNewCustomer GetInactivateNewCustomers()
+        {
+            var data = new InactivateNewCustomer();
+            var criteria = new GetInactivateNewCustomerCriteria();
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                var result = db.QueryMultiple(criteria);
+                data.CustIDs = result.Read<long>();
+                var lastCustIDs = result.Read<long>();
+                var lastScannedTimes = result.Read<DateTime>();
+
+                if (lastCustIDs != null && lastCustIDs.Any())
+                    data.LastCustID = lastCustIDs.FirstOrDefault();
+                
+                if (lastScannedTimes != null && lastScannedTimes.Any())
+                    data.LastScannedTime = lastScannedTimes.FirstOrDefault();
+
+                return data;
+            }
+        }
+
+        public int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime)
+        {
+            var criteria = new UpdateStatusInactivateNewCustomerCriteria
+            {
+                LastCustID = lastCustID,
+                LastScannedTime = lastScannedTime
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        #endregion
+
     }
 }

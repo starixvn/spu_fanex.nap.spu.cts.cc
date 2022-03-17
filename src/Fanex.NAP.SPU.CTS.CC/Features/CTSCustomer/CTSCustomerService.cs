@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -67,6 +68,10 @@
         void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
+
+        InactivateNewCustomer GetInactivateNewCustomers();
+
+        int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -538,5 +543,18 @@
         }
 
         #endregion Insert Reactivated Customers
+
+        #region Inactivate New Customers
+        public InactivateNewCustomer GetInactivateNewCustomers()
+        {
+            return dataAccess.GetInactivateNewCustomers();
+        }
+
+        public int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime)
+        {
+            return dataAccess.UpdateStatusInactivateNewCustomers(lastCustID, lastScannedTime);
+        }
+        #endregion
+
     }
 }

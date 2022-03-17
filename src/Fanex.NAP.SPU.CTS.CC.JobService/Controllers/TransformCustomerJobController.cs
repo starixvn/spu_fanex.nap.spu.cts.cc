@@ -49,5 +49,12 @@
         {
             return await ctsCustomerJobService.InsertReactivatedCustomers();
         }
+
+        [HttpPost("InactivateNewCustomers")]
+        public async Task<bool> InactivateNewCustomers()
+        {
+            return await ctsCustomerJobService.InactivateNewCustomers();
+        }
+
     }
 }

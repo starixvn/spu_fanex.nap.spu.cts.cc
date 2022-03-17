@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
+    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
@@ -27,22 +29,27 @@
         Task<bool> MonitorInsertNewCustomer();
 
         Task<bool> InsertReactivatedCustomers();
+
+        Task<bool> InactivateNewCustomers();
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
         private readonly ICTSCustomerService ctscustomerService;
+        private readonly IDailyClassificationServices dailyClassificationService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
         public CTSCustomerJobService(ISentryClient sentryClient, 
             ICTSCustomerService ctscustomerService,
+            IDailyClassificationServices dailyClassificationService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.ctscustomerService = ctscustomerService;
+            this.dailyClassificationService = dailyClassificationService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
         }
@@ -270,6 +277,45 @@
             }
         }
 
+        public Task<bool> InactivateNewCustomers()
+        {
+            try
+            {
+                var isRunInactivate = true;
+
+                do
+                {
+                    var inactivateCusts = ctscustomerService.GetInactivateNewCustomers();
+
+                    if (inactivateCusts.CustIDs != null && inactivateCusts.CustIDs.Any())
+                    {
+                        dailyClassificationService.ClassifyCustomerGeneralCategoryDaily(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
+
+                        ctscustomerService.UpdateStatusInactivateNewCustomers(inactivateCusts.LastCustID, inactivateCusts.LastScannedTime);
+
+                        isRunInactivate = true;
+                    }
+                    else
+                    {
+                        isRunInactivate = false;
+                    }
+                 
+                } while (isRunInactivate);
+                    
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
         #region Private Methods
         private void NotifyTelegramMessage(string message)
         {
@@ -278,7 +324,7 @@
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
                .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
                .SendWithoutDelay(isInfo: true);
-        }
+        }            
 
         #endregion
     }
