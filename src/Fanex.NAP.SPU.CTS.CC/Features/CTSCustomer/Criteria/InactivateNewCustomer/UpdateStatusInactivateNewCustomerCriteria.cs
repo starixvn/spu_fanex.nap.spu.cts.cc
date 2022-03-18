@@ -6,11 +6,11 @@
 
     public class UpdateStatusInactivateNewCustomerCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_LastCustID")]
-        public long LastCustID { get; set; }
+        [SpParam(SqlParamName = "ip_LastCTSCustID")]
+        public long LastCTSCustID { get; set; }
 
-        [SpParam(SqlParamName = "ip_LastScannedTime")]
-        public DateTime LastScannedTime { get; set; }
+        [SpParam(SqlParamName = "ip_LastCreatedDate")]
+        public DateTime LastCreatedDate { get; set; }
 
         public override string GetSettingKey()
         {
@@ -21,5 +21,6 @@
         {
             return true;
         }
+
     }
 }

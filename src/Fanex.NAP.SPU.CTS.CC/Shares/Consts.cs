@@ -100,6 +100,7 @@
             RemoveFlaggedEvidenceWeb = 8,
             RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
+            InactivateNewCustomer = 11,
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
@@ -117,8 +118,7 @@
             RemoveFlaggedEvi_CheckRobotUser = 38,
             RemoveMultiEvi_CheckRobotUser = 39,
             ExcludeTaggingAss_CheckRobotUser = 40,
-            InsertPAJob = 41,
-            InactivateNewCustomer = 42
+            InsertPAJob = 41            
         };
 
         public enum HttpStatus

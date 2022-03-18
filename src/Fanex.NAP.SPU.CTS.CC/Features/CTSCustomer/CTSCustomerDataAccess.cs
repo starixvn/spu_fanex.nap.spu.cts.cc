@@ -68,7 +68,7 @@
 
         InactivateNewCustomer GetInactivateNewCustomers();
 
-        int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime);
+        int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -435,25 +435,25 @@
             {
                 var result = db.QueryMultiple(criteria);
                 data.CustIDs = result.Read<long>();
-                var lastCustIDs = result.Read<long>();
-                var lastScannedTimes = result.Read<DateTime>();
-
-                if (lastCustIDs != null && lastCustIDs.Any())
-                    data.LastCustID = lastCustIDs.FirstOrDefault();
+                var lastCreatedDates = result.Read<DateTime>();
+                var lastCTSCustIDs = result.Read<long>();
                 
-                if (lastScannedTimes != null && lastScannedTimes.Any())
-                    data.LastScannedTime = lastScannedTimes.FirstOrDefault();
+                if (lastCreatedDates != null && lastCreatedDates.Any())
+                    data.LastCreatedDate = lastCreatedDates.FirstOrDefault();
+
+                if (lastCTSCustIDs != null && lastCTSCustIDs.Any())
+                    data.LastCTSCustID = lastCTSCustIDs.FirstOrDefault();
 
                 return data;
             }
         }
 
-        public int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime)
+        public int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate)
         {
             var criteria = new UpdateStatusInactivateNewCustomerCriteria
             {
-                LastCustID = lastCustID,
-                LastScannedTime = lastScannedTime
+                LastCTSCustID = lastCTSCustID,
+                LastCreatedDate = lastCreatedDate                
             };
 
             return repository.Execute(criteria);

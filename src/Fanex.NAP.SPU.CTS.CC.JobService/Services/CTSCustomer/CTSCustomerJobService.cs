@@ -15,6 +15,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -291,9 +292,11 @@
                     {
                         dailyClassificationService.ClassifyCustomerGeneralCategoryDaily(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
 
-                        ctscustomerService.UpdateStatusInactivateNewCustomers(inactivateCusts.LastCustID, inactivateCusts.LastScannedTime);
+                        ctscustomerService.UpdateStatusInactivateNewCustomers(inactivateCusts.LastCTSCustID, inactivateCusts.LastCreatedDate);
 
                         isRunInactivate = true;
+
+                        Thread.Sleep(10000);
                     }
                     else
                     {

@@ -71,7 +71,7 @@
 
         InactivateNewCustomer GetInactivateNewCustomers();
 
-        int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime);
+        int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -550,9 +550,9 @@
             return dataAccess.GetInactivateNewCustomers();
         }
 
-        public int UpdateStatusInactivateNewCustomers(long lastCustID, DateTime lastScannedTime)
+        public int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate)
         {
-            return dataAccess.UpdateStatusInactivateNewCustomers(lastCustID, lastScannedTime);
+            return dataAccess.UpdateStatusInactivateNewCustomers(lastCTSCustID, lastCreatedDate);
         }
         #endregion
 
