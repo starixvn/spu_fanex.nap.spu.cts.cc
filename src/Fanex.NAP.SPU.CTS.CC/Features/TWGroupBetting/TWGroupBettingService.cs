@@ -11,11 +11,13 @@
 
     public interface ITWGroupBettingService
     {
-        void ScanTicket(DateTime fromTime, DateTime toTime, int step);
+        IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step);
 
         void CountGroupBettingTicket();
 
         DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime);
+
+        void CountGroupBettingTicketForDB062();
 
         DateTime GetLastScanTime(SystemParameters paraID);
 
@@ -24,6 +26,8 @@
         void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
+
+        void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -57,14 +61,19 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
-        public void ScanTicket(DateTime fromTime, DateTime toTime, int step) 
+        public IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step) 
         {
-            twGroupBettingDataAccess.ScanTicket(fromTime, toTime, step);
+            return twGroupBettingDataAccess.ScanTicket(fromTime, toTime, step);
         }
 
         public void CountGroupBettingTicket()
         {
             twGroupBettingDataAccess.CountGroupBettingTicket();
+        }
+        
+        public void CountGroupBettingTicketForDB062()
+        {
+            twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
         }
 
         public DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime) 
@@ -75,6 +84,11 @@
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {
             return twGroupBettingDataAccess.GetAllRules();
+        }
+
+        public void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets)
+        {
+            twGroupBettingDataAccess.SyncGroupBettingTicketToDB062(gbTickets);
         }
     }
 }

@@ -114,5 +114,7 @@
     <Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.bodb02.bodbSPUNet" />
     <Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.bodb02.bodbSPUNet" />
     <Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
+    <Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
+    <Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="SQL.bodb02.bodbSPUNet" />
   </Function>
 </Functions>

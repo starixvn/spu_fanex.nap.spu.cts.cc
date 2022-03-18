@@ -5,16 +5,21 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
     using System;
     using System.Collections.Generic;
+    using Fanex.NAP.SPU.CTS.Shares;
 
     public interface ITWGroupBettingDataAccess
     {
-        void ScanTicket(DateTime fromTime, DateTime toTime, int step);
+        IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step);
 
         void CountGroupBettingTicket();
+
+        void CountGroupBettingTicketForDB062();
 
         DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
+
+        void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
 
     }
 
@@ -28,7 +33,7 @@
             repository = new DynamicRepository();
         }
 
-        public void ScanTicket(DateTime fromTime, DateTime toTime, int step)
+        public IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step)
         {
             var criteria = new TWGroupBetting_ScanTicketCriteria
             {
@@ -37,12 +42,18 @@
                 Step = step
             };
 
-            repository.Execute(criteria);
+            return repository.Fetch<TWGroupBettingTicket>(criteria);
         }
 
         public void CountGroupBettingTicket()
         {
             var criteria = new TWGroupBetting_CountGBTicketCriteria();
+            repository.Execute(criteria);
+        }
+        
+        public void CountGroupBettingTicketForDB062()
+        {
+            var criteria = new TWGroupBetting_CountGBTicketDB062Criteria();
             repository.Execute(criteria);
         }
 
@@ -63,6 +74,16 @@
             var criteria = new TWGroupBetting_GetRuleCriteria();
 
             return repository.Fetch<TWGroupBettingRule>(criteria);
+        }
+
+        public void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets)
+        {
+            var criteria = new TWGroupBetting_SyncDataGroupBettingTicket 
+            { 
+                GBTicketXML = gbTickets.ToXmlString() 
+            };
+
+            repository.Execute(criteria);
         }
     }
 }

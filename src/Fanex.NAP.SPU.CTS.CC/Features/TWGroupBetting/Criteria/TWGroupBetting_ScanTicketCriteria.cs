@@ -4,7 +4,7 @@
     using Fanex.Data.Repository;
     using System;
 
-    public class TWGroupBetting_ScanTicketCriteria : NonQueryCommand
+    public class TWGroupBetting_ScanTicketCriteria : CriteriaBase
     {
         public DateTime FromTime { get; set; }
         

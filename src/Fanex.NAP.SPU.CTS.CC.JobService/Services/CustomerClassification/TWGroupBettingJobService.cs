@@ -42,8 +42,12 @@
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
                     var toTime = fromTime.AddMinutes(5);
-                    twGroupBettingService.ScanTicket(fromTime, toTime, step);
+                    var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
+                    twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
+
                     twGroupBettingService.CountGroupBettingTicket();
+                    twGroupBettingService.CountGroupBettingTicketForDB062();
+
                     twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
                 }
             }
