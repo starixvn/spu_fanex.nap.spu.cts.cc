@@ -3,6 +3,8 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InactivateNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -63,6 +65,10 @@
         void InsertMissingCust(string custDataJson, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
+
+        InactivateNewCustomer GetInactivateNewCustomers();
+
+        int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -418,5 +424,42 @@
         }
 
         #endregion Insert Reactivated Customers
+
+        #region Inactive New Customers
+        public InactivateNewCustomer GetInactivateNewCustomers()
+        {
+            var data = new InactivateNewCustomer();
+            var criteria = new GetInactivateNewCustomerCriteria();
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                var result = db.QueryMultiple(criteria);
+                data.CustIDs = result.Read<long>();
+                var lastCreatedDates = result.Read<DateTime>();
+                var lastCTSCustIDs = result.Read<long>();
+                
+                if (lastCreatedDates != null && lastCreatedDates.Any())
+                    data.LastCreatedDate = lastCreatedDates.FirstOrDefault();
+
+                if (lastCTSCustIDs != null && lastCTSCustIDs.Any())
+                    data.LastCTSCustID = lastCTSCustIDs.FirstOrDefault();
+
+                return data;
+            }
+        }
+
+        public int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate)
+        {
+            var criteria = new UpdateStatusInactivateNewCustomerCriteria
+            {
+                LastCTSCustID = lastCTSCustID,
+                LastCreatedDate = lastCreatedDate                
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        #endregion
+
     }
 }
