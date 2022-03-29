@@ -41,7 +41,7 @@
                 {
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
-                    var toTime = fromTime.AddMinutes(5);
+                    var toTime = fromTime.AddMinutes(1);
                     var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
                     twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
 
