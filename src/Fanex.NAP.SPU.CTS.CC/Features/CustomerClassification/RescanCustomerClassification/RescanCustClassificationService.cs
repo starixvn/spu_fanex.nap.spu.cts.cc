@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -54,7 +54,7 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
-        private readonly IDailyClassificationServices dailyClassificationServices;
+        private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private List<ProblemAccountsEntity> probAccountNAPPA;
         private List<ProblemAccountsEntity> robotUsers;
         private List<CustEvidenceEntity> existedEvidences;
@@ -68,7 +68,7 @@
             IProblemAccountServices problemAccountServices,
             IAntiFraudCenterServices antiFraudCenterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IDailyClassificationServices dailyClassificationServices)
+            IDailyNormalClassificationServices dailyClassificationServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.problemAccountServices = problemAccountServices;
@@ -288,7 +288,7 @@
 
                     foreach (var custIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, paras.FunctionId, false);
+                        dailyClassificationServices.ScanningDailyNormalClassification(custIds, paras.FunctionId, false);
                     }
                 }
             }

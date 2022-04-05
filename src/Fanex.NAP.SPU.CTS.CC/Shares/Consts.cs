@@ -39,7 +39,9 @@
             RobotAIClassificationLastScannedID = 69,
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastScanTime = 77,
-            TWGroupBetting_LastTimeCountTotalTicket = 78
+            TWGroupBetting_LastTimeCountTotalTicket = 78,
+            DailyNormalClassificationLastCategoryID = 85,
+            DailyNormalClassificationLastCustID = 86
         };
 
         public enum DangerLevel
@@ -94,7 +96,7 @@
         {
             RealtimeJob = 1,
             ProbationJob = 2,
-            DailyJob = 3,
+            NormalDailyJob = 3,
             InsertNewCustJob = 4,
             RemoveVIPWeb = 5,
             RemoveSpecialCCWeb = 6,
@@ -120,7 +122,7 @@
             RemoveFlaggedEvi_CheckRobotUser = 38,
             RemoveMultiEvi_CheckRobotUser = 39,
             ExcludeTaggingAss_CheckRobotUser = 40,
-            InsertPAJob = 41            
+            InsertPAJob = 41
         };
 
         public enum HttpStatus

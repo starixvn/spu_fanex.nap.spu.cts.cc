@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -12,47 +13,29 @@
 
     public class DailyClassificationTest
     {
-        private readonly IDailyClassificationDataAccess dailyClassificationDataAccess;
-        private readonly IDailyClassificationServices dailyClassificationServices;
+        private readonly IDailyNormalClassificationDataAccess dailyClassificationDataAccess;
+        private readonly IDailyNormalClassificationServices dailyClassificationServices;
+        private readonly ISystemParameterServices systemParameterService;
 
         public DailyClassificationTest()
         {
-            dailyClassificationDataAccess = Substitute.For<IDailyClassificationDataAccess>();
-            dailyClassificationServices = new DailyClassificationServices(dailyClassificationDataAccess);
+            dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
         }
 
-        [Theory]
-        [InlineData(-1, 1)]
-        [InlineData(1, -1)]
-        [InlineData(-1, -1)]
-        [InlineData(0, 0)]
-        [InlineData(0, -1)]
-        [InlineData(-1, 0)]
-        public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnCustClassificationList(int batchQuantity, int rowQuantityPerBatch)
+        [Fact]
+        public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnCustClassificationList()
         {
-            var dailyScanningClassiifications = new List<CustClassificationDailyEntity>
+            var dailyScanningClassiifications = new NormalClassificationDailyEntity
             {
-               new CustClassificationDailyEntity
-               {
-                    CustId = 1,
-                    CategoryId = 1,
-                    BatchID = 1,
-                    SportGroupId = 1,
-                    CreatedTime = DateTime.Parse("2021-07-07 22:50:55")
-               },
-               new CustClassificationDailyEntity
-               {
-                    CustId = 2,
-                    CategoryId = 2,
-                    BatchID = 2,
-                    SportGroupId = 2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55")
-               }
+                CustID = new List<Int64> { 1, 2, 3, 4 },
+                op_LastCategoryID = 1,
+                op_LastCustID = 1
             };
 
-            dailyClassificationDataAccess.GetCustomerForDailyScanning(batchQuantity, rowQuantityPerBatch).Returns(dailyScanningClassiifications);
+            dailyClassificationDataAccess.GetCustomerForDailyNormalScanning().Returns(dailyScanningClassiifications);
 
-            var result = dailyClassificationServices.GetCustClassificationForDailyScanning(batchQuantity, rowQuantityPerBatch);
+            var result = dailyClassificationServices.ScanningDailyNormalClassification(FunctionId.NormalDailyJob, true);
 
             result.Should().BeEquivalentTo(dailyScanningClassiifications);
         }
@@ -62,75 +45,9 @@
         {
             var custIds = new List<long> { 1, 2, 3 };
 
-            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), FunctionId.DailyJob, true);
+            dailyClassificationDataAccess.ScanningDailyNormalClassification(string.Join(",", custIds), FunctionId.NormalDailyJob, true);
 
-            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(custIds, FunctionId.DailyJob, true);
-            action.Should().NotThrow<Exception>();
-        }
-
-        [Fact]
-        public void ClassifyCustomerCategory_WhenSuccess_ReturnNotException()
-        {
-            var dailyScanningClassiifications = new List<CustClassificationDailyEntity>
-            {
-               new CustClassificationDailyEntity
-               {
-                    CustId = 1,
-                    CategoryId = 1,
-                    BatchID = 1,
-                    SportGroupId = 1,
-                    CreatedTime = DateTime.Parse("2021-07-07 22:50:55")
-               },
-               new CustClassificationDailyEntity
-               {
-                    CustId = 2,
-                    CategoryId = 2,
-                    BatchID = 2,
-                    SportGroupId = 2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55")
-               }
-            };
-
-            var custIds = string.Join(",", dailyScanningClassiifications.Select(c => c.CustId));
-
-            dailyClassificationDataAccess.ClassifyCustomerGeneralCategoryDaily(string.Join(",", custIds), FunctionId.DailyJob, true);
-
-            Action action = () => dailyClassificationServices.ClassifyCustomerGeneralCategoryDaily(dailyScanningClassiifications, FunctionId.DailyJob, true);
-            action.Should().NotThrow<Exception>();
-        }
-
-        [Fact]
-        public void UpdateDailyClassificationStatus_WhenSuccess_ReturnNotException()
-        {
-            var dailyScanningClassiifications = new List<CustClassificationDailyEntity>
-            {
-               new CustClassificationDailyEntity
-               {
-                    CustId = 1,
-                    CategoryId = 1,
-                    BatchID = 1,
-                    SportGroupId = 1,
-                    CreatedTime = DateTime.Parse("2021-07-07 22:50:55")
-               },
-               new CustClassificationDailyEntity
-               {
-                    CustId = 2,
-                    CategoryId = 2,
-                    BatchID = 2,
-                    SportGroupId = 2,
-                    CreatedTime = DateTime.Parse("2021-07-07 12:50:55")
-               }
-            };
-
-            string jsonData = JsonConvert.SerializeObject(dailyScanningClassiifications.Select(a => new
-            {
-                a.CustId,
-                a.SportGroupId
-            }));
-
-            dailyClassificationDataAccess.ClassifyCustomerDailyDone(jsonData);
-
-            Action action = () => dailyClassificationServices.UpdateDailyClassificationStatus(dailyScanningClassiifications);
+            Action action = () => dailyClassificationServices.ScanningDailyNormalClassification(custIds, FunctionId.NormalDailyJob, true);
             action.Should().NotThrow<Exception>();
         }
     }

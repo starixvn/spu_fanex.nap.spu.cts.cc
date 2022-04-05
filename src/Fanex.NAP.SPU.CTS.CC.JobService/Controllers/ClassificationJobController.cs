@@ -13,7 +13,7 @@
         private readonly ISentryClient sentryClient;
         private readonly IProblemAccountJobService problemAccountInsertJobService;
         private readonly INormalAccountJobService normalAccountInsertJobService;
-        private readonly IDailyClassificationJobService dailyClassificationJobService;
+        private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -21,7 +21,7 @@
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,
-            IDailyClassificationJobService dailyClassificationJobService,
+            IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService)
@@ -29,7 +29,7 @@
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
-            this.dailyClassificationJobService = dailyClassificationJobService;
+            this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
@@ -47,11 +47,11 @@
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("scanningDailyClassification")]
-        public async Task<bool> DailyScanningClassification([FromForm] int batchSize)
+        [HttpPost("scanningDailyNormalClassification")]
+        public async Task<bool> DailyScanningNormalClassification()
         {
-            sentryClient.CaptureMessage($"Daily Service is running at {DateTime.Now}");
-            return await this.dailyClassificationJobService.Execute(batchSize);
+            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
+            return await this.dailyNormalClassificationJobService.Execute();
         }
 
         [HttpPost("scanningRealtimeClassification")]

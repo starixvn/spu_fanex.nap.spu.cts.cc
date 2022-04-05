@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
 {
     using Fanex.Data.Repository;
 

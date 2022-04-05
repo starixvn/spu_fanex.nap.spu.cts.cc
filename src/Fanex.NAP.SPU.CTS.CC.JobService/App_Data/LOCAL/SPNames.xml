@@ -23,10 +23,9 @@
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger_xtest" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.bodb02.bodbSPUNet" />
 	</Function>
-	<Function Name="DailyClassification">
-		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+	<Function Name="DailyNormalClassification">
+		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_Daily" SpName="CTS_NormalAccountsClassification_GeneralCategorize_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
-		<Setting Key="CTS_DC_CustClassification_DailyScan_UpdateStatus" SpName="CTS_DC_CustClassification_DailyScan_UpdateStatus" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="RealtimeClassification">
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" SpName="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />

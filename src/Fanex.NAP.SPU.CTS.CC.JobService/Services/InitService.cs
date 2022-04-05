@@ -5,7 +5,7 @@
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
@@ -36,7 +36,7 @@
 
             RegisterNormalAccount(services);
 
-            RegisterDailyClassification(services);
+            RegisterDailyNormalClassification(services);
 
             RegisterRealtimeClassification(services);
 
@@ -81,11 +81,11 @@
             services.AddSingleton<INormalAccountJobService, NormalAccountJobService>();
         }
 
-        private static void RegisterDailyClassification(this IServiceCollection services)
+        private static void RegisterDailyNormalClassification(this IServiceCollection services)
         {
-            services.AddSingleton<IDailyClassificationDataAccess, DailyClassificationDataAccess>();
-            services.AddSingleton<IDailyClassificationServices, DailyClassificationServices>();
-            services.AddSingleton<IDailyClassificationJobService, DailyClassificationJobService>();
+            services.AddSingleton<IDailyNormalClassificationDataAccess, DailyNormalClassificationDataAccess>();
+            services.AddSingleton<IDailyNormalClassificationServices, DailyNormalClassificationServices>();
+            services.AddSingleton<IDailyNormalClassificationJobService, DailyNormalClassificationJobService>();
         }
 
         private static void RegisterRealtimeClassification(this IServiceCollection services)
