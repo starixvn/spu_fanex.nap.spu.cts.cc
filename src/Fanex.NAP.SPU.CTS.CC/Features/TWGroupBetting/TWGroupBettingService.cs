@@ -51,7 +51,7 @@
 
         public void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID)
         {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
+            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss.fff"), paraID);
         }
 
         public DateTime GetLastTimeCountTotalTicket(SystemParameters paraID)
