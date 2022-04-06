@@ -26,7 +26,6 @@
 	<Function Name="DailyClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_Daily" SpName="CTS_NormalAccountsClassification_GeneralCategorize_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
-		<Setting Key="CTS_DC_CustClassification_DailyScan_UpdateStatus" SpName="CTS_DC_CustClassification_DailyScan_UpdateStatus" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="RealtimeClassification">
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" SpName="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
