@@ -18,7 +18,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -47,6 +49,15 @@
             RegisteRemoveAccountEvidences(services);
 
             RegisteCustomer(services);
+
+            RegisterTWGroupBetting(services);
+        }
+
+        private static void RegisterTWGroupBetting(this IServiceCollection services)
+        {
+            services.AddSingleton<ITWGroupBettingDataAccess, TWGroupBettingDataAccess>();
+            services.AddSingleton<ITWGroupBettingService, TWGroupBettingService>();
+            services.AddSingleton<ITWGroupBettingJobService, TWGroupBettingJobService>();
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
