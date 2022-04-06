@@ -35,23 +35,24 @@
         {
             try
             {
-
                 var rules = twGroupBettingService.GetAllRules();
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
                     var toTime = fromTime.AddMinutes(1);
-                    var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
-                    if (gbTickets.Any())
+                    if (toTime < DateTime.Now)
                     {
-                        twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
+                        var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
+                        if (gbTickets.Any())
+                        {
+                            twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
+                            twGroupBettingService.CountGroupBettingTicket();
+                            twGroupBettingService.CountGroupBettingTicketForDB062();
+                        }
 
-                        twGroupBettingService.CountGroupBettingTicket();
-                        twGroupBettingService.CountGroupBettingTicketForDB062();
+                        twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
                     }
-
-                    twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
                 }
             }
             catch (Exception ex)
