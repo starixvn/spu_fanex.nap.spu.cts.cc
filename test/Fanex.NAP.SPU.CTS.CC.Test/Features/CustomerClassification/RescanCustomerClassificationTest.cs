@@ -1,12 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System.Collections.Generic;
@@ -24,13 +25,15 @@
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private readonly IDailyClassificationDataAccess dailyClassificationDataAccess;
-        private readonly IDailyClassificationServices dailyClassificationServices;
+        private readonly IDailyNormalClassificationDataAccess dailyClassificationDataAccess;
+        private readonly IDailyNormalClassificationServices dailyClassificationServices;
 
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
+
+        private readonly ISystemParameterServices systemParameterService;
 
         public RescanCustomerClassificationTest()
         {
@@ -43,8 +46,8 @@
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services);
 
-            dailyClassificationDataAccess = Substitute.For<IDailyClassificationDataAccess>();
-            dailyClassificationServices = new DailyClassificationServices(dailyClassificationDataAccess);
+            dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
 
             antiFraudCenterServices = new AntiFraudCenterServices(null);
 

@@ -4,7 +4,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
@@ -39,14 +39,14 @@
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
         private readonly ICTSCustomerService ctscustomerService;
-        private readonly IDailyClassificationServices dailyClassificationService;
+        private readonly IDailyNormalClassificationServices dailyClassificationService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
         public CTSCustomerJobService(ISentryClient sentryClient, 
             ICTSCustomerService ctscustomerService,
-            IDailyClassificationServices dailyClassificationService,
+            IDailyNormalClassificationServices dailyClassificationService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
@@ -292,7 +292,7 @@
 
                     if (inactivateCusts.CustIDs != null && inactivateCusts.CustIDs.Any())
                     {
-                        dailyClassificationService.ClassifyCustomerGeneralCategoryDaily(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
+                        dailyClassificationService.ScanningDailyNormalClassification(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
 
                         ctscustomerService.UpdateStatusInactivateNewCustomers(inactivateCusts.LastCTSCustID, inactivateCusts.LastCreatedDate);
 
@@ -329,7 +329,7 @@
 
                 if (inactivateCusts.CustIDs != null && inactivateCusts.CustIDs.Any())
                 {
-                    dailyClassificationService.ClassifyCustomerGeneralCategoryDaily(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
+                    dailyClassificationService.ScanningDailyNormalClassification(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
 
                     ctscustomerService.UpdateStatusInactivateNewCustomers(inactivateCusts.LastCTSCustID, inactivateCusts.LastCreatedDate);
                 }
