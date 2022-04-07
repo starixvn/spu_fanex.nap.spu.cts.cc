@@ -42,7 +42,9 @@
             TWGroupBetting_LastTimeCountTotalTicket = 78,
             TWGroupBetting_LastTransID = 90,
             DailyNormalClassificationLastCategoryID = 85,
-            DailyNormalClassificationLastCustID = 86
+            DailyNormalClassificationLastCustID = 86,      
+            DailyProblemClassificationLastCategoryID = 88,
+            DailyProblemClassificationLastCustID = 89
         };
 
         public enum DangerLevel
@@ -106,6 +108,7 @@
             RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
+            ProblemDailyJob = 12,
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,

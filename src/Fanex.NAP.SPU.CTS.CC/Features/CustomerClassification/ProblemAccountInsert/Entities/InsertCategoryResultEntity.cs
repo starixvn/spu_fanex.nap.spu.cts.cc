@@ -11,6 +11,6 @@
 
         public IEnumerable<long> CustIds { get; set; }
 
-        public IEnumerable<NewPAAssociationCustomerForRollbackEntity> NewPAAssociationCustomerForRollback { get; set; }
+        public IEnumerable<CheckPACustomerAssociationForRollbackEntity> NewPAAssociationCustomerForRollback { get; set; }
     }
 }

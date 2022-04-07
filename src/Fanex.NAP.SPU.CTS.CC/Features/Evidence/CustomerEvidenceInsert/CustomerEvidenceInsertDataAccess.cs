@@ -89,7 +89,7 @@
 
         public DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan)
         {
-            var custInfos = new List<NewPAAssociationCustomerForRollbackEntity>();
+            var custInfos = new List<CheckPACustomerAssociationForRollbackEntity>();
 
             var criteria = new CustEvidenceToCTSCategorySyncCriteria
             {
@@ -99,7 +99,7 @@
 
             if (!string.IsNullOrEmpty(jsonData))
             {
-                custInfos = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria).ToList();
+                custInfos = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria).ToList();
             }         
            
             return new DBResult

@@ -163,7 +163,7 @@
 
                         if (hashCustInfos != null)
                         {
-                            var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+                            var custInfos = (IEnumerable<CheckPACustomerAssociationForRollbackEntity>)hashCustInfos;
 
                             if (custInfos.Any())
                             {
@@ -171,7 +171,7 @@
 
                                 custIdsToRescanPA.AddRange(custIds);
 
-                                problemAccountServices.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameRescan);
+                                problemAccountServices.CheckNewPAAssociationCustomerForRollback(custInfos);
                             }
                         }
                     }
@@ -240,7 +240,7 @@
 
                 foreach (var problemAccs in problemAccountsChunk)
                 {
-                    var problemCustIds = problemAccountServices.InsertProblemAccountToCTS(problemAccs, isWriteLogRescan, paras.ServiceName, paras.IsWriteLog);
+                    var problemCustIds = problemAccountServices.InsertProblemAccount(problemAccs, isWriteLogRescan, paras.ServiceName, paras.IsWriteLog);
 
                     custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }

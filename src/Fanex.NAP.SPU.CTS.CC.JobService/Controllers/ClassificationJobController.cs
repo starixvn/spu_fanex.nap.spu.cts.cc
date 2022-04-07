@@ -14,6 +14,7 @@
         private readonly IProblemAccountJobService problemAccountInsertJobService;
         private readonly INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
+        private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -22,6 +23,7 @@
             IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,
             IDailyNormalClassificationJobService dailyNormalClassificationJobService,
+            IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService)
@@ -29,6 +31,7 @@
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
+            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
@@ -52,6 +55,13 @@
         {
             sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
             return await this.dailyNormalClassificationJobService.Execute();
+        }
+
+        [HttpPost("scanningDailyProblemProbationClassification")]
+        public async Task<bool> DailyScanningProblemProbationClassification([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Daily Problem Probation Service is running at {DateTime.Now}");
+            return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
         [HttpPost("scanningRealtimeClassification")]

@@ -184,7 +184,7 @@
 
                     if (hashCustInfos != null)
                     {
-                        var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+                        var custInfos = (IEnumerable<CheckPACustomerAssociationForRollbackEntity>)hashCustInfos;
 
                         if (custInfos.Any())
                         {
@@ -228,7 +228,7 @@
 
                     if (hashCustInfos != null)
                     {
-                        var custInfos = (IEnumerable<NewPAAssociationCustomerForRollbackEntity>)hashCustInfos;
+                        var custInfos = (IEnumerable<CheckPACustomerAssociationForRollbackEntity>)hashCustInfos;
 
                         if (custInfos.Any())
                         {
@@ -338,7 +338,7 @@
             yield return queue;
         }
 
-        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName)
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks, string serviceName)
         {
             if (assCustForRollbacks != null && assCustForRollbacks.Any())
             {

@@ -89,7 +89,7 @@
 
             problemAccountDataAccess.InsertProblemAccount(problemAccountJson, false).Returns(dataResult);
 
-            var result = problemAccountServices.InsertProblemAccountToCTS(problemAccounts, false, "ProblemAccountInsert", false);
+            var result = problemAccountServices.InsertProblemAccount(problemAccounts, false, "ProblemAccountInsert", false);
 
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(dataResult);

@@ -44,7 +44,7 @@
                 IsRescan = isRescan
             };
 
-            var assCustForRollback = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria);
+            var assCustForRollback = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
 
             var custIds = assCustForRollback.Select(x => (long)x.CustID);
 

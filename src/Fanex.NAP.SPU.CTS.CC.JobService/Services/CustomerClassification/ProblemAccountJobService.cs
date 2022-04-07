@@ -85,7 +85,7 @@
 
             var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
-          var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
 
             if (isSuccess)
             {
@@ -106,7 +106,8 @@
 
                 foreach (var items in problemAccountsChunk)
                 {
-                    var result = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+                    var result = problemAccountServices.InsertProblemAccount(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+
                     var isSuccess = (result != null && result.ErrorCode == 0);
 
                     if (isSuccess && result.CustIds != null && result.CustIds.Any())
