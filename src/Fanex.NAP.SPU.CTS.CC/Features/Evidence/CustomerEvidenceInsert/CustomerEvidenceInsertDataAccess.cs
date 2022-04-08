@@ -75,7 +75,7 @@
                 NewAccountEvidences = jsonData,
                 UserId = ImportEvidence_StarixITId,
                 IsOverride = isOverwrite,
-                SourceType = 1
+                SourceType = 0
             };
 
             repository.Execute(criteria);
