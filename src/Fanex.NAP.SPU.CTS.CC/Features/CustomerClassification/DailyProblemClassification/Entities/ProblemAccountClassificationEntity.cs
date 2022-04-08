@@ -4,9 +4,9 @@
 
     public class ProblemAccountClassificationEntity
     {
-        public Int64 CustID { get; set; }
+        public Int64 CustId { get; set; }
 
-        public bool IsLosing { get; set; }
+        public int WinlossStatus { get; set; }
 
         public decimal TurnoverRM { get; set; }
 
