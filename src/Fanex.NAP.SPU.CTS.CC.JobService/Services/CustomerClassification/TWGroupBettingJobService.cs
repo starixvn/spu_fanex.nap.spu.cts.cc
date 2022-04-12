@@ -40,16 +40,14 @@
                 {
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
+                    var lastTransId = twGroupBettingService.GetLastTransID(SystemParameters.TWGroupBetting_LastTransID);
                     var toTime = fromTime.AddMinutes(1);
                     if (toTime < DateTime.Now)
                     {
-                        var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
-                        if (gbTickets.Any())
-                        {
-                            twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
-                            twGroupBettingService.CountGroupBettingTicket();
-                            twGroupBettingService.CountGroupBettingTicketForDB062();
-                        }
+                        var maxTransId = twGroupBettingService.ScanTicket(fromTime, toTime, step, lastTransId);
+
+                        twGroupBettingService.CountGroupBettingTicket();
+                        twGroupBettingService.CountGroupBettingTicketForDB062();
 
                         twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
                     }

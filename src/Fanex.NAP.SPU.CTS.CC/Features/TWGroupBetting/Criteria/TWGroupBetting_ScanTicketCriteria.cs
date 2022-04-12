@@ -12,6 +12,10 @@
 
         public int Step { get; set; }
 
+        public Int64 LastTransID { get; set; }
+
+        public Int64 MaxTransID { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_TWGroupBetting_ScanTicket";

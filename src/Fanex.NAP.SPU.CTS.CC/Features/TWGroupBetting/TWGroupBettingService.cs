@@ -11,7 +11,7 @@
 
     public interface ITWGroupBettingService
     {
-        IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step);
+        Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID);
 
         void CountGroupBettingTicket();
 
@@ -28,6 +28,8 @@
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
+
+        Int64 GetLastTransID(SystemParameters paraID);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -49,6 +51,13 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
+        public Int64 GetLastTransID(SystemParameters paraID)
+        {
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            Int64 defaultValue = 0;
+            return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
+        }
+
         public void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss.fff"), paraID);
@@ -61,9 +70,9 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
-        public IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step) 
+        public Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID) 
         {
-            return twGroupBettingDataAccess.ScanTicket(fromTime, toTime, step);
+            return twGroupBettingDataAccess.ScanTicket(fromTime, toTime, step, lastTransID);
         }
 
         public void CountGroupBettingTicket()

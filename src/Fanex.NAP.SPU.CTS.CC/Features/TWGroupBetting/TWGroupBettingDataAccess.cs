@@ -9,7 +9,7 @@
 
     public interface ITWGroupBettingDataAccess
     {
-        IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step);
+        Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID);
 
         void CountGroupBettingTicket();
 
@@ -33,16 +33,18 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step)
+        public Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID)
         {
             var criteria = new TWGroupBetting_ScanTicketCriteria
             {
                 FromTime = fromTime,
                 ToTime = toTime,
-                Step = step
+                Step = step,
+                LastTransID = lastTransID
             };
 
-            return repository.Fetch<TWGroupBettingTicket>(criteria);
+            repository.Fetch<TWGroupBettingTicket>(criteria);
+            return criteria.MaxTransID;
         }
 
         public void CountGroupBettingTicket()
