@@ -281,7 +281,7 @@
 
                 foreach (var robotBatch in robotChunk)
                 {
-                    var problemCustIds = problemAccountServices.InsertProblemAccount(robotBatch, null, isRescanFlow, paras.ServiceName);
+                    var problemCustIds = problemAccountServices.InsertProblemAccount(robotBatch, isRescanFlow, paras.ServiceName);
 
                     custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }

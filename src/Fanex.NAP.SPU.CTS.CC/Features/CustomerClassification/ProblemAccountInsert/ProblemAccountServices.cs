@@ -17,6 +17,8 @@
 
         InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing, bool isRescanFlow, string serviceName);
 
+        InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName);
+
         void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks);
     }
 
@@ -53,7 +55,9 @@
 
                 if (proAccountClassification.Any())
                 {
-                    var result = InsertProblemAccount(proAccountClassification, isRescanFlow, serviceName);
+                    var problemAccountJson = JsonConvert.SerializeObject(proAccountClassification);
+
+                    var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
 
                     if (result.ErrorCode == 0)
                     {
@@ -62,6 +66,26 @@
 
                     return result;
                 }
+            }
+
+            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+        }
+
+
+        public InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
+
+                var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
+
+                if (result.ErrorCode == 0)
+                {
+                    CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback);
+                }
+
+                return result;
             }
 
             return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
@@ -94,28 +118,26 @@
                                                      CustID = group.pa.CustID,
                                                      ReasonID = group.pa.ReasonID,
                                                      RobotCounter = group.pa.RobotCounter,
-                                                     BetCount = (temp != null) ? temp.BetCount : null,
-                                                     ActiveDays = (temp != null) ? temp.ActiveDays : null,
-                                                     TurnoverRM = (temp != null) ? temp.TurnoverRM : null,
-                                                     WinlossRM = (temp != null) ? temp.WinlossRM : null,
-                                                     WinlossStatus = (temp != null) ? temp.WinlossStatus : null
+                                                     BetCount = temp?.BetCount,
+                                                     ActiveDays = temp?.ActiveDays,
+                                                     TurnoverRM = temp?.TurnoverRM,
+                                                     WinlossRM = temp?.WinlossRM,
+                                                     WinlossStatus = temp?.WinlossStatus
                                                  });
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
         }
 
-        private InsertCategoryResultEntity InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, bool isRescanFlow, string serviceName)
+        private InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescanFlow, string serviceName)
         {
-            if (problemAccounts != null && problemAccounts.Any())
+            if (!string.IsNullOrEmpty(problemAccountJson))
             {
-                var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
-
                 var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescanFlow);
 
                 if (result.ErrorCode == -1)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccountJson, new Exception(result.ErrorMessage), sentryClient);
                 }
 
                 return result;

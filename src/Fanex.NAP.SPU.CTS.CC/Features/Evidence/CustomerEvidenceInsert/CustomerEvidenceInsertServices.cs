@@ -396,11 +396,11 @@
                                                      EvidenceId = group.pa.EvidenceId,
                                                      SubscriberId = group.pa.SubscriberId,
                                                      ActionType = group.pa.ActionType,
-                                                     BetCount = (temp != null) ? temp.BetCount : null,
-                                                     ActiveDays = (temp != null) ? temp.ActiveDays : null,
-                                                     TurnoverRM = (temp != null) ? temp.TurnoverRM : null,
-                                                     WinlossRM = (temp != null) ? temp.WinlossRM : null,
-                                                     WinlossStatus = (temp != null) ? temp.WinlossStatus : null
+                                                     BetCount = temp?.BetCount,
+                                                     ActiveDays = temp?.ActiveDays,
+                                                     TurnoverRM = temp?.TurnoverRM,
+                                                     WinlossRM = temp?.WinlossRM,
+                                                     WinlossStatus = temp?.WinlossStatus
                                                  });
             }
 
