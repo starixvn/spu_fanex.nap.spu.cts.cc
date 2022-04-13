@@ -15,9 +15,7 @@
 
         void CountGroupBettingTicket();
 
-        DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime);
-
-        void CountGroupBettingTicketForDB062();
+        void CountTotalTicket();
 
         DateTime GetLastScanTime(SystemParameters paraID);
 
@@ -30,6 +28,8 @@
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
 
         Int64 GetLastTransID(SystemParameters paraID);
+
+        void UpdateMaxTransID(Int64 transId, SystemParameters paraID);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -58,6 +58,11 @@
             return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
 
+        public void UpdateMaxTransID(Int64 transId, SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(transId.ToString(), paraID);
+        }
+
         public void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss.fff"), paraID);
@@ -77,17 +82,25 @@
 
         public void CountGroupBettingTicket()
         {
-            twGroupBettingDataAccess.CountGroupBettingTicket();
-        }
-        
-        public void CountGroupBettingTicketForDB062()
-        {
-            twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
+            try
+            {
+                twGroupBettingDataAccess.CountGroupBettingTicket();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally 
+            {
+                twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
+            }
+            
         }
 
-        public DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime) 
+        public void CountTotalTicket() 
         {
-            return twGroupBettingDataAccess.CountTotalTicket(lastUpdatedTotalTicketTime);
+            twGroupBettingDataAccess.CountTotalTicket();
+            twGroupBettingDataAccess.CountTotalTicketDB062();
         }
         
         public IEnumerable<TWGroupBettingRule> GetAllRules()

@@ -45,11 +45,10 @@
                     if (toTime < DateTime.Now)
                     {
                         var maxTransId = twGroupBettingService.ScanTicket(fromTime, toTime, step, lastTransId);
-
                         twGroupBettingService.CountGroupBettingTicket();
-                        twGroupBettingService.CountGroupBettingTicketForDB062();
 
                         twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
+                        twGroupBettingService.UpdateMaxTransID(maxTransId, SystemParameters.TWGroupBetting_LastTransID);
                     }
                 }
             }
@@ -67,12 +66,7 @@
         {
             try
             {
-                var lastTimeCountTotalTicket = twGroupBettingService.GetLastTimeCountTotalTicket(SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
-                var lastestScanTime = twGroupBettingService.CountTotalTicket(lastTimeCountTotalTicket);
-                if (lastestScanTime != DateTime.MinValue)
-                {
-                    twGroupBettingService.UpdateLastScanTime(lastestScanTime, SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
-                }
+                twGroupBettingService.CountTotalTicket();
             }
             catch (Exception ex)
             {

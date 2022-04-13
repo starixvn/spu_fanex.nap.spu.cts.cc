@@ -15,11 +15,13 @@
 
         void CountGroupBettingTicketForDB062();
 
-        DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime);
+        void CountTotalTicket();
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
+
+        void CountTotalTicketDB062();
 
     }
 
@@ -59,16 +61,18 @@
             repository.Execute(criteria);
         }
 
-        public DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime)
+        public void CountTotalTicket()
         {
-            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria
-            {
-                LastScannedTime = lastUpdatedTotalTicketTime,
-                LastestScannedTime = lastUpdatedTotalTicketTime
-            };
+            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria();
 
             repository.Execute(criteria);
-            return criteria.LastestScannedTime;
+        } 
+        
+        public void CountTotalTicketDB062()
+        {
+            var criteria = new TWGroupBetting_UpdateTotalTicketDB062Criteria();
+
+            repository.Execute(criteria);
         }
         
         public IEnumerable<TWGroupBettingRule> GetAllRules()

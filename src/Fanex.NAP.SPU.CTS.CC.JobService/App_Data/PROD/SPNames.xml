@@ -111,6 +111,7 @@
   <Function Name="TWGroupBetting">
     <Setting Key="CTS_TWGroupBetting_GetRules" SpName="CTS_TWGroupBetting_GetRules" DbName="SQL.bodb02.bodbSPUNet" />
     <Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.bodb02.bodbSPUNet" />
+    <Setting Key="CTS_TWGroupBetting_UpdateTotalTicketDB062" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="DB062.bodb02.bodbSPUNet" />
     <Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600"/>
     <Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
     <Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="DB062.bodb02.bodbSPUNet" />
