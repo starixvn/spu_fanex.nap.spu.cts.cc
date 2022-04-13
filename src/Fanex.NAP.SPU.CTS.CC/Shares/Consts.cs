@@ -24,6 +24,8 @@
 
         public const int ImportEvidence_SleepTimes = 5000; //5s
 
+        public const int ProblemAccountLosing_BatchSize = 2000;
+        
         public enum MatchMonitorQueryTypes
         {
             Service = 1,
@@ -109,6 +111,7 @@
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
             ProblemDailyJob = 12,
+            InsertEvidenceJob = 13,
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,

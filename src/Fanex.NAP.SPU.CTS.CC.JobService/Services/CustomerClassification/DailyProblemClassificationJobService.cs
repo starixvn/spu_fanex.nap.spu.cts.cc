@@ -61,7 +61,7 @@
         {
             var problemClassification = dailyProblemClassificationServices.Start()
                                         .GetCustomerForProblemDailyScanning()
-                                        .GetProblemAccountClassification(FunctionId.ProblemDailyJob);
+                                        .GetProblemAccountLosingClassification(FunctionId.ProblemDailyJob);
 
             if (problemClassification != null && problemClassification.Any())
             {

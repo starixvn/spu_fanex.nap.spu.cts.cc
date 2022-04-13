@@ -17,9 +17,11 @@
 
         IDailyProblemClassificationServices GetCustomerForProblemDailyScanning();
 
-        IEnumerable<ProblemAccountClassificationEntity> GetProblemAccountClassification(FunctionId funcId);
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId);
 
-        IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountClassificationEntity> problemClassification);
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
+
+        IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification);
 
         IDailyProblemClassificationServices CheckNewPAAssociationCustomerForRollback();
 
@@ -70,19 +72,32 @@
             return this;
         }
 
-        public IEnumerable<ProblemAccountClassificationEntity> GetProblemAccountClassification(FunctionId funcId)
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId)
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
                 var custIds = string.Join(",", scanningCustomers.CustID);
 
-                return dailyClassificationDataAccess.GetProblemClassifiction(custIds, funcId);
+                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIds, funcId);
             }
 
-            return Enumerable.Empty<ProblemAccountClassificationEntity>();
+            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountClassificationEntity> problemClassification)
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                var custIdsToString = string.Join(",", custIds);
+
+                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+            }
+
+            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
+        }
+
+
+        public IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
         {
             if (problemClassification != null && problemClassification.Any())
             {

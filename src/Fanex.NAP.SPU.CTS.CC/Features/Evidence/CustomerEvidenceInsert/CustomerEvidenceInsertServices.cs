@@ -1,12 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
     using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -22,16 +20,17 @@
 
         bool InsertNewCustomerEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isOverwrite, bool isPrevSuccess);
 
-        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType
-              , IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess);
+        bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess);
 
         bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, bool isPrevSuccess);
+
+        SynctEvidenceCategoryResultEntity SyncCustomerEvidenceToCTSCategory(IEnumerable<CustEvidenceEntity> custEvidences, IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing, bool isRescan);
 
         ICustomerEvidenceInsertServices UpdateCompleteCustEvidence(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, bool isProcessed);
 
         ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences);
 
-        void UpdateBetLimitOfFlaggedCustomer(string custIds);
+        void UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custIds);
 
         List<CustomerEvidenceFailedToProcessEntity> GetLogError();
 
@@ -45,14 +44,23 @@
     public class CustomerEvidenceInsertServices : ICustomerEvidenceInsertServices
     {
         private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
+        private readonly IProblemAccountServices problemAccountServices;
+        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
+        
         private List<CustomerEvidenceFailedToProcessEntity> failedToProcessList;
         private readonly ISentryClient sentryClient;
         private const string ServiceNameCustEviInsert = "Customer Evidence Insert";
 
-        public CustomerEvidenceInsertServices(ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess, ISentryClient sentryClient)
+        public CustomerEvidenceInsertServices(
+            ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess,
+            IProblemAccountServices problemAccountServices,
+            IDailyProblemClassificationServices dailyProblemClassificationServices,
+            ISentryClient sentryClient)
         {
             this.customerEvidenceInsertDataAccess = customerEvidenceInsertDataAccess;
+            this.problemAccountServices = problemAccountServices;
             this.sentryClient = sentryClient;
+            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
         }
 
         public ICustomerEvidenceInsertServices Start()
@@ -140,12 +148,11 @@
             return isPrevSuccess;
         }
 
-        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType,
-            IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess)
+        public bool SyncCustomerEvidenceToCTSCategory(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences, EvidenceActionType actionType, IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList, bool isPrevSuccess)
         {
             if (isPrevSuccess)
             {
-                var objects = custEvidences.Select(x => new
+                var evidencesInfo = custEvidences.Select(x => new CustEvidenceEntity
                 {
                     CustId = x.CustID,
                     CTSCustId = x.CTSCustID,
@@ -156,44 +163,28 @@
 
                 if (custEviRemovedList != null && custEviRemovedList.Any())
                 {
-                    var removeds = custEviRemovedList.Select(x => new
+                    var removeds = custEviRemovedList.Select(x => new CustEvidenceEntity
                     {
-                        x.CustId,
-                        x.CTSCustId,
-                        x.SubscriberId,
-                        x.EvidenceId,
-                        x.ActionType
+                        CustId = x.CustId,
+                        CTSCustId = x.CTSCustId,
+                        SubscriberId = x.SubscriberId,
+                        EvidenceId = x.EvidenceId,
+                        ActionType = x.ActionType
                     });
 
-                    objects.AddRange(removeds);
+                    evidencesInfo.AddRange(removeds);
                 }
 
-                var jsonData = JsonConvert.SerializeObject(objects);
+                var problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(evidencesInfo.Select(c=>c.CustId).Distinct(), FunctionId.InsertEvidenceJob);
 
-                var dbResult = customerEvidenceInsertDataAccess.SyncCustomerEvidenceToCategory(jsonData, false);
+                var result = SyncCustomerEvidenceToCTSCategory(evidencesInfo, problemAccountLosing, false);
 
-                if (dbResult.ErrorCode != 0)
+                if (result.ErrorCode != 0)
                 {
-                    WriteLogError("InsertNewCustEvidence", dbResult.ErrorMsg, custEvidences);
+                    WriteLogError("InsertNewCustEvidence", result.ErrorMsg, custEvidences);
 
                     return false;
                 }
-                else if(dbResult.OutParam != null)
-                {
-                    var hashCustInfos = dbResult.OutParam["custInfos"];
-
-                    if (hashCustInfos != null)
-                    {
-                        var custInfos = (IEnumerable<CheckPACustomerAssociationForRollbackEntity>)hashCustInfos;
-
-                        if (custInfos.Any())
-                        {
-                            this.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameCustEviInsert);
-                        }
-                    }
-                }
-
-                return true;
             }
 
             return isPrevSuccess;
@@ -203,7 +194,7 @@
         {
             if (isPrevSuccess)
             {
-                var objects = custEvidences.Select(x => new
+                var evidenceInfo = custEvidences.Select(x => new CustEvidenceEntity
                 {
                     CustId = x.CustID,
                     CTSCustId = x.CTSCustID,
@@ -212,36 +203,51 @@
                     ActionType = (int)actionType
                 });
 
-                var jsonData = JsonConvert.SerializeObject(objects);
+                var problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(evidenceInfo.Select(c => c.CustId).Distinct(), FunctionId.InsertEvidenceJob);
 
-                var dbResult = customerEvidenceInsertDataAccess.SyncCustomerEvidenceToCategory(jsonData, false);
+                var result = SyncCustomerEvidenceToCTSCategory(evidenceInfo, problemAccountLosing, false);
 
-                if (dbResult.ErrorCode != 0)
+                if (result.ErrorCode != 0)
                 {
-                    WriteLogError("InsertNewCustEvidence", dbResult.ErrorMsg, custEvidences);
+                    WriteLogError("InsertNewCustEvidence", result.ErrorMsg, custEvidences);
 
                     return false;
                 }
-                else if (dbResult.OutParam != null)
-                {
-                    var hashCustInfos = dbResult.OutParam["custInfos"];
-
-                    if (hashCustInfos != null)
-                    {
-                        var custInfos = (IEnumerable<CheckPACustomerAssociationForRollbackEntity>)hashCustInfos;
-
-                        if (custInfos.Any())
-                        {
-                            this.CheckNewPAAssociationCustomerForRollback(custInfos, ServiceNameCustEviInsert);
-                        }
-                    }
-                }
-
-                return true;
             }
 
             return isPrevSuccess;
         }
+
+        public SynctEvidenceCategoryResultEntity SyncCustomerEvidenceToCTSCategory(IEnumerable<CustEvidenceEntity> custEvidences, IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing, bool isRescan)
+        {
+            if (custEvidences != null & custEvidences.Any())
+            {
+                var evidenceCategoryClassification = MergeProblemAccountClassification(custEvidences, problemAccountLosing);
+
+                if (evidenceCategoryClassification.Any())
+                {
+                    var jsonData = JsonConvert.SerializeObject(evidenceCategoryClassification);
+
+                    var result = customerEvidenceInsertDataAccess.SyncCustomerEvidenceToCategory(jsonData, isRescan);
+
+
+                    if (result.ErrorCode != 0)
+                    {
+                        return result;
+                    }
+
+                    if (result.CustInfo != null && result.CustInfo.Any())
+                    {
+                        problemAccountServices.CheckNewPAAssociationCustomerForRollback(result.CustInfo);
+                    }
+
+                    return result;
+                }
+            }
+
+            return new SynctEvidenceCategoryResultEntity();
+        }
+
 
         public ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences)
         {
@@ -262,15 +268,17 @@
             return this;
         }
 
-        public void UpdateBetLimitOfFlaggedCustomer(string custIds)
+        public void UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custIds)
         {
-            if (!string.IsNullOrEmpty(custIds))
+            if (custIds != null && custIds.Any())
             {
-                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIds);
+                var custIdsToString = string.Join(",", custIds);
+
+                var dbResult = customerEvidenceInsertDataAccess.UpdateBetLimitOfFlaggedCustomer(custIdsToString);
 
                 if (dbResult.ErrorCode != 0)
                 {
-                    LogService.Error("CTS.CC Update Bet Limit Of Flagged Customer with error message: " + dbResult.ErrorMsg);
+                    LogService.Error("CTS.CC Update Bet Limit Of Flagged Customer throws exception: " + dbResult.ErrorMsg);
                 }
             }
         }
@@ -292,20 +300,6 @@
         public List<CustomerEvidenceFailedToProcessEntity> GetLogError()
         {
             return failedToProcessList;
-        }
-
-        private void WriteLogError(string method, string errorMessage, IEnumerable<CustomerEvidenceFromFileEntity> errorCustEvidences)
-        {
-            failedToProcessList.AddRange(
-                errorCustEvidences.Select(x => new CustomerEvidenceFailedToProcessEntity
-                {
-                    FileKey = x.FileKey,
-                    SubscriberID = x.SubscriberID,
-                    CTSCustID = x.CTSCustID,
-                    EvidenceID = x.EvidenceID,
-                    ErrorContent = method + " " + errorMessage
-                })
-            );
         }
 
         public IEnumerable<IEnumerable<CustomerEvidenceFromFileEntity>> ChunkSize(List<CustomerEvidenceFromFileEntity> custEvidenceInFiles, int internalBatchSize)
@@ -338,23 +332,6 @@
             yield return queue;
         }
 
-        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks, string serviceName)
-        {
-            if (assCustForRollbacks != null && assCustForRollbacks.Any())
-            {
-                try
-                {
-                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
-
-                    var updateResult = customerEvidenceInsertDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "CheckNewPAAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
-                }
-            }
-        }
-
         public IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(IEnumerable<ProblemAccountsEntity> problemAccounts)
         {
             var custReasons = problemAccounts.Select(x => new CustReasonEntity
@@ -370,20 +347,68 @@
 
         public void InsertCustEvidenceFromProblemAccount(IEnumerable<CustEvidenceByReasonIdEntity> custEvidences)
         {
-            var CreatedBy = ImportEvidence_StarixITId;
-
-            var objects = custEvidences.Select(x => new
+            if (custEvidences != null & custEvidences.Any())
             {
-                x.CTSCustID,
-                x.EvidenceID,
-                x.Remark,
-                CreatedBy
-            });
+                var CreatedBy = ImportEvidence_StarixITId;
 
-            var jsonData = JsonConvert.SerializeObject(objects);
+                var objects = custEvidences.Select(x => new
+                {
+                    x.CTSCustID,
+                    x.EvidenceID,
+                    x.Remark,
+                    CreatedBy
+                });
 
-            var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false, 1);
+                var jsonData = JsonConvert.SerializeObject(objects);
+
+                customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false);
+            }
         }
+
+        #region Private Methods
+
+        private void WriteLogError(string method, string errorMessage, IEnumerable<CustomerEvidenceFromFileEntity> errorCustEvidences)
+        {
+            failedToProcessList.AddRange(
+                errorCustEvidences.Select(x => new CustomerEvidenceFailedToProcessEntity
+                {
+                    FileKey = x.FileKey,
+                    SubscriberID = x.SubscriberID,
+                    CTSCustID = x.CTSCustID,
+                    EvidenceID = x.EvidenceID,
+                    ErrorContent = method + " " + errorMessage
+                })
+            );
+        }
+
+        private static IEnumerable<CustEvidenceInsertEntity> MergeProblemAccountClassification(IEnumerable<CustEvidenceEntity> evidenceCategory, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing)
+        {
+            if (evidenceCategory != null && evidenceCategory.Any())
+            {
+                return evidenceCategory.GroupJoin(probAccountLosing,
+                                            pa => pa.CustId,
+                                            paLosing => paLosing.CustId,
+                                            (pa, paLosing) => new { pa, paLosing })
+                                            .SelectMany(
+                                                 group => group.paLosing.DefaultIfEmpty(),
+                                                 (group, temp) => new CustEvidenceInsertEntity
+                                                 {
+                                                     CustId = group.pa.CustId,
+                                                     CTSCustId = group.pa.CTSCustId,
+                                                     EvidenceId = group.pa.EvidenceId,
+                                                     SubscriberId = group.pa.SubscriberId,
+                                                     ActionType = group.pa.ActionType,
+                                                     BetCount = (temp != null) ? temp.BetCount : null,
+                                                     ActiveDays = (temp != null) ? temp.ActiveDays : null,
+                                                     TurnoverRM = (temp != null) ? temp.TurnoverRM : null,
+                                                     WinlossRM = (temp != null) ? temp.WinlossRM : null,
+                                                     WinlossStatus = (temp != null) ? temp.WinlossStatus : null
+                                                 });
+            }
+
+            return Enumerable.Empty<CustEvidenceInsertEntity>();
+        }
+
+        #endregion Private Methods
     }
 }
-

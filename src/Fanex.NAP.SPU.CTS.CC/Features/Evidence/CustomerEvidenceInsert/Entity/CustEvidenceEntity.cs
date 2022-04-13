@@ -1,10 +1,10 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence
 {
     public class CustEvidenceEntity
     {
-        public int CustId { get; set; }
+        public long CustId { get; set; }
 
-        public int CTSCustId { get; set; }
+        public long CTSCustId { get; set; }
 
         public int SubscriberId { get; set; }
 

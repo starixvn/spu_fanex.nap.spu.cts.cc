@@ -46,13 +46,11 @@
 
             var assCustForRollback = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
 
-            var custIds = assCustForRollback.Select(x => (long)x.CustID);
-
             return new InsertCategoryResultEntity
             {
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                CustIds = custIds,
+                CustIds = assCustForRollback?.Select(x => x.CustID) ?? Enumerable.Empty<long>(),
                 NewPAAssociationCustomerForRollback = assCustForRollback
             };
         }

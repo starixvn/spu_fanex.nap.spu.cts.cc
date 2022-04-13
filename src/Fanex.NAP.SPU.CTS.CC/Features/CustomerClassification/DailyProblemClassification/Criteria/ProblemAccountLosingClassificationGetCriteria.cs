@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class ProblemAccountsClassificationDailyGetCriteria : NonQueryCommand
+    public class ProblemAccountLosingClassificationGetCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ListCustIds")]
         public string ListCustIds { get; set; }

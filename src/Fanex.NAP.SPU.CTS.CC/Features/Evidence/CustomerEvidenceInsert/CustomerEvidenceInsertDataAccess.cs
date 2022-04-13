@@ -18,13 +18,11 @@
 
         DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite, int sourceType);
 
-        DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
+        SynctEvidenceCategoryResultEntity SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
 
         DBResult UpdateProcessedCustEvidence(string idList, bool isProcessed);
 
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
-
-        int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
 
         IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(string custInfoJson);
     }
@@ -87,28 +85,21 @@
             };
         }
 
-        public DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan)
+        public SynctEvidenceCategoryResultEntity SyncCustomerEvidenceToCategory(string jsonData, bool isRescan)
         {
-            var custInfos = new List<CheckPACustomerAssociationForRollbackEntity>();
-
             var criteria = new CustEvidenceToCTSCategorySyncCriteria
             {
                 CustEvidences = jsonData,
                 IsRescan = isRescan
             };
 
-            if (!string.IsNullOrEmpty(jsonData))
-            {
-                custInfos = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria).ToList();
-            }         
+            var custInfos = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria).ToList();       
            
-            return new DBResult
+            return new SynctEvidenceCategoryResultEntity
             {
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage,
-                OutParam = new Hashtable {
-                    { "custInfos", custInfos }
-                }
+                CustInfo = custInfos ?? Enumerable.Empty<CheckPACustomerAssociationForRollbackEntity>()
             };
         }
 
@@ -144,13 +135,6 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
-        }
-
-        public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
-        {
-            var criteria = new CheckNewPAAssociationCustomerForRollbackCriteria {  CustInfoJson = custInfoJson };
-
-            return repository.Execute(criteria);
         }
 
         public IEnumerable<CustEvidenceByReasonIdEntity> GetCustEvidenceByReasonId(string custInfoJson)

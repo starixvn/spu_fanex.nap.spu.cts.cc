@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class ProblemAccountClassificationEntity
+    public class ProblemAccountLosingClassificationEntity
     {
         public Int64 CustId { get; set; }
 
