@@ -47,7 +47,7 @@
                 CreateSampleCustomerMainDBModel()
             };
 
-            dataAccess.GetCustSubFromMainDB(100,1).Returns(dataFromDB);
+            dataAccess.GetCustSubFromMainDB(100, 1).Returns(dataFromDB);
 
             var realData = ctsCustomerService.GetCustSubFromMainDB(100, 1);
             realData.Should().BeEquivalentTo(dataFromDB);

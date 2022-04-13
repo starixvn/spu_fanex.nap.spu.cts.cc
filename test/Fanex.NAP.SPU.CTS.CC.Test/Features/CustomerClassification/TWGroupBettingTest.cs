@@ -37,7 +37,7 @@
             var result = twGroupbettingServices.GetLastTimeCountTotalTicket(SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
             result.Should().NotBe(DateTime.MinValue);
         }
-        
+
         [Fact]
         public void GetAllRule_WhenSuccess_RunSuccessfully()
         {
@@ -60,7 +60,7 @@
         //{
         //    DateTime fromDate = DateTime.MinValue;
         //    DateTime toDate = DateTime.MinValue;
-        //    int step = 5; 
+        //    int step = 5;
         //    twGroupbettingServices.ScanTicket(fromDate, toDate, step);
         //}
 

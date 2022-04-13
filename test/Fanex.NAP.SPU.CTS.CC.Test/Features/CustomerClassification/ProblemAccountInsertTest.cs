@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
@@ -78,6 +79,18 @@
                 },
             };
 
+            var paLosing = new List<ProblemAccountLosingClassificationEntity> {
+                new ProblemAccountLosingClassificationEntity
+                {
+                  CustId=1,
+                  TurnoverRM = 1,
+                  ActiveDays = 1,
+                  WinlossRM = 1,
+                  BetCount = 1,
+                  WinlossStatus = 1
+                }
+            };
+
             var dataResult = new InsertCategoryResultEntity
             {
                 ErrorMessage = string.Empty,
@@ -89,7 +102,7 @@
 
             problemAccountDataAccess.InsertProblemAccount(problemAccountJson, false).Returns(dataResult);
 
-            var result = problemAccountServices.InsertProblemAccount(problemAccounts, false, "ProblemAccountInsert", false);
+            var result = problemAccountServices.InsertProblemAccount(problemAccounts, paLosing, false, "ProblemAccountInsert");
 
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(dataResult);

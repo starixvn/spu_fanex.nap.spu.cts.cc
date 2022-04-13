@@ -188,11 +188,11 @@
                 }
             };
 
-            var custIdsToRescan = new ResultRemoveCustEviFromQueueEntity {
+            var custIdsToRescan = new ResultRemoveCustEviFromQueueEntity
+            {
                 CustIds = dbResult.OutParam["custIds"]?.ToString().Split(',').Select(long.Parse),
                 IsRemoveSuccess = true
             };
-
 
             var customerEvidenceJson = JsonConvert.SerializeObject(cusEvidences);
             var processedIdList = cusEvidences.Select(x => x.Id);

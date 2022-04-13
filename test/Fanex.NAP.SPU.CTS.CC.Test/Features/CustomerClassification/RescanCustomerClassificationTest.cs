@@ -2,9 +2,12 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
+    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -35,6 +38,15 @@
 
         private readonly ISystemParameterServices systemParameterService;
 
+        private readonly IRobotAccountInsertServices robotAccountInsertServices;
+        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
+
+        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
+        private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;
+
+        private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
+        private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
+
         public RescanCustomerClassificationTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
@@ -51,13 +63,21 @@
 
             antiFraudCenterServices = new AntiFraudCenterServices(null);
 
+            dailyProblemClassificationDataAccess = Substitute.For<IDailyProblemClassificationDataAccess>();
+            dailyProblemClassificationServices = new DailyProblemClassificationServices(dailyProblemClassificationDataAccess, systemParameterService, problemAccountServices, custClassToMainDBService);
+
+            customerEvidenceInsertDataAccess = Substitute.For<ICustomerEvidenceInsertDataAccess>();
+            customerEvidenceInsertServices = new CustomerEvidenceInsertServices(customerEvidenceInsertDataAccess, problemAccountServices, dailyProblemClassificationServices, null);
+
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
-                rescanCustClassificationDataAccess,null,
+                rescanCustClassificationDataAccess, null,
                 problemAccountServices,
                 antiFraudCenterServices,
                 custClassToMainDBService,
-                dailyClassificationServices);
+                dailyClassificationServices,
+                customerEvidenceInsertServices,
+                dailyProblemClassificationServices);
         }
 
         [Fact]
@@ -77,7 +97,7 @@
                 },
             };
 
-            var custIds = new List<long>{ 1,2,3 };
+            var custIds = new List<long> { 1, 2, 3 };
 
             var custTORescanPA = new List<long> { 2 };
 
