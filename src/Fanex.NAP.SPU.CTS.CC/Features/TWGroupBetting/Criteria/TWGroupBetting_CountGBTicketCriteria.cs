@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class TWGroupBetting_CountGBTicketCriteria : NonQueryCommand
     {

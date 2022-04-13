@@ -1,13 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using System;
 
     public class TWGroupBetting_ScanTicketCriteria : CriteriaBase
     {
         public DateTime FromTime { get; set; }
-        
+
         public DateTime ToTime { get; set; }
 
         public int Step { get; set; }

@@ -96,7 +96,6 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-
         public IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
         {
             if (problemClassification != null && problemClassification.Any())

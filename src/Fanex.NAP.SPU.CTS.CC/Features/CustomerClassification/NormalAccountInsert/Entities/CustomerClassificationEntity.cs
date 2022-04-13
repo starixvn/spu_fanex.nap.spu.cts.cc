@@ -37,6 +37,5 @@
         public decimal TWTicketRejectRate { get; set; }
 
         public decimal TWDesktopUsageRate { get; set; }
-
     }
 }

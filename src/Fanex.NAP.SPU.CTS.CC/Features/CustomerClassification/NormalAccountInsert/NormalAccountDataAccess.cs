@@ -41,7 +41,7 @@
 
             return repository.Fetch<TaggedCustomerEntity>(criteria);
         }
-        
+
         public IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds)
         {
             var criteria = new CheckGroupBettingAndRejectCriteria

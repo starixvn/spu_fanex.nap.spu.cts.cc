@@ -3,9 +3,9 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using System.Collections.Generic;
-    using Fanex.NAP.SPU.CTS.Shares;
 
     public interface ITWGroupBettingDataAccess
     {
@@ -24,7 +24,6 @@
         void CountTotalTicketDB062();
 
     }
-
 
     public class TWGroupBettingDataAccess : ITWGroupBettingDataAccess
     {
@@ -54,7 +53,7 @@
             var criteria = new TWGroupBetting_CountGBTicketCriteria();
             repository.Execute(criteria);
         }
-        
+
         public void CountGroupBettingTicketForDB062()
         {
             var criteria = new TWGroupBetting_CountGBTicketDB062Criteria();
@@ -74,7 +73,7 @@
 
             repository.Execute(criteria);
         }
-        
+
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {
             var criteria = new TWGroupBetting_GetRuleCriteria();
@@ -84,9 +83,9 @@
 
         public void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets)
         {
-            var criteria = new TWGroupBetting_SyncDataGroupBettingTicket 
-            { 
-                GBTicketXML = gbTickets.ToXmlString() 
+            var criteria = new TWGroupBetting_SyncDataGroupBettingTicket
+            {
+                GBTicketXML = gbTickets.ToXmlString()
             };
 
             repository.Execute(criteria);

@@ -63,7 +63,7 @@
 
             return new List<TaggedCustomerEntity>();
         }
-        
+
         public IEnumerable<TaggedCustomerEntity> GetGroupBettingAndRejectCustomer(IEnumerable<CustomerClassificationEntity> listClassification)
         {
             if (listClassification != null && listClassification.Any())
@@ -143,7 +143,7 @@
                                         TWBetCount = (temp != null) ? temp.TWBetCount : 0,
                                         TWDesktopUsageRate = (temp != null) ? temp.TWDesktopUsageRate : 0,
                                         TWGroupBettingRate = (temp != null) ? temp.TWGroupBettingRate : 0,
-                                        TWTicketRejectRate = (temp != null) ? temp.TWTicketRejectRate: 0
+                                        TWTicketRejectRate = (temp != null) ? temp.TWTicketRejectRate : 0
                                     });
 
             return result.ToList();

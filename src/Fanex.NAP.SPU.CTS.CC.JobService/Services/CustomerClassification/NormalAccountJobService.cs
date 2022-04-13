@@ -84,20 +84,20 @@
         private void JobRun(int batchExternalSize, int batchInternalSize)
         {
             var newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
-            
+
             if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
-            {                
+            {
                 var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
 
                 foreach (var listClassification in generalClassificationChunk)
                 {
-                    var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);                    
+                    var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
 
                     var custClassificationAfterCheckPA = normalAccountServices.MergeWithTaggedCust(listClassification, custAssociationPA);
 
                     var custGroupBettingAndReject = normalAccountServices.GetGroupBettingAndRejectCustomer(custClassificationAfterCheckPA.Where(c => c.TaggingID == 0));
-                    
-                    var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckPA, custGroupBettingAndReject);                    
+
+                    var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckPA, custGroupBettingAndReject);
 
                     var result = normalAccountServices.InsertMainCustomerClassification(finalCustClassification, serviceName, appSettings.NormalAccountIsWriteLog);
 
@@ -122,7 +122,6 @@
                         {
                             antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
                         });
-
                     }
                 }
             }

@@ -92,7 +92,6 @@
                 HandleLogError();
 
                 Thread.Sleep(ImportEvidence_SleepTimes);
-
             } while (custEvidenceFromFiles != null && custEvidenceFromFiles.Any());
         }
 

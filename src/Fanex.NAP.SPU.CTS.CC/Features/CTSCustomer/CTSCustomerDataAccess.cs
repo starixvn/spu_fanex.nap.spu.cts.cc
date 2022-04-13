@@ -148,7 +148,7 @@
             {
                 LastCustSubId = lastScannedCustID,
                 RowSize = quantityPerBatch,
-                QueryType = (int) QueryType.GetByRange,
+                QueryType = (int)QueryType.GetByRange,
                 CustIdList = ""
             };
 
@@ -426,6 +426,7 @@
         #endregion Insert Reactivated Customers
 
         #region Inactive New Customers
+
         public InactivateNewCustomer GetInactivateNewCustomers()
         {
             var data = new InactivateNewCustomer();
@@ -437,7 +438,7 @@
                 data.CustIDs = result.Read<long>();
                 var lastCreatedDates = result.Read<DateTime>();
                 var lastCTSCustIDs = result.Read<long>();
-                
+
                 if (lastCreatedDates != null && lastCreatedDates.Any())
                     data.LastCreatedDate = lastCreatedDates.FirstOrDefault();
 
@@ -453,13 +454,12 @@
             var criteria = new UpdateStatusInactivateNewCustomerCriteria
             {
                 LastCTSCustID = lastCTSCustID,
-                LastCreatedDate = lastCreatedDate                
+                LastCreatedDate = lastCreatedDate
             };
 
             return repository.Execute(criteria);
         }
 
-        #endregion
-
+        #endregion Inactive New Customers
     }
 }

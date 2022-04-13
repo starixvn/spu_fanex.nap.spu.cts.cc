@@ -1,13 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;    
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
-    using Fanex.NAP.SPU.CTS.Shares.Models;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
 
     public interface IRescanCustClassificationDataAccess
     {

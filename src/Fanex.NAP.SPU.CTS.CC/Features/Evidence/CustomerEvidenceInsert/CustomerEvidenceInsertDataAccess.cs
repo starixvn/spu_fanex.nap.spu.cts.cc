@@ -1,11 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -93,8 +91,8 @@
                 IsRescan = isRescan
             };
 
-            var custInfos = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria).ToList();       
-           
+            var custInfos = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria).ToList();
+
             return new SynctEvidenceCategoryResultEntity
             {
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
@@ -146,6 +144,5 @@
 
             return repository.Fetch<CustEvidenceByReasonIdEntity>(criteria);
         }
-
     }
 }

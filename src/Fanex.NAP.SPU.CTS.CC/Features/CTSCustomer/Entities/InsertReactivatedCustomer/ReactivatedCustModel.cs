@@ -7,6 +7,5 @@
         public Int64 CustID { get; set; }
 
         public DateTime LogTime { get; set; }
-
     }
 }

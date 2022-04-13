@@ -99,7 +99,7 @@
                                                      TurnoverRM = (temp != null) ? temp.TurnoverRM : null,
                                                      WinlossRM = (temp != null) ? temp.WinlossRM : null,
                                                      WinlossStatus = (temp != null) ? temp.WinlossStatus : null
-                                                 }) ;
+                                                 });
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();

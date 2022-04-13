@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InactivateNewCustomer
 {
-    using System;
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class UpdateStatusInactivateNewCustomerCriteria : NonQueryCommand
     {
@@ -21,6 +21,5 @@
         {
             return true;
         }
-
     }
 }

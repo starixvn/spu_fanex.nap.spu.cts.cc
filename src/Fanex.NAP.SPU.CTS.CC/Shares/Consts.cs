@@ -25,7 +25,7 @@
         public const int ImportEvidence_SleepTimes = 5000; //5s
 
         public const int ProblemAccountLosing_BatchSize = 2000;
-        
+
         public enum MatchMonitorQueryTypes
         {
             Service = 1,
@@ -44,7 +44,7 @@
             TWGroupBetting_LastTimeCountTotalTicket = 78,
             TWGroupBetting_LastTransID = 90,
             DailyNormalClassificationLastCategoryID = 85,
-            DailyNormalClassificationLastCustID = 86,      
+            DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastCategoryID = 88,
             DailyProblemClassificationLastCustID = 89
         };

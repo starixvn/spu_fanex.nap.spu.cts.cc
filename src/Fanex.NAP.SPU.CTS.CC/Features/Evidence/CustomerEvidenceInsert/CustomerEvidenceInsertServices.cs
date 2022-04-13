@@ -46,7 +46,7 @@
         private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
-        
+
         private List<CustomerEvidenceFailedToProcessEntity> failedToProcessList;
         private readonly ISentryClient sentryClient;
         private const string ServiceNameCustEviInsert = "Customer Evidence Insert";
@@ -175,7 +175,7 @@
                     evidencesInfo.AddRange(removeds);
                 }
 
-                var problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(evidencesInfo.Select(c=>c.CustId).Distinct(), FunctionId.InsertEvidenceJob);
+                var problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(evidencesInfo.Select(c => c.CustId).Distinct(), FunctionId.InsertEvidenceJob);
 
                 var result = SyncCustomerEvidenceToCTSCategory(evidencesInfo, problemAccountLosing, false);
 
@@ -230,7 +230,6 @@
 
                     var result = customerEvidenceInsertDataAccess.SyncCustomerEvidenceToCategory(jsonData, isRescan);
 
-
                     if (result.ErrorCode != 0)
                     {
                         return result;
@@ -247,7 +246,6 @@
 
             return new SynctEvidenceCategoryResultEntity();
         }
-
 
         public ICustomerEvidenceInsertServices UpdateBetLimitOfFlaggedCustomer(IEnumerable<CustomerEvidenceFromFileEntity> custEvidences)
         {

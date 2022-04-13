@@ -3,9 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -14,7 +11,6 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly ITWGroupBettingJobService twGroupBettingJobService;
-
 
         public TWGroupBettingJobController(ISentryClient sentryClient,
             ITWGroupBettingJobService twGroupBettingJobService)

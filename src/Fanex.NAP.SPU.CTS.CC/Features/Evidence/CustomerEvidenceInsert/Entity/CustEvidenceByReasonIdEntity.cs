@@ -11,6 +11,5 @@
         public string EvidenceCode { get; set; }
 
         public string Remark { get; set; }
-
     }
 }

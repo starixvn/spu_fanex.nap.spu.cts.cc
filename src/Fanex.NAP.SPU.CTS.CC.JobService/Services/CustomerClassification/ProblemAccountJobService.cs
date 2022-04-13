@@ -107,7 +107,7 @@
 
                 foreach (var probAccountBatch in problemAccountsChunk)
                 {
-                    var probAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(probAccountBatch.Select(c=>c.CustID), FunctionId.InsertPAJob);
+                    var probAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(probAccountBatch.Select(c => c.CustID), FunctionId.InsertPAJob);
 
                     var result = problemAccountServices.InsertProblemAccount(probAccountBatch, probAccountLosing, false, serviceName);
 
