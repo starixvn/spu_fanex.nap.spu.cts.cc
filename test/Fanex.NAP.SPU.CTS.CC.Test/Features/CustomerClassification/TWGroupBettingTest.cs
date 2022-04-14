@@ -56,16 +56,6 @@
             result.Should().NotBeEmpty();
         }
 
-        [Fact]
-        public void CountTotalTicket_WhenSuccess_RunSuccessfully()
-        {
-            var lastUpdatedTotalTicketTime = DateTime.Now;
-            var expectedResult = DateTime.Now.AddDays(1);
-            twGroupBettingDataAccess.CountTotalTicket(lastUpdatedTotalTicketTime).Returns(expectedResult);
-            var result = twGroupbettingServices.CountTotalTicket(lastUpdatedTotalTicketTime);
-            result.Should().BeOnOrAfter(lastUpdatedTotalTicketTime);
-        }
-
         //public void Abc()
         //{
         //    DateTime fromDate = DateTime.MinValue;
