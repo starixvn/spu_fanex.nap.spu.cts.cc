@@ -40,6 +40,7 @@
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastScanTime = 77,
             TWGroupBetting_LastTimeCountTotalTicket = 78,
+            TWGroupBetting_LastTransID = 90,
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86
         };

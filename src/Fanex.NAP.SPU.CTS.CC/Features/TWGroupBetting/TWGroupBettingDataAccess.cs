@@ -9,17 +9,19 @@
 
     public interface ITWGroupBettingDataAccess
     {
-        IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step);
+        Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID);
 
         void CountGroupBettingTicket();
 
         void CountGroupBettingTicketForDB062();
 
-        DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime);
+        void CountTotalTicket();
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
+
+        void CountTotalTicketDB062();
 
     }
 
@@ -33,16 +35,18 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<TWGroupBettingTicket> ScanTicket(DateTime fromTime, DateTime toTime, int step)
+        public Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID)
         {
             var criteria = new TWGroupBetting_ScanTicketCriteria
             {
                 FromTime = fromTime,
                 ToTime = toTime,
-                Step = step
+                Step = step,
+                LastTransID = lastTransID
             };
 
-            return repository.Fetch<TWGroupBettingTicket>(criteria);
+            repository.Fetch<TWGroupBettingTicket>(criteria);
+            return criteria.MaxTransID;
         }
 
         public void CountGroupBettingTicket()
@@ -57,16 +61,18 @@
             repository.Execute(criteria);
         }
 
-        public DateTime CountTotalTicket(DateTime lastUpdatedTotalTicketTime)
+        public void CountTotalTicket()
         {
-            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria
-            {
-                LastScannedTime = lastUpdatedTotalTicketTime,
-                LastestScannedTime = lastUpdatedTotalTicketTime
-            };
+            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria();
 
             repository.Execute(criteria);
-            return criteria.LastestScannedTime;
+        } 
+        
+        public void CountTotalTicketDB062()
+        {
+            var criteria = new TWGroupBetting_UpdateTotalTicketDB062Criteria();
+
+            repository.Execute(criteria);
         }
         
         public IEnumerable<TWGroupBettingRule> GetAllRules()

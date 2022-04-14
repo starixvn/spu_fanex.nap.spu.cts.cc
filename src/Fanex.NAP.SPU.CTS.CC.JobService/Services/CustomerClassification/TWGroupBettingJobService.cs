@@ -40,18 +40,15 @@
                 {
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
+                    var lastTransId = twGroupBettingService.GetLastTransID(SystemParameters.TWGroupBetting_LastTransID);
                     var toTime = fromTime.AddMinutes(1);
                     if (toTime < DateTime.Now)
                     {
-                        var gbTickets = twGroupBettingService.ScanTicket(fromTime, toTime, step);
-                        if (gbTickets.Any())
-                        {
-                            twGroupBettingService.SyncGroupBettingTicketToDB062(gbTickets);
-                            twGroupBettingService.CountGroupBettingTicket();
-                            twGroupBettingService.CountGroupBettingTicketForDB062();
-                        }
+                        var maxTransId = twGroupBettingService.ScanTicket(fromTime, toTime, step, lastTransId);
+                        twGroupBettingService.CountGroupBettingTicket();
 
                         twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
+                        twGroupBettingService.UpdateMaxTransID(maxTransId, SystemParameters.TWGroupBetting_LastTransID);
                     }
                 }
             }
@@ -69,12 +66,7 @@
         {
             try
             {
-                var lastTimeCountTotalTicket = twGroupBettingService.GetLastTimeCountTotalTicket(SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
-                var lastestScanTime = twGroupBettingService.CountTotalTicket(lastTimeCountTotalTicket);
-                if (lastestScanTime != DateTime.MinValue)
-                {
-                    twGroupBettingService.UpdateLastScanTime(lastestScanTime, SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
-                }
+                twGroupBettingService.CountTotalTicket();
             }
             catch (Exception ex)
             {

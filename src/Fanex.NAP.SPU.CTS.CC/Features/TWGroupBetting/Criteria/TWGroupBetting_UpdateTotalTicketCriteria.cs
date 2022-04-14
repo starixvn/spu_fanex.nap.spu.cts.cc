@@ -4,15 +4,11 @@
     using Fanex.Data.Repository;
     using System;
 
-    public class TWGroupBetting_UpdateTotalTicketCriteria : NonQueryCommand
+    public class TWGroupBetting_UpdateTotalTicketDB062Criteria : NonQueryCommand
     {
-        public DateTime LastScannedTime { get; set; }
-
-        public DateTime LastestScannedTime { get; set; }
-
         public override string GetSettingKey()
         {
-            return "CTS_TWGroupBetting_UpdateTotalTicket";
+            return "CTS_TWGroupBetting_UpdateTotalTicketDB062";
         }
 
         public override bool IsValid()
