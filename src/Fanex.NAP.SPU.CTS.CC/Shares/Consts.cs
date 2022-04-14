@@ -112,6 +112,7 @@
             InactivateNewCustomer = 11,
             ProblemDailyJob = 12,
             InsertEvidenceJob = 13,
+            PlaceSingleEvidence = 14,
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
@@ -129,7 +130,8 @@
             RemoveFlaggedEvi_CheckRobotUser = 38,
             RemoveMultiEvi_CheckRobotUser = 39,
             ExcludeTaggingAss_CheckRobotUser = 40,
-            InsertPAJob = 41
+            InsertPAJob = 41,
+            UpdateCategory = 42
         };
 
         public enum HttpStatus
