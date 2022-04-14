@@ -359,7 +359,7 @@
 
                 var jsonData = JsonConvert.SerializeObject(objects);
 
-                customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false);
+                customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false, 1);
             }
         }
 
