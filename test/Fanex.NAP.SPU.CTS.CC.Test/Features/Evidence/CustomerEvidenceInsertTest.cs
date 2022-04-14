@@ -183,7 +183,7 @@
 
             var jsonData = JsonConvert.SerializeObject(objects);
 
-            customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, true).Returns(rs);
+            customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, true, 0).Returns(rs);
 
             var result = customerEvidenceInsertServices.InsertNewCustomerEvidence(cusEvidences, true, true);
 
