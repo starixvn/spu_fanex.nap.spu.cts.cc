@@ -16,7 +16,7 @@
 
         ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog);
 
-        DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite);
+        DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite, int sourceType);
 
         DBResult SyncCustomerEvidenceToCategory(string jsonData, bool isRescan);
 
@@ -68,13 +68,14 @@
             return result;
         }
 
-        public DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite)
+        public DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite, int sourceType)
         {
             var criteria = new CustEvidencesInsertCriteria
             {
                 NewAccountEvidences = jsonData,
                 UserId = ImportEvidence_StarixITId,
-                IsOverride = isOverwrite
+                IsOverride = isOverwrite,
+                SourceType = sourceType
             };
 
             repository.Execute(criteria);

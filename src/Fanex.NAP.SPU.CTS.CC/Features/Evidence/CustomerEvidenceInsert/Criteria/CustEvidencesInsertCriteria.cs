@@ -14,6 +14,9 @@
         [SpParam(SqlParamName = "ip_IsOverride")]
         public bool IsOverride { get; set; }
 
+        [SpParam(SqlParamName = "ip_SourceType")]
+        public int SourceType { get; set; }
+
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }
 

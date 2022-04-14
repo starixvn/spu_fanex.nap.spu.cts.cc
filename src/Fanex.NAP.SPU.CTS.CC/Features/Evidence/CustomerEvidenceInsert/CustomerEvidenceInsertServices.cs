@@ -113,7 +113,7 @@
 
                 do
                 {
-                    var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, isOverwrite);
+                    var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, isOverwrite, 0);
 
                     isSuccess = dbResult.ErrorCode == 0;
                     errorMsg = dbResult.ErrorMsg;
@@ -382,7 +382,7 @@
 
             var jsonData = JsonConvert.SerializeObject(objects);
 
-            var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false);
+            var dbResult = customerEvidenceInsertDataAccess.InsertCustomerEvidenceMuitiple(jsonData, false, 1);
         }
     }
 }
