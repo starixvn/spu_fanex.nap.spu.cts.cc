@@ -32,6 +32,12 @@
             Report = 2,
         };
 
+        public enum ImportEvidenceSourceTypesFrom
+        {
+            Evidence = 0,
+            MarkPA = 1
+        };
+
         public enum SystemParameters
         {
             ProblemAccountLastScannedTime = 2,
