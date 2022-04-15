@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification
 {
+    using Newtonsoft.Json;
     using System;
 
     public class ProblemAccountLosingClassificationEntity
     {
+        [JsonProperty("CustID")]
         public Int64 CustId { get; set; }
 
         public int WinlossStatus { get; set; }
