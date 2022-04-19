@@ -391,10 +391,10 @@
                                                  group => group.paLosing.DefaultIfEmpty(),
                                                  (group, temp) => new CustEvidenceInsertEntity
                                                  {
-                                                     CustId = group.pa.CustId,
-                                                     CTSCustId = group.pa.CTSCustId,
-                                                     EvidenceId = group.pa.EvidenceId,
-                                                     SubscriberId = group.pa.SubscriberId,
+                                                     CustID = group.pa.CustId,
+                                                     CTSCustID = group.pa.CTSCustId,
+                                                     EvidenceID = group.pa.EvidenceId,
+                                                     SubscriberID = group.pa.SubscriberId,
                                                      ActionType = group.pa.ActionType,
                                                      BetCount = temp?.BetCount,
                                                      ActiveDays = temp?.ActiveDays,

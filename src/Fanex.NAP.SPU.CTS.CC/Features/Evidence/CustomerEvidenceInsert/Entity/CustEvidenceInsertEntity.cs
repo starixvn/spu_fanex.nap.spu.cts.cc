@@ -4,13 +4,13 @@
 
     public class CustEvidenceInsertEntity
     {
-        public long CustId { get; set; }
+        public long CustID { get; set; }
 
-        public long CTSCustId { get; set; }
+        public long CTSCustID { get; set; }
 
-        public int SubscriberId { get; set; }
+        public int SubscriberID { get; set; }
 
-        public int EvidenceId { get; set; }
+        public int EvidenceID { get; set; }
 
         public int ActionType { get; set; }
 
