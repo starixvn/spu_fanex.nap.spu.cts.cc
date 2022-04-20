@@ -28,7 +28,6 @@
 
         public CustomerCategoryQueueModel GetCustomerCategoryQueue()
         {
-            var data = new CustomerCategoryQueueModel();
             var criteria = new GetCustomerCategoryQueueCriteria();
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -38,12 +37,17 @@
                 var customerCategoryQueue = result.Read<CustomerCategoryEntity>();
                 var queueInfo = result.Read<QueueInfoEntity>();
 
-                return new CustomerCategoryQueueModel
+                if (customerCategoryQueue.Any() && queueInfo.Any())
                 {
-                     CustomerCategoryQueue = customerCategoryQueue,
-                     QueueInfo = queueInfo?.FirstOrDefault()
-                };
+                    return new CustomerCategoryQueueModel
+                    {
+                        CustomerCategoryQueue = customerCategoryQueue,
+                        QueueInfo = queueInfo?.FirstOrDefault()
+                    };
+                }                
             }
+
+            return new CustomerCategoryQueueModel();
         }
 
         public IEnumerable<LatestClassificationModel> AddCustomerCategory(CustomerCategoryQueueModel model)

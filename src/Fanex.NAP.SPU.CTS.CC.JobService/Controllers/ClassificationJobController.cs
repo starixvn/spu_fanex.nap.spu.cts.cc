@@ -18,6 +18,7 @@
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
+        private readonly ICustomerCategoryJobService customerCategoryJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
@@ -26,7 +27,8 @@
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
-            IRobotAccountInsertJobService robotAccountInsertJobService)
+            IRobotAccountInsertJobService robotAccountInsertJobService,
+            ICustomerCategoryJobService customerCategoryJobService)
         {
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -36,6 +38,7 @@
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
+            this.customerCategoryJobService = customerCategoryJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -89,10 +92,10 @@
             return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("InsertCustCategoryVVIP")]
-        public async Task<bool> InsertCustCategoryVVIP()
+        [HttpPost("InsertCustCategoryVVIPFromQueue")]
+        public async Task<bool> InsertCustCategoryVVIPFromQueue()
         {
-            return true;
+            return await this.customerCategoryJobService.Execute();
         }
 
         [HttpPost("updatewritelog")]
