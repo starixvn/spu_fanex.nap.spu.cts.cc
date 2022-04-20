@@ -89,10 +89,17 @@
             return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
+        [HttpPost("InsertCustCategoryVVIP")]
+        public async Task<bool> InsertCustCategoryVVIP()
+        {
+            return true;
+        }
+
         [HttpPost("updatewritelog")]
         public async Task<bool> UpdateWriteLog([FromForm] string serviceName, [FromForm] bool isWriteLog)
         {
             return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
         }
+        
     }
 }

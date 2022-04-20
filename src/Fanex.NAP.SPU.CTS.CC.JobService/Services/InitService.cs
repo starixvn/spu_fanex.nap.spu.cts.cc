@@ -5,6 +5,7 @@
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
@@ -54,6 +55,8 @@
             RegisteCustomer(services);
 
             RegisterTWGroupBetting(services);
+
+            RegisterCustomerCategory(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -159,6 +162,13 @@
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
 
             services.AddSingleton<IAntiFraudCenterServices, AntiFraudCenterServices>();
+        }
+
+        private static void RegisterCustomerCategory(this IServiceCollection services)
+        {
+            services.AddSingleton<ICustomerCategoryJobService, CustomerCategoryJobService>();
+            services.AddSingleton<ICustomerCategoryService, CustomerCategoryService>();
+            services.AddSingleton<ICustomerCategoryDataAccess, CustomerCategoryDataAccess>();
         }
     }
 }
