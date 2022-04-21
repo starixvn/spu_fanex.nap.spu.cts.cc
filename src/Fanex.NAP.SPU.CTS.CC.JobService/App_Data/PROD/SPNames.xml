@@ -123,7 +123,8 @@
   </Function>
 
 	<Function Name="CustomerClassification">
-		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_VVIPQueue_Get" SpName="CTS_DC_CustClassification_VVIPQueue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />		
+		<Setting Key="CTS_DC_CustClassification_InsertVVIP" SpName="CTS_DC_CustClassification_InsertVVIP" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_RemoveVVIP" SpName="CTS_DC_CustClassification_RemoveVVIP" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 </Functions>

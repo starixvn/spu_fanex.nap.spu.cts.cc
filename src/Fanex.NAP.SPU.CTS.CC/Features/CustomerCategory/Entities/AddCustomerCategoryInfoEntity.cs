@@ -6,9 +6,7 @@
 
         public long CTSCustID { get; set; }
 
-        public int SubscriberID { get; set; }
-
-        public int CategoryID { get; set; }
+        public int SubscriberID { get; set; }        
 
         public long CreatedBy { get; set; }
 

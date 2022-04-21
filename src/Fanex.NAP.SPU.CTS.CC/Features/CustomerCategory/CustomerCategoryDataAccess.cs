@@ -3,12 +3,9 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Newtonsoft.Json;
-    using System;
+    using Newtonsoft.Json;    
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerCategoryDataAccess
@@ -16,6 +13,8 @@
         CustomerCategoryQueueModel GetCustomerCategoryQueue();
 
         IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model);
+
+        IEnumerable<LatestClassificationEntity> RemoveCustomerCategory(CustomerCategoryQueueModel model);
     }
 
     public class CustomerCategoryDataAccess : ICustomerCategoryDataAccess
@@ -56,8 +55,7 @@
             var custList = model.CustomerCategoryQueue.Select(x => new AddCustomerCategoryInfoEntity
             {
                 CustID = x.CustID,
-                CTSCustID = x.CTSCustID,
-                CategoryID = x.CategoryID,
+                CTSCustID = x.CTSCustID,                
                 SubscriberID = x.SubscriberID,
                 CreatedBy = x.CreatedBy,
                 Remark = x.Remark
@@ -69,6 +67,26 @@
                 UplineRoleID = model.QueueInfo.UplineRoleID,
                 AffectDownline = true,
                 QueueID = model.QueueInfo.QueueID,
+                CustJson = JsonConvert.SerializeObject(custList)
+            };
+
+            return repository.Fetch<LatestClassificationEntity>(criteria);
+        }
+
+        public IEnumerable<LatestClassificationEntity> RemoveCustomerCategory(CustomerCategoryQueueModel model)
+        {
+            var custList = model.CustomerCategoryQueue.Select(x => new RemoveCustomerCategoryInfoEntity
+            {
+                CustID = x.CustID,
+                CTSCustID = x.CTSCustID,
+                CreatedBy = x.CreatedBy                
+            });
+
+            var criteria = new RemoveCustomerCategoryCriteria
+            {
+                FromAction = (int)FromAction.Service,
+                UplineRoleID = model.QueueInfo.UplineRoleID,
+                AffectDownline = true,
                 CustJson = JsonConvert.SerializeObject(custList)
             };
 

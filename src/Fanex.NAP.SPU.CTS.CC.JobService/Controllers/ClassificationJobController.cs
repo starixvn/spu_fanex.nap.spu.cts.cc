@@ -93,9 +93,9 @@
         }
 
         [HttpPost("InsertCustCategoryVVIPFromQueue")]
-        public async Task<bool> InsertCustCategoryVVIPFromQueue()
+        public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.customerCategoryJobService.Execute();
+            return await this.customerCategoryJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("updatewritelog")]

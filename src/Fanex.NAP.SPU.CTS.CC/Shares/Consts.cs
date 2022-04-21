@@ -174,5 +174,11 @@
             WebSite = 1,
             Service = 2
         }
+
+        public enum VVIPActionType
+        {
+            Insert = 1,
+            Remove = 2
+        }
     }
 }

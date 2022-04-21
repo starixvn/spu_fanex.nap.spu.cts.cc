@@ -5,14 +5,14 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public interface ICustomerCategoryService
     {
         CustomerCategoryQueueModel GetCustomerCategoryQueue();
 
         IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model);
+
+        IEnumerable<LatestClassificationEntity> RemoveCustomerCategory(CustomerCategoryQueueModel model);
     }
 
     public class CustomerCategoryService : ICustomerCategoryService
@@ -36,5 +36,9 @@
             return dataAccess.AddCustomerCategory(model);
         }
         
+        public IEnumerable<LatestClassificationEntity> RemoveCustomerCategory(CustomerCategoryQueueModel model)
+        {
+            return dataAccess.RemoveCustomerCategory(model);
+        }
     }
 }

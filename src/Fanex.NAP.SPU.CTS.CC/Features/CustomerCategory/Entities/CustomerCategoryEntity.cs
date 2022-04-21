@@ -10,9 +10,7 @@
 
         public int CreatedBy { get; set; }
 
-        public string Remark { get; set; }
-
-        public int CategoryID { get; set; }
+        public string Remark { get; set; }        
 
         public long LastDownlineCTSCustID { get; set; }
 

@@ -25,7 +25,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Insert";
+            return "CTS_DC_CustClassification_InsertVVIP";
         }
 
         public override bool IsValid()

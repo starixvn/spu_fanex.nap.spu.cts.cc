@@ -7,7 +7,7 @@
     {
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Queue_Get";
+            return "CTS_DC_CustClassification_VVIPQueue_Get";
         }
 
         public override bool IsValid()
