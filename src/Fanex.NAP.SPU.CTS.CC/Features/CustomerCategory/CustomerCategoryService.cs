@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -11,7 +12,7 @@
     {
         CustomerCategoryQueueModel GetCustomerCategoryQueue();
 
-        IEnumerable<LatestClassificationModel> AddCustomerCategory(CustomerCategoryQueueModel model);
+        IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model);
     }
 
     public class CustomerCategoryService : ICustomerCategoryService
@@ -30,7 +31,7 @@
             return dataAccess.GetCustomerCategoryQueue();
         }
 
-        public IEnumerable<LatestClassificationModel> AddCustomerCategory(CustomerCategoryQueueModel model)
+        public IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model)
         {
             return dataAccess.AddCustomerCategory(model);
         }

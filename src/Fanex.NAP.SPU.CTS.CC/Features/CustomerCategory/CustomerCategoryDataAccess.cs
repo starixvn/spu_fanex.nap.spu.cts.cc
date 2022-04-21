@@ -2,6 +2,7 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
@@ -14,7 +15,7 @@
     {
         CustomerCategoryQueueModel GetCustomerCategoryQueue();
 
-        IEnumerable<LatestClassificationModel> AddCustomerCategory(CustomerCategoryQueueModel model);
+        IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model);
     }
 
     public class CustomerCategoryDataAccess : ICustomerCategoryDataAccess
@@ -50,7 +51,7 @@
             return new CustomerCategoryQueueModel();
         }
 
-        public IEnumerable<LatestClassificationModel> AddCustomerCategory(CustomerCategoryQueueModel model)
+        public IEnumerable<LatestClassificationEntity> AddCustomerCategory(CustomerCategoryQueueModel model)
         {
             var custList = model.CustomerCategoryQueue.Select(x => new AddCustomerCategoryInfoEntity
             {
@@ -64,13 +65,14 @@
 
             var criteria = new AddCustomerCategoryCriteria
             {
-                FromAction = (int)FromAction.WebSite,
+                FromAction = (int)FromAction.Service,
+                UplineRoleID = model.QueueInfo.UplineRoleID,
                 AffectDownline = true,
                 QueueID = model.QueueInfo.QueueID,
                 CustJson = JsonConvert.SerializeObject(custList)
             };
 
-            return repository.Fetch<LatestClassificationModel>(criteria);
+            return repository.Fetch<LatestClassificationEntity>(criteria);
         }
     }
 }

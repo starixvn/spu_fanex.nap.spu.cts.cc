@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "ip_FromAction")]
         public int FromAction { get; set; }
 
+        [SpParam(SqlParamName = "ip_UplineRoleID")]
+        public int UplineRoleID { get; set; }
+
         [SpParam(SqlParamName = "ip_QueueID")]
         public long QueueID { get; set; }
 
