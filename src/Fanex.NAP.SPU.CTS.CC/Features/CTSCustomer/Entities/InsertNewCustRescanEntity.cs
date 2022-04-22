@@ -15,5 +15,6 @@
         public bool IsSyncAFCData { get; set; }
 
         public string AFCInsertAccountURL { get; set; }
+        public string AFCDeleteAccountURL { get; set; }
     }
 }

@@ -11,6 +11,9 @@
         [SpParam(SqlParamName = "ip_UplineRoleID")]
         public int UplineRoleID { get; set; }
 
+        [SpParam(SqlParamName = "ip_QueueID")]
+        public int QueueID { get; set; }
+
         [SpParam(SqlParamName = "ip_AffectDownline")]
         public bool AffectDownline { get; set; }
 

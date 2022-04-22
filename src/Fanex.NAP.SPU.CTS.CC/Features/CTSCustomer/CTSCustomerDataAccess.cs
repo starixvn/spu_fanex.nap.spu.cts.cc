@@ -3,7 +3,10 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InactivateNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -23,7 +26,7 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
-        IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson);
+        CustInsertedInfoModel TransformCustomerFromMainDB(string customerJson);
 
         int UpdateAssociationCustomerForArchive(string custInfoJson);
 
@@ -152,14 +155,23 @@
             return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
-        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(string customerJson)
+        public CustInsertedInfoModel TransformCustomerFromMainDB(string customerJson)
         {
             var criteria = new TransformCustomerFromMainDbCriteria
             {
                 CustomerJson = customerJson
             };
 
-            return repository.Fetch<InsertCustomerModel>(criteria);
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                var result = db.QueryMultiple(criteria);
+                
+                return new CustInsertedInfoModel
+                {
+                    InsertCustomer = result.Read<InsertCustomerModel>(),
+                    CustInfoVVip = result.Read<CustInfoVVipModel>()
+                };
+            }            
         }
 
         public int UpdateAssociationCustomerForArchive(string custInfoJson)

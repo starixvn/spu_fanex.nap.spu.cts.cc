@@ -74,14 +74,14 @@
                         var paras = new RescanParametersEntity
                         {
                             CustIds = custIds,
-                            FunctionId = FunctionId.RemoveMultiEvidencesWeb,
+                            FunctionId = FunctionId.RemoveVIPWeb,
                             IsCheckPAFromNAP = true,
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
                             DangerLevelType = DangerLevel.ABI,
                             ServiceName = this.serviceName,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsWriteLog = appSettings.RemoveAccountEvidenceIsWriteLog,
+                            IsWriteLog = false,
                             InternalBatchSize = internalBatchSize,
                             ExternalBatchSize = externalBatchSize,
                             IsSyncAFCData = appSettings.IsSyncAFCData,

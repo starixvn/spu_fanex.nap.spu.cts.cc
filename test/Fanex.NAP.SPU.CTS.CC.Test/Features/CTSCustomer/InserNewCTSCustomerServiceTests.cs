@@ -1,7 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -17,6 +21,9 @@
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ICustomerCategoryService customerCategoryService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
@@ -24,19 +31,19 @@
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, customerCategoryService, custClassToMainDBService, antiFraudCenterServices, systemParameterDataAccess);
         }
 
         [Fact]
         public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
         {
-            var expectedResult = new List<InsertCustomerModel>();
+            var expectedResult = new CustInsertedInfoModel();
 
             var inputData = new List<CustomerMainDBModel>();
             dataAccess.TransformCustomerFromMainDB(string.Empty).Returns(expectedResult);
             var result = ctsCustomerService.TransformCustomerFromMainDB(inputData);
 
-            result.Should().BeEquivalentTo(expectedResult);
+            result.Should().BeNull();
         }
 
         [Fact]

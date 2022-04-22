@@ -1,8 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -12,6 +16,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
@@ -52,7 +57,7 @@
 
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
 
-        IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
+        CustInsertedInfoModel TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
 
         IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
@@ -76,17 +81,25 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ICustomerCategoryService customerCategoryService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
-
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
             IRescanCustClassificationService rescanClassificationService,
+            ICustomerCategoryService customerCategoryService,
+            ICustClassToMainDBService custClassToMainDBService,
+            IAntiFraudCenterServices antiFraudCenterServices,
             ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
             this.rescanClassificationService = rescanClassificationService;
+            this.customerCategoryService = customerCategoryService;
+            this.custClassToMainDBService = custClassToMainDBService;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
@@ -113,21 +126,20 @@
             return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
         }
 
-        public IEnumerable<InsertCustomerModel> TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList)
+        public CustInsertedInfoModel TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList)
         {
-            var custInfos = new List<InsertCustomerModel>();
             var customerJson = JsonConvert.SerializeObject(customerList);
 
             try
             {
-                custInfos = dataAccess.TransformCustomerFromMainDB(customerJson)?.ToList();
+                return dataAccess.TransformCustomerFromMainDB(customerJson);
             }
             catch (Exception ex)
             {
                 Utilities.LogSentryError("InsertNewCustomer", "TransformCustomerFromMainDB exception:", customerJson, ex, sentryClient);
-            }
 
-            return custInfos;
+                return new CustInsertedInfoModel();
+            }
         }
 
         public bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
@@ -141,13 +153,41 @@
                 {
                     var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);
 
+                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer", customers, true, sentryClient);
+
                     foreach (var custs in customersChunk)
                     {
-                        var custIdList = TransformCustomerFromMainDB(custs.ToList());
+                        var custInfoInserted = TransformCustomerFromMainDB(custs.ToList());
 
-                        UpdateAssociationCustomerForArchive(custIdList);
+                        if (custInfoInserted.InsertCustomer != null && custInfoInserted.InsertCustomer.Any())
+                        {
+                            UpdateAssociationCustomerForArchive(custInfoInserted.InsertCustomer);
+                            
+                            var isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);
 
-                        RescanCCAndNotifyCompleteForNewCustomer(custIdList, paras, lastCustID);
+                            /* insert case VVIP */
+                            if (custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
+                            {                                
+                                var lastestCustClassification = customerCategoryService.AddCustomerCategory(custInfoInserted.CustInfoVVip);
+
+                                Parallel.Invoke(() =>
+                                {
+                                    var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
+                                },
+                                () =>
+                                {
+                                    var custIds = lastestCustClassification.Select(x => x.CustId);
+                                    antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
+                                });
+                            }
+
+                            /* end case VVIP */
+
+                            if (isSuccess)
+                            {
+                                NotifyCompleteForNewCustomer(custInfoInserted.InsertCustomer, lastCustID, paras.IsInsertMissingCust);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)

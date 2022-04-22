@@ -172,7 +172,8 @@
         public enum FromAction
         {
             WebSite = 1,
-            Service = 2
+            Service = 2,
+            ServiceInsertNew = 3
         }
 
         public enum VVIPActionType
