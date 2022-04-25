@@ -179,7 +179,7 @@
             };
 
             var expectedData = new List<CustInfoModel>
-            { 
+            {
                 new CustInfoModel
                 {
                     CustID = custFromMain[0].CustID,
@@ -187,7 +187,7 @@
                     Danger1 = custFromMain[0].Danger1,
                     Danger2 = custFromMain[0].Danger2,
                     Danger3 = custFromMain[0].Danger3
-                } 
+                }
             };
 
             var expectedResult = JsonConvert.SerializeObject(expectedData);

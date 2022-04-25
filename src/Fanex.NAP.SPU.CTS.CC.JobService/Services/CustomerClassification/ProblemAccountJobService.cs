@@ -1,16 +1,16 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
-    using System.Linq;    
+    using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -28,8 +28,8 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ICustomerEvidenceInsertServices custEvidenceServices;
+        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IAppSettings appSettings;
-        private IEnumerable<ProblemAccountsEntity> logData;
 
         public ProblemAccountJobService(
             ISentryClient sentryClient,
@@ -38,6 +38,7 @@
             ICustClassToMainDBService pushDataToExternalService,
             IAntiFraudCenterServices antiFraudCenterServices,
             ICustomerEvidenceInsertServices custEvidenceServices,
+            IDailyProblemClassificationServices dailyProblemClassificationServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
@@ -46,6 +47,7 @@
             this.custClassToMainDBService = pushDataToExternalService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.custEvidenceServices = custEvidenceServices;
+            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.appSettings = appSettings;
             this.serviceName = "ProblemAccountInsert";
         }
@@ -53,7 +55,7 @@
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
             bool response = true;
-            
+
             try
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
@@ -67,7 +69,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, logData, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
 
                 return Task.FromResult(false);
             }
@@ -85,7 +87,7 @@
 
             var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
-          var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
 
             if (isSuccess)
             {
@@ -99,44 +101,23 @@
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                logData = problemAccounts;
                 custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, FunctionId.InsertPAJob, serviceName);
 
                 var problemAccountsChunk = problemAccounts.Distinct().Chunk(batchInternalSize);
 
-                foreach (var items in problemAccountsChunk)
+                foreach (var probAccountBatch in problemAccountsChunk)
                 {
-                    var result = problemAccountServices.InsertProblemAccountToCTS(items, false, serviceName, appSettings.ProblemAccountIsWriteLog);
+                    var probAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(probAccountBatch.Select(c => c.CustID), FunctionId.InsertPAJob);
+
+                    var result = problemAccountServices.InsertProblemAccount(probAccountBatch, probAccountLosing, false, serviceName);
+
                     var isSuccess = (result != null && result.ErrorCode == 0);
 
                     if (isSuccess && result.CustIds != null && result.CustIds.Any())
                     {
-                        var custEvidences = custEvidenceServices.GetCustEvidenceByReasonId(items);
+                        InsertEvidenceFromNapPA(probAccountBatch);
 
-                        custEvidenceServices.InsertCustEvidenceFromProblemAccount(custEvidences);
-
-                        Parallel.Invoke(() =>
-                        {
-                            isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                            {
-                                ExternalBatchSize = batchExternalSize,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                IsPushCCToSoon88 = true,
-                                IsUpdateDangerToMainDB = true,
-                                DangerLevelType = DangerLevel.ABI,
-                                IsWriteLog = appSettings.ProblemAccountIsWriteLog,
-                                ServiceName = serviceName
-                            });
-                        },
-                        () => {
-                            var custIds = string.Join(",", result.CustIds);
-                          
-                            custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
-                        },
-                        () =>
-                        {
-                            antiFraudCenterServices.InsertAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCInsertAccountURL);
-                        });
+                        isSuccess = PushDataToExternal(result.CustIds, batchExternalSize);
                     }
 
                     if (!isSuccess)
@@ -147,6 +128,51 @@
             }
 
             return true;
+        }
+
+        private void InsertEvidenceFromNapPA(IEnumerable<ProblemAccountsEntity> problemAccounts)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var custEvidences = custEvidenceServices.GetCustEvidenceByReasonId(problemAccounts);
+
+                if (custEvidences != null && custEvidences.Any())
+                {
+                    custEvidenceServices.InsertCustEvidenceFromProblemAccount(custEvidences);
+                }
+            }
+        }
+
+        private bool PushDataToExternal(IEnumerable<long> custIds, int batchExternalSize)
+        {
+            var isSuccess = true;
+
+            if (custIds != null && custIds.Any())
+            {
+                Parallel.Invoke(() =>
+                {
+                    isSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = batchExternalSize,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsPushCCToSoon88 = true,
+                        IsUpdateDangerToMainDB = true,
+                        DangerLevelType = DangerLevel.ABI,
+                        IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                        ServiceName = serviceName
+                    });
+                },
+                () =>
+                {
+                    custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
+                },
+                () =>
+                {
+                    antiFraudCenterServices.InsertAFCAccounts(custIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCInsertAccountURL);
+                });
+            }
+
+            return isSuccess;
         }
 
         #endregion Private Methods

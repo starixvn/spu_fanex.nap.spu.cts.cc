@@ -10,6 +10,5 @@
         public DateTime LastCreatedDate { get; set; }
 
         public long LastCTSCustID { get; set; }
-
     }
 }

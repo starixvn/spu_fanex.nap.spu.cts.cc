@@ -43,7 +43,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             services
                .AddHealthChecks();
 
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fanex.NAP.SPU.CTS.JobService", Version = "v1" });
@@ -96,14 +95,14 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
                                            x => x.GetValue<string>("Name"),
                                            y => new ConnectionConfiguration(y.GetValue<string>("Name"), y.GetValue<string>("ConnectionString"), y.GetValue<string>("ProviderName"))
                                    );
-                        
+
             DbSettingProviderManager
               .StartNewSession()
               .Use(connections)
               .WithSqlServer()
               .WithMySql()
               .UseDefaultDbSettingProvider(resourcePath: appSettings.SPName)
-              .Run();                       
+              .Run();
         }
 
         private void RegisterLogging(IAppSettings appSettings)

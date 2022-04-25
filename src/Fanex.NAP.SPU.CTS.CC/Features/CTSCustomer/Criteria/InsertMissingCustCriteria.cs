@@ -8,7 +8,7 @@
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }
-        
+
         [SpParam(SqlParamName = "ip_ScannedDate")]
         public DateTime ScannedDate { get; set; }
 

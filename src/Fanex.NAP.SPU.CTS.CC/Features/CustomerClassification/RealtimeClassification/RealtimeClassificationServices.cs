@@ -135,7 +135,7 @@
         {
             if (this.customerClassification != null && this.customerClassification.Any())
             {
-                var custIds = this.customerClassification.Select(x => new { CustID = x.CustId});
+                var custIds = this.customerClassification.Select(x => new { CustID = x.CustId });
 
                 var custIdChunks = custIds.Chunk(internalBatchSize).ToList();
 
@@ -143,10 +143,10 @@
                 {
                     var custIdList = string.Join(",", custIdItems.Select(x => x.CustID));
 
-                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(custIdList);                    
+                    realtimeClassificationDataAccess.UpdateAssociationCustomerLastTicket(custIdList);
                 }
             }
-            
+
             return this;
         }
 

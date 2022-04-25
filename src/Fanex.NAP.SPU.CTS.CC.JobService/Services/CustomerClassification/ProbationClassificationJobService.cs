@@ -60,7 +60,7 @@
                 .ScanningProbationClassification()
                 .UpdateLastScanDateForProbationCust();
 
-            if(probationClassificationServices.CustomerClassification != null &&
+            if (probationClassificationServices.CustomerClassification != null &&
                 probationClassificationServices.CustomerClassification.Any())
             {
                 JobRun(batchSize);

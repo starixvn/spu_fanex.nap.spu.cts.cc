@@ -3,11 +3,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
-    using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 

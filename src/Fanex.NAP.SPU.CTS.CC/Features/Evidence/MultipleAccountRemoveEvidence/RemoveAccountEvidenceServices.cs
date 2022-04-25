@@ -113,7 +113,7 @@
         {
             if (custToUpdateBetlimit != null && custToUpdateBetlimit.Any())
             {
-                var custIds = string.Join(",", custToUpdateBetlimit.Select(c=>c.CustID).Distinct());
+                var custIds = string.Join(",", custToUpdateBetlimit.Select(c => c.CustID).Distinct());
 
                 var result = removeAccountEvidenceDataAccess.UpdateBetLimitOfUnflaggedCustomer(custIds);
 

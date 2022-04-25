@@ -44,15 +44,13 @@
                 IsRescan = isRescan
             };
 
-            var assCustForRollback = repository.Fetch<NewPAAssociationCustomerForRollbackEntity>(criteria);
-
-            var custIds = assCustForRollback.Select(x => (long)x.CustID);
+            var assCustForRollback = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
 
             return new InsertCategoryResultEntity
             {
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                CustIds = custIds,
+                CustIds = assCustForRollback?.Select(x => x.CustID) ?? Enumerable.Empty<long>(),
                 NewPAAssociationCustomerForRollback = assCustForRollback
             };
         }

@@ -4,9 +4,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ITWGroupBettingService
@@ -20,7 +17,7 @@
         DateTime GetLastScanTime(SystemParameters paraID);
 
         DateTime GetLastTimeCountTotalTicket(SystemParameters paraID);
-        
+
         void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
@@ -102,7 +99,7 @@
             twGroupBettingDataAccess.CountTotalTicket();
             twGroupBettingDataAccess.CountTotalTicketDB062();
         }
-        
+
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {
             return twGroupBettingDataAccess.GetAllRules();

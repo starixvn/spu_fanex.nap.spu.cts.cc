@@ -1,12 +1,10 @@
 namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Sentry;
     using System;
-    using System.IO;
 
     public static class Program
     {
@@ -47,6 +45,5 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
                     .UseStartup<Startup>();
                 });
         }
-
     }
 }

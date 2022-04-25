@@ -10,7 +10,6 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -539,12 +538,13 @@
 
         public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
         {
-            return dataAccess.GetCustSubFromMainDB(custIds) ?? Enumerable.Empty< CustomerMainDBModel>();
+            return dataAccess.GetCustSubFromMainDB(custIds) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
         #endregion Insert Reactivated Customers
 
         #region Inactivate New Customers
+
         public InactivateNewCustomer GetInactivateNewCustomers()
         {
             return dataAccess.GetInactivateNewCustomers();
@@ -554,7 +554,7 @@
         {
             return dataAccess.UpdateStatusInactivateNewCustomers(lastCTSCustID, lastCreatedDate);
         }
-        #endregion
 
+        #endregion Inactivate New Customers
     }
 }

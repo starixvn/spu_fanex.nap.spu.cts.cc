@@ -91,7 +91,7 @@
             {
                 var custCategory = MappingRobotCategory(robotUsers);
 
-                var result = problemAccountServices.InsertProblemAccountToCTS(custCategory, false, paras.ServiceName, paras.IsWriteLog);
+                var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
 
                 isSuccess = (result != null && result.ErrorCode == 0);
 

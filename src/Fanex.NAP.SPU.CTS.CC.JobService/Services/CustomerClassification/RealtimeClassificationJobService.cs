@@ -30,7 +30,7 @@
         {
             try
             {
-                if (batchExternalSize > 0 && batchInternalSize >0)
+                if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
                     JobRun(batchExternalSize, batchInternalSize);
                 }
@@ -56,7 +56,7 @@
             realtimeClassificationServices
                 .Start()
                 .GetCustomerGeneralCategoryHasChangeForRunRealtime()
-                .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)   
+                .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
                 .UpdateLastTicketAssociationCustomer(batchInternalSize)
                 .RealtimeUpdateLastScanTime(true);
         }

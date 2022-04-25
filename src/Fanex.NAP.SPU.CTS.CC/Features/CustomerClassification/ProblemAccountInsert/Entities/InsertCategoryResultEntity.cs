@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;    
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System.Collections.Generic;
 
     public class InsertCategoryResultEntity
@@ -11,6 +11,6 @@
 
         public IEnumerable<long> CustIds { get; set; }
 
-        public IEnumerable<NewPAAssociationCustomerForRollbackEntity> NewPAAssociationCustomerForRollback { get; set; }
+        public IEnumerable<CheckPACustomerAssociationForRollbackEntity> NewPAAssociationCustomerForRollback { get; set; }
     }
 }

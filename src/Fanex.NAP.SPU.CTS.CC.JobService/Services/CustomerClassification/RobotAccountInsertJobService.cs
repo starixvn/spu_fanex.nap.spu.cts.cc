@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -61,8 +60,8 @@
             }
 
             return Task.FromResult(response);
-        }   
-        
+        }
+
         public Task<bool> ScanningRobotAIClassification(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
@@ -106,7 +105,6 @@
                                                           AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                                                       });
 
-
             if (isSuccess)
             {
                 robotAccountInsertServices.UpdateLastTimespan();
@@ -121,13 +119,12 @@
                                                                .GetRobotUserFromAIClassification()
                                                                .Process(new InsertRobotParaEntity
                                                                {
-                                                                  BatchExternalSize = batchExternalSize,
-                                                                  BatchInternalSize = batchInternalSize,
-                                                                  ServiceName = robotAIClassServiceName,
-                                                                  Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
-                                                                  IsWriteLog = appSettings.RobotAccountIsWriteLog
+                                                                   BatchExternalSize = batchExternalSize,
+                                                                   BatchInternalSize = batchInternalSize,
+                                                                   ServiceName = robotAIClassServiceName,
+                                                                   Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
+                                                                   IsWriteLog = appSettings.RobotAccountIsWriteLog
                                                                });
-
 
             if (isSuccess)
             {

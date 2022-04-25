@@ -10,5 +10,4 @@
 
         public int CustSubID { get; set; }
     }
-
 }

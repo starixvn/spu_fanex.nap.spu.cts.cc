@@ -8,7 +8,6 @@
     using FluentAssertions;
     using NSubstitute;
     using Sentry;
-    using System;
     using System.Collections.Generic;
     using Xunit;
 
@@ -30,7 +29,7 @@
         [Fact]
         public void GetCustWithNullUserName2_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<GetCustIdModel> 
+            var expectedResult = new List<GetCustIdModel>
             {
                 new GetCustIdModel
                 {
@@ -41,7 +40,7 @@
                 }
             };
 
-            dataAccess.GetCustWithNullUserName2(10,1).Returns(expectedResult);
+            dataAccess.GetCustWithNullUserName2(10, 1).Returns(expectedResult);
             var result = ctsCustomerService.GetCustWithNullUserName2(10, 1);
 
             result.Should().BeEquivalentTo(expectedResult);
@@ -66,6 +65,6 @@
 
             var result = ctsCustomerService.GetCustWithHavingUserName2(inputParam);
             result.Should().BeEquivalentTo(expectedResult);
-        }       
+        }
     }
 }

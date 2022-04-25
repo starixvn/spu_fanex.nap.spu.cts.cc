@@ -1,6 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
     using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using FluentAssertions;
     using Newtonsoft.Json;
@@ -13,13 +20,36 @@
 
     public class CustomerEvidenceInsertTest
     {
+        private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
+        private readonly IFeedSoon88Services feedSoon88Services;
+
         private readonly ICustomerEvidenceInsertDataAccess customerEvidenceInsertDataAccess;
         private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
 
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly IProblemAccountServices problemAccountServices;
+
+        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
+        private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;
+
+        private readonly ISystemParameterServices systemParameterService;
+
+        private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
+
         public CustomerEvidenceInsertTest()
         {
+            custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services);
+
             customerEvidenceInsertDataAccess = Substitute.For<ICustomerEvidenceInsertDataAccess>();
-            customerEvidenceInsertServices = new CustomerEvidenceInsertServices(customerEvidenceInsertDataAccess, null);
+            customerEvidenceInsertServices = new CustomerEvidenceInsertServices(customerEvidenceInsertDataAccess, problemAccountServices, dailyProblemClassificationServices, null);
+
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
+
+            dailyProblemClassificationDataAccess = Substitute.For<IDailyProblemClassificationDataAccess>();
+            dailyProblemClassificationServices = new DailyProblemClassificationServices(dailyProblemClassificationDataAccess, systemParameterService, problemAccountServices, custClassToMainDBService);
         }
 
         [Fact]
@@ -243,10 +273,11 @@
                      },
                  };
 
-            var rs = new DBResult
+            var rs = new SynctEvidenceCategoryResultEntity
             {
                 ErrorCode = 0,
                 ErrorMsg = string.Empty,
+                CustInfo = new List<CheckPACustomerAssociationForRollbackEntity> { new CheckPACustomerAssociationForRollbackEntity { CTSCustID = 1, CustID = 1 } }
             };
 
             var objects = cusEvidences.Select(x => new
@@ -311,10 +342,11 @@
                 },
             };
 
-            var rs = new DBResult
+            var rs = new SynctEvidenceCategoryResultEntity
             {
                 ErrorCode = 0,
                 ErrorMsg = string.Empty,
+                CustInfo = new List<CheckPACustomerAssociationForRollbackEntity> { new CheckPACustomerAssociationForRollbackEntity { CTSCustID = 1, CustID = 1 } }
             };
 
             var objects = cusEvidences.Select(x => new

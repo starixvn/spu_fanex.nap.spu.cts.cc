@@ -31,7 +31,7 @@
         {
             return await ctsCustomerJobService.UpdateCTSCustomerInfo(batchSize);
         }
-        
+
         [HttpPost("UpdateUsername2")]
         public async Task<bool> UpdateUsername2([FromForm] int batchSize)
         {
@@ -61,6 +61,5 @@
         {
             return await ctsCustomerJobService.InitInactivateNewCustomers();
         }
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -12,11 +13,13 @@
     {
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts(DateTime? dateTime, string serviceName, bool isWriteLog);
 
-        InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName, bool isWriteLog);
-
         IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
 
-        void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName);
+        InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing, bool isRescanFlow, string serviceName);
+
+        InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName);
+
+        void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -34,30 +37,52 @@
         {
             string custIDs = (dateTime == null) ? Constants.InitialProblemAccounts : Constants.ProblemAccountByDateTime;
 
-            var problemAccounts = GetProblemAccounts_IBC(custIDs, dateTime);
-
-            Utilities.LogSentryInfo(serviceName, "Get ProblemAccount", problemAccounts, isWriteLog, sentryClient);
+            var problemAccounts = problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
 
             return problemAccounts ?? new List<ProblemAccountsEntity>();
         }
 
-        public InsertCategoryResultEntity InsertProblemAccountToCTS(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName, bool isWriteLog)
+        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
+        {
+            return problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
+        }
+
+        public InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing, bool isRescanFlow, string serviceName)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var proAccountClassification = MergeProblemAccountClassification(problemAccounts, probAccountLosing);
+
+                if (proAccountClassification.Any())
+                {
+                    var problemAccountJson = JsonConvert.SerializeObject(proAccountClassification);
+
+                    var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
+
+                    if (result.ErrorCode == 0)
+                    {
+                        CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback);
+                    }
+
+                    return result;
+                }
+            }
+
+            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+        }
+
+
+        public InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
 
-                var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescanFlow);
+                var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
 
-                Utilities.LogSentryInfo(serviceName, "InsertProblemAccountToCTS", result.CustIds, isWriteLog, sentryClient);
-
-                if (result.ErrorCode == -1)
+                if (result.ErrorCode == 0)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
-                }
-                else
-                {
-                    CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback, serviceName);
+                    CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback);
                 }
 
                 return result;
@@ -66,27 +91,61 @@
             return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
         }
 
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
-        {
-            return problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
-        }
-
-        public void CheckNewPAAssociationCustomerForRollback(IEnumerable<NewPAAssociationCustomerForRollbackEntity> assCustForRollbacks, string serviceName)
+        public void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks)
         {
             if (assCustForRollbacks != null && assCustForRollbacks.Any())
             {
-                try
-                {
-                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
 
-                    var updateResult = problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "CheckNewPAAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
-                }
+                problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
             }
         }
 
+        #region Private methods
+
+        private static IEnumerable<InsertProblemAccountEntity> MergeProblemAccountClassification(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                return problemAccounts.GroupJoin(probAccountLosing,
+                                            pa => pa.CustID,
+                                            paLosing => paLosing.CustId,
+                                            (pa, paLosing) => new { pa, paLosing })
+                                            .SelectMany(
+                                                 group => group.paLosing.DefaultIfEmpty(),
+                                                 (group, temp) => new InsertProblemAccountEntity
+                                                 {
+                                                     CustID = group.pa.CustID,
+                                                     ReasonID = group.pa.ReasonID,
+                                                     RobotCounter = group.pa.RobotCounter,
+                                                     BetCount = temp?.BetCount,
+                                                     ActiveDays = temp?.ActiveDays,
+                                                     TurnoverRM = temp?.TurnoverRM,
+                                                     WinlossRM = temp?.WinlossRM,
+                                                     WinlossStatus = temp?.WinlossStatus
+                                                 });
+            }
+
+            return Enumerable.Empty<InsertProblemAccountEntity>();
+        }
+
+        private InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescanFlow, string serviceName)
+        {
+            if (!string.IsNullOrEmpty(problemAccountJson))
+            {
+                var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescanFlow);
+
+                if (result.ErrorCode == -1)
+                {
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccountJson, new Exception(result.ErrorMessage), sentryClient);
+                }
+
+                return result;
+            }
+
+            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+        }
+
+        #endregion Private methods
     }
 }

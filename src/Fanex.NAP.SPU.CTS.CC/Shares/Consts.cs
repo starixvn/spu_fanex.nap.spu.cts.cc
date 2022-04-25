@@ -24,10 +24,18 @@
 
         public const int ImportEvidence_SleepTimes = 5000; //5s
 
+        public const int ProblemAccountLosing_BatchSize = 2000;
+
         public enum MatchMonitorQueryTypes
         {
             Service = 1,
             Report = 2,
+        };
+
+        public enum ImportEvidenceSourceTypesFrom
+        {
+            Evidence = 0,
+            MarkPA = 1
         };
 
         public enum SystemParameters
@@ -42,7 +50,9 @@
             TWGroupBetting_LastTimeCountTotalTicket = 78,
             TWGroupBetting_LastTransID = 90,
             DailyNormalClassificationLastCategoryID = 85,
-            DailyNormalClassificationLastCustID = 86
+            DailyNormalClassificationLastCustID = 86,
+            DailyProblemClassificationLastCategoryID = 88,
+            DailyProblemClassificationLastCustID = 89
         };
 
         public enum DangerLevel
@@ -106,6 +116,9 @@
             RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
+            ProblemDailyJob = 12,
+            InsertEvidenceJob = 13,
+            PlaceSingleEvidence = 14,
             PlaceEvidenceForMultiCustAPI = 21,
             PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
@@ -123,7 +136,8 @@
             RemoveFlaggedEvi_CheckRobotUser = 38,
             RemoveMultiEvi_CheckRobotUser = 39,
             ExcludeTaggingAss_CheckRobotUser = 40,
-            InsertPAJob = 41
+            InsertPAJob = 41,
+            UpdateCategory = 42
         };
 
         public enum HttpStatus

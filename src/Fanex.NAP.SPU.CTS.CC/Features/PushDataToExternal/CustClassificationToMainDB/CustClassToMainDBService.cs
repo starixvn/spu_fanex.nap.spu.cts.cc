@@ -261,7 +261,7 @@
         public void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName)
         {
             try
-            {               
+            {
                 var inputData = MappingLogInputData(content);
 
                 if (inputData != null && inputData.Any())
@@ -284,11 +284,12 @@
         {
             var logInputData = new List<LogInputDataEntity>();
 
-            if(content != null && content.RobotUser!=null && content.RobotUser.Any())
+            if (content != null && content.RobotUser != null && content.RobotUser.Any())
             {
-                content.RobotUser.ToList().ForEach(c => 
+                content.RobotUser.ToList().ForEach(c =>
                 {
-                    logInputData.Add(new LogInputDataEntity  {
+                    logInputData.Add(new LogInputDataEntity
+                    {
                         CustId = c.CustId,
                         InputValue = c.Counter
                     });
@@ -308,6 +309,6 @@
             }
 
             return logInputData;
-        }         
+        }
     }
 }

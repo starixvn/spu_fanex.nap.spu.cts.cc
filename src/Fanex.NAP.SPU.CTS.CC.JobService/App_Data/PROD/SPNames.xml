@@ -14,7 +14,7 @@
 		<Setting Key="CTS_DC_CustEvidence_GetByReasonId" SpName="CTS_DC_CustEvidence_GetByReasonId" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="NormalAccount">
-		<Setting Key="CTS_DC_CustClassification_InsertNormalAccount" SpName="CTS_DC_CustClassification_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600"/>
+		<Setting Key="CTS_DC_CustClassification_InsertNormalAccount" SpName="CTS_DC_CustClassification_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" SpName="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" DbName="MySQL.SLAVE.CTS_DataCenter.ctsService" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_GetDangerLevel" SpName="CTS_DC_CustClassification_GetDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
 		<Setting Key="CTS_DC_CustClassification_UpdateDangerLevel" SpName="CTS_DC_CustClassification_UpdateDangerLevel" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -26,6 +26,11 @@
 	<Function Name="DailyNormalClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_Daily" SpName="CTS_NormalAccountsClassification_GeneralCategorize_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+	</Function>
+	<Function Name="DailyProblemClassification">
+		<Setting Key="CTS_DC_CustClassification_DailyScan_GetPA" SpName="CTS_DC_CustClassification_DailyScan_GetPA" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="RealtimeClassification">
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" SpName="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
@@ -64,7 +69,7 @@
 		<Setting Key="CTS_DC_CustEvidence_SyncToCategory" SpName="CTS_DC_CustEvidence_SyncToCategory" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="NAP_BLControl_EvidenceFlagged" SpName="NAP_BLControl_EvidenceFlagged" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
 		<Setting Key="NAP_BLControl_EvidenceUnflagged" SpName="NAP_BLControl_EvidenceUnflagged" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
-		<Setting Key="CTS_DC_CustEvidence_CheckCleanCust" SpName="CTS_DC_CustEvidence_CheckCleanCust" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600"/>
+		<Setting Key="CTS_DC_CustEvidence_CheckCleanCust" SpName="CTS_DC_CustEvidence_CheckCleanCust" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
 	</Function>
 	<Function Name="TransformCTSCustomer">
 		<Setting Key="CTS_CustInfoHistory_GetUpdatedCustID" SpName="CTS_CustInfoHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />

@@ -14,10 +14,13 @@
     {
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly ISystemParameterServices systemParameterServices;
+
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+
         private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
+
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
 
@@ -25,8 +28,10 @@
         {
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
             systemParameterServices = new SystemParameterServices(systemParameterDataAccess);
+
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
 
@@ -74,7 +79,6 @@
 
             robotAccountInsertServices.RobotUserInfo.Should().BeEquivalentTo(robotAccounts);
         }
-
 
         [Fact]
         public void MappingRobotCategory_WhenSuccess_ReturnProblemAccounts()

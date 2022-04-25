@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
@@ -8,11 +7,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Sentry;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -44,7 +40,7 @@
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
-        public CTSCustomerJobService(ISentryClient sentryClient, 
+        public CTSCustomerJobService(ISentryClient sentryClient,
             ICTSCustomerService ctscustomerService,
             IDailyNormalClassificationServices dailyClassificationService,
             ISystemParameterServices systemParameterServices,
@@ -238,7 +234,7 @@
                 if (custToReactive != null && custToReactive.Any())
                 {
                     var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
-                    string custIds = string.Join(",", custToReactive.Select(c=>c.CustID).Distinct());
+                    string custIds = string.Join(",", custToReactive.Select(c => c.CustID).Distinct());
 
                     var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(custIds, UpdateCustomer.ForNewCustomer);
                     var subCusts = ctscustomerService.GetCustSubFromMainDB(custIds);
@@ -304,9 +300,8 @@
                     {
                         isRunInactivate = false;
                     }
-                 
                 } while (isRunInactivate);
-                    
+
                 return Task.FromResult(true);
             }
             catch (Exception ex)
@@ -349,6 +344,7 @@
         }
 
         #region Private Methods
+
         private void NotifyTelegramMessage(string message)
         {
             var telegramService = new NotificationService();
@@ -356,8 +352,8 @@
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
                .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
                .SendWithoutDelay(isInfo: true);
-        }            
+        }
 
-        #endregion
+        #endregion Private Methods
     }
 }
