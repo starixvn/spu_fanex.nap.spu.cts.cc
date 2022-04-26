@@ -158,6 +158,7 @@
                     CTSCustId = x.CTSCustID,
                     SubscriberId = x.SubscriberID,
                     EvidenceId = x.EvidenceID,
+                    CreatedBy = x.CreatedBy,
                     ActionType = (int)actionType
                 }).ToList();
 
@@ -168,6 +169,7 @@
                         CustId = x.CustId,
                         CTSCustId = x.CTSCustId,
                         SubscriberId = x.SubscriberId,
+                        CreatedBy = x.CreatedBy,
                         EvidenceId = x.EvidenceId,
                         ActionType = x.ActionType
                     });
@@ -200,6 +202,7 @@
                     CTSCustId = x.CTSCustID,
                     SubscriberId = x.SubscriberID,
                     EvidenceId = x.EvidenceID,
+                    CreatedBy = x.CreatedBy,
                     ActionType = (int)actionType
                 });
 
@@ -396,6 +399,7 @@
                                                      EvidenceID = group.pa.EvidenceId,
                                                      SubscriberID = group.pa.SubscriberId,
                                                      ActionType = group.pa.ActionType,
+                                                     CreatedBy = group.pa.CreatedBy,
                                                      BetCount = temp?.BetCount,
                                                      ActiveDays = temp?.ActiveDays,
                                                      TurnoverRM = temp?.TurnoverRM,

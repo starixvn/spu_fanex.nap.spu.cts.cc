@@ -118,6 +118,7 @@
                                                      CustID = group.pa.CustID,
                                                      ReasonID = group.pa.ReasonID,
                                                      RobotCounter = group.pa.RobotCounter,
+                                                     CreatedBy = group.pa.CreatedBy,
                                                      BetCount = temp?.BetCount,
                                                      ActiveDays = temp?.ActiveDays,
                                                      TurnoverRM = temp?.TurnoverRM,
