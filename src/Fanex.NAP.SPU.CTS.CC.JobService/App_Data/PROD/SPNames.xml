@@ -109,8 +109,7 @@
 		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
 	</Function>
 	<Function Name="InactivateNewCustomer">
-		<Setting Key="CTS_DC_CustClassification_InactiveNewMemberScan_Get" SpName="CTS_DC_CustClassification_InactiveNewMemberScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_InactiveNewMemberScan_UpdateStatus" SpName="CTS_DC_CustClassification_InactiveNewMemberScan_UpdateStatus" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" SpName="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
   <Function Name="TWGroupBetting">

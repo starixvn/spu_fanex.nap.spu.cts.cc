@@ -49,6 +49,8 @@
             TWGroupBetting_LastScanTime = 77,
             TWGroupBetting_LastTimeCountTotalTicket = 78,
             TWGroupBetting_LastTransID = 90,
+            InactiveNewMember_LastCategoryID = 80,
+            InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastCategoryID = 88,

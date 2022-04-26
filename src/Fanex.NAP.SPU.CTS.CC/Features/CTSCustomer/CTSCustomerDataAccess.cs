@@ -3,7 +3,6 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InactivateNewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -67,8 +66,6 @@
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
 
         InactivateNewCustomer GetInactivateNewCustomers();
-
-        int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -432,32 +429,11 @@
             var data = new InactivateNewCustomer();
             var criteria = new GetInactivateNewCustomerCriteria();
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                var result = db.QueryMultiple(criteria);
-                data.CustIDs = result.Read<long>();
-                var lastCreatedDates = result.Read<DateTime>();
-                var lastCTSCustIDs = result.Read<long>();
+            data.CustIDs = repository.Fetch<long>(criteria) ?? Enumerable.Empty<long>();
+            data.LastCustID = criteria.LastCustID;
+            data.LastCategoryID = criteria.LastCategoryID;
 
-                if (lastCreatedDates != null && lastCreatedDates.Any())
-                    data.LastCreatedDate = lastCreatedDates.FirstOrDefault();
-
-                if (lastCTSCustIDs != null && lastCTSCustIDs.Any())
-                    data.LastCTSCustID = lastCTSCustIDs.FirstOrDefault();
-
-                return data;
-            }
-        }
-
-        public int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate)
-        {
-            var criteria = new UpdateStatusInactivateNewCustomerCriteria
-            {
-                LastCTSCustID = lastCTSCustID,
-                LastCreatedDate = lastCreatedDate
-            };
-
-            return repository.Execute(criteria);
+            return data;
         }
 
         #endregion Inactive New Customers
