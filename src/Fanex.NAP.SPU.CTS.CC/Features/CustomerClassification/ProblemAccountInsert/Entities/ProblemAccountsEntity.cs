@@ -11,6 +11,6 @@
         //Default value = 0, except Check/Get RobotUser From MainDB
         public int RobotCounter { get; set; }
 
-        public Int64 CreatedBy { get; set; }
+        public Int64 Creator { get; set; }
     }
 }
