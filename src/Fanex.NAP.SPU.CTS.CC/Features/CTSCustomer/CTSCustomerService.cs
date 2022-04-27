@@ -151,9 +151,7 @@
 
                 try
                 {
-                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);
-
-                    Utilities.LogSentryInfo(serviceName, "InsertNewCustomer", customers, true, sentryClient);
+                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);                    
 
                     foreach (var custs in customersChunk)
                     {
