@@ -28,6 +28,8 @@
         Task<bool> InsertReactivatedCustomers();
 
         Task<bool> InactivateNewCustomers();
+
+        Task<bool> InitInactivateNewCustomers();
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService
@@ -299,6 +301,33 @@
                         isContinue = false;
                     }
                 } while (isContinue);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> InitInactivateNewCustomers()
+        {
+            try
+            {
+                var inactivateCusts = ctscustomerService.GetInactivateNewCustomers();
+
+                if (inactivateCusts.CustIDs != null && inactivateCusts.CustIDs.Any())
+                {
+                    dailyClassificationService.ScanningDailyNormalClassification(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), SystemParameters.InactiveNewMember_LastCategoryID);
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
+                }
 
                 return Task.FromResult(true);
             }
