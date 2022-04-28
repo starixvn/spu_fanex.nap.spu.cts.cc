@@ -7,8 +7,8 @@
     {
         public IEnumerable<long> CustIDs { get; set; }
 
-        public DateTime LastCreatedDate { get; set; }
+        public UInt64 LastCustID { get; set; }
 
-        public long LastCTSCustID { get; set; }
+        public int LastCategoryID { get; set; }
     }
 }

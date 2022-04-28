@@ -69,8 +69,6 @@
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
         InactivateNewCustomer GetInactivateNewCustomers();
-
-        int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -548,11 +546,6 @@
         public InactivateNewCustomer GetInactivateNewCustomers()
         {
             return dataAccess.GetInactivateNewCustomers();
-        }
-
-        public int UpdateStatusInactivateNewCustomers(long lastCTSCustID, DateTime lastCreatedDate)
-        {
-            return dataAccess.UpdateStatusInactivateNewCustomers(lastCTSCustID, lastCreatedDate);
         }
 
         #endregion Inactivate New Customers
