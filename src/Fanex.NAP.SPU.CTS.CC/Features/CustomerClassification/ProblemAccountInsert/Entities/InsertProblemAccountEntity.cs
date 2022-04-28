@@ -10,7 +10,7 @@
 
         public int RobotCounter { get; set; }
 
-        public Int64 CreatedBy { get; set; }
+        public Int64? CreatedBy { get; set; }
 
         public int? WinlossStatus { get; set; }
 
