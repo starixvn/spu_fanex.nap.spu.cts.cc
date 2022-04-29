@@ -161,31 +161,31 @@
                         {
                             UpdateAssociationCustomerForArchive(custInfoInserted.InsertCustomer);
                             
-                            var isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);
-
-                            /* insert case VVIP */
-                            if (custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
-                            {                                
-                                var lastestCustClassification = customerCategoryService.AddCustomerCategory(custInfoInserted.CustInfoVVip);
-
-                                Parallel.Invoke(() =>
-                                {
-                                    var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
-                                },
-                                () =>
-                                {
-                                    var custIds = lastestCustClassification.Select(x => x.CustId);
-                                    antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
-                                });
-                            }
-
-                            /* end case VVIP */
+                            var isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);                           
 
                             if (isSuccess)
                             {
                                 NotifyCompleteForNewCustomer(custInfoInserted.InsertCustomer, lastCustID, paras.IsInsertMissingCust);
                             }
                         }
+
+                        /* insert case VVIP */
+                        if (custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
+                        {
+                            var lastestCustClassification = customerCategoryService.AddCustomerCategory(custInfoInserted.CustInfoVVip);
+
+                            Parallel.Invoke(() =>
+                            {
+                                var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
+                            },
+                            () =>
+                            {
+                                var custIds = lastestCustClassification.Select(x => x.CustId);
+                                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
+                            });
+                        }
+
+                        /* end case VVIP */
                     }
                 }
                 catch (Exception ex)
