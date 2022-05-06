@@ -5,5 +5,7 @@
         public long CustID { get; set; }
 
         public int ReasonID { get; set; }
+
+        public long? CreatedBy { get; set; }
     }
 }

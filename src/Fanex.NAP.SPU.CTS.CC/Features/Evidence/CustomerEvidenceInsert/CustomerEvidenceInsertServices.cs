@@ -338,7 +338,8 @@
             var custReasons = problemAccounts.Select(x => new CustReasonEntity
             {
                 CustID = x.CustID,
-                ReasonID = x.ReasonID
+                ReasonID = x.ReasonID,
+                CreatedBy = x.Creator
             });
 
             var custInfoJson = JsonConvert.SerializeObject(custReasons);
@@ -350,14 +351,12 @@
         {
             if (custEvidences != null & custEvidences.Any())
             {
-                var CreatedBy = ImportEvidence_StarixITId;
-
                 var objects = custEvidences.Select(x => new
                 {
                     x.CTSCustID,
                     x.EvidenceID,
                     x.Remark,
-                    CreatedBy
+                    x.CreatedBy
                 });
 
                 var jsonData = JsonConvert.SerializeObject(objects);
