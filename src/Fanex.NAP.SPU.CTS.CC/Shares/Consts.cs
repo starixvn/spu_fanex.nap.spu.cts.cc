@@ -168,5 +168,18 @@
             GetByRange = 1,
             GetByCustId = 2
         };
+
+        public enum FromAction
+        {
+            WebSite = 1,
+            Service = 2,
+            ServiceInsertNew = 3
+        }
+
+        public enum VVIPActionType
+        {
+            Insert = 1,
+            Remove = 2
+        }
     }
 }

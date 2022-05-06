@@ -22,20 +22,11 @@
         }
 
         [Fact]
-        public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnCustClassificationList()
+        public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnNotException()
         {
-            var dailyScanningClassiifications = new NormalClassificationDailyEntity
-            {
-                CustID = new List<Int64> { 1, 2, 3, 4 },
-                op_LastCategoryID = 1,
-                op_LastCustID = 1
-            };
+            Action action = () => dailyClassificationServices.Start().ScanningDailyNormalClassification(FunctionId.NormalDailyJob, true);
 
-            dailyClassificationDataAccess.GetCustomerForDailyNormalScanning().Returns(dailyScanningClassiifications);
-
-            var result = dailyClassificationServices.ScanningDailyNormalClassification(FunctionId.NormalDailyJob, true);
-
-            result.Should().BeEquivalentTo(dailyScanningClassiifications);
+            action.Should().NotThrow<Exception>();
         }
 
         [Fact]

@@ -18,6 +18,7 @@
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
+        private readonly ICustomerCategoryJobService customerCategoryJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
@@ -26,7 +27,8 @@
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
-            IRobotAccountInsertJobService robotAccountInsertJobService)
+            IRobotAccountInsertJobService robotAccountInsertJobService,
+            ICustomerCategoryJobService customerCategoryJobService)
         {
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -36,6 +38,7 @@
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
+            this.customerCategoryJobService = customerCategoryJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -89,10 +92,17 @@
             return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
+        [HttpPost("InsertCustCategoryVVIPFromQueue")]
+        public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await this.customerCategoryJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
         [HttpPost("updatewritelog")]
         public async Task<bool> UpdateWriteLog([FromForm] string serviceName, [FromForm] bool isWriteLog)
         {
             return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
         }
+        
     }
 }

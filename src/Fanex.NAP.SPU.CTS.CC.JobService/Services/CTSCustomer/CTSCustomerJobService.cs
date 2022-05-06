@@ -72,7 +72,8 @@
                     FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsInsertMissingCust = false,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
-                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
                 });
 
                 return Task.FromResult(result);
