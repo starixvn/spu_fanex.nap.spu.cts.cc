@@ -6,7 +6,10 @@
     public class CustEvidencesByCTSCustIdsRemoveCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CTSCustIDs")]
-        public string NewAccountEvidences { get; set; }
+        public string NewAccountEvidences { get; set; }        
+        
+        [SpParam(SqlParamName = "ip_CreatedBy")]
+        public long CreatedBy { get; set; }
 
         [SpParam(SqlParamName = "ip_SessionId")]
         public long SessionId { get; set; }

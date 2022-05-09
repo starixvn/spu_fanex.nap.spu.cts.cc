@@ -81,9 +81,11 @@
 
             var ctsCustIdList = custEvidences.Select(x => new { x.CTSCustID }).Distinct();
 
+            var createdBy = custEvidences.ToList()[0].CreatedBy;
+
             var jsonData = JsonConvert.SerializeObject(ctsCustIdList);
 
-            var result = customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, false, false);
+            var result = customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, false, false, createdBy);
 
             if (result.CustEviRemovedList != null)
             {

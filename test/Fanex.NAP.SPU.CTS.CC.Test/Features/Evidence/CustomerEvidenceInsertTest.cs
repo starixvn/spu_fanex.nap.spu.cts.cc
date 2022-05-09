@@ -135,7 +135,8 @@
                          CustId = 1,
                          ActionType = 1,
                          EvidenceId = 1,
-                         SubscriberId = 1
+                         SubscriberId = 1,
+                         CreatedBy = StarixITId
                      },
                      new CustomerEvidenceRemovedEntity
                      {
@@ -143,7 +144,8 @@
                          CustId = 2,
                          ActionType = 2,
                          EvidenceId = 2,
-                         SubscriberId = 2
+                         SubscriberId = 2,
+                         CreatedBy = StarixITId
                      },
                  },
                 DBResult = new DBResult
@@ -157,7 +159,7 @@
 
             var jsonData = JsonConvert.SerializeObject(ctsCustIdList);
 
-            customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, false, false).Returns(rs);
+            customerEvidenceInsertDataAccess.RemoveCustomerEvidenceByCTSCustIds(jsonData, false, false, StarixITId).Returns(rs);
 
             var result = customerEvidenceInsertServices.RemoveOldEvidence(cusEvidences, out IEnumerable<CustomerEvidenceRemovedEntity> custEviRemovedList);
 
