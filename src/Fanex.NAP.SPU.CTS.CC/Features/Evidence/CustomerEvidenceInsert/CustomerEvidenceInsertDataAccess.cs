@@ -69,7 +69,7 @@
             var criteria = new CustEvidencesInsertCriteria
             {
                 NewAccountEvidences = jsonData,
-                UserId = ImportEvidence_StarixITId,
+                UserId = StarixITId,
                 IsOverride = isOverwrite,
                 SourceType = sourceType
             };
@@ -107,7 +107,7 @@
             {
                 IdList = idList,
                 IsProcessed = isProcessed,
-                UserId = ImportEvidence_StarixITId
+                UserId = StarixITId
             };
 
             repository.Execute(criteria);

@@ -20,7 +20,7 @@
 
         public const int RemoveEvidences_ClearActionId = 3;
 
-        public const int ImportEvidence_StarixITId = 10278938;
+        public const int StarixITId = 10278938;
 
         public const int ImportEvidence_SleepTimes = 5000; //5s
 

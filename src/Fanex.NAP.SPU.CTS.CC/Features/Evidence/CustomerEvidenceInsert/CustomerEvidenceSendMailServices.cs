@@ -108,7 +108,7 @@
 
         public void SendMailInternal(string body, string environmentName, int mailingToSPU)
         {
-            var subject = $"CTS service Customer-Evidence failed to process ({ environmentName }), UserId={ Constants.ImportEvidence_StarixITId } at { DateTime.Now }";
+            var subject = $"CTS service Customer-Evidence failed to process ({ environmentName }), UserId={ Constants.StarixITId } at { DateTime.Now }";
 
             try
             {
