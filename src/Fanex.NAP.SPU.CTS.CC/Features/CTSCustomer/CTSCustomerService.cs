@@ -155,34 +155,36 @@
 
                     foreach (var custs in customersChunk)
                     {
+                        var isSuccess = true;
+
                         var custInfoInserted = TransformCustomerFromMainDB(custs.ToList());
 
                         if (custInfoInserted.InsertCustomer != null && custInfoInserted.InsertCustomer.Any())
                         {
                             UpdateAssociationCustomerForArchive(custInfoInserted.InsertCustomer);
-                            
-                            var isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);                           
 
-                            if (isSuccess)
-                            {
-                                NotifyCompleteForNewCustomer(custInfoInserted.InsertCustomer, lastCustID, paras.IsInsertMissingCust);
-                            }
+                            isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);
                         }
 
                         /* insert case VVIP */
-                        if (custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
+                        if (isSuccess && custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
                         {
                             var lastestCustClassification = customerCategoryService.AddCustomerCategory(custInfoInserted.CustInfoVVip);
 
+                            isSuccess = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
+
                             Parallel.Invoke(() =>
-                            {
-                                var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
-                            },
-                            () =>
                             {
                                 var custIds = lastestCustClassification.Select(x => x.CustId);
                                 antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
                             });
+                        }
+
+                        var updateCompleteCusts = custInfoInserted.MergeCustForUpdateComplete();
+
+                        if (isSuccess && updateCompleteCusts.Any())
+                        {
+                            NotifyCompleteForNewCustomer(updateCompleteCusts, lastCustID, paras.IsInsertMissingCust);
                         }
 
                         /* end case VVIP */
