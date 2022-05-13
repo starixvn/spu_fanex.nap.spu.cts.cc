@@ -14,6 +14,8 @@
 
         public int ActionType { get; set; }
 
+        public Int64 CreatedBy { get; set; }
+
         public int? WinlossStatus { get; set; }
 
         public decimal? TurnoverRM { get; set; }

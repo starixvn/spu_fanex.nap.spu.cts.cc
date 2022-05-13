@@ -262,7 +262,8 @@
                         {
                             CustID = c.CustId,
                             RobotCounter = c.Counter,
-                            ReasonID = (int)Category.Robot
+                            ReasonID = (int)Category.Robot,
+                            Creator = StarixITId
                         });
                     });
                 }

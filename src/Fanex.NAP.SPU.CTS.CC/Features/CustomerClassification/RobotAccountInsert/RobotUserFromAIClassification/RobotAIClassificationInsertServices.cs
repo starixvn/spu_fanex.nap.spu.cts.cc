@@ -125,7 +125,8 @@
                 {
                     CustID = c.CustID,
                     ReasonID = c.ReasonID,
-                    RobotCounter = 0
+                    RobotCounter = 0,
+                    Creator = StarixITId
                 }).ToList();
             }
 

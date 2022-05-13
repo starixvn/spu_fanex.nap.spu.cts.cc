@@ -12,7 +12,7 @@
     {
         IEnumerable<CustomerEvidenceFromFileEntity> GetCustomerEvidenceFromFile();
 
-        ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog);
+        ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog, long createdBy);
 
         DBResult InsertCustomerEvidenceMuitiple(string jsonData, bool isOverwrite, int sourceType);
 
@@ -41,11 +41,12 @@
             return repository.Fetch<CustomerEvidenceFromFileEntity>(criteria);
         }
 
-        public ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog)
+        public ResultRemoveCustomerEvidence RemoveCustomerEvidenceByCTSCustIds(string jsonData, bool isRollBack, bool isClearLog, long createdBy)
         {
             var criteria = new CustEvidencesByCTSCustIdsRemoveCriteria
             {
                 NewAccountEvidences = jsonData,
+                CreatedBy = createdBy,
                 SessionId = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")),
                 IsRollBack = isRollBack,
                 IsClearLog = isClearLog
@@ -69,7 +70,7 @@
             var criteria = new CustEvidencesInsertCriteria
             {
                 NewAccountEvidences = jsonData,
-                UserId = ImportEvidence_StarixITId,
+                UserId = StarixITId,
                 IsOverride = isOverwrite,
                 SourceType = sourceType
             };
@@ -107,7 +108,7 @@
             {
                 IdList = idList,
                 IsProcessed = isProcessed,
-                UserId = ImportEvidence_StarixITId
+                UserId = StarixITId
             };
 
             repository.Execute(criteria);

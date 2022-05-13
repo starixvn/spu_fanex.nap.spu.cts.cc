@@ -303,7 +303,7 @@
                     logInputData.Add(new LogInputDataEntity
                     {
                         CustId = c.CustID,
-                        InputValue = c.ReasonID
+                        InputValue = new { c.ReasonID, CreatedBy = c.Creator }.ToString()
                     });
                 });
             }
