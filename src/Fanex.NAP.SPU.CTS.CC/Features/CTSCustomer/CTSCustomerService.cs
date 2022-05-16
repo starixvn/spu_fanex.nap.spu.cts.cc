@@ -159,10 +159,15 @@
 
                         var custInfoInserted = TransformCustomerFromMainDB(custs.ToList());
 
+                        var updateCompleteCusts = custInfoInserted.MergeCustForUpdateComplete();
+
+                        if (updateCompleteCusts.Any())
+                        {
+                            UpdateAssociationCustomerForArchive(updateCompleteCusts);
+                        }
+
                         if (custInfoInserted.InsertCustomer != null && custInfoInserted.InsertCustomer.Any())
                         {
-                            UpdateAssociationCustomerForArchive(custInfoInserted.InsertCustomer);
-
                             isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);
                         }
 
@@ -179,8 +184,6 @@
                                 antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
                             });
                         }
-
-                        var updateCompleteCusts = custInfoInserted.MergeCustForUpdateComplete();
 
                         if (isSuccess && updateCompleteCusts.Any())
                         {
