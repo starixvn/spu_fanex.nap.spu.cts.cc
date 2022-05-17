@@ -31,5 +31,20 @@
                 problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
             }
         }
+
+        public void UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custIds)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                var custIdsToString = string.Join(",", custIds);
+
+                var dbResult = problemAccountDataAccess.UpdateBetLimitOfFlaggedCustomer(custIdsToString);
+
+                if (dbResult.ErrorCode != 0)
+                {
+                    LogService.Error("CTS.CC Update Bet Limit Of Flagged Customer throws exception: " + dbResult.ErrorMsg);
+                }
+            }
+        }
     }
 }

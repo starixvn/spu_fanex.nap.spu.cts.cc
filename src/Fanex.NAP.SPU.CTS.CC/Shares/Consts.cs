@@ -14,11 +14,7 @@
 
         public const int RobotUsers_SleepTimes = 300;
 
-        public const int RemoveEvidences_ClearActionId = 3;
-
         public const int StarixITId = 10278938;
-
-        public const int ImportEvidence_SleepTimes = 5000; //5s
 
         public const int ProblemAccountLosing_BatchSize = 2000;
 
@@ -26,12 +22,6 @@
         {
             Service = 1,
             Report = 2,
-        };
-
-        public enum ImportEvidenceSourceTypesFrom
-        {
-            Evidence = 0,
-            MarkPA = 1
         };
 
         public enum SystemParameters
@@ -93,12 +83,6 @@
             FromCustomer = 1,
             FromCustInfo = 2,
             FromProductStatus = 3
-        };
-
-        public enum EvidenceActionType
-        {
-            Insert = 0,
-            Remove = 2
         };
 
         public enum FunctionId

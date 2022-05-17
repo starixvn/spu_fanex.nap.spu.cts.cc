@@ -1,19 +1,18 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Evidence.MultipleAccountRemoveEvidence
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class CustomerEvidenceUpdateCriteria : NonQueryCommand
+    public class BetLimitByEvidenceRemovingUpdateCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_ProcessedIDList")]
-        public string ProcessedIdList { get; set; }
+        public string CustIDList { get; set; }
 
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustEvidenceQueue_Update";
+            return "NAP_BLControl_EvidenceUnflagged";
         }
 
         public override bool IsValid()

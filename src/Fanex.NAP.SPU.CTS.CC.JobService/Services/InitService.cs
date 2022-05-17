@@ -14,8 +14,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.MultipleAccountRemoveEvidence;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -47,10 +45,6 @@
             RegisterProbationClassification(services);
 
             RegisteRobotAccountInsert(services);
-
-            RegisteCustomerEvidencesInsert(services);
-
-            RegisteRemoveAccountEvidences(services);
 
             RegisteCustomer(services);
 
@@ -123,21 +117,6 @@
             services.AddSingleton<IRobotAIClassificationInsertDataAccess, RobotAIClassificationInsertDataAccess>();
             services.AddSingleton<IRobotAIClassificationInsertServices, RobotAIClassificationInsertServices>();
             services.AddSingleton<IRobotAccountInsertJobService, RobotAccountInsertJobService>();
-        }
-
-        private static void RegisteRemoveAccountEvidences(this IServiceCollection services)
-        {
-            services.AddSingleton<IRemoveAccountEvidenceDataAccess, RemoveAccountEvidenceDataAccess>();
-            services.AddSingleton<IRemoveAccountEvidenceServices, RemoveAccountEvidenceServices>();
-            services.AddSingleton<IRemoveAccountEvidenceJobService, RemoveAccountEvidenceJobService>();
-        }
-
-        private static void RegisteCustomerEvidencesInsert(this IServiceCollection services)
-        {
-            services.AddSingleton<ICustomerEvidenceInsertDataAccess, CustomerEvidenceInsertDataAccess>();
-            services.AddSingleton<ICustomerEvidenceInsertServices, CustomerEvidenceInsertServices>();
-            services.AddSingleton<ICustomerEvidenceSendMailServices, CustomerEvidenceSendMailServices>();
-            services.AddSingleton<ICustomerEvidenceInsertJobService, CustomerEvidenceInsertJobService>();
         }
 
         private static void RegisteCustomer(this IServiceCollection services)

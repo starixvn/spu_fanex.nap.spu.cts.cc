@@ -4,12 +4,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -23,15 +20,9 @@
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds);
-
-        IRescanCustClassificationService InsertCustEvidenceCategory(RescanParametersEntity paras);
-
         IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
-
-        IRescanCustClassificationService InsertProblemAccount(RescanParametersEntity paras);
 
         IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras);
 
@@ -44,8 +35,6 @@
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<ProblemAccountsEntity> RobotUsers { get; }
-
-        IEnumerable<CustEvidenceEntity> ExistedEvidences { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -59,7 +48,6 @@
         private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private List<long> custIdsToRescanPA;
-        private IEnumerable<CustEvidenceEntity> existedEvidences;
         private List<ProblemAccountsEntity> robotUsers;
         private bool isSuccess;
         private List<ProblemAccountLosingClassificationEntity> problemAccountLosing;
@@ -88,7 +76,6 @@
         public IRescanCustClassificationService Start()
         {
             this.custIdsToRescanPA = new List<long>();
-            this.existedEvidences = Enumerable.Empty<CustEvidenceEntity>();
             this.robotUsers = new List<ProblemAccountsEntity>();
             this.problemAccountLosing = new List<ProblemAccountLosingClassificationEntity>();
             this.isSuccess = true;
@@ -102,10 +89,7 @@
             {
                 Start()
                .GetAgentCusts(paras.CustIds)
-               .GetExistedCustEvidences(paras.CustIds)
                .GetProbAccountLosingClassification(paras.FunctionId)
-               .InsertCustEvidenceCategory(paras)
-               .InsertProblemAccount(paras)
                .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
                .InsertRobot(paras)
                .RescanProblemAccount(paras)
@@ -129,49 +113,6 @@
                                .Select(c => c.CustID)?.ToList();
 
                     custIdsToRescanPA.AddRange(agentIds);
-                }
-            }
-
-            return this;
-        }
-
-        public IRescanCustClassificationService GetExistedCustEvidences(IEnumerable<long> custIds)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                string custIdsToString = string.Join(",", custIds);
-
-                existedEvidences = rescanCustClassificationDataAccess.GetExistedEvidences(custIdsToString);
-            }
-
-            return this;
-        }
-
-        public IRescanCustClassificationService InsertCustEvidenceCategory(RescanParametersEntity paras)
-        {
-            var isRescan = paras.FunctionId != FunctionId.InsertNewCustJob;
-
-            if (existedEvidences != null && existedEvidences.Any())
-            {
-                var evidencesChunk = existedEvidences.Chunk(paras.InternalBatchSize);
-
-                foreach (var evidences in evidencesChunk)
-                {
-                    var result = customerEvidenceInsertServices.SyncCustomerEvidenceToCTSCategory(evidences, problemAccountLosing, isRescan);
-
-                    if (result.ErrorCode == -1)
-                    {
-                        Utilities.LogSentryError(paras.ServiceName, "RescanCC - SyncCustEvidence fail", evidences, new Exception(result.ErrorMsg), sentryClient);
-                    }
-                    else
-                    {
-                        if (result.CustInfo != null && result.CustInfo.Any())
-                        {
-                            var custIds = result.CustInfo.Select(x => x.CustID);
-
-                            custIdsToRescanPA.AddRange(custIds);
-                        }
-                    }
                 }
             }
 
@@ -305,7 +246,5 @@
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
         public IEnumerable<ProblemAccountsEntity> RobotUsers => robotUsers;
-
-        public IEnumerable<CustEvidenceEntity> ExistedEvidences => existedEvidences;
     }
 }

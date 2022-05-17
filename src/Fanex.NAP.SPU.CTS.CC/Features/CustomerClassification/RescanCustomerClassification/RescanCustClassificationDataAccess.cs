@@ -9,8 +9,6 @@
     {
         IEnumerable<RoleCustomerEntity> GetRoleCustomer(string custIds);
 
-        IEnumerable<CustEvidenceEntity> GetExistedEvidences(string custIDs);
-
         IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds);
     }
 
@@ -31,16 +29,6 @@
             };
 
             return repository.Fetch<RoleCustomerEntity>(criteria);
-        }
-
-        public IEnumerable<CustEvidenceEntity> GetExistedEvidences(string custIDs)
-        {
-            var criteria = new ExistedEvidencesGetCriteria
-            {
-                CustIds = custIDs
-            };
-
-            return repository.Fetch<CustEvidenceEntity>(criteria);
         }
 
         public IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds)

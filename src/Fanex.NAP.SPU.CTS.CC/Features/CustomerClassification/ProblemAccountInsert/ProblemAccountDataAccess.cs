@@ -26,5 +26,37 @@
 
             return repository.Execute(criteria);
         }
+
+        public DBResult UpdateBetLimitOfFlaggedCustomer(string custIds)
+        {
+            var criteria = new BetLimitByEvidenceAddingUpdateCriteria
+            {
+                CustIDList = custIds
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
+            };
+        }
+
+        public DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds)
+        {
+            var criteria = new BetLimitByEvidenceRemovingUpdateCriteria
+            {
+                CustIDList = custIds
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
+            };
+        }
     }
 }
