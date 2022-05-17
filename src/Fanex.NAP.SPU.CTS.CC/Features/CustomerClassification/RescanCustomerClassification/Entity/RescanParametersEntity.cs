@@ -7,7 +7,7 @@
     {
         public IEnumerable<long> CustIds { get; set; }
 
-        public bool IsCheckPAFromNAP { get; set; }
+        public bool IsRescanPA { get; set; }
 
         public bool IsPushCCToSoon88 { get; set; }
 
@@ -30,39 +30,6 @@
         public bool IsSyncAFCData { get; set; }
 
         public string AFCInsertAccountURL { get; set; }
-
-        public FunctionId FuncId_CheckPA
-        {
-            get
-            {
-                switch (FunctionId)
-                {
-                    case FunctionId.InsertNewCustJob:
-                        return FunctionId.InsertNewCus_CheckPA;
-
-                    case FunctionId.RemoveVIPWeb:
-                        return FunctionId.RemoveVVIP_CheckPA;
-
-                    case FunctionId.RemoveSpecialCCWeb:
-                        return FunctionId.RemoveSpecial_CheckPA;
-
-                    case FunctionId.RemovePAAPI:
-                        return FunctionId.RemovePA_CheckPA;
-
-                    case FunctionId.RemoveFlaggedEvidenceWeb:
-                        return FunctionId.RemoveFlaggedEvidence_CheckPA;
-
-                    case FunctionId.RemoveMultiEvidencesWeb:
-                        return FunctionId.RemoveMultiEvidences_CheckPA;
-
-                    case FunctionId.ExcludeTaggingAssPAWeb:
-                        return FunctionId.ExcludeTaggingByAss_CheckPA;
-
-                    default:
-                        return 0;
-                }
-            }
-        }
 
         public FunctionId FuncId_CheckRobotUser
         {

@@ -6,10 +6,6 @@
 
         public const int InternalRetry = 3;
 
-        public const string InitialProblemAccounts = "0";
-
-        public const string ProblemAccountByDateTime = "";
-
         public const string FeedSoon88_Salt = "!%HGDwweHqw#";
 
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";

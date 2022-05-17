@@ -29,8 +29,6 @@
 
         IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService GetProblemAccountFromNAP(IEnumerable<long> custIds, bool isCheckPAFromNAP);
-
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
         IRescanCustClassificationService InsertProblemAccount(RescanParametersEntity paras);
@@ -44,8 +42,6 @@
         IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
-
-        IEnumerable<ProblemAccountsEntity> ProblemAccounts { get; }
 
         IEnumerable<ProblemAccountsEntity> RobotUsers { get; }
 
@@ -64,7 +60,6 @@
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private List<long> custIdsToRescanPA;
         private IEnumerable<CustEvidenceEntity> existedEvidences;
-        private IEnumerable<ProblemAccountsEntity> problemAccountFromNAP;
         private List<ProblemAccountsEntity> robotUsers;
         private bool isSuccess;
         private List<ProblemAccountLosingClassificationEntity> problemAccountLosing;
@@ -94,7 +89,6 @@
         {
             this.custIdsToRescanPA = new List<long>();
             this.existedEvidences = Enumerable.Empty<CustEvidenceEntity>();
-            this.problemAccountFromNAP = Enumerable.Empty<ProblemAccountsEntity>();
             this.robotUsers = new List<ProblemAccountsEntity>();
             this.problemAccountLosing = new List<ProblemAccountLosingClassificationEntity>();
             this.isSuccess = true;
@@ -109,7 +103,6 @@
                 Start()
                .GetAgentCusts(paras.CustIds)
                .GetExistedCustEvidences(paras.CustIds)
-               .GetProblemAccountFromNAP(paras.CustIds, paras.IsCheckPAFromNAP).LogRescanPAData(problemAccountFromNAP, paras.FuncId_CheckPA, paras.ServiceName)
                .GetProbAccountLosingClassification(paras.FunctionId)
                .InsertCustEvidenceCategory(paras)
                .InsertProblemAccount(paras)
@@ -185,18 +178,6 @@
             return this;
         }
 
-        public IRescanCustClassificationService GetProblemAccountFromNAP(IEnumerable<long> custIds, bool isCheckPAFromNAP)
-        {
-            if (custIds != null && custIds.Any() && isCheckPAFromNAP)
-            {
-                string custIdsToString = string.Join(",", custIds);
-
-                problemAccountFromNAP = problemAccountServices.GetProblemAccounts_IBC(custIdsToString, null);
-            }
-
-            return this;
-        }
-
         public IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId)
         {
             var custIds = new List<long>();
@@ -204,11 +185,6 @@
             if (existedEvidences != null && existedEvidences.Any())
             {
                 custIds.AddRange(existedEvidences.Select(c => c.CustId));
-            }
-
-            if (problemAccountFromNAP != null && problemAccountFromNAP.Any())
-            {
-                custIds.AddRange(problemAccountFromNAP.Select(c => c.CustID));
             }
 
             if (custIds.Any())
@@ -223,25 +199,6 @@
                     {
                         problemAccountLosing.AddRange(paLosing);
                     }
-                }
-            }
-
-            return this;
-        }
-
-        public IRescanCustClassificationService InsertProblemAccount(RescanParametersEntity paras)
-        {
-            if (problemAccountFromNAP != null && problemAccountFromNAP.Any())
-            {
-                var problemAccountsChunk = problemAccountFromNAP.Distinct().Chunk(paras.InternalBatchSize);
-
-                var isRescanFlow = paras.FunctionId != FunctionId.InsertNewCustJob;
-
-                foreach (var problemAccs in problemAccountsChunk)
-                {
-                    var problemCustIds = problemAccountServices.InsertProblemAccount(problemAccs, problemAccountLosing, isRescanFlow, paras.ServiceName);
-
-                    custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }
             }
 
@@ -346,8 +303,6 @@
         }
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
-
-        public IEnumerable<ProblemAccountsEntity> ProblemAccounts => problemAccountFromNAP;
 
         public IEnumerable<ProblemAccountsEntity> RobotUsers => robotUsers;
 
