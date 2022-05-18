@@ -2,6 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.Shares.Models;
 
     public interface IProblemAccountDataAccess
     { 

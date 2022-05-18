@@ -21,7 +21,7 @@
 
         bool InsertPAToCTS(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras);
 
-        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers);
+        IEnumerable<RobotInsetViewEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers);
     }
 
     public class RobotAIClassificationInsertServices : IRobotAIClassificationInsertServices
@@ -91,37 +91,37 @@
             {
                 var custCategory = MappingRobotCategory(robotUsers);
 
-                var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
+                //var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
 
-                isSuccess = (result != null && result.ErrorCode == 0);
+                //isSuccess = (result != null && result.ErrorCode == 0);
 
-                if (isSuccess && result.CustIds != null && result.CustIds.Any())
-                {
-                    isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                    {
-                        ExternalBatchSize = paras.BatchExternalSize,
-                        FeedSoon88API = paras.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
-                        IsUpdateDangerToMainDB = true,
-                        DangerLevelType = DangerLevel.ABI,
-                        IsWriteLog = paras.IsWriteLog,
-                        ServiceName = paras.ServiceName
-                    });
+                //if (isSuccess && result.CustIds != null && result.CustIds.Any())
+                //{
+                //    isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                //    {
+                //        ExternalBatchSize = paras.BatchExternalSize,
+                //        FeedSoon88API = paras.Soon88FeedDataAPI,
+                //        IsPushCCToSoon88 = true,
+                //        IsUpdateDangerToMainDB = true,
+                //        DangerLevelType = DangerLevel.ABI,
+                //        IsWriteLog = paras.IsWriteLog,
+                //        ServiceName = paras.ServiceName
+                //    });
 
-                    Thread.Sleep(RobotUsers_SleepTimes);
-                }
+                //    Thread.Sleep(RobotUsers_SleepTimes);
+                //}
             }
 
             return isSuccess;
         }
 
-        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers)
+        public IEnumerable<RobotInsetViewEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers)
         {
-            var custCategory = new List<ProblemAccountsEntity>();
+            var custCategory = new List<RobotInsetViewEntity>();
 
             if (robotUsers != null && robotUsers.Any())
             {
-                custCategory = robotUsers.Select(c => new ProblemAccountsEntity
+                custCategory = robotUsers.Select(c => new RobotInsetViewEntity
                 {
                     CustID = c.CustID,
                     ReasonID = c.ReasonID,

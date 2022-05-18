@@ -75,7 +75,7 @@
                         {
                             CustIds = custIds,
                             FunctionId = FunctionId.RemoveVIPWeb,
-                            IsCheckPAFromNAP = true,
+                            //IsCheckPAFromNAP = true,  //TODO
                             IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
                             DangerLevelType = DangerLevel.ABI,

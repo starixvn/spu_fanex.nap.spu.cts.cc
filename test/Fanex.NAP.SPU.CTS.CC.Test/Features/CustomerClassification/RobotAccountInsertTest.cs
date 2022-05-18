@@ -97,15 +97,15 @@
                 }
             };
 
-            var problemAccounts = new List<ProblemAccountsEntity>
+            var problemAccounts = new List<RobotInsetViewEntity>
             {
-                new ProblemAccountsEntity
+                new RobotInsetViewEntity
                 {
                     CustID=1,
                     ReasonID=(int)Category.Robot,
                     RobotCounter = 1
                 },
-                  new ProblemAccountsEntity
+                  new RobotInsetViewEntity
                 {
                     CustID=2,
                     ReasonID=(int)Category.Robot,
@@ -121,15 +121,15 @@
         [Fact]
         public void MappingRobotCategory_WhenFail_ReturnEmptyLists()
         {
-            var problemAccounts = new List<ProblemAccountsEntity>
+            var problemAccounts = new List<RobotInsetViewEntity>
             {
-               new ProblemAccountsEntity
+               new RobotInsetViewEntity
                 {
                     CustID=1,
                     ReasonID=(int)Category.Robot,
                     RobotCounter = 1
                 },
-                  new ProblemAccountsEntity
+                  new RobotInsetViewEntity
                 {
                     CustID=2,
                     ReasonID=(int)Category.Robot,

@@ -8,6 +8,6 @@
     {
         public IEnumerable<RobotUserEntity> RobotUser { get; set; }
 
-        public IEnumerable<ProblemAccountsEntity> ProblemAccounts { get; set; }
+        public IEnumerable<RobotInsetViewEntity> ProblemAccounts { get; set; }
     }
 }

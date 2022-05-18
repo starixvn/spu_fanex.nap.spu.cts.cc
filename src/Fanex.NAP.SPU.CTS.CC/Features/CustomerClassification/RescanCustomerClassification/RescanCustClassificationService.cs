@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -28,13 +29,13 @@
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
-        IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName);
+        IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> problemAccounts, FunctionId funcId, string stageName);
 
         IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
 
-        IEnumerable<ProblemAccountsEntity> RobotUsers { get; }
+        IEnumerable<RobotInsetViewEntity> RobotUsers { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -45,10 +46,9 @@
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
-        private readonly ICustomerEvidenceInsertServices customerEvidenceInsertServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private List<long> custIdsToRescanPA;
-        private List<ProblemAccountsEntity> robotUsers;
+        private List<RobotInsetViewEntity> robotUsers;
         private bool isSuccess;
         private List<ProblemAccountLosingClassificationEntity> problemAccountLosing;
         private const string ServiceNameRescan = "Rescan Customer Classification";
@@ -60,7 +60,6 @@
             IAntiFraudCenterServices antiFraudCenterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IDailyNormalClassificationServices dailyClassificationServices,
-            ICustomerEvidenceInsertServices customerEvidenceInsertServices,
             IDailyProblemClassificationServices dailyProblemClassificationServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
@@ -69,14 +68,13 @@
             this.sentryClient = sentryClient;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.dailyClassificationServices = dailyClassificationServices;
-            this.customerEvidenceInsertServices = customerEvidenceInsertServices;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
         }
 
         public IRescanCustClassificationService Start()
         {
             this.custIdsToRescanPA = new List<long>();
-            this.robotUsers = new List<ProblemAccountsEntity>();
+            this.robotUsers = new List<RobotInsetViewEntity>();
             this.problemAccountLosing = new List<ProblemAccountLosingClassificationEntity>();
             this.isSuccess = true;
 
@@ -87,12 +85,17 @@
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
-                Start()
-               .GetAgentCusts(paras.CustIds)
-               .GetProbAccountLosingClassification(paras.FunctionId)
-               .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
-               .InsertRobot(paras)
-               .RescanProblemAccount(paras)
+                Start();
+
+                if (paras.IsRescanPA)
+                {
+                    GetProbAccountLosingClassification(paras.FunctionId)
+                   .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
+                   .InsertRobot(paras)
+                   .RescanProblemAccount(paras);
+                }
+                
+                GetAgentCusts(paras.CustIds)       
                .RescanNormalAccount(paras);
             }
 
@@ -123,11 +126,6 @@
         {
             var custIds = new List<long>();
 
-            if (existedEvidences != null && existedEvidences.Any())
-            {
-                custIds.AddRange(existedEvidences.Select(c => c.CustId));
-            }
-
             if (custIds.Any())
             {
                 var custIdChunk = custIds.Distinct().Chunk(ProblemAccountLosing_BatchSize);
@@ -156,7 +154,7 @@
                 {
                     robots.ToList().ForEach(c =>
                     {
-                        robotUsers.Add(new ProblemAccountsEntity
+                        robotUsers.Add(new RobotInsetViewEntity
                         {
                             CustID = c.CustId,
                             RobotCounter = c.Counter,
@@ -180,9 +178,9 @@
 
                 foreach (var robotBatch in robotChunk)
                 {
-                    var problemCustIds = problemAccountServices.InsertProblemAccount(robotBatch, isRescanFlow, paras.ServiceName);
+                    //var problemCustIds = problemAccountServices.InsertProblemAccount(robotBatch, isRescanFlow, paras.ServiceName);
 
-                    custIdsToRescanPA.AddRange(problemCustIds.CustIds);
+                   // custIdsToRescanPA.AddRange(problemCustIds.CustIds);
                 }
             }
 
@@ -236,7 +234,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService LogRescanPAData(IEnumerable<ProblemAccountsEntity> problemAccounts, FunctionId funcId, string stageName)
+        public IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> problemAccounts, FunctionId funcId, string stageName)
         {
             custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, funcId, stageName);
 
@@ -245,6 +243,6 @@
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
-        public IEnumerable<ProblemAccountsEntity> RobotUsers => robotUsers;
+        public IEnumerable<RobotInsetViewEntity> RobotUsers => robotUsers;
     }
 }

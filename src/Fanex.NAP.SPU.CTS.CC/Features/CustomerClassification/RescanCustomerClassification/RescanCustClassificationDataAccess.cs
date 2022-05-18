@@ -2,7 +2,6 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
     using System.Collections.Generic;
 
     public interface IRescanCustClassificationDataAccess

@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence.CustomerEvidenceInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -27,7 +27,6 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
-        private readonly ICustomerEvidenceInsertServices custEvidenceServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IAppSettings appSettings;
 
@@ -37,7 +36,6 @@
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService pushDataToExternalService,
             IAntiFraudCenterServices antiFraudCenterServices,
-            ICustomerEvidenceInsertServices custEvidenceServices,
             IDailyProblemClassificationServices dailyProblemClassificationServices,
             IAppSettings appSettings)
         {
@@ -46,7 +44,6 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = pushDataToExternalService;
             this.antiFraudCenterServices = antiFraudCenterServices;
-            this.custEvidenceServices = custEvidenceServices;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.appSettings = appSettings;
             this.serviceName = "ProblemAccountInsert";
@@ -85,9 +82,10 @@
 
             var savedDataTime = DateTime.Now.AddSeconds(-10);
 
-            var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
+            //var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
-            var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+            //var isSuccess = InsertProblemAccount(problemAccounts, batchExternalSize, batchInternalSize);
+            var isSuccess = false;
 
             if (isSuccess)
             {
@@ -97,51 +95,51 @@
             return isSuccess;
         }
 
-        private bool InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, int batchExternalSize, int batchInternalSize)
-        {
-            if (problemAccounts != null && problemAccounts.Any())
-            {
-                custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, FunctionId.InsertPAJob, serviceName);
+        //private bool InsertProblemAccount(IEnumerable<RobotInsetViewEntity> problemAccounts, int batchExternalSize, int batchInternalSize)
+        //{
+        //    if (problemAccounts != null && problemAccounts.Any())
+        //    {
+        //        custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, FunctionId.InsertPAJob, serviceName);
 
-                var problemAccountsChunk = problemAccounts.Distinct().Chunk(batchInternalSize);
+        //        var problemAccountsChunk = problemAccounts.Distinct().Chunk(batchInternalSize);
 
-                foreach (var probAccountBatch in problemAccountsChunk)
-                {
-                    var probAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(probAccountBatch.Select(c => c.CustID), FunctionId.InsertPAJob);
+        //        foreach (var probAccountBatch in problemAccountsChunk)
+        //        {
+        //            var probAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(probAccountBatch.Select(c => c.CustID), FunctionId.InsertPAJob);
 
-                    var result = problemAccountServices.InsertProblemAccount(probAccountBatch, probAccountLosing, false, serviceName);
+        //           // var result = problemAccountServices.InsertProblemAccount(probAccountBatch, probAccountLosing, false, serviceName);
 
-                    var isSuccess = (result != null && result.ErrorCode == 0);
+        //            var isSuccess = (result != null && result.ErrorCode == 0);
 
-                    if (isSuccess && result.CustIds != null && result.CustIds.Any())
-                    {
-                        InsertEvidenceFromNapPA(probAccountBatch);
+        //            if (isSuccess && result.CustIds != null && result.CustIds.Any())
+        //            {
+        //                InsertEvidenceFromNapPA(probAccountBatch);
 
-                        isSuccess = PushDataToExternal(result.CustIds, batchExternalSize);
-                    }
+        //                isSuccess = PushDataToExternal(result.CustIds, batchExternalSize);
+        //            }
 
-                    if (!isSuccess)
-                    {
-                        return false;
-                    }
-                }
-            }
+        //            if (!isSuccess)
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        private void InsertEvidenceFromNapPA(IEnumerable<ProblemAccountsEntity> problemAccounts)
-        {
-            if (problemAccounts != null && problemAccounts.Any())
-            {
-                var custEvidences = custEvidenceServices.GetCustEvidenceByReasonId(problemAccounts);
+        //private void InsertEvidenceFromNapPA(IEnumerable<RobotInsetViewEntity> problemAccounts)
+        //{
+        //    if (problemAccounts != null && problemAccounts.Any())
+        //    {
+        //        var custEvidences = custEvidenceServices.GetCustEvidenceByReasonId(problemAccounts);
 
-                if (custEvidences != null && custEvidences.Any())
-                {
-                    custEvidenceServices.InsertCustEvidenceFromProblemAccount(custEvidences);
-                }
-            }
-        }
+        //        if (custEvidences != null && custEvidences.Any())
+        //        {
+        //            custEvidenceServices.InsertCustEvidenceFromProblemAccount(custEvidences);
+        //        }
+        //    }
+        //}
 
         private bool PushDataToExternal(IEnumerable<long> custIds, int batchExternalSize)
         {
@@ -164,7 +162,7 @@
                 },
                 () =>
                 {
-                    custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
+                    //custEvidenceServices.UpdateBetLimitOfFlaggedCustomer(custIds);
                 },
                 () =>
                 {

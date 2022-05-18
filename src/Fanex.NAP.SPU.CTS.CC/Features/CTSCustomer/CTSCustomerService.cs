@@ -247,7 +247,7 @@
                 {
                     CustIds = custToRescan,
                     FunctionId = FunctionId.InsertNewCustJob,
-                    IsCheckPAFromNAP = true,
+                    //IsCheckPAFromNAP = true,  //TODO
                     IsPushCCToSoon88 = true,
                     IsUpdateDangerToMainDB = true,
                     DangerLevelType = DangerLevel.ABI,
