@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -19,6 +20,7 @@
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ICustomerCategoryJobService customerCategoryJobService;
+        private readonly ITWProblemAccountJobService twProblemAccountJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
@@ -28,7 +30,8 @@
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
-            ICustomerCategoryJobService customerCategoryJobService)
+            ICustomerCategoryJobService customerCategoryJobService,
+            ITWProblemAccountJobService twProblemAccountJobService)
         {
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -39,6 +42,7 @@
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.customerCategoryJobService = customerCategoryJobService;
+            this.twProblemAccountJobService = twProblemAccountJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -96,6 +100,12 @@
         public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.customerCategoryJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("scan-tw-problem-account-customer")]
+        public async Task<bool> ScanTWSystemFormulaBetCustomer()
+        {
+            return await twProblemAccountJobService.Execute();
         }
 
         [HttpPost("updatewritelog")]
