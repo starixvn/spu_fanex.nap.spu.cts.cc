@@ -290,20 +290,8 @@
                 {
                     logInputData.Add(new LogInputDataEntity
                     {
-                        CustId = c.CustId,
-                        InputValue = c.Counter
-                    });
-                });
-            }
-
-            if (content != null && content.ProblemAccounts != null && content.ProblemAccounts.Any())
-            {
-                content.ProblemAccounts.ToList().ForEach(c =>
-                {
-                    logInputData.Add(new LogInputDataEntity
-                    {
                         CustId = c.CustID,
-                        InputValue = new { c.ReasonID, CreatedBy = c.Creator }.ToString()
+                        InputValue = new { c.RobotCounter, c.ReasonID, c.Creator }.ToString()
                     });
                 });
             }

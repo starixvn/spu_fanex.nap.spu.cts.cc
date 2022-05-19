@@ -72,7 +72,7 @@
                     var isSuccess = dailyProblemClassificationServices
                                         .Reset()
                                         .InsertProblemAccountProbationClassification(batchSize, problemAccountBatch)
-                                        .CheckNewPAAssociationCustomerForRollback()
+                                        .InsertPALogic()
                                         .PushCCToExternal(new PushDataToExternalEntity
                                         {
                                             ExternalBatchSize = batchSize,

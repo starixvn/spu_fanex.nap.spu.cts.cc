@@ -16,8 +16,6 @@
 
         public const int StarixITId = 10278938;
 
-        public const int ProblemAccountLosing_BatchSize = 2000;
-
         public enum MatchMonitorQueryTypes
         {
             Service = 1,

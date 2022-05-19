@@ -2,7 +2,7 @@
 {
     public class RobotUserEntity
     {
-        public int CustId { get; set; }
+        public long CustId { get; set; }
 
         public int Counter { get; set; }
     }

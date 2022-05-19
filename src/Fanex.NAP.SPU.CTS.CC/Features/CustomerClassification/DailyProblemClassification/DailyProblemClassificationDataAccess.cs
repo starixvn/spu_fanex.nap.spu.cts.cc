@@ -13,7 +13,7 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
 
-        IEnumerable<CheckPACustomerAssociationForRollbackEntity> InsertProblemProbationClassification(string problemAccountJson);
+        IEnumerable<AssCustomerForCheckingRollbackEntity> InsertProblemProbationClassification(string problemAccountJson);
     }
 
     public class DailyProblemClassificationDataAccess : IDailyProblemClassificationDataAccess
@@ -50,14 +50,14 @@
             return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
         }
 
-        public IEnumerable<CheckPACustomerAssociationForRollbackEntity> InsertProblemProbationClassification(string problemAccountJson)
+        public IEnumerable<AssCustomerForCheckingRollbackEntity> InsertProblemProbationClassification(string problemAccountJson)
         {
             var criteria = new ProblemAccountProbationInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson
             };
 
-            return repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
+            return repository.Fetch<AssCustomerForCheckingRollbackEntity>(criteria);
         }
     }
 }

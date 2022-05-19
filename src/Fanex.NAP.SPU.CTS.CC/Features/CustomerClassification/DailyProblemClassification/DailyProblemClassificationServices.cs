@@ -23,11 +23,11 @@
 
         IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification);
 
-        IDailyProblemClassificationServices CheckNewPAAssociationCustomerForRollback();
-
         bool PushCCToExternal(PushDataToExternalEntity paras);
 
         bool UpdateLastScan();
+
+        IDailyProblemClassificationServices InsertPALogic();
     }
 
     public class DailyProblemClassificationServices : IDailyProblemClassificationServices
@@ -37,7 +37,8 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private ProblemClassificationDailyEntity scanningCustomers;
-        private IEnumerable<CheckPACustomerAssociationForRollbackEntity> problemAccounts;
+        private IEnumerable<AssCustomerForCheckingRollbackEntity> problemAccounts;
+        private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
             IDailyProblemClassificationDataAccess dailyClassificationDataAccess,
@@ -54,13 +55,12 @@
         public IDailyProblemClassificationServices Start()
         {
             scanningCustomers = new ProblemClassificationDailyEntity();
-
             return this;
         }
 
         public IDailyProblemClassificationServices Reset()
         {
-            problemAccounts = Enumerable.Empty<CheckPACustomerAssociationForRollbackEntity>();
+            problemAccounts = Enumerable.Empty<AssCustomerForCheckingRollbackEntity>();
 
             return this;
         }
@@ -108,11 +108,11 @@
             return this;
         }
 
-        public IDailyProblemClassificationServices CheckNewPAAssociationCustomerForRollback()
+        public IDailyProblemClassificationServices InsertPALogic()
         {
             if (problemAccounts != null & problemAccounts.Any())
             {
-                problemAccountServices.CheckNewPAAssociationCustomerForRollback(problemAccounts);
+                problemAccountServices.InsertPALogics(problemAccounts, serviceName);
             }
 
             return this;

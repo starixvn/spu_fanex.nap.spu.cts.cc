@@ -81,8 +81,6 @@
                 && robotInfo.RobotUsers != null
                 && robotInfo.RobotUsers.Any())
             {
-                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotInfo.RobotUsers }, FunctionId.RobotUserJob, paras.ServiceName);
-
                 var robotUsersChunks = robotInfo.RobotUsers.Chunk(paras.BatchInternalSize).ToList();
 
                 foreach (var robot in robotUsersChunks)
@@ -105,7 +103,9 @@
 
             if (robotUsers != null && robotUsers.Any())
             {
-                var custCategory = MappingRobotCategory(robotUsers);
+                var robotToInsert = MappingRobotCategory(robotUsers);
+
+                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
 
                 //var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
 

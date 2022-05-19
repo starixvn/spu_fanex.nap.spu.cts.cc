@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -19,22 +20,26 @@
 
         bool RescanCustomerClassify(RescanParametersEntity paras);
 
+        IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
+
+        IRescanCustClassificationService InsertProblemAccount(string serviceName);
+
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
         IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
-        IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras);
+        IRescanCustClassificationService PushExternalData(RescanParametersEntity paras);
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
-        IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> problemAccounts, FunctionId funcId, string stageName);
+        IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> RobotUser, FunctionId funcId, string stageName);
 
         IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
-
+        
         IEnumerable<RobotInsetViewEntity> RobotUsers { get; }
     }
 
@@ -47,11 +52,12 @@
         private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
-        private List<long> custIdsToRescanPA;
+        private IEnumerable<ProblemAccountEntity> problemAccounts;
+        private IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing;
         private List<RobotInsetViewEntity> robotUsers;
+        private List<long> custIdsToRescanPA;
+        private List<long> smaCustIds;
         private bool isSuccess;
-        private List<ProblemAccountLosingClassificationEntity> problemAccountLosing;
-        private const string ServiceNameRescan = "Rescan Customer Classification";
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -73,9 +79,10 @@
 
         public IRescanCustClassificationService Start()
         {
-            this.custIdsToRescanPA = new List<long>();
+            this.problemAccountLosing = Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
+            this.problemAccounts = Enumerable.Empty<ProblemAccountEntity>();
             this.robotUsers = new List<RobotInsetViewEntity>();
-            this.problemAccountLosing = new List<ProblemAccountLosingClassificationEntity>();
+            this.custIdsToRescanPA = new List<long>();
             this.isSuccess = true;
 
             return this;
@@ -89,10 +96,12 @@
 
                 if (paras.IsRescanPA)
                 {
-                    GetProbAccountLosingClassification(paras.FunctionId)
+                    GetExistedProblemAccounts(paras.CustIds)
+                   .GetProbAccountLosingClassification(paras.FunctionId)
+                   .InsertProblemAccount(paras.ServiceName)
                    .GetRobotUsers(paras.CustIds).LogRescanPAData(robotUsers, paras.FuncId_CheckRobotUser, paras.ServiceName)
                    .InsertRobot(paras)
-                   .RescanProblemAccount(paras);
+                   .PushExternalData(paras);
                 }
                 
                 GetAgentCusts(paras.CustIds)       
@@ -102,21 +111,11 @@
             return isSuccess;
         }
 
-        public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
-                var data = rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds));
-
-                if (data != null && data.Any())
-                {
-                    var agentIds = data.Where(c => c.RoleID == (int)CustomerRole.Agent
-                                            || c.RoleID == (int)CustomerRole.Master
-                                            || c.RoleID == (int)CustomerRole.Super)
-                               .Select(c => c.CustID)?.ToList();
-
-                    custIdsToRescanPA.AddRange(agentIds);
-                }
+                problemAccounts = problemAccountServices.GetExistedProblemAccounts(custIds);
             }
 
             return this;
@@ -124,20 +123,29 @@
 
         public IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId)
         {
-            var custIds = new List<long>();
-
-            if (custIds.Any())
+            if (problemAccounts.Any())
             {
-                var custIdChunk = custIds.Distinct().Chunk(ProblemAccountLosing_BatchSize);
+                var custIds = problemAccounts.Select(c => c.CustID);
 
-                foreach (var custIdBatch in custIdChunk)
+                problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(custIds, functionId);
+            }
+
+            return this;
+        }
+
+        public IRescanCustClassificationService InsertProblemAccount(string serviceName)
+        {
+            if (problemAccounts.Any())
+            {
+                var result = problemAccountServices.InsertProblemAccount(problemAccounts, problemAccountLosing, serviceName);
+
+                isSuccess = result.ErrorCode == 0;
+
+                if(result.ErrorCode == 0 && result.customerInfo != null && result.customerInfo.Any())
                 {
-                    var paLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(custIdBatch, functionId);
+                   var custIds = result.customerInfo.Select(c => c.CustID).Distinct();
 
-                    if (paLosing != null)
-                    {
-                        problemAccountLosing.AddRange(paLosing);
-                    }
+                   custIdsToRescanPA.AddRange(custIds);
                 }
             }
 
@@ -172,24 +180,20 @@
         {
             if (robotUsers != null && robotUsers.Any())
             {
-                var robotChunk = robotUsers.Distinct().Chunk(paras.InternalBatchSize);
+                //TODO
 
-                var isRescanFlow = paras.FunctionId != FunctionId.InsertNewCustJob;
-
-                foreach (var robotBatch in robotChunk)
-                {
-                    //var problemCustIds = problemAccountServices.InsertProblemAccount(robotBatch, isRescanFlow, paras.ServiceName);
-
-                   // custIdsToRescanPA.AddRange(problemCustIds.CustIds);
-                }
+                //if (result.ErrorCode == 0 && result.CustIds != null && result.CustIds.Any())
+                //{
+                //    custIdsToRescanPA.AddRange(result.CustIds);
+                //}
             }
 
             return this;
         }
 
-        public IRescanCustClassificationService RescanProblemAccount(RescanParametersEntity paras)
+        public IRescanCustClassificationService PushExternalData(RescanParametersEntity paras)
         {
-            if (custIdsToRescanPA != null && custIdsToRescanPA.Any())
+            if (custIdsToRescanPA.Any())
             {
                 Parallel.Invoke(() =>
                 {
@@ -213,13 +217,34 @@
             return this;
         }
 
+        public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                var data = rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds));
+
+                if (data != null && data.Any())
+                {
+                    var agentIds = data.Where(c => c.RoleID == (int)CustomerRole.Agent
+                                            || c.RoleID == (int)CustomerRole.Master
+                                            || c.RoleID == (int)CustomerRole.Super)
+                               .Select(c => c.CustID)?.ToList();
+
+                    smaCustIds.AddRange(agentIds);
+                }
+            }
+
+            return this;
+        }
+
         public IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras)
         {
             if (paras.CustIds != null && paras.CustIds.Any())
             {
                 var custToRescanNormal = paras.CustIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Contains(x));
-
+                custToRescanNormal.RemoveAll(x => smaCustIds.Contains(x));
+                
                 if (custToRescanNormal.Any())
                 {
                     var custIdsChunk = custToRescanNormal.Chunk(paras.ExternalBatchSize);
@@ -234,9 +259,9 @@
             return this;
         }
 
-        public IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> problemAccounts, FunctionId funcId, string stageName)
+        public IRescanCustClassificationService LogRescanPAData(IEnumerable<RobotInsetViewEntity> robotUsers, FunctionId funcId, string stageName)
         {
-            custClassToMainDBService.LogInputData(new LogInputViewEntity { ProblemAccounts = problemAccounts }, funcId, stageName);
+            custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
 
             return this;
         }
