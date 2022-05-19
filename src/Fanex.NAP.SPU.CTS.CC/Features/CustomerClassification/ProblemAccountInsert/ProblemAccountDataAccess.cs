@@ -9,7 +9,7 @@
 
     public interface IProblemAccountDataAccess
     {
-        IEnumerable<ProblemAccountEntity> GetExistedProblemAccounts(string custIds);
+        IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(string custIds);
 
         InsertPAResultModel InsertProblemAccountByCategory(string problemAccountJson);
 
@@ -29,14 +29,14 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProblemAccountEntity> GetExistedProblemAccounts(string custIds)
+        public IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(string custIds)
         {
             var criteria = new ProblemAccountGetCriteria()
             {
                 CustIds = custIds,
             };
 
-            return repository.Fetch<ProblemAccountEntity>(criteria) ?? Enumerable.Empty<ProblemAccountEntity>();
+            return repository.Fetch<ProblemAccountCategoryEntity>(criteria) ?? Enumerable.Empty<ProblemAccountCategoryEntity>();
         }
 
         public InsertPAResultModel InsertProblemAccountByCategory(string problemAccountJson)

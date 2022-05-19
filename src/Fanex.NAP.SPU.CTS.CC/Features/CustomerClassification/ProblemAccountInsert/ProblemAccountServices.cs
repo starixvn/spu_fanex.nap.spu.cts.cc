@@ -11,9 +11,9 @@
 
     public interface IProblemAccountServices
     {
-        IEnumerable<ProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
+        IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName);
+        InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName);
 
         void InsertPALogics(IEnumerable<AssCustomerForCheckingRollbackEntity> customerInfo, string serviceName);
     }
@@ -31,7 +31,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public IEnumerable<ProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds)
+        public IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
@@ -40,10 +40,10 @@
                 return problemAccountDataAccess.GetExistedProblemAccounts(custIdsToString);
             }
 
-            return Enumerable.Empty<ProblemAccountEntity>();
+            return Enumerable.Empty<ProblemAccountCategoryEntity>();
         }
 
-        public InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName)
+        public InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName)
         {
             var result = new InsertPAResultModel();
 
@@ -90,7 +90,7 @@
             return true;
         }
 
-        private InsertPAResultModel InsertProblemAccountByCategory(IEnumerable<ProblemAccountViewEntity> problemAccounts, string serviceName)
+        private InsertPAResultModel InsertProblemAccountByCategory(IEnumerable<InsertProblemAccountByCategoryEntity> problemAccounts, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -145,7 +145,7 @@
             return true;
         }
 
-        private IEnumerable<ProblemAccountViewEntity> MergePALosingClassification(IEnumerable<ProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        private IEnumerable<InsertProblemAccountByCategoryEntity> MergePALosingClassification(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -155,7 +155,7 @@
                                                 (pa, pl) => new { pa, pl })
                                                 .SelectMany(
                                                         group => group.pl.DefaultIfEmpty(),
-                                                        (group, temp) => new ProblemAccountViewEntity
+                                                        (group, temp) => new InsertProblemAccountByCategoryEntity
                                                         {
                                                             CustID = group.pa.CustID,
                                                             CategoryID = group.pa.CategoryID,
@@ -168,7 +168,7 @@
                                                         });
             }
 
-            return Enumerable.Empty<ProblemAccountViewEntity>();
+            return Enumerable.Empty<InsertProblemAccountByCategoryEntity>();
         }
 
         #endregion

@@ -81,7 +81,7 @@
 
                             var paLosing = dailyPCServices.GetProblemAccountLosingClassification(custIds, FunctionId.TWProblemAccountInsert);
 
-                            var pas = paList.Select(x => new ProblemAccountEntity
+                            var pas = paList.Select(x => new InsertProblemAccountByCategoryEntity
                             {
                                 CustID = x.CustID,
                                 CategoryID = 0 // TODO

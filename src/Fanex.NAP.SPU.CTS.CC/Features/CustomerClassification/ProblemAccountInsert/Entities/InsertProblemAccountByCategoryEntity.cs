@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class ProblemAccountViewEntity
+    public class InsertProblemAccountByCategoryEntity
     {
         public Int64 CustID { get; set; }
 

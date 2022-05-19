@@ -52,7 +52,7 @@
         private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
-        private IEnumerable<ProblemAccountEntity> problemAccounts;
+        private IEnumerable<ProblemAccountCategoryEntity> problemAccounts;
         private IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing;
         private List<RobotInsetViewEntity> robotUsers;
         private List<long> custIdsToRescanPA;
@@ -80,7 +80,7 @@
         public IRescanCustClassificationService Start()
         {
             this.problemAccountLosing = Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
-            this.problemAccounts = Enumerable.Empty<ProblemAccountEntity>();
+            this.problemAccounts = Enumerable.Empty<ProblemAccountCategoryEntity>();
             this.robotUsers = new List<RobotInsetViewEntity>();
             this.custIdsToRescanPA = new List<long>();
             this.isSuccess = true;
