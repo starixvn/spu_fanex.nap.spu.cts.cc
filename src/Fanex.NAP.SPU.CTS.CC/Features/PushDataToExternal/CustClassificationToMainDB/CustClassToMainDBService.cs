@@ -291,7 +291,7 @@
                     logInputData.Add(new LogInputDataEntity
                     {
                         CustId = c.CustID,
-                        InputValue = new { c.RobotCounter, c.ReasonID, c.Creator }.ToString()
+                        InputValue = new { c.RobotCounter, c.CategoryID, c.CreatedBy }.ToString()
                     });
                 });
             }

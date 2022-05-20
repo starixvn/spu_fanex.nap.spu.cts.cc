@@ -9,9 +9,11 @@
 
     public interface IProblemAccountDataAccess
     {
-        IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(string custIds);
+        IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
-        InsertPAResultModel InsertProblemAccountByCategory(string problemAccountJson);
+        InsertPAResultModel InsertProblemAccount(string problemAccountJson, string byType);
+
+        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
 
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
 
@@ -29,31 +31,42 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(string custIds)
+        public IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds)
         {
             var criteria = new ProblemAccountGetCriteria()
             {
                 CustIds = custIds,
             };
 
-            return repository.Fetch<ProblemAccountCategoryEntity>(criteria) ?? Enumerable.Empty<ProblemAccountCategoryEntity>();
+            return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertPAResultModel InsertProblemAccountByCategory(string problemAccountJson)
+        public InsertPAResultModel InsertProblemAccount(string problemAccountJson, string byType)
         {
             var criteria = new ProblemAccountByCategoryInsertCriteria
             {
-                CustInfoJson = problemAccountJson
+                ProblemAccountJson = problemAccountJson,
+                ByType = byType
             };
 
-            var result = repository.Fetch<AssCustomerForCheckingRollbackEntity>(criteria);
+            var result = repository.Fetch<CustInfoEntity>(criteria);
 
             return new InsertPAResultModel
             {
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                customerInfo = result ?? Enumerable.Empty<AssCustomerForCheckingRollbackEntity>()
+                customerInfo = result ?? Enumerable.Empty<CustInfoEntity>()
             };
+        }
+
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson)
+        {
+            var criteria = new RobotAccountInsertCriteria
+            {
+                CustInfo = robotAccountJson
+            };
+
+            return repository.Fetch<CustInfoEntity>(criteria) ?? Enumerable.Empty<CustInfoEntity>();
         }
 
         public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)

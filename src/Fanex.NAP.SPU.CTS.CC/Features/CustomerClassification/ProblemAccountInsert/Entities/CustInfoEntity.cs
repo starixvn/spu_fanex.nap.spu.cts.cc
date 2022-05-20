@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities
 {
-    public class AssCustomerForCheckingRollbackEntity
+    public class CustInfoEntity
     {
         public long CustID { get; set; }
 

@@ -8,14 +8,17 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProblemAccountServices
     {
-        IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
+        IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
 
         InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName);
 
-        void InsertPALogics(IEnumerable<AssCustomerForCheckingRollbackEntity> customerInfo, string serviceName);
+        IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
+
+        void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -31,7 +34,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public IEnumerable<ProblemAccountCategoryEntity> GetExistedProblemAccounts(IEnumerable<long> custIds)
+        public IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds)
         {
             if (custIds != null && custIds.Any())
             {
@@ -40,7 +43,7 @@
                 return problemAccountDataAccess.GetExistedProblemAccounts(custIdsToString);
             }
 
-            return Enumerable.Empty<ProblemAccountCategoryEntity>();
+            return Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
         public InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName)
@@ -53,20 +56,32 @@
 
                 result = InsertProblemAccountByCategory(probAccounts, serviceName);
 
-                if (result.ErrorCode != 0)
+                if (result.ErrorCode == 0)
                 {
-                    return result;
+                    InsertPALogics(result.customerInfo, serviceName);
                 }
-
-                InsertPALogics(result.customerInfo, serviceName);
             }
 
             return result;
         }
 
-        public void InsertPALogics (IEnumerable<AssCustomerForCheckingRollbackEntity> customerInfo, string serviceName)
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
         {
-            if(customerInfo != null && customerInfo.Any())
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                var customerInfo = problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
+
+                return customerInfo;
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
+        }
+
+        public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
+        {
+            if (customerInfo != null && customerInfo.Any())
             {
                 CheckNewPAAssociationCustomerForRollback(customerInfo);
 
@@ -75,10 +90,10 @@
                 UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
             }
         }
-            
+
         #region Private Methods
 
-        private bool CheckNewPAAssociationCustomerForRollback(IEnumerable<AssCustomerForCheckingRollbackEntity> assCustForRollbacks)
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
         {
             if (assCustForRollbacks != null && assCustForRollbacks.Any())
             {
@@ -86,19 +101,34 @@
 
                 problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
             }
-
-            return true;
         }
 
         private InsertPAResultModel InsertProblemAccountByCategory(IEnumerable<InsertProblemAccountByCategoryEntity> problemAccounts, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.InsertProblemAccountByCategory(JsonConvert.SerializeObject(problemAccounts));
+                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), nameof(InsertPA_ByType.Category));
 
                 if (result.ErrorCode != 0)
                 {
                     Utilities.LogSentryError(serviceName, "InsertProblemAccountByCategory", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                }
+
+                return result;
+            }
+
+            return new InsertPAResultModel();
+        }
+
+        private InsertPAResultModel InsertProblemAccountByReason(IEnumerable<InsertProblemAccountByReasonEntity> problemAccounts, string serviceName)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), nameof(InsertPA_ByType.Reason));
+
+                if (result.ErrorCode != 0)
+                {
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccountByReason", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
                 }
 
                 return result;
@@ -157,9 +187,16 @@
                                                         group => group.pl.DefaultIfEmpty(),
                                                         (group, temp) => new InsertProblemAccountByCategoryEntity
                                                         {
+                                                            CTSCustID = group.pa.CTSCustID,
                                                             CustID = group.pa.CustID,
                                                             CategoryID = group.pa.CategoryID,
-                                                            CreatedBy = group.pa.CreatedBy,
+                                                            CategoryGroup = group.pa.CategoryGroup,
+                                                            IsDirectPA = group.pa.IsDirectPA,
+                                                            IsLicensee = group.pa.IsLicensee,
+                                                            Remark = group.pa.Remark,
+                                                            RoleID = group.pa.RoleID,
+                                                            SubscriberID = group.pa.SubscriberID,
+                                                            CreatedBy = StarixITId,
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,

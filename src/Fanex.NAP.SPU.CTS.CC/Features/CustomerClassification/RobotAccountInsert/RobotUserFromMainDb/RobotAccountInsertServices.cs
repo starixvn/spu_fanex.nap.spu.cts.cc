@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -19,7 +20,7 @@
 
         bool Process(InsertRobotParaEntity paras);
 
-        IEnumerable<RobotInsetViewEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
 
         void UpdateLastTimespan();
 
@@ -131,18 +132,19 @@
             return isSuccess;
         }
 
-        public IEnumerable<RobotInsetViewEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
         {
-            var custCategory = new List<RobotInsetViewEntity>();
+            var custCategory = new List<InsertRobotEntity>();
 
             if (robotUsers != null && robotUsers.Any())
             {
-                custCategory = robotUsers.Select(c => new RobotInsetViewEntity
+                custCategory = robotUsers.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustId,
-                    ReasonID = (int)Category.Robot,
+                    CategoryID = (int)Category.Robot,
+                    IsFromTW = true,
                     RobotCounter = c.Counter,
-                    Creator = StarixITId
+                    CreatedBy = StarixITId
                 }).ToList();
             }
 

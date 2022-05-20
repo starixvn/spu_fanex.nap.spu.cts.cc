@@ -161,5 +161,11 @@
             Insert = 1,
             Remove = 2
         }
+
+        public enum InsertPA_ByType
+        {
+            Category = 1,
+            Reason = 2,
+        };
     }
 }

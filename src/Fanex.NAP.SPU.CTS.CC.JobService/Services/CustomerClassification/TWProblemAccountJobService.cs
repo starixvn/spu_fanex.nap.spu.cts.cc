@@ -87,7 +87,7 @@
                                 CategoryID = 0 // TODO
                             });
 
-                            paServices.InsertProblemAccount(pas, paLosing, ServiceName);
+                            //paServices.InsertProblemAccount(pas, paLosing, ServiceName);
 
                             twProblemAccService.RemoveSystemFormulaBetCustomer(string.Join(",", paList.Select(c => c.CustID)));
                         }

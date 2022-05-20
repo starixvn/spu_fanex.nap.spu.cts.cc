@@ -37,7 +37,7 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private ProblemClassificationDailyEntity scanningCustomers;
-        private IEnumerable<AssCustomerForCheckingRollbackEntity> problemAccounts;
+        private IEnumerable<CustInfoEntity> problemAccounts;
         private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
@@ -60,7 +60,7 @@
 
         public IDailyProblemClassificationServices Reset()
         {
-            problemAccounts = Enumerable.Empty<AssCustomerForCheckingRollbackEntity>();
+            problemAccounts = Enumerable.Empty<CustInfoEntity>();
 
             return this;
         }

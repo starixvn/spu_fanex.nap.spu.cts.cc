@@ -8,6 +8,6 @@
 
         public int ErrorCode { get; set; }
 
-        public IEnumerable<AssCustomerForCheckingRollbackEntity> customerInfo { get; set; }
+        public IEnumerable<CustInfoEntity> customerInfo { get; set; }
     }
 }
