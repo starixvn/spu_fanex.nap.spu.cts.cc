@@ -260,7 +260,7 @@
                     AFCInsertAccountURL = paras.AFCInsertAccountURL
                 };
 
-                result = rescanClassificationService.RescanCustomerClassify(rescanParam);
+                result = rescanClassificationService.RescanCustomerClassification(rescanParam);
 
                 Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
             }

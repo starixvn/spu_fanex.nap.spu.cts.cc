@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class BetLimitByEvidenceAddingUpdateCriteria : NonQueryCommand
+    public class BetLimitByEvidenceUpdateCriteria : NonQueryCommand
     {
         public string CustIDList { get; set; }
 

@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
 
-    public class InsertPAResultModel
+    public class InsertPAResultEntity
     {
         public string ErrorMessage { get; set; }
 
         public int ErrorCode { get; set; }
 
-        public IEnumerable<CustInfoEntity> customerInfo { get; set; }
+        public IEnumerable<CustInfoEntity> CustomerInfo { get; set; }
     }
 }

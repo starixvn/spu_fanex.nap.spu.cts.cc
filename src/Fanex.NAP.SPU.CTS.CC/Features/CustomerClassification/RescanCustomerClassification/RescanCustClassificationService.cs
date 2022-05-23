@@ -17,11 +17,11 @@
     {
         IRescanCustClassificationService Start();
 
-        bool RescanCustomerClassify(RescanParametersEntity paras);
+        bool RescanCustomerClassification(RescanParametersEntity paras);
 
         IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertProblemAccount(string serviceName);
+        IRescanCustClassificationService InsertProblemAccountLogics(string serviceName);
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
@@ -51,7 +51,7 @@
         private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
-        private IEnumerable<ProblemAccountCategoryEntity> problemAccounts;
+        private IEnumerable<InsertProblemAccountEntity> problemAccounts;
         private IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing;
         private IEnumerable<InsertRobotEntity> robotClassificationPerformance;
         private List<InsertRobotEntity> robotUsers;
@@ -80,7 +80,7 @@
         public IRescanCustClassificationService Start()
         {
             this.problemAccountLosing = Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
-            this.problemAccounts = Enumerable.Empty<ProblemAccountCategoryEntity>();
+            this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassificationPerformance = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
@@ -90,7 +90,7 @@
             return this;
         }
 
-        public bool RescanCustomerClassify(RescanParametersEntity parameters)
+        public bool RescanCustomerClassification(RescanParametersEntity parameters)
         {
             if (parameters.CustIds != null && parameters.CustIds.Any())
             {
@@ -100,7 +100,7 @@
                 {
                     GetExistedProblemAccounts(parameters.CustIds)
                    .GetProbAccountLosingClassification(parameters.FunctionId)
-                   .InsertProblemAccount(parameters.ServiceName)
+                   .InsertProblemAccountLogics(parameters.ServiceName)
                    .GetRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
                    .PushExternalData(parameters);
@@ -121,7 +121,7 @@
 
                 if (result.Any())
                 {
-                    problemAccounts = result.Where(c => !c.IsRobot).Select(c => new ProblemAccountCategoryEntity
+                    problemAccounts = result.Where(c => !c.IsRobot).Select(c => new InsertProblemAccountEntity
                     {
                         CustID = c.CustID,
                         CTSCustID = c.CTSCustID,
@@ -164,17 +164,17 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertProblemAccount(string serviceName)
+        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName)
         {
             if (problemAccounts.Any())
             {
-                var result = problemAccountServices.InsertProblemAccount(problemAccounts, problemAccountLosing, serviceName);
+                var result = problemAccountServices.InsertProblemAccountLogics(problemAccounts, problemAccountLosing, InsertPA_ByType.Category ,serviceName);
 
                 isSuccess = result.ErrorCode == 0;
 
-                if (isSuccess && result.customerInfo != null && result.customerInfo.Any())
+                if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    var custIds = result.customerInfo.Select(c => c.CustID).Distinct();
+                    var custIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
 
                     custIdsToRescanPA.AddRange(custIds);
                 }

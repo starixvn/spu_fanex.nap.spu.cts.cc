@@ -14,7 +14,7 @@
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName);
+        InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, string serviceName);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
 
@@ -46,23 +46,35 @@
             return Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertPAResultModel InsertProblemAccount(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, string serviceName)
+        public InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, string serviceName)
         {
-            var result = new InsertPAResultModel();
+            var result = new InsertPAResultEntity();
 
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var probAccounts = MergePALosingClassification(problemAccounts, paLosing);
+                var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                result = InsertProblemAccountByCategory(probAccounts, serviceName);
+                result = InsertProblemAccount(paClassification, insertByType, serviceName);
 
                 if (result.ErrorCode == 0)
                 {
-                    InsertPALogics(result.customerInfo, serviceName);
+                    InsertPALogics(result.CustomerInfo, serviceName);
                 }
             }
 
             return result;
+        }
+
+        public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
+        {
+            if (customerInfo != null && customerInfo.Any())
+            {
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
+
+                var custIds = customerInfo.Select(x => x.CustID).Distinct();
+
+                UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+            }
         }
 
         public IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
@@ -79,18 +91,6 @@
             return Enumerable.Empty<CustInfoEntity>();
         }
 
-        public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
-        {
-            if (customerInfo != null && customerInfo.Any())
-            {
-                CheckNewPAAssociationCustomerForRollback(customerInfo);
-
-                var custIds = customerInfo.Select(x => x.CustID).Distinct();
-
-                UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
-            }
-        }
-
         #region Private Methods
 
         private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
@@ -103,38 +103,21 @@
             }
         }
 
-        private InsertPAResultModel InsertProblemAccountByCategory(IEnumerable<InsertProblemAccountByCategoryEntity> problemAccounts, string serviceName)
+        private InsertPAResultEntity InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), nameof(InsertPA_ByType.Category));
+                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType));
 
                 if (result.ErrorCode != 0)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccountByCategory", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
                 }
 
                 return result;
             }
 
-            return new InsertPAResultModel();
-        }
-
-        private InsertPAResultModel InsertProblemAccountByReason(IEnumerable<InsertProblemAccountByReasonEntity> problemAccounts, string serviceName)
-        {
-            if (problemAccounts != null && problemAccounts.Any())
-            {
-                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), nameof(InsertPA_ByType.Reason));
-
-                if (result.ErrorCode != 0)
-                {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccountByReason", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
-                }
-
-                return result;
-            }
-
-            return new InsertPAResultModel();
+            return new InsertPAResultEntity();
         }
 
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
@@ -175,7 +158,7 @@
             return true;
         }
 
-        private IEnumerable<InsertProblemAccountByCategoryEntity> MergePALosingClassification(IEnumerable<ProblemAccountCategoryEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        private static IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -185,12 +168,13 @@
                                                 (pa, pl) => new { pa, pl })
                                                 .SelectMany(
                                                         group => group.pl.DefaultIfEmpty(),
-                                                        (group, temp) => new InsertProblemAccountByCategoryEntity
+                                                        (group, temp) => new InsertProblemAccountEntity
                                                         {
                                                             CTSCustID = group.pa.CTSCustID,
                                                             CustID = group.pa.CustID,
                                                             CategoryID = group.pa.CategoryID,
                                                             CategoryGroup = group.pa.CategoryGroup,
+                                                            ReasonID = group.pa.ReasonID,
                                                             IsDirectPA = group.pa.IsDirectPA,
                                                             IsLicensee = group.pa.IsLicensee,
                                                             Remark = group.pa.Remark,
@@ -201,11 +185,15 @@
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
-                                                            WinlossStatus = temp?.WinlossStatus
-                                                        });
+                                                            WinlossStatus = temp?.WinlossStatus,
+                                                            IsFromPAM = false,
+                                                            IsFromTVS = false,
+                                                            IsFromTW = false,
+                                                            IsDataChanged = false
+                                                        }); ;
             }
 
-            return Enumerable.Empty<InsertProblemAccountByCategoryEntity>();
+            return Enumerable.Empty<InsertProblemAccountEntity>();
         }
 
         #endregion

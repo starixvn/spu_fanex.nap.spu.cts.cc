@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class InsertProblemAccountByCategoryEntity
+    public class InsertProblemAccountEntity
     {
         public Int64 CustID { get; set; }
 
@@ -15,6 +15,8 @@
         public int CategoryID { get; set; }
 
         public int CategoryGroup { get; set; }
+
+        public int ReasonID { get; set; }
 
         public bool IsLicensee { get; set; }
 
@@ -33,5 +35,14 @@
         public Int64? BetCount { get; set; }
 
         public int? ActiveDays { get; set; }
+
+        public bool IsFromPAM { get; set; }
+
+        public bool IsFromTVS { get; set; }
+
+        public bool IsFromTW { get; set; }
+
+        //True if only removing SpecialCC
+        public bool IsDataChanged { get; set; }
     }
 }

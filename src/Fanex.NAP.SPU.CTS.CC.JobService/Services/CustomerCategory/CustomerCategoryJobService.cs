@@ -88,7 +88,7 @@
                             AFCInsertAccountURL = appSettings.AFCInsertAccountURL
                         };
 
-                        rescanClassificationService.RescanCustomerClassify(paras);
+                        rescanClassificationService.RescanCustomerClassification(paras);
                     }
                 }
 

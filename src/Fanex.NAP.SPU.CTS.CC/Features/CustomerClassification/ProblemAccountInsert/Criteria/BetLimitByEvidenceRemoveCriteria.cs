@@ -3,20 +3,16 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class ProblemAccountByCategoryInsertCriteria : NonQueryCommand
+    public class BetLimitByEvidenceRemoveCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_ProblemAccounts")]
-        public string ProblemAccountJson { get; set; }
-
-        [SpParam(SqlParamName = "ip_ByType")]
-        public string ByType { get; set; }
+        public string CustIDList { get; set; }
 
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_PA_Insert";
+            return "NAP_BLControl_EvidenceUnflagged";
         }
 
         public override bool IsValid()

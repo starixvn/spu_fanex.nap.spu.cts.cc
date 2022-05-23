@@ -11,7 +11,7 @@
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
-        InsertPAResultModel InsertProblemAccount(string problemAccountJson, string byType);
+        InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
 
@@ -41,9 +41,9 @@
             return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertPAResultModel InsertProblemAccount(string problemAccountJson, string byType)
+        public InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType)
         {
-            var criteria = new ProblemAccountByCategoryInsertCriteria
+            var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
                 ByType = byType
@@ -51,11 +51,11 @@
 
             var result = repository.Fetch<CustInfoEntity>(criteria);
 
-            return new InsertPAResultModel
+            return new InsertPAResultEntity
             {
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                customerInfo = result ?? Enumerable.Empty<CustInfoEntity>()
+                CustomerInfo = result ?? Enumerable.Empty<CustInfoEntity>()
             };
         }
 
@@ -81,7 +81,7 @@
 
         public DBResult UpdateBetLimitOfFlaggedCustomer(string custIds)
         {
-            var criteria = new BetLimitByEvidenceAddingUpdateCriteria
+            var criteria = new BetLimitByEvidenceUpdateCriteria
             {
                 CustIDList = custIds
             };
@@ -97,7 +97,7 @@
 
         public DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds)
         {
-            var criteria = new BetLimitByEvidenceRemovingUpdateCriteria
+            var criteria = new BetLimitByEvidenceRemoveCriteria
             {
                 CustIDList = custIds
             };
