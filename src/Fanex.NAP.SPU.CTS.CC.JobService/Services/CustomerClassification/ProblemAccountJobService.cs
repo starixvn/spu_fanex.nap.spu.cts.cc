@@ -83,7 +83,7 @@
         {
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ProblemAccountLastScannedTime);
 
-            var savedDataTime = DateTime.Now;
+            var savedDataTime = DateTime.Now.AddSeconds(-10);
 
             var problemAccounts = problemAccountServices.GetProblemAccounts(lastScannedTime, serviceName, appSettings.ProblemAccountIsWriteLog);
 
