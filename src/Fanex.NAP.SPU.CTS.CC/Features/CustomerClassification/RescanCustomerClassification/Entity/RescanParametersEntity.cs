@@ -45,22 +45,25 @@
 
                     case FunctionId.RemoveSpecialCCWeb:
                         return FunctionId.RemoveSpecial_CheckRobotUser;
-
-                    case FunctionId.RemovePAAPI:
-                        return FunctionId.RemovePA_CheckRobotUser;
-
-                    case FunctionId.RemoveFlaggedEvidenceWeb:
-                        return FunctionId.RemoveFlaggedEvi_CheckRobotUser;
-
-                    case FunctionId.RemoveMultiEvidencesWeb:
-                        return FunctionId.RemoveMultiEvi_CheckRobotUser;
-
-                    case FunctionId.ExcludeTaggingAssPAWeb:
-                        return FunctionId.ExcludeTaggingAss_CheckRobotUser;
-
                     default:
                         return 0;
                 }
+            }
+        }
+
+        /// <summary>
+        /// True for removing specialCC
+        /// </summary>
+        public bool IsDataChanged
+        {
+            get
+            {
+                if (FunctionId == FunctionId.RemoveSpecialCCWeb)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
     }

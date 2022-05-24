@@ -4,6 +4,14 @@
 
     public class InsertProblemAccountEntity
     {
+        public InsertProblemAccountEntity()
+        {
+            IsFromTVS = false;
+            IsFromPAM = false;
+            IsFromTW = false;
+            IsDataChanged = false;
+        }
+
         public Int64 CustID { get; set; }
 
         public Int64 CTSCustID { get; set; }
@@ -12,11 +20,11 @@
 
         public int SubscriberID { get; set; }
 
-        public int CategoryID { get; set; }
+        public int? CategoryID { get; set; }
 
         public int CategoryGroup { get; set; }
 
-        public int ReasonID { get; set; }
+        public int? ReasonID { get; set; }
 
         public bool IsLicensee { get; set; }
 

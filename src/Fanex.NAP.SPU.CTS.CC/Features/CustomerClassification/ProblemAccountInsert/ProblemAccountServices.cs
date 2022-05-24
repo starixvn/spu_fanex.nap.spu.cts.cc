@@ -172,24 +172,27 @@
                                                         {
                                                             CTSCustID = group.pa.CTSCustID,
                                                             CustID = group.pa.CustID,
-                                                            CategoryID = group.pa.CategoryID,
-                                                            CategoryGroup = group.pa.CategoryGroup,
-                                                            ReasonID = group.pa.ReasonID,
-                                                            IsDirectPA = group.pa.IsDirectPA,
-                                                            IsLicensee = group.pa.IsLicensee,
-                                                            Remark = group.pa.Remark,
                                                             RoleID = group.pa.RoleID,
                                                             SubscriberID = group.pa.SubscriberID,
+                                                            CategoryID = group.pa.CategoryID,
+                                                            CategoryGroup = group.pa.CategoryGroup,
+                                                            IsLicensee = group.pa.IsLicensee,
                                                             CreatedBy = StarixITId,
+                                                            Remark = group.pa.Remark,
+                                                           
+                                                            IsDirectPA = group.pa.IsDirectPA,
+                                                            IsFromPAM = false,
+                                                            IsFromTVS = false,
+                                                            IsFromTW = false,
+                                                            IsDataChanged = false,
+                                                            ReasonID = group.pa.ReasonID,
+
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
                                                             WinlossStatus = temp?.WinlossStatus,
-                                                            IsFromPAM = false,
-                                                            IsFromTVS = false,
-                                                            IsFromTW = false,
-                                                            IsDataChanged = false
+                                                           
                                                         }); ;
             }
 

@@ -25,7 +25,7 @@
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds);
+        IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
@@ -101,7 +101,7 @@
                     GetExistedProblemAccounts(parameters.CustIds)
                    .GetProbAccountLosingClassification(parameters.FunctionId)
                    .InsertProblemAccountLogics(parameters.ServiceName)
-                   .GetRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
+                   .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
                    .PushExternalData(parameters);
                 }
@@ -125,13 +125,17 @@
                     {
                         CustID = c.CustID,
                         CTSCustID = c.CTSCustID,
-                        CategoryID = c.CategoryID,
-                        CategoryGroup = c.CategoryGroup,
-                        IsDirectPA = c.IsDirectPA,
-                        Remark = c.Remark,
-                        IsLicensee = c.IsLicensee,
                         RoleID = c.RoleID,
                         SubscriberID = c.SubscriberID,
+                        CategoryID = c.CategoryID,
+                        CategoryGroup = c.CategoryGroup,
+                        IsLicensee = c.IsLicensee,
+                        Remark = c.Remark,
+                        IsDirectPA = c.IsDirect,
+                        IsFromPAM = c.IsFromPAM,
+                        IsFromTVS = c.IsFromTVS,
+                        IsFromTW = c.IsFromTW,
+                        IsDataChanged = false,
                         CreatedBy = StarixITId
                     });
 
@@ -183,11 +187,11 @@
             return this;
         }
 
-        public IRescanCustClassificationService GetRobotUsers(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds)
         {
             if (isSuccess && custIds != null && custIds.Any())
             {
-                var robots = rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds));
+                var robots = rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds));
 
                 if (robots != null && robots.Any())
                 {
@@ -262,7 +266,7 @@
 
         public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
         {
-            if (custIds != null && custIds.Any())
+            if (isSuccess && custIds != null && custIds.Any())
             {
                 var data = rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds));
 

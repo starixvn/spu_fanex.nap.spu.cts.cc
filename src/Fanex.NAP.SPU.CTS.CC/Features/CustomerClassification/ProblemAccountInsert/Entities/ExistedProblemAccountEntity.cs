@@ -18,17 +18,23 @@
 
         public int CategoryGroup { get; set; }
 
-        public bool IsDirectPA { get; set; }
+        public bool IsDirect { get; set; }
 
         public bool IsRobot { get; set; }
 
-        public decimal Turnover { get; set; }
+        public bool IsFromTVS { get; set; }
 
-        public decimal Winloss { get; set; }
+        public bool IsFromTW { get; set; }
 
-        public Int64 BetCount { get; set; }
+        public bool IsFromPAM { get; set; }
 
-        public int ActiveDays { get; set; }
+        public decimal? Turnover { get; set; }
+
+        public decimal? Winloss { get; set; }
+
+        public Int64? BetCount { get; set; }
+
+        public int? ActiveDays { get; set; }
 
         public string Remark { get; set; }
     }

@@ -4,6 +4,11 @@
 
     public class InsertRobotEntity
     {
+        public InsertRobotEntity()
+        {
+            IsFromTW = false;
+        }
+
         public Int64 CustID { get; set; }
 
         public int CategoryID { get; set; }
@@ -18,6 +23,7 @@
 
         public int? ActiveDays { get; set; }
 
+        //True: Robot from TW, False: Robot Classification
         public bool IsFromTW { get; set; }
 
         public Int64? CreatedBy { get; set; }
