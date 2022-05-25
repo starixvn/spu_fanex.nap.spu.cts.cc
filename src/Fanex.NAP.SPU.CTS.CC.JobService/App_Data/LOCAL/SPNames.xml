@@ -110,6 +110,7 @@
 		<Setting Key="CTS_DC_CustClassification_InsertVVIP" SpName="CTS_DC_CustClassification_InsertVVIP" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_RemoveVVIP" SpName="CTS_DC_CustClassification_RemoveVVIP" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 
+		<Setting Key="CTS_DC_CustClassification_PA_Insert" SpName="CTS_DC_CustClassification_PA_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>

@@ -21,7 +21,7 @@
 
         IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertProblemAccountLogics(string serviceName);
+        IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue);
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
@@ -33,7 +33,7 @@
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
-        IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> RobotUser, FunctionId funcId, string stageName);
+        IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
 
         IRescanCustClassificationService GetProbAccountLosingClassification(FunctionId functionId);
 
@@ -100,7 +100,7 @@
                 {
                     GetExistedProblemAccounts(parameters.CustIds)
                    .GetProbAccountLosingClassification(parameters.FunctionId)
-                   .InsertProblemAccountLogics(parameters.ServiceName)
+                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsRescanPAFromQueue)
                    .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
                    .PushExternalData(parameters);
@@ -168,11 +168,11 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName)
+        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue)
         {
             if (problemAccounts.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountLogics(problemAccounts, problemAccountLosing, InsertPA_ByType.Category ,serviceName);
+                var result = problemAccountServices.InsertProblemAccountLogics(problemAccounts, problemAccountLosing, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
 
                 isSuccess = result.ErrorCode == 0;
 
@@ -286,8 +286,8 @@
             if (isSuccess && paras.CustIds != null && paras.CustIds.Any())
             {
                 var custToRescanNormal = paras.CustIds.ToList();
-                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Contains(x));
-                custToRescanNormal.RemoveAll(x => smaCustIds.Contains(x));
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+                custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
 
                 if (custToRescanNormal.Any())
                 {

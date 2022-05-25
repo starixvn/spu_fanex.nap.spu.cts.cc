@@ -14,7 +14,7 @@
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, string serviceName);
+        InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
 
@@ -46,7 +46,7 @@
             return Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, string serviceName)
+        public InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
         {
             var result = new InsertPAResultEntity();
 
@@ -54,7 +54,7 @@
             {
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                result = InsertProblemAccount(paClassification, insertByType, serviceName);
+                result = InsertProblemAccount(paClassification, insertByType, isFromQueue, serviceName);
 
                 if (result.ErrorCode == 0)
                 {
@@ -103,11 +103,11 @@
             }
         }
 
-        private InsertPAResultEntity InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, string serviceName)
+        private InsertPAResultEntity InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType));
+                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueue);
 
                 if (result.ErrorCode != 0)
                 {

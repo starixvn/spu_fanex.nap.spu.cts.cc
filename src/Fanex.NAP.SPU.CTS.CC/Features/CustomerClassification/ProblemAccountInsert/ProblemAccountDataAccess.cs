@@ -11,7 +11,7 @@
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
-        InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType);
+        InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType, bool isFromQueue);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
 
@@ -41,12 +41,13 @@
             return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType)
+        public InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType, bool isFromQueue)
         {
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
-                ByType = byType
+                ByType = byType,
+                IsFromQueue = isFromQueue
             };
 
             var result = repository.Fetch<CustInfoEntity>(criteria);

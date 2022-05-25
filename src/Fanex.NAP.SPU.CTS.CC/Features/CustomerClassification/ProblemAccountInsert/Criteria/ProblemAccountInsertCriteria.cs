@@ -11,6 +11,9 @@
         [SpParam(SqlParamName = "ip_ByType")]
         public string ByType { get; set; }
 
+        [SpParam(SqlParamName = "ip_IsFromQueue")]
+        public bool IsFromQueue { get; set; }
+
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }
 
