@@ -116,6 +116,8 @@
         {
             if (newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {
+                parameters.CustIds = newCustomerClassification.NormalClassification.Select(c => c.CustID);
+
                 rescanCustClassificationService.RescanCustomerClassification(parameters);
             }
 

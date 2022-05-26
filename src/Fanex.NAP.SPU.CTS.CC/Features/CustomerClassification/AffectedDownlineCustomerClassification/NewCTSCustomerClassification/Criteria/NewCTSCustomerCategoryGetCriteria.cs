@@ -2,11 +2,12 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class NewCTSCustomerCategoryGetCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "op_LastCTSCustID")]
-        public long LastCTSCustID { get; set; }
+        public UInt64 LastCTSCustID { get; set; }
 
         public override string GetSettingKey()
         {

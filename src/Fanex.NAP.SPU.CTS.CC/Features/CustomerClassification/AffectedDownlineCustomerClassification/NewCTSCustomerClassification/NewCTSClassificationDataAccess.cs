@@ -29,10 +29,10 @@
 
             return new NewCTSCustomerClassificationEntity()
             {
-                LastCTSCustID = criteria.LastCTSCustID,
                 VVIPClassification = result?.Read<VVIPCustomerEntity>() ?? Enumerable.Empty<VVIPCustomerEntity>(),
                 PAClassification = result?.Read<InsertProblemAccountEntity>() ?? Enumerable.Empty<InsertProblemAccountEntity>(),
-                NormalClassification = result?.Read<NormalRescanEntity>() ?? Enumerable.Empty<NormalRescanEntity>()
+                NormalClassification = result?.Read<NormalRescanEntity>() ?? Enumerable.Empty<NormalRescanEntity>(),
+                LastCTSCustID = criteria.LastCTSCustID
             };
         }
     }

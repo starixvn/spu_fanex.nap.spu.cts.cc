@@ -24,10 +24,10 @@
         public NewCTSCustomerClassificationJobService(
             ISentryClient sentryClient,
             IAppSettings appSettings,
-            INewCTSClassificationServices newCTSClassificationServices,
-            IProblemAccountServices problemAccountServices)
+            INewCTSClassificationServices newCTSClassificationServices)
         {
             this.sentryClient = sentryClient;
+            this.appSettings = appSettings;
             this.newCTSClassificationServices = newCTSClassificationServices;
             this.serviceName = "NewCTSCustomerClassification";
         }
