@@ -24,6 +24,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
 
     public static class InitService
     {
@@ -51,6 +52,8 @@
 
             RegisterTWGroupBetting(services);
 
+            RegisterTWProblemAccount(services);
+
             RegisterCustomerCategory(services);
 
             RegisterAffectedCustomerClassification(services);
@@ -63,6 +66,13 @@
             services.AddSingleton<ITWGroupBettingDataAccess, TWGroupBettingDataAccess>();
             services.AddSingleton<ITWGroupBettingService, TWGroupBettingService>();
             services.AddSingleton<ITWGroupBettingJobService, TWGroupBettingJobService>();
+        }
+
+        private static void RegisterTWProblemAccount(this IServiceCollection services)
+        {
+            services.AddSingleton<ITWProblemAccountDataAccess, TWProblemAccountDataAccess>();
+            services.AddSingleton<ITWProblemAccountService, TWProblemAccountService>();
+            services.AddSingleton<ITWProblemAccountJobService, TWProblemAccountJobService>();
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
