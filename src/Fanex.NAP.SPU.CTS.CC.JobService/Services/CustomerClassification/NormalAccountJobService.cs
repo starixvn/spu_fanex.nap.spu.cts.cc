@@ -111,7 +111,6 @@
                                 FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                 IsPushCCToSoon88 = true,
                                 IsUpdateDangerToMainDB = true,
-                                DangerLevelType = Constants.DangerLevel.Original,
                                 IsWriteLog = appSettings.NormalAccountIsWriteLog,
                                 ServiceName = serviceName
                             });

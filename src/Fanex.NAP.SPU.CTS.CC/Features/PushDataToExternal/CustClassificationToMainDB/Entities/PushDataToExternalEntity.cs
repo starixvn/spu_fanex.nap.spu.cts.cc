@@ -1,14 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
-{
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
-
+{ 
     public class PushDataToExternalEntity
     {
         public bool IsPushCCToSoon88 { get; set; }
 
         public bool IsUpdateDangerToMainDB { get; set; }
-
-        public DangerLevel DangerLevelType { get; set; }
 
         public int ExternalBatchSize { get; set; }
 

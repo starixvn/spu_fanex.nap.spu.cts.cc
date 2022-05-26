@@ -15,6 +15,8 @@
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
 
+        void RemoveOldProblemAccount(string custIds);
+
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
 
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
@@ -58,6 +60,16 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 CustomerInfo = result ?? Enumerable.Empty<CustInfoEntity>()
             };
+        }
+
+        public void RemoveOldProblemAccount(string custIds)
+        {
+            var criteria = new OldProblemAccountRemoveCriteria
+            {
+                CustId = custIds
+            };
+
+            repository.Execute(criteria);
         }
 
         public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson)

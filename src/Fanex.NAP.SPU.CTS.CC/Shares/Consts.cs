@@ -41,13 +41,6 @@
             DailyProblemClassificationLastCustID = 89
         };
 
-        public enum DangerLevel
-        {
-            Original = 1,
-            ABI = 2,
-            Other = 3
-        }
-
         public enum Category
         {
             Newmember = 201,

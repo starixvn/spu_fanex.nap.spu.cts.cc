@@ -16,6 +16,8 @@
 
         InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
+        void RemoveOldProblemAccount(IEnumerable<long> custIds);
+
         IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
@@ -74,6 +76,14 @@
                 var custIds = customerInfo.Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+            }
+        }
+
+        public void RemoveOldProblemAccount(IEnumerable<long> custIds)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                problemAccountDataAccess.RemoveOldProblemAccount(string.Join(",", custIds.Distinct()));
             }
         }
 

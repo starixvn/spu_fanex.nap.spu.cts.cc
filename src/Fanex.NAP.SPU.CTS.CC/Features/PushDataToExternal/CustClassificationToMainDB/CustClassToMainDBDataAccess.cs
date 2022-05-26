@@ -10,17 +10,11 @@
 
     public interface ICustClassToMainDBDataAccess
     {
-        IEnumerable<LatestClassificationEntity> GetLatestClassification(string custIds);
+        IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
         DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification);
 
-        DBResult UpdateAppliedCustomerClassification(string problemCustomerJson);
-
-        IEnumerable<DangerLevelEntity> GetDangerLevel(string custIds, DangerLevel typeId);
-
-        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, DangerLevel typeId);
-
-        void UpdateAppliedDangerLevel(string custsJson, DangerLevel typeId);
+        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);
 
         DBResult LogInputData(IEnumerable<LogInputDataEntity> content, FunctionId funcId);
     }
@@ -34,14 +28,14 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<LatestClassificationEntity> GetLatestClassification(string custIds)
+        public IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds)
         {
-            var criteria = new LastestClassificationGetCriteria
+            var criteria = new GetLastestCCDangerLevelCriteria
             {
-                CustIds = custIds
+                CustIds = string.Join(",", custIds)
             };
 
-            return repository.Fetch<LatestClassificationEntity>(criteria);
+            return repository.Fetch<LatestCCDangerLevelEntity>(criteria) ?? Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
         public DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification)
@@ -60,46 +54,14 @@
             };
         }
 
-        public DBResult UpdateAppliedCustomerClassification(string problemCustomerJson)
-        {
-            var criteria = new AppliedCustomerClassificationUpdateCriteria
-            {
-                ProblemCustomerJson = problemCustomerJson
-            };
-
-            repository.Execute(criteria);
-
-            return new DBResult
-            {
-                ErrorCode = !string.IsNullOrEmpty(criteria.ErrorMessage) ? -1 : 0,
-                ErrorMsg = criteria.ErrorMessage
-            };
-        }
-
-        public IEnumerable<DangerLevelEntity> GetDangerLevel(string custIds, DangerLevel typeId)
-        {
-            if (!string.IsNullOrEmpty(custIds))
-            {
-                var criteria = new DangerLevelGetCriteria
-                {
-                    CustIds = custIds,
-                    TypeID = (int)typeId
-                };
-
-                return repository.Fetch<DangerLevelEntity>(criteria);
-            }
-
-            return new List<DangerLevelEntity>();
-        }
-
-        public DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, DangerLevel typeId)
+        public DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId)
         {
             if (dangerLevel != null && dangerLevel.Any())
             {
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),
-                    DangerType = (int)typeId
+                    DangerType = dangerTypeId
                 };
 
                 repository.Execute(criteria);
@@ -108,20 +70,6 @@
             }
 
             return new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
-        }
-
-        public void UpdateAppliedDangerLevel(string custsJson, DangerLevel typeId)
-        {
-            if (!string.IsNullOrEmpty(custsJson))
-            {
-                var criteria = new AppliedDangerLevelUpdateCriteria
-                {
-                    CustJson = custsJson,
-                    TypeID = (int)typeId
-                };
-
-                repository.Execute(criteria);
-            }
         }
 
         public DBResult LogInputData(IEnumerable<LogInputDataEntity> content, FunctionId funcId)

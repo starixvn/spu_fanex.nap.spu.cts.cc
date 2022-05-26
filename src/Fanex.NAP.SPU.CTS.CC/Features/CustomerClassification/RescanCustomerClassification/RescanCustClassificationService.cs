@@ -23,6 +23,8 @@
 
         IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue);
 
+        IRescanCustClassificationService RemoveOldProblemAccount();
+
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
         IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
@@ -56,6 +58,7 @@
         private IEnumerable<InsertRobotEntity> robotClassificationPerformance;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
+        private IEnumerable<long> custIdsToRemoveOldPA;
         private List<long> smaCustIds;
         private bool isSuccess;
 
@@ -84,6 +87,7 @@
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassificationPerformance = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
+            this.custIdsToRemoveOldPA = Enumerable.Empty<long>();
             this.smaCustIds = new List<long>();
             this.isSuccess = true;
 
@@ -103,7 +107,8 @@
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsRescanPAFromQueue)
                    .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
-                   .PushExternalData(parameters);
+                   .PushExternalData(parameters)
+                   .RemoveOldProblemAccount();
                 }
 
                 GetAgentCusts(parameters.CustIds)
@@ -180,8 +185,20 @@
                 {
                     var custIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
 
+                    custIdsToRemoveOldPA = custIds;
+
                     custIdsToRescanPA.AddRange(custIds);
                 }
+            }
+
+            return this;
+        }
+
+        public IRescanCustClassificationService RemoveOldProblemAccount()
+        {
+            if (isSuccess && custIdsToRemoveOldPA != null && custIdsToRemoveOldPA.Any())
+            {
+                problemAccountServices.RemoveOldProblemAccount(custIdsToRemoveOldPA);
             }
 
             return this;
@@ -250,7 +267,6 @@
                         FeedSoon88API = paras.FeedSoon88API,
                         IsPushCCToSoon88 = paras.IsPushCCToSoon88,
                         IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
-                        DangerLevelType = paras.DangerLevelType,
                         IsWriteLog = paras.IsWriteLog,
                         ServiceName = paras.ServiceName
                     });

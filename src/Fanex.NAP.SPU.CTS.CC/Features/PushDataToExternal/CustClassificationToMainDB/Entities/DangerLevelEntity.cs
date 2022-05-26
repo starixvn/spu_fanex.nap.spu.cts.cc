@@ -12,8 +12,5 @@
 
         [XName("l")]
         public int DangerLevel { get; set; }
-
-        [XmlIgnore]
-        public DateTime ScannedTime { get; set; }
     }
 }

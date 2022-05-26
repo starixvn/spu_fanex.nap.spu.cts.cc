@@ -194,7 +194,6 @@
                     //IsCheckPAFromNAP = true,  //TODO
                     IsPushCCToSoon88 = true,
                     IsUpdateDangerToMainDB = true,
-                    DangerLevelType = DangerLevel.ABI,
                     ServiceName = serviceName,
                     FeedSoon88API = paras.FeedSoon88API,
                     IsWriteLog = paras.IsWriteLog,

@@ -15,8 +15,6 @@
 
         public bool IsUpdateDangerToMainDB { get; set; }
 
-        public DangerLevel DangerLevelType { get; set; }
-
         public FunctionId FunctionId { get; set; }
 
         public int InternalBatchSize { get; set; }
