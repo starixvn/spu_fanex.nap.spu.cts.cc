@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class TransformCustomerFromMainDbCriteria : NonQueryCommand
+    public class NewCTSCustomerInsertCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerJson { get; set; }

@@ -1,14 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities
 {
-    public class InsertCustomerModel
+    public class InsertNewCustomerResultModel
     {
         public int CTSCustID { get; set; }
 
         public long CustID { get; set; }
 
         public int CustSubID { get; set; }
-
-        public bool IsExisting { get; set; }
 
         public int SubscriberID { get; set; }
 

@@ -34,17 +34,17 @@
             ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, customerCategoryService, custClassToMainDBService, antiFraudCenterServices, systemParameterDataAccess);
         }
 
-        [Fact]
-        public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
-        {
-            var expectedResult = new CustInsertedInfoModel();
+        //[Fact] TODO
+        //public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
+        //{
+        //    var expectedResult = new InsertNewCustomerResultViewModel();
 
-            var inputData = new List<CustomerMainDBModel>();
-            dataAccess.TransformCustomerFromMainDB(string.Empty).Returns(expectedResult);
-            var result = ctsCustomerService.TransformCustomerFromMainDB(inputData);
+        //    var inputData = new List<CustomerMainDBModel>();
+        //    dataAccess.InsertNewCTSCustomer(string.Empty).Returns(expectedResult);
+        //    var result = ctsCustomerService.InsertNewCTSCustomer(inputData);
 
-            result.Should().BeNull();
-        }
+        //    result.Should().BeNull();
+        //}
 
         [Fact]
         public void GetCustSubFromMainDb_WhenSuccess_ReturnData()
@@ -98,7 +98,6 @@
             var rd = new Random();
             var data = new CustomerMainDBModel
             {
-                BatchID = rd.Next(int.MinValue, int.MaxValue),
                 CreatedDate = DateTime.Now,
                 Currency = "RM",
                 CurrencyID = rd.Next(int.MinValue, int.MaxValue),

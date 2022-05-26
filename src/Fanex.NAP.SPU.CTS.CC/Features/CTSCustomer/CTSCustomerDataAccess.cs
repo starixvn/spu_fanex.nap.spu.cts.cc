@@ -10,6 +10,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,11 +26,11 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
-        CustInsertedInfoModel TransformCustomerFromMainDB(string customerJson);
+        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo);
 
-        int UpdateAssociationCustomerForArchive(string custInfoJson);
+        void UpdateAssociationCustomerForArchive(string custInfoJson);
 
-        int UpdateAssociationCustomerForRollback(string custInfoJson);
+        void UpdateAssociationCustomerForRollback(string custInfoJson);
 
         void UpdateCustInfoComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID);
 
@@ -55,7 +56,7 @@
 
         int UpdateUsername2(string customerJson);
 
-        void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust);
+        void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust);
 
         IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
@@ -154,48 +155,44 @@
             return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
-        public CustInsertedInfoModel TransformCustomerFromMainDB(string customerJson)
+        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo)
         {
-            var criteria = new TransformCustomerFromMainDbCriteria
+            if (customerInfo != null && customerInfo.Any())
             {
-                CustomerJson = customerJson
-            };
-
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                var result = db.QueryMultiple(criteria);
-                
-                return new CustInsertedInfoModel
+                var criteria = new NewCTSCustomerInsertCriteria
                 {
-                    InsertCustomer = result.Read<InsertCustomerModel>(),
-                    CustInfoVVip = result.Read<CustInfoVVipModel>()
+                    CustomerJson = JsonConvert.SerializeObject(customerInfo)
                 };
-            }            
+
+                return repository.Fetch<InsertNewCustomerResultModel>(criteria) ?? Enumerable.Empty<InsertNewCustomerResultModel>();
+            }
+
+            return Enumerable.Empty<InsertNewCustomerResultModel>();
         }
 
-        public int UpdateAssociationCustomerForArchive(string custInfoJson)
+        public void UpdateAssociationCustomerForArchive(string custInfoJson)
         {
             var criteria = new UpdateAssociationCustomerForArchiveCriteria
             {
                 CustInfoJson = custInfoJson
             };
 
-            return repository.Execute(criteria);
+            repository.Execute(criteria);
         }
 
-        public int UpdateAssociationCustomerForRollback(string custInfoJson)
+        public void UpdateAssociationCustomerForRollback(string custInfoJson)
         {
             var criteria = new UpdateAssociationCustomerForRollbackCriteria
             {
                 CustInfoJson = custInfoJson
             };
 
-            return repository.Execute(criteria);
+            repository.Execute(criteria);
         }
 
-        public void ReTransformAccount(string jsonData, long? lastCustID, bool isInsertMissingCust)
+        public void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust)
         {
-            var criteria = new ReTransformAccountCriteria
+            var criteria = new UpdateCompleteAndRetranCustomerCriteria
             {
                 CustomerInfo = jsonData,
                 LastInsertCustID = lastCustID,

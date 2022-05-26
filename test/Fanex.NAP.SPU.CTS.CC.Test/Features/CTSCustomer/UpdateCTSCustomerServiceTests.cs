@@ -138,7 +138,6 @@
             {
                 new CustomerMainDBModel
                 {
-                    BatchID = 1,
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
                     CurrencyID = 1,
@@ -163,7 +162,6 @@
             {
                 new CustomerMainDBModel
                 {
-                    BatchID = 1,
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
                     CurrencyID = 1,
@@ -209,7 +207,6 @@
             var rd = new Random();
             var data = new CustomerMainDBModel
             {
-                BatchID = rd.Next(int.MinValue, int.MaxValue),
                 CreatedDate = DateTime.Now,
                 Currency = "RM",
                 CurrencyID = rd.Next(int.MinValue, int.MaxValue),

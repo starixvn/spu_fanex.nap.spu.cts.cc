@@ -6,8 +6,6 @@
     {
         private DateTime createdDate;
 
-        public int BatchID { get; set; }
-
         public int CustID { get; set; }
 
         public int CustSubID { get; set; }

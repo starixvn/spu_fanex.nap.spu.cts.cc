@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class ReTransformAccountCriteria : NonQueryCommand
+    public class UpdateCompleteAndRetranCustomerCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_Customer")]
         public string CustomerInfo { get; set; }
