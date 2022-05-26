@@ -2,10 +2,8 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;    
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;

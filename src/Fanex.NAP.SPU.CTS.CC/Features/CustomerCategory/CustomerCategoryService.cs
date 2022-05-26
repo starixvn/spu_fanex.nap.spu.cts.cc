@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;

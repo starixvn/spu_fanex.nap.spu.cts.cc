@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -68,7 +68,7 @@
 
             var criteria = new AddCustomerCategoryCriteria
             {
-                FromAction = (int)FromAction.Service,
+                FromAction = (int)VVIP_FromAction.Service,
                 UplineRoleID = model.QueueInfo.UplineRoleID,
                 AffectDownline = true,
                 QueueID = model.QueueInfo.QueueID,
@@ -82,7 +82,7 @@
         {
             var criteria = new AddCustomerCategoryCriteria
             {
-                FromAction = (int)FromAction.ServiceInsertNew,                                
+                FromAction = (int)VVIP_FromAction.ServiceInsertNew,                                
                 CustJson = JsonConvert.SerializeObject(model)
             };
 
@@ -100,7 +100,7 @@
 
             var criteria = new RemoveCustomerCategoryCriteria
             {
-                FromAction = (int)FromAction.Service,
+                FromAction = (int)VVIP_FromAction.Service,
                 UplineRoleID = model.QueueInfo.UplineRoleID,
                 QueueID = model.QueueInfo.QueueID,
                 AffectDownline = true,

@@ -5,7 +5,7 @@
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
+    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
@@ -23,6 +23,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
 
     public static class InitService
     {
@@ -51,6 +52,10 @@
             RegisterTWGroupBetting(services);
 
             RegisterCustomerCategory(services);
+
+            RegisterAffectedCustomerClassification(services);
+
+            RegisterNewCTSCustomerClassification(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -148,6 +153,19 @@
             services.AddSingleton<ICustomerCategoryJobService, CustomerCategoryJobService>();
             services.AddSingleton<ICustomerCategoryService, CustomerCategoryService>();
             services.AddSingleton<ICustomerCategoryDataAccess, CustomerCategoryDataAccess>();
+        }
+
+        private static void RegisterAffectedCustomerClassification(this IServiceCollection services)
+        {
+            services.AddSingleton<IAffectedCustomerClassificationDataAccess, AffectedCustomerClassificationDataAccess>();
+            services.AddSingleton<IAffectedCustomerClassificationService, AffectedCustomerClassificationService>();
+        }
+
+        private static void RegisterNewCTSCustomerClassification(this IServiceCollection services)
+        {
+            services.AddSingleton<INewCTSClassificationDataAccess, NewCTSClassificationDataAccess>();
+            services.AddSingleton<INewCTSClassificationServices, NewCTSClassificationServices>();
+            services.AddSingleton<INewCTSCustomerClassificationJobService, NewCTSCustomerClassificationJobService>();
         }
     }
 }

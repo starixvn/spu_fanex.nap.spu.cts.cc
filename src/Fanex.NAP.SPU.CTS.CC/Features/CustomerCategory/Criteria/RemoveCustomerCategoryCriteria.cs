@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;

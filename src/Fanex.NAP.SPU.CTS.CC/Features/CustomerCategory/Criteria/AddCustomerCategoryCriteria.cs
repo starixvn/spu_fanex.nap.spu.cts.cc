@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -25,7 +25,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_InsertVVIP";
+            return "CTS_DC_CustClassification_VVIP_Insert";
         }
 
         public override bool IsValid()

@@ -21,6 +21,7 @@
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ICustomerCategoryJobService customerCategoryJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
+        private readonly INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
@@ -31,7 +32,8 @@
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ICustomerCategoryJobService customerCategoryJobService,
-            ITWProblemAccountJobService twProblemAccountJobService)
+            ITWProblemAccountJobService twProblemAccountJobService,
+            INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService)
         {
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -43,6 +45,7 @@
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.customerCategoryJobService = customerCategoryJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
+            this.newCTSCustomerClassificationJobService = newCTSCustomerClassificationJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -106,6 +109,12 @@
         public async Task<bool> ScanTWSystemFormulaBetCustomer()
         {
             return await twProblemAccountJobService.Execute();
+        }
+
+        [HttpPost("newcustomerclassification")]
+        public async Task<bool> NewCTSCustomerClassification([FromForm] int batchSize)
+        {
+            return await newCTSCustomerClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("updatewritelog")]

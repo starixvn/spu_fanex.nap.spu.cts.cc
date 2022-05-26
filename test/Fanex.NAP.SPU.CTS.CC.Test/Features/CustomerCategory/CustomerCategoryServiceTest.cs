@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerCategory
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
+    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;

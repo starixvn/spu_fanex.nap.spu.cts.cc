@@ -31,6 +31,8 @@
 
         public string AFCInsertAccountURL { get; set; }
 
+        public string AFCDeleteAccountURL { get; set; }
+
         public FunctionId FuncId_CheckRobotUser
         {
             get

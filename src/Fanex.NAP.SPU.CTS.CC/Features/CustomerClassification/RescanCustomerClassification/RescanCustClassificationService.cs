@@ -31,6 +31,8 @@
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
+        bool PushExternalData(RescanParametersEntity parameters, IEnumerable<long> custIds);
+
         IRescanCustClassificationService PushExternalData(RescanParametersEntity paras);
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
@@ -255,7 +257,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService PushExternalData(RescanParametersEntity paras)
+        public IRescanCustClassificationService PushExternalData(RescanParametersEntity parameters)
         {
             if (isSuccess && custIdsToRescanPA.Any())
             {
@@ -263,21 +265,48 @@
                 {
                     isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
                     {
-                        ExternalBatchSize = paras.ExternalBatchSize,
-                        FeedSoon88API = paras.FeedSoon88API,
-                        IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                        IsUpdateDangerToMainDB = paras.IsUpdateDangerToMainDB,
-                        IsWriteLog = paras.IsWriteLog,
-                        ServiceName = paras.ServiceName
+                        ExternalBatchSize = parameters.ExternalBatchSize,
+                        FeedSoon88API = parameters.FeedSoon88API,
+                        IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
+                        IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
+                        IsWriteLog = parameters.IsWriteLog,
+                        ServiceName = parameters.ServiceName
                     });
                 },
                 () =>
                 {
-                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
+                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
                 });
             }
 
             return this;
+        }
+
+        public bool PushExternalData(RescanParametersEntity parameters, IEnumerable<long> custIds)
+        {
+            var isSuccess = true;
+
+            if (custIds != null && custIds.Any())
+            {
+                Parallel.Invoke(() =>
+                {
+                    isSuccess = custClassToMainDBService.PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = parameters.ExternalBatchSize,
+                        FeedSoon88API = parameters.FeedSoon88API,
+                        IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
+                        IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
+                        IsWriteLog = parameters.IsWriteLog,
+                        ServiceName = parameters.ServiceName
+                    });
+                },
+                () =>
+                {
+                    antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
+                });
+            }
+
+            return isSuccess;
         }
 
         public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)

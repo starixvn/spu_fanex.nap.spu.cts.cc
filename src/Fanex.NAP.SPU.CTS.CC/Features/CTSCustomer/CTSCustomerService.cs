@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -79,9 +79,6 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IRescanCustClassificationService rescanClassificationService;
-        private readonly ICustomerCategoryService customerCategoryService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly string serviceName = "CTSCustomerService";
 
@@ -95,9 +92,6 @@
         {
             this.dataAccess = dataAccess;
             this.rescanClassificationService = rescanClassificationService;
-            this.customerCategoryService = customerCategoryService;
-            this.custClassToMainDBService = custClassToMainDBService;
-            this.antiFraudCenterServices = antiFraudCenterServices;
             this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
@@ -126,30 +120,21 @@
 
         public bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
         {
-            try
+            if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
-                if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
+                var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
+
+                foreach (var batchCust in chunkCusts)
                 {
-                    var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
+                    var customers = InsertNewCTSCustomer(batchCust.ToList());
 
-                    foreach (var batchCust in chunkCusts)
+                    if (customers != null && customers.Any())
                     {
-                        var customers = InsertNewCTSCustomer(batchCust.ToList());
+                        UpdateAssociationCustomerForArchive(customers);
 
-                        if (customers != null && customers.Any())
-                        {
-                            UpdateAssociationCustomerForArchive(customers);
-
-                            UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
-                        }
+                        UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", data.CustomerInfos, ex, sentryClient);
-
-                return false;
             }
 
             return true;
@@ -177,42 +162,6 @@
             {
                 dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
             }
-        }
-
-        private bool RescanCCForNewCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, InsertNewCustRescanEntity paras)
-        {
-            var result = false;
-
-            try
-            {
-                var custToRescan = custIdList.Select(c => c.CustID).Distinct();
-
-                var rescanParam = new RescanParametersEntity
-                {
-                    CustIds = custToRescan,
-                    FunctionId = FunctionId.InsertNewCustJob,
-                    //IsCheckPAFromNAP = true,  //TODO
-                    IsPushCCToSoon88 = true,
-                    IsUpdateDangerToMainDB = true,
-                    ServiceName = serviceName,
-                    FeedSoon88API = paras.FeedSoon88API,
-                    IsWriteLog = paras.IsWriteLog,
-                    InternalBatchSize = paras.InternalBatchSize,
-                    ExternalBatchSize = paras.ExternalBatchSize,
-                    IsSyncAFCData = paras.IsSyncAFCData,
-                    AFCInsertAccountURL = paras.AFCInsertAccountURL
-                };
-
-                result = rescanClassificationService.RescanCustomerClassification(rescanParam);
-
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
-            }
-
-            return result;
         }
 
         private void UpdateAssociationCustomerForArchive(IEnumerable<InsertNewCustomerResultModel> customerList)

@@ -38,7 +38,8 @@
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastCategoryID = 88,
-            DailyProblemClassificationLastCustID = 89
+            DailyProblemClassificationLastCustID = 89,
+            NewCTSCustomerClassificationLastCustID = 92
         };
 
         public enum Category
@@ -142,14 +143,14 @@
             GetByCustId = 2
         };
 
-        public enum FromAction
+        public enum VVIP_FromAction
         {
             WebSite = 1,
             Service = 2,
             ServiceInsertNew = 3
         }
 
-        public enum VVIPActionType
+        public enum VVIP_ActionType
         {
             Insert = 1,
             Remove = 2

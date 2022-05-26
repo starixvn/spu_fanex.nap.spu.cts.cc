@@ -4,7 +4,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
+    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;    
     using Sentry;
@@ -48,49 +48,48 @@
         {
             try
             {
-                var custCategoryQueues = customerCategoryService.GetCustomerCategoryQueue();
+                //var custCategoryQueues = customerCategoryService.GetCustomerCategoryQueue();
 
-                if (custCategoryQueues != null && custCategoryQueues.CustomerCategoryQueue.Any())
-                {
-                    if (custCategoryQueues.QueueInfo.ActionType == (int)VVIPActionType.Insert)
-                    {
-                        var lastestCustomerClassification = customerCategoryService.AddCustomerCategory(custCategoryQueues);
+                //if (custCategoryQueues != null && custCategoryQueues.CustomerCategoryQueue.Any())
+                //{
+                //    if (custCategoryQueues.QueueInfo.ActionType == (int)VVIPActionType.Insert)
+                //    {
+                //        var lastestCustomerClassification = customerCategoryService.AddCustomerCategory(custCategoryQueues);
 
-                        Parallel.Invoke(() =>
-                        {
-                            var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustomerClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
-                        },
-                        () =>
-                        {
-                            var custIds = lastestCustomerClassification.Select(x => x.CustId);
-                            antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
-                        });
-                    }
-                    else
-                    {
-                        var lastestCustomerClassification = customerCategoryService.RemoveCustomerCategory(custCategoryQueues);
-                        var custIds = lastestCustomerClassification.Select(x => x.CustId);
+                //        Parallel.Invoke(() =>
+                //        {
+                //            var pushCCResult = custClassToMainDBService.RetryPushCCToMainDB(lastestCustomerClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
+                //        },
+                //        () =>
+                //        {
+                //            var custIds = lastestCustomerClassification.Select(x => x.CustId);
+                //            antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                //        });
+                //    }
+                //    else
+                //    {
+                //        var lastestCustomerClassification = customerCategoryService.RemoveCustomerCategory(custCategoryQueues);
+                //        var custIds = lastestCustomerClassification.Select(x => x.CustId);
 
-                        var paras = new RescanParametersEntity
-                        {
-                            CustIds = custIds,
-                            FunctionId = FunctionId.RemoveVIPWeb,
-                            //IsCheckPAFromNAP = true,  //TODO
-                            IsPushCCToSoon88 = true,
-                            IsUpdateDangerToMainDB = true,
-                            DangerLevelType = DangerLevel.ABI,
-                            ServiceName = this.serviceName,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsWriteLog = false,
-                            InternalBatchSize = internalBatchSize,
-                            ExternalBatchSize = externalBatchSize,
-                            IsSyncAFCData = appSettings.IsSyncAFCData,
-                            AFCInsertAccountURL = appSettings.AFCInsertAccountURL
-                        };
+                //        var paras = new RescanParametersEntity
+                //        {
+                //            CustIds = custIds,
+                //            FunctionId = FunctionId.RemoveVIPWeb,
+                //            //IsCheckPAFromNAP = true,  //TODO
+                //            IsPushCCToSoon88 = true,
+                //            IsUpdateDangerToMainDB = true,
+                //            ServiceName = this.serviceName,
+                //            FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                //            IsWriteLog = false,
+                //            InternalBatchSize = internalBatchSize,
+                //            ExternalBatchSize = externalBatchSize,
+                //            IsSyncAFCData = appSettings.IsSyncAFCData,
+                //            AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                //        };
 
-                        rescanClassificationService.RescanCustomerClassification(paras);
-                    }
-                }
+                //        rescanClassificationService.RescanCustomerClassification(paras);
+                //    }
+                //}
 
             }
             catch (Exception ex)
