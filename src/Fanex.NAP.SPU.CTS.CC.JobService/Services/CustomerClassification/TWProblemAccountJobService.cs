@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -26,17 +27,21 @@
         private readonly ITWProblemAccountService twProblemAccService;
         private readonly IDailyProblemClassificationServices dailyPCServices;
         private readonly IProblemAccountServices paServices;
+        private readonly IAppSettings appSettings;
         private const string ServiceName = "TWProblemAccountInsert";
+        private const int batchSize = 500;
 
         public TWProblemAccountJobService(ITWProblemAccountService twProblemAccService
             , IProblemAccountServices paServices
             , IDailyProblemClassificationServices dailyPCServices
-            , ISentryClient sentryClient)
+            , ISentryClient sentryClient
+            , IAppSettings appSettings)
         {
             this.twProblemAccService = twProblemAccService;
             this.paServices = paServices;
             this.dailyPCServices = dailyPCServices;
             this.sentryClient = sentryClient;
+            this.appSettings = appSettings;
         }
 
         public Task<bool> Execute()
@@ -84,10 +89,24 @@
                             var pas = paList.Select(x => new InsertProblemAccountEntity
                             {
                                 CustID = x.CustID,
-                                CategoryID = 0 // TODO
+                                ReasonID = x.ReasonId,
+                                Remark = x.Comment,
+                                IsDirectPA = true,
+                                IsFromTW = true,
+                                CreatedBy = x.UserId
                             });
 
-                            //paServices.InsertProblemAccount(pas, paLosing, ServiceName);
+                            paServices.InsertProblemAccountLogics(pas, paLosing, InsertPA_ByType.Reason, true, ServiceName);
+
+                            dailyPCServices.PushCCToExternal(new PushDataToExternalEntity
+                            {
+                                ExternalBatchSize = batchSize,
+                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsPushCCToSoon88 = true,
+                                IsUpdateDangerToMainDB = true,
+                                IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                                ServiceName = ServiceName
+                            });
 
                             twProblemAccService.RemoveSystemFormulaBetCustomer(string.Join(",", paList.Select(c => c.CustID)));
                         }

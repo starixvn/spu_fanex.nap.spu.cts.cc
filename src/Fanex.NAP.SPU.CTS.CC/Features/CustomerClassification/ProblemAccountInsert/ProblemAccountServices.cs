@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;   
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -25,14 +25,14 @@
 
     public class ProblemAccountServices : IProblemAccountServices
     {
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;        
         private readonly ISentryClient sentryClient;
 
         public ProblemAccountServices(
-            IProblemAccountDataAccess problemAccountDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,            
             ISentryClient sentryClient)
         {
-            this.problemAccountDataAccess = problemAccountDataAccess;
+            this.problemAccountDataAccess = problemAccountDataAccess;            
             this.sentryClient = sentryClient;
         }
 
@@ -168,7 +168,7 @@
             return true;
         }
 
-        private static IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        private IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -207,8 +207,7 @@
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
-        }
-
+        }       
         #endregion
     }
 }
