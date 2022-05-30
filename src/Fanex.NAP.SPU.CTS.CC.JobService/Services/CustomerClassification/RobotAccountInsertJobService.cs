@@ -100,9 +100,11 @@
                                                           BatchInternalSize = batchInternalSize,
                                                           ServiceName = robotAccountServiceName,
                                                           Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
+                                                          IsPushCCToSoon88 = true,
                                                           IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                           IsSyncAFCData = appSettings.IsSyncAFCData,
-                                                          AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                                                          AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                                          IsFromTW = false
                                                       });
 
             if (isSuccess)
@@ -122,8 +124,10 @@
                                                                    BatchExternalSize = batchExternalSize,
                                                                    BatchInternalSize = batchInternalSize,
                                                                    ServiceName = robotAIClassServiceName,
+                                                                   IsPushCCToSoon88 = true,
                                                                    Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
-                                                                   IsWriteLog = appSettings.RobotAccountIsWriteLog
+                                                                   IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                                   IsFromTW = true
                                                                });
 
             if (isSuccess)

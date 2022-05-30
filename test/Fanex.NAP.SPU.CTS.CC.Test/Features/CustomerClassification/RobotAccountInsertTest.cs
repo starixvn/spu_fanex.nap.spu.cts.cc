@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -24,6 +25,8 @@
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
 
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
+
         public RobotAccountInsertTest()
         {
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
@@ -35,11 +38,14 @@
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
 
+            antiFraudCenterServices = new AntiFraudCenterServices(null);
+
             robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
                                                                         systemParameterServices,
                                                                         custClassToMainDBService,
-                                                                        problemAccountServices);
+                                                                        problemAccountServices,
+                                                                        antiFraudCenterServices);
         }
 
         [Fact]
@@ -113,7 +119,7 @@
                 }
             };
 
-            var result = robotAccountInsertServices.MappingRobotCategory(robotAccounts);
+            var result = robotAccountInsertServices.MappingRobotCategory(robotAccounts, true);
 
             result.Should().BeEquivalentTo(problemAccounts);
         }
@@ -137,7 +143,7 @@
                 }
             };
 
-            var result = robotAccountInsertServices.MappingRobotCategory(null);
+            var result = robotAccountInsertServices.MappingRobotCategory(null, false);
 
             result.Should().NotBeEquivalentTo(problemAccounts);
         }

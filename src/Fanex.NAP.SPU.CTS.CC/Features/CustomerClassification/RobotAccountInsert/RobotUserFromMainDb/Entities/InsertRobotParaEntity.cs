@@ -12,6 +12,8 @@
 
         public string Soon88FeedDataAPI { get; set; }
 
+        public bool IsPushCCToSoon88 { get; set; }
+
         public bool IsSyncAFCData { get; set; }
 
         public string AFCInsertAccountURL { get; set; }
@@ -21,5 +23,7 @@
         public string AFCGetAccountURL { get; set; }
 
         public string AFCInternalKey { get; set; }
+
+        public bool IsFromTW { get; set; }
     }
 }

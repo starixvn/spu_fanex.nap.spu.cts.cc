@@ -51,7 +51,8 @@
             VIP = 205,
             Probation = 206,
             VVIP = 213,
-            Robot = 61
+            Robot = 61,
+            AIRobot = 63
         };
 
         public enum CustomerRole

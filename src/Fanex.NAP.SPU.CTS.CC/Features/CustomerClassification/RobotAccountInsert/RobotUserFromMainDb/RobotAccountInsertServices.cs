@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -20,7 +21,7 @@
 
         bool Process(InsertRobotParaEntity paras);
 
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, bool isFromTW);
 
         void UpdateLastTimespan();
 
@@ -33,6 +34,7 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private long lastScannedTimespan;
         private RobotUserViewEntity robotInfo;
 
@@ -40,13 +42,15 @@
             IRobotAccountInsertDataAccess robotAccountInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IProblemAccountServices problemAccountServices)
+            IProblemAccountServices problemAccountServices,
+            IAntiFraudCenterServices antiFraudCenterServices)
 
         {
             this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
+            this.antiFraudCenterServices = antiFraudCenterServices;
         }
 
         public IRobotAccountInsertServices Start()
@@ -86,53 +90,55 @@
 
                 foreach (var robot in robotUsersChunks)
                 {
-                    bool isSuccess = InsertRobotUsers(robot, paras);
+                    var custIds = InsertRobotUsers(robot, paras);
 
-                    if (!isSuccess)
+                    if (custIds != null && custIds.Any())
                     {
-                        return false;
+                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = paras.BatchExternalSize,
+                            FeedSoon88API = paras.Soon88FeedDataAPI,
+                            IsPushCCToSoon88 = paras.IsPushCCToSoon88,
+                            IsUpdateDangerToMainDB = true,
+                            IsWriteLog = paras.IsWriteLog,
+                            ServiceName = paras.ServiceName
+                        });
+
+                        antiFraudCenterServices.InsertAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
+
+                        if (!isSuccess)
+                        {
+                            return false;
+                        }
                     }
+                    
+                    Thread.Sleep(RobotUsers_SleepTimes);
                 }
             }
 
             return true;
         }
 
-        public bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
+        public IEnumerable<long> InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
-            bool isSuccess = true;
-
             if (robotUsers != null && robotUsers.Any())
             {
-                var robotToInsert = MappingRobotCategory(robotUsers);
+                var robotToInsert = MappingRobotCategory(robotUsers, paras.IsFromTW);
 
                 custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
 
-                //var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
+                var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
 
-                //isSuccess = (result != null && result.ErrorCode == 0);
-
-                //if (isSuccess && result.CustIds != null && result.CustIds.Any())
-                //{
-                //    isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                //    {
-                //        ExternalBatchSize = paras.BatchExternalSize,
-                //        FeedSoon88API = paras.Soon88FeedDataAPI,
-                //        IsPushCCToSoon88 = true,
-                //        IsUpdateDangerToMainDB = true,
-                //        DangerLevelType = DangerLevel.ABI,
-                //        IsWriteLog = paras.IsWriteLog,
-                //        ServiceName = paras.ServiceName
-                //    });
-
-                //    Thread.Sleep(RobotUsers_SleepTimes);
-                //}
+                if (customerInfo != null && customerInfo.Any())
+                {
+                    return customerInfo.Select(x => x.CustID).Distinct();
+                }
             }
 
-            return isSuccess;
+            return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, bool isFromTW)
         {
             var custCategory = new List<InsertRobotEntity>();
 
@@ -142,7 +148,7 @@
                 {
                     CustID = c.CustId,
                     CategoryID = (int)Category.Robot,
-                    IsFromTW = true,
+                    IsFromTW = isFromTW,
                     RobotCounter = c.Counter,
                     CreatedBy = StarixITId
                 }).ToList();
