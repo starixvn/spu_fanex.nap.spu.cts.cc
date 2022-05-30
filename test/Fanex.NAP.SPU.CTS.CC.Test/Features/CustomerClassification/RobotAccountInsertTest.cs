@@ -3,10 +3,12 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
+    using System;
     using System.Collections.Generic;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -21,6 +23,9 @@
 
         private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
         private readonly IRobotAccountInsertServices robotAccountInsertServices;
+
+        private readonly IRobotDetectionDataAccess robotDetectionDataAccess;
+        private readonly IRobotDetectionService robotDetectionService;
 
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
@@ -39,6 +44,13 @@
             problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
 
             antiFraudCenterServices = new AntiFraudCenterServices(null);
+
+            robotDetectionDataAccess = Substitute.For<IRobotDetectionDataAccess>();
+            robotDetectionService = new RobotDetectionService(robotDetectionDataAccess
+                , systemParameterServices
+                , custClassToMainDBService
+                , problemAccountServices
+                , antiFraudCenterServices);           
 
             robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess,
@@ -147,5 +159,44 @@
 
             result.Should().NotBeEquivalentTo(problemAccounts);
         }
+
+        [Fact]
+        public void GetRobotDetections_WhenSuccess()
+        {
+            var result = robotDetectionService.GetRobotDetections();
+
+            // Assert
+            Assert.IsAssignableFrom<IRobotDetectionService>(result);
+        }
+
+        [Fact]
+        public void InsertProblemAccount_WhenSuccess_ReturnData()
+        {
+            // Arrange
+            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 11, LastModifiedDate = DateTime.Now } };
+            var paras = new InsertRobotParaEntity();
+            var expectedResult = new List<long>();
+            
+            // Act
+            var result = robotDetectionService.InsertProblemAccount(robotDetections, paras);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public void Process_WhenSuccess_ReturnTrue()
+        {
+            // Arrange
+            var paras = new InsertRobotParaEntity();
+
+            // Act
+            var result = robotDetectionService.Process(paras);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
     }
 }

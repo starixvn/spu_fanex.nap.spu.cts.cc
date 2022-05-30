@@ -132,6 +132,9 @@
             services.AddSingleton<IRobotAIClassificationInsertDataAccess, RobotAIClassificationInsertDataAccess>();
             services.AddSingleton<IRobotAIClassificationInsertServices, RobotAIClassificationInsertServices>();
             services.AddSingleton<IRobotAccountInsertJobService, RobotAccountInsertJobService>();
+
+            services.AddSingleton<IRobotDetectionDataAccess, RobotDetectionDataAccess>();
+            services.AddSingleton<IRobotDetectionService, RobotDetectionService>();
         }
 
         private static void RegisteCustomer(this IServiceCollection services)

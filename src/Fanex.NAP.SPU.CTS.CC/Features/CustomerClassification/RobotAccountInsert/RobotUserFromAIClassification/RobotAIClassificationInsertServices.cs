@@ -80,11 +80,11 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess =    custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = paras.BatchExternalSize,
                             FeedSoon88API = paras.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = true,
+                            IsPushCCToSoon88 = paras.IsPushCCToSoon88,
                             IsUpdateDangerToMainDB = true,                            
                             IsWriteLog = paras.IsWriteLog,
                             ServiceName = paras.ServiceName

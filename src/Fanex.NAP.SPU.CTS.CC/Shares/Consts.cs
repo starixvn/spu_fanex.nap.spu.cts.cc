@@ -39,7 +39,8 @@
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastCategoryID = 88,
             DailyProblemClassificationLastCustID = 89,
-            NewCTSCustomerClassificationLastCustID = 92
+            NewCTSCustomerClassificationLastCustID = 92,
+            RobotDetectionLastModifiedDate = 94
         };
 
         public enum Category

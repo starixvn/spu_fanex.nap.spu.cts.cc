@@ -99,6 +99,12 @@
             return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
+        [HttpPost("robotDetection")]
+        public async Task<bool> RobotDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await this.robotAccountInsertJobService.ScanningRobotDetection(batchExternalSize, batchInternalSize);
+        }
+
         [HttpPost("InsertCustCategoryVVIPFromQueue")]
         public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
