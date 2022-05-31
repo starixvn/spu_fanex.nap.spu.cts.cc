@@ -54,7 +54,7 @@
             {
                 IsRescanPA = false,
                 IsPushCCToSoon88 = true,
-                IsRescanPAFromQueue = false,
+                IsFromQueue = false,
                 IsUpdateDangerToMainDB = true,
                 FunctionId = FunctionId.InsertNewCustJob,
                 ServiceName = "NewCTSCustomerClassification",

@@ -31,8 +31,6 @@
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
-        bool PushExternalData(RescanParametersEntity parameters, IEnumerable<long> custIds);
-
         IRescanCustClassificationService PushExternalData(RescanParametersEntity paras);
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
@@ -106,7 +104,7 @@
                 {
                     GetExistedProblemAccounts(parameters.CustIds)
                    .GetProbAccountLosingClassification(parameters.FunctionId)
-                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsRescanPAFromQueue)
+                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsFromQueue)
                    .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
                    .PushExternalData(parameters)

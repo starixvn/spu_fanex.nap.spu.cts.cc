@@ -10,7 +10,7 @@
 
     public interface IAffectedCustomerClassificationService
     {
-        IEnumerable<LatestClassificationEntity> InsertVVIP(VVIPCustomerInsertEntity custInfo);
+        IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
     }
 
     public class AffectedCustomerClassificationService : IAffectedCustomerClassificationService
@@ -29,11 +29,11 @@
         //    //return dataAccess.GetCustomerCategoryQueue();
         //}
 
-        public IEnumerable<LatestClassificationEntity> InsertVVIP(VVIPCustomerInsertEntity custInfo)
+        public IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo)
         {
             if (custInfo != null && custInfo.CustInfo != null && custInfo.CustInfo.Any())
             {
-                return affectedCustClassificationDataAccess.InsertVVIP(custInfo);
+                return affectedCustClassificationDataAccess.InsertVVIPCategory(custInfo);
             }
 
             return Enumerable.Empty<LatestClassificationEntity>();

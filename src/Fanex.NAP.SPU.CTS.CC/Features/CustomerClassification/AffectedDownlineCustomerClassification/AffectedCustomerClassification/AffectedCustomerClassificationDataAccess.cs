@@ -9,7 +9,7 @@
 
     public interface IAffectedCustomerClassificationDataAccess
     {
-        IEnumerable<LatestClassificationEntity> InsertVVIP(VVIPCustomerInsertEntity custInfo);
+        IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
 
     }
 
@@ -70,7 +70,7 @@
         //    return repository.Fetch<LatestClassificationEntity>(criteria);
         //}
 
-        public IEnumerable<LatestClassificationEntity> InsertVVIP(VVIPCustomerInsertEntity custInfo)
+        public IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo)
         {
             var criteria = new VVIPInsertCriteria
             {

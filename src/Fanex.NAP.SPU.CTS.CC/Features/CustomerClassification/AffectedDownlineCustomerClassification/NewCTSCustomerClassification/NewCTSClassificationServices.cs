@@ -5,7 +5,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -32,6 +34,7 @@
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISystemParameterServices systemParameterServices;
         private NewCTSCustomerClassificationEntity newCustomerClassification;
@@ -43,6 +46,7 @@
                 IDailyProblemClassificationServices dailyProblemClassificationServices,
                 IProblemAccountServices problemAccountServices,
                 IRescanCustClassificationService rescanCustClassificationService,
+                ICustClassToMainDBService custClassToMainDBService,
                 IAntiFraudCenterServices antiFraudCenterServices,
                 ISystemParameterServices systemParameterServices)
         {
@@ -51,6 +55,7 @@
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.problemAccountServices = problemAccountServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.systemParameterServices = systemParameterServices;
         }
@@ -70,9 +75,31 @@
             return this;
         }
 
+        public INewCTSClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters)
+        {
+            if (newCustomerClassification != null && newCustomerClassification.VVIPClassification.Any())
+            {
+                var result = affectedCustomerClassificationService.InsertVVIPCategory(new VVIPCustomerInsertEntity
+                {
+                    CustInfo = newCustomerClassification.VVIPClassification,
+                    FromAction = VVIP_FromAction.ServiceInsertNew,
+                    IsAffectDownline = null,
+                    QueueID = null,
+                    UplineRoleID = null
+                });
+
+                IsSuccess = custClassToMainDBService.RetryPushCCToMainDB(result, Constants.RetryPushCCToExternal, parameters.ServiceName);
+
+                var custIds = newCustomerClassification.VVIPClassification.Select(c => c.CustID).Distinct();
+                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCDeleteAccountURL);
+            }
+
+            return this;
+        }
+
         public INewCTSClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters)
         {
-            if (newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
+            if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
                 var paLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(newCustomerClassification.PAClassification.Select(c => c.CustID), FunctionId.InsertNewCustJob);
 
@@ -82,43 +109,34 @@
 
                 if (result.ErrorCode == 0)
                 {
-                    parameters.CustIds = result.CustomerInfo.Select(c => c.CustID);
+                    var custIds = result.CustomerInfo.Select(c => c.CustID);
 
-                    rescanCustClassificationService.PushExternalData(parameters);
+                    IsSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = parameters.ExternalBatchSize,
+                        FeedSoon88API = parameters.FeedSoon88API,
+                        IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
+                        IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
+                        IsWriteLog = parameters.IsWriteLog,
+                        ServiceName = parameters.ServiceName
+                    });
+
+                    antiFraudCenterServices.InsertAFCAccounts(custIds, FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
                 }
             }
 
             return this;
         }
 
-        public INewCTSClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters)
-        {
-            if (newCustomerClassification != null && newCustomerClassification.VVIPClassification.Any())
-            {
-                affectedCustomerClassificationService.InsertVVIP(new VVIPCustomerInsertEntity
-                {
-                    CustInfo = newCustomerClassification.VVIPClassification,
-                    FromAction = VVIP_FromAction.ServiceInsertNew,
-                    IsAffectDownline = null,
-                    QueueID = null,
-                    UplineRoleID = null
-                });
 
-                var custIds = newCustomerClassification.VVIPClassification.Select(c => c.CustID).Distinct();
-
-                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCDeleteAccountURL);
-            }
-
-            return this;
-        }
 
         public INewCTSClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters)
         {
-            if (newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
+            if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {
                 parameters.CustIds = newCustomerClassification.NormalClassification.Select(c => c.CustID);
 
-                rescanCustClassificationService.RescanCustomerClassification(parameters);
+                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
             }
 
             return this;
