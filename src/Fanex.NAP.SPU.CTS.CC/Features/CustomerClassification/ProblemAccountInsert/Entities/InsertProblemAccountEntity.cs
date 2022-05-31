@@ -7,7 +7,7 @@
         public InsertProblemAccountEntity()
         {
             IsFromTVS = false;
-            IsFromPAM = false;
+            IsFromCTS = false;
             IsFromTW = false;
             IsDataChanged = false;
         }
@@ -44,7 +44,7 @@
 
         public int? ActiveDays { get; set; }
 
-        public bool IsFromPAM { get; set; }
+        public bool IsFromCTS { get; set; }
 
         public bool IsFromTVS { get; set; }
 

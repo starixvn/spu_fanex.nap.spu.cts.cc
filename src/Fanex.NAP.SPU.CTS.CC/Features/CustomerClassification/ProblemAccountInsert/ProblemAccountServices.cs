@@ -191,7 +191,7 @@
                                                             Remark = group.pa.Remark,
                                                            
                                                             IsDirectPA = group.pa.IsDirectPA,
-                                                            IsFromPAM = false,
+                                                            IsFromCTS = false,
                                                             IsFromTVS = false,
                                                             IsFromTW = false,
                                                             IsDataChanged = false,

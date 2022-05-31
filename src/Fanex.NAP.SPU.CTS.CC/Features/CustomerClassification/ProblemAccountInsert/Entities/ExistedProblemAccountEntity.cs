@@ -26,7 +26,7 @@
 
         public bool IsFromTW { get; set; }
 
-        public bool IsFromPAM { get; set; }
+        public bool IsFromCTS { get; set; }
 
         public decimal? Turnover { get; set; }
 
