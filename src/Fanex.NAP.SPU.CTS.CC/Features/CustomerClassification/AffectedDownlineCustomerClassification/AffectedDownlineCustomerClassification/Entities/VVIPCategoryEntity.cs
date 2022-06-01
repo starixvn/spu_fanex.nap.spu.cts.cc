@@ -1,5 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification
-{  
+{
     public class VVIPCategoryEntity
     {
         public long CTSCustID { get; set; }

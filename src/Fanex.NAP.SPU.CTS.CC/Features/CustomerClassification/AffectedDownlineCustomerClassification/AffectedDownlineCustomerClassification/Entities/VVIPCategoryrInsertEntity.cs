@@ -12,7 +12,7 @@
 
         public Int64? QueueID { get; set; }
 
-        public bool? IsAffectDownline { get; set; }        
+        public bool? IsAffectDownline { get; set; }
 
         public IEnumerable<VVIPCategoryEntity> CustInfo { get; set; }
     }

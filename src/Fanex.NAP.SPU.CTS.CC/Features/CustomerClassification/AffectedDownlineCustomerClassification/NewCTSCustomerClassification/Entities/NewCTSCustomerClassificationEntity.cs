@@ -14,13 +14,13 @@
             PAClassification = Enumerable.Empty<InsertProblemAccountEntity>();
             NormalClassification = Enumerable.Empty<NormalRescanEntity>();
         }
-        
+
         public UInt64 LastCTSCustID { get; set; }
 
         public IEnumerable<VVIPCategoryEntity> VVIPClassification { get; set; }
 
         public IEnumerable<InsertProblemAccountEntity> PAClassification { get; set; }
-        
+
         public IEnumerable<NormalRescanEntity> NormalClassification { get; set; }
     }
 }

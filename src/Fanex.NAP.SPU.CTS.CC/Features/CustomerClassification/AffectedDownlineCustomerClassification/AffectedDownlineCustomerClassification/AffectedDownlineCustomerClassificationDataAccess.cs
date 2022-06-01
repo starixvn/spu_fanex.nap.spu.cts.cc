@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Newtonsoft.Json;
@@ -39,7 +38,7 @@
             queueResult.ActionType = criteria.ActionType;
             queueResult.QueueID = criteria.QueueID;
             queueResult.UplineRoleID = criteria.UplineRoleID;
-            queueResult.LastDownlineCTSCustID = criteria.LastDownlineCTSCustID;             
+            queueResult.LastDownlineCTSCustID = criteria.LastDownlineCTSCustID;
 
             return queueResult;
         }
@@ -60,7 +59,7 @@
 
         public IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model)
         {
-            var custInfo = model.CustInfo.Select(x => new 
+            var custInfo = model.CustInfo.Select(x => new
             {
                 CustID = x.CustID,
                 CTSCustID = x.CTSCustID,

@@ -1,5 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
-{ 
+{
     public class PushDataToExternalEntity
     {
         public bool IsPushCCToSoon88 { get; set; }

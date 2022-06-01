@@ -26,8 +26,6 @@
         IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
 
         IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
-
-
     }
 
     public class AffectedDownlineCustomerClassificationService : IAffectedDownlineCustomerClassificationService
@@ -97,8 +95,8 @@
                         {
                             IsSuccess = RemoveDownlineProblemAccount(parameters, custClassificationFromQueue);
                             break;
-                        } 
-                }    
+                        }
+                }
             }
 
             return this;
@@ -126,13 +124,12 @@
                     IsFromTW = c.IsFromTW,
                     IsDataChanged = false,
                     CreatedBy = c.CreatedBy
-
                 });
 
                 var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
-                
+
                 return custClassToMainDBService.PushExternalProblemAcountPackage(insertPAResult, parameters);
-            }           
+            }
 
             return true;
         }
@@ -235,7 +232,7 @@
             return Enumerable.Empty<VVIPCustomerRemoveResultEntity>();
         }
 
-        public static VVIPCustomerInsertEntity MappingVVIPModel (CustClassificationFromQueueResultEntity custInfo)
+        public static VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
         {
             return new VVIPCustomerInsertEntity
             {

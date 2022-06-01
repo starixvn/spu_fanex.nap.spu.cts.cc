@@ -47,6 +47,7 @@
 
                     case FunctionId.RemoveSpecialCCWeb:
                         return FunctionId.RemoveSpecial_CheckRobotUser;
+
                     default:
                         return 0;
                 }
