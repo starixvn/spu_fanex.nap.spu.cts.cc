@@ -31,7 +31,7 @@
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
-        IRescanCustClassificationService PushExternalData(RescanParametersEntity paras);
+        IRescanCustClassificationService PushExternalProblemAccounts(RescanParametersEntity paras);
 
         IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
 
@@ -99,7 +99,7 @@
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsFromQueue, parameters.FunctionId)
                    .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
-                   .PushExternalData(parameters)
+                   .PushExternalProblemAccounts(parameters)
                    .RemoveOldProblemAccount();
                 }
 
@@ -133,6 +133,7 @@
                         IsFromTVS = c.IsFromTVS,
                         IsFromTW = c.IsFromTW,
                         IsDataChanged = false,
+                        LastModifiedDate = c.LastModifiedDate,
                         CreatedBy = StarixITId
                     });
 
@@ -235,56 +236,14 @@
             return this;
         }
 
-        public IRescanCustClassificationService PushExternalData(RescanParametersEntity parameters)
+        public IRescanCustClassificationService PushExternalProblemAccounts(RescanParametersEntity parameters)
         {
             if (isSuccess && custIdsToRescanPA.Any())
             {
-                Parallel.Invoke(() =>
-                {
-                    isSuccess = custClassToMainDBService.PushDataToExternal(custIdsToRescanPA.Distinct(), new PushDataToExternalEntity
-                    {
-                        ExternalBatchSize = parameters.ExternalBatchSize,
-                        FeedSoon88API = parameters.FeedSoon88API,
-                        IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
-                        IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
-                        IsWriteLog = parameters.IsWriteLog,
-                        ServiceName = parameters.ServiceName
-                    });
-                },
-                () =>
-                {
-                    antiFraudCenterServices.InsertAFCAccounts(custIdsToRescanPA.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
-                });
+                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custIdsToRescanPA.Distinct(), parameters);
             }
 
             return this;
-        }
-
-        public bool PushExternalData(RescanParametersEntity parameters, IEnumerable<long> custIds)
-        {
-            var isSuccess = true;
-
-            if (custIds != null && custIds.Any())
-            {
-                Parallel.Invoke(() =>
-                {
-                    isSuccess = custClassToMainDBService.PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
-                    {
-                        ExternalBatchSize = parameters.ExternalBatchSize,
-                        FeedSoon88API = parameters.FeedSoon88API,
-                        IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
-                        IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
-                        IsWriteLog = parameters.IsWriteLog,
-                        ServiceName = parameters.ServiceName
-                    });
-                },
-                () =>
-                {
-                    antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
-                });
-            }
-
-            return isSuccess;
         }
 
         public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)

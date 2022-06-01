@@ -30,14 +30,14 @@
 
     public class ProblemAccountServices : IProblemAccountServices
     {
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;        
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;                
         private readonly ISentryClient sentryClient;
 
         public ProblemAccountServices(
-            IProblemAccountDataAccess problemAccountDataAccess,            
+            IProblemAccountDataAccess problemAccountDataAccess,
             ISentryClient sentryClient)
         {
-            this.problemAccountDataAccess = problemAccountDataAccess;            
+            this.problemAccountDataAccess = problemAccountDataAccess;
             this.sentryClient = sentryClient;
         }
 
@@ -251,6 +251,7 @@
                                                             CategoryGroup = group.pa.CategoryGroup,
                                                             IsLicensee = group.pa.IsLicensee,
                                                             CreatedBy = StarixITId,
+                                                            LastModifiedDate = group.pa.LastModifiedDate,
                                                             Remark = group.pa.Remark,
                                                            
                                                             IsDirectPA = group.pa.IsDirectPA,

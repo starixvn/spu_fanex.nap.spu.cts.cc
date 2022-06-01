@@ -36,6 +36,8 @@
 
         public int? ActiveDays { get; set; }
 
+        public DateTime LastModifiedDate { get; set; }
+
         public string Remark { get; set; }
     }
 }

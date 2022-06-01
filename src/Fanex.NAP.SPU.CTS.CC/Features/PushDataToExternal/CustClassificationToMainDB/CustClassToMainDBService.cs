@@ -1,5 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -11,6 +14,10 @@
 
     public interface ICustClassToMainDBService
     {
+        bool PushExternalProblemAcountPackage(InsertPAResultEntity insertResult, RescanParametersEntity parameters);
+
+        bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters);
+
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
         bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName);
@@ -30,16 +37,55 @@
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
             ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
             ISentryClient sentryClient,
-            IFeedSoon88Services feedSoon88Services)
+            IFeedSoon88Services feedSoon88Services,
+            IAntiFraudCenterServices antiFraudCenterServices)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
             this.feedSoon88Services = feedSoon88Services;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.sentryClient = sentryClient;
+        }
+
+        public bool PushExternalProblemAcountPackage(InsertPAResultEntity insertResult, RescanParametersEntity parameters)
+        {
+            var isSuccess = insertResult.ErrorCode == 0;
+
+            if (isSuccess && insertResult != null && insertResult.CustomerInfo != null && insertResult.CustomerInfo.Any())
+            {
+                var custIds = insertResult.CustomerInfo.Select(c => c.CustID).Distinct();
+
+                return PushExternalProblemAcountPackage(custIds, parameters);
+            }
+
+            return isSuccess;
+        }
+
+        public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        {
+            var isSuccess = true;
+
+            if (custIds != null && custIds.Any())
+            {
+                isSuccess = PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
+                {
+                    ExternalBatchSize = parameters.ExternalBatchSize,
+                    FeedSoon88API = parameters.FeedSoon88API,
+                    IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
+                    IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
+                    IsWriteLog = parameters.IsWriteLog,
+                    ServiceName = parameters.ServiceName
+                });
+
+                antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
+            }
+
+            return isSuccess;
         }
 
         public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
@@ -117,7 +163,6 @@
 
             return Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
-
 
         public bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
         {

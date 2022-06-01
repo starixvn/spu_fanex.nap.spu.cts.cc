@@ -51,7 +51,7 @@
         {
             var paramaters = new RescanParametersEntity()
             {
-                IsRescanPA = true,
+                IsRescanPA = false,
                 IsPushCCToSoon88 = true,
                 IsFromQueue = true,
                 IsUpdateDangerToMainDB = true,

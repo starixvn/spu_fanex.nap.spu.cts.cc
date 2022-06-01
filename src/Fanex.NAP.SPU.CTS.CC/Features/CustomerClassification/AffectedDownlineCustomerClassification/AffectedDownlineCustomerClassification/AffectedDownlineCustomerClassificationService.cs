@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -10,7 +9,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAffectedDownlineCustomerClassificationService
@@ -21,11 +19,15 @@
 
         IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters);
 
+        bool InsertVVIPForDownline(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo);
+
+        bool CompleteCustomerClassificationFromQueue();
+
         IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
 
         IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
 
-        bool CompleteCustomerClassificationFromQueue();
+
     }
 
     public class AffectedDownlineCustomerClassificationService : IAffectedDownlineCustomerClassificationService
@@ -56,7 +58,6 @@
         {
             custClassificationFromQueue = new CustClassificationFromQueueResultEntity();
             IsSuccess = true;
-
             return this;
         }
 
@@ -79,74 +80,37 @@
                 {
                     case (int)DownlineClassification_ActionType.InsertVVIP:
                         {
-                            var custInfo = new VVIPCustomerInsertEntity
-                            {
-                                FromAction = VVIP_FromAction.Service,
-                                IsAffectDownline = false,
-                                QueueID = Convert.ToInt64(custClassificationFromQueue.QueueID),
-                                UplineRoleID = custClassificationFromQueue.UplineRoleID,
-                                CustInfo = custClassificationFromQueue.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity
-                                {
-                                    CustID = c.CustID,
-                                    CTSCustID = c.CTSCustID,
-                                    SubscriberID = c.SubscriberID,
-                                    RoleID = c.RoleID,
-                                    Remark = c.Remark,
-                                    CreatedBy = c.CreatedBy
-                                })
-                            };
-
-                            InsertVVIPForDownline(parameters, custInfo);
-
+                            IsSuccess = InsertVVIPForDownline(parameters, MappingVVIPModel(custClassificationFromQueue));
                             break;
                         }
                     case (int)DownlineClassification_ActionType.RemoveVVIP:
                         {
-                            var custInfo = new VVIPCustomerInsertEntity
-                            {
-                                FromAction = VVIP_FromAction.Service,
-                                IsAffectDownline = false,
-                                QueueID = Convert.ToInt64(custClassificationFromQueue.QueueID),
-                                UplineRoleID = custClassificationFromQueue.UplineRoleID,
-                                CustInfo = custClassificationFromQueue.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity
-                                {
-                                    CustID = c.CustID,
-                                    CTSCustID = c.CTSCustID,
-                                    SubscriberID = c.SubscriberID,
-                                    RoleID = c.RoleID,
-                                    Remark = c.Remark,
-                                    CreatedBy = c.CreatedBy
-                                })
-                            };
-
-                            RemoveVVIPForDownline(parameters, custInfo);
+                            IsSuccess = RemoveVVIPForDownline(parameters, MappingVVIPModel(custClassificationFromQueue));
                             break;
                         }
                     case (int)DownlineClassification_ActionType.InsertPA:
                         {
-                            InsertDownlineProblemAccount(parameters);
+                            IsSuccess = InsertDownlineProblemAccount(parameters, custClassificationFromQueue);
                             break;
                         }
                     case (int)DownlineClassification_ActionType.RemovePA:
                         {
-                            RemoveDownlineProblemAccount(parameters);
+                            IsSuccess = RemoveDownlineProblemAccount(parameters, custClassificationFromQueue);
                             break;
                         } 
-                    default:
-                        break;
                 }    
             }
 
             return this;
         }
 
-        public IAffectedDownlineCustomerClassificationService InsertDownlineProblemAccount(RescanParametersEntity parameters)
+        public bool InsertDownlineProblemAccount(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
-            if (custClassificationFromQueue.CustomerClassificationQueue != null && custClassificationFromQueue.CustomerClassificationQueue.Any())
+            if (custInfo != null && custInfo.CustomerClassificationQueue.Any())
             {
-                var custIds = custClassificationFromQueue.CustomerClassificationQueue.Select(c => c.CustID).Distinct();
+                var custIds = custInfo.CustomerClassificationQueue.Select(c => c.CustID).Distinct();
 
-                var probAccounts = custClassificationFromQueue.CustomerClassificationQueue.Select(c => new InsertProblemAccountEntity
+                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new InsertProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -166,40 +130,20 @@
                 });
 
                 var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
-
-                IsSuccess = insertPAResult.ErrorCode == 0;
-
-                if (IsSuccess && insertPAResult.CustomerInfo.Any())
-                {
-                    var custToPushExternal = insertPAResult.CustomerInfo.Select(c => c.CustID).Distinct();
-
-                    Parallel.Invoke(() =>
-                    {
-                        IsSuccess = custClassToMainDBService.PushDataToExternal(custToPushExternal, new PushDataToExternalEntity
-                        {
-                            ExternalBatchSize = parameters.ExternalBatchSize,
-                            FeedSoon88API = parameters.FeedSoon88API,
-                            IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
-                            IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
-                            IsWriteLog = parameters.IsWriteLog,
-                            ServiceName = parameters.ServiceName
-                        });
-                    },
-                    () =>
-                    {
-                        antiFraudCenterServices.InsertAFCAccounts(custToPushExternal, FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
-                    });
-                }
+                
+                return custClassToMainDBService.PushExternalProblemAcountPackage(insertPAResult, parameters);
             }           
 
-            return this;
+            return true;
         }
 
-        public IAffectedDownlineCustomerClassificationService RemoveDownlineProblemAccount(RescanParametersEntity parameters)
+        public bool RemoveDownlineProblemAccount(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
-            if (custClassificationFromQueue.CustomerClassificationQueue != null && custClassificationFromQueue.CustomerClassificationQueue.Any())
+            var isSuccess = true;
+
+            if (custInfo.CustomerClassificationQueue != null && custInfo.CustomerClassificationQueue.Any())
             {
-                var probAccounts = custClassificationFromQueue.CustomerClassificationQueue.Select(c => new RemoveProblemAccountEntity
+                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new RemoveProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -213,28 +157,16 @@
 
                 var result = problemAccountServices.RemoveProblemAccountLogics(probAccounts, true, parameters.ServiceName);
 
-                IsSuccess = result.ErrorCode == 0;
+                isSuccess = result.ErrorCode == 0;
 
-                if (IsSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
+                if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    IsSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
+                    parameters.IsRescanPA = false;
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
                 }
             }
 
-            return this;
-        }
-
-        public bool CompleteCustomerClassificationFromQueue()
-        {
-            if (IsSuccess  
-                 && custClassificationFromQueue != null
-                 && custClassificationFromQueue.CustomerClassificationQueue != null
-                 && custClassificationFromQueue.CustomerClassificationQueue.Any())
-            {
-                affectedCustClassificationDataAccess.CustomerClassificationFromQueueComplete(custClassificationFromQueue.QueueID, custClassificationFromQueue.LastDownlineCTSCustID);
-            }
-
-            return IsSuccess;
+            return isSuccess;
         }
 
         public bool InsertVVIPForDownline(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
@@ -263,10 +195,24 @@
                 var result = RemoveVVIPCategory(custInfo);
 
                 parameters.CustIds = result.Select(c => c.CustID).Distinct();
+                parameters.IsRescanPA = true;
                 isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
             }
 
             return isSuccess;
+        }
+
+        public bool CompleteCustomerClassificationFromQueue()
+        {
+            if (IsSuccess
+                 && custClassificationFromQueue != null
+                 && custClassificationFromQueue.CustomerClassificationQueue != null
+                 && custClassificationFromQueue.CustomerClassificationQueue.Any())
+            {
+                affectedCustClassificationDataAccess.CustomerClassificationFromQueueComplete(custClassificationFromQueue.QueueID, custClassificationFromQueue.LastDownlineCTSCustID);
+            }
+
+            return IsSuccess;
         }
 
         public IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo)
@@ -287,6 +233,26 @@
             }
 
             return Enumerable.Empty<VVIPCustomerRemoveResultEntity>();
+        }
+
+        public static VVIPCustomerInsertEntity MappingVVIPModel (CustClassificationFromQueueResultEntity custInfo)
+        {
+            return new VVIPCustomerInsertEntity
+            {
+                FromAction = VVIP_FromAction.Service,
+                IsAffectDownline = false,
+                QueueID = Convert.ToInt64(custInfo.QueueID),
+                UplineRoleID = custInfo.UplineRoleID,
+                CustInfo = custInfo.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity
+                {
+                    CustID = c.CustID,
+                    CTSCustID = c.CTSCustID,
+                    SubscriberID = c.SubscriberID,
+                    RoleID = c.RoleID,
+                    Remark = c.Remark,
+                    CreatedBy = c.CreatedBy
+                })
+            };
         }
     }
 }

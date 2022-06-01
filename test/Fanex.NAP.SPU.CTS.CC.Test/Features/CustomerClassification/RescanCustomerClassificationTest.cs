@@ -50,7 +50,7 @@
             feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null,  feedSoon88Services, null);
 
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
             dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
