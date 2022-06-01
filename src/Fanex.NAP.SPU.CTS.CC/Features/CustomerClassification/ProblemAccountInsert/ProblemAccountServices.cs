@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;   
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -13,6 +12,8 @@
     public interface IProblemAccountServices
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
+
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
         InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
@@ -50,6 +51,18 @@
             }
 
             return Enumerable.Empty<ExistedProblemAccountEntity>();
+        }
+
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                var custIdsToString = string.Join(",", custIds);
+
+                return problemAccountDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+            }
+
+            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
         public InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)

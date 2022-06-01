@@ -52,7 +52,6 @@
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
-        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
         private IEnumerable<ProblemAccountLosingClassificationEntity> problemAccountLosing;
         private IEnumerable<InsertRobotEntity> robotClassificationPerformance;
@@ -68,8 +67,7 @@
             IProblemAccountServices problemAccountServices,
             IAntiFraudCenterServices antiFraudCenterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IDailyNormalClassificationServices dailyClassificationServices,
-            IDailyProblemClassificationServices dailyProblemClassificationServices)
+            IDailyNormalClassificationServices dailyClassificationServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.problemAccountServices = problemAccountServices;
@@ -77,7 +75,6 @@
             this.sentryClient = sentryClient;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.dailyClassificationServices = dailyClassificationServices;
-            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
         }
 
         public IRescanCustClassificationService Start()
@@ -167,7 +164,7 @@
             {
                 var custIds = problemAccounts.Select(c => c.CustID);
 
-                problemAccountLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(custIds, functionId);
+                problemAccountLosing = problemAccountServices.GetProblemAccountLosingClassification(custIds, functionId);
             }
 
             return this;

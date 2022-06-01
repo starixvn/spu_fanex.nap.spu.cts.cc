@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -31,7 +31,6 @@
     {
         private readonly INewCTSClassificationDataAccess newCTSClassificationDataAccess;
         private readonly IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService;
-        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
@@ -52,7 +51,6 @@
         {
             this.newCTSClassificationDataAccess = newCTSClassificationDataAccess;
             this.affectedCustomerClassificationService = affectedCustomerClassificationService;
-            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.problemAccountServices = problemAccountServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
             this.custClassToMainDBService = custClassToMainDBService;
@@ -101,7 +99,7 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var paLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(newCustomerClassification.PAClassification.Select(c => c.CustID), FunctionId.InsertNewCustJob);
+                var paLosing = problemAccountServices.GetProblemAccountLosingClassification(newCustomerClassification.PAClassification.Select(c => c.CustID), FunctionId.InsertNewCustJob);
 
                 var result = problemAccountServices.InsertProblemAccountLogics(newCustomerClassification.PAClassification, paLosing, InsertPA_ByType.Category, false, parameters.ServiceName);
 

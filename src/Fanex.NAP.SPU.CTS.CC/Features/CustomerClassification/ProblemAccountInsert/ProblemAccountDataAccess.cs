@@ -7,11 +7,14 @@
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProblemAccountDataAccess
     {
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
+        
         InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType, bool isFromQueue);
 
         RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
@@ -45,6 +48,18 @@
 
             return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
         }
+
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
+        {
+            var criteria = new ProblemAccountLosingClassificationGetCriteria()
+            {
+                ListCustIds = custIds,
+                FunctionId = (int)funcId
+            };
+
+            return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
+        }
+
 
         public InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType, bool isFromQueue)
         {

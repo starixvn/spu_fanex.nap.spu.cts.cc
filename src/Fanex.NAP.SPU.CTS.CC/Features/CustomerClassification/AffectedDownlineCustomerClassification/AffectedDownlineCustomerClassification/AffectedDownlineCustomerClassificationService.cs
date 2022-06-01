@@ -32,7 +32,6 @@
     {
         private readonly IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
@@ -42,14 +41,12 @@
         public AffectedDownlineCustomerClassificationService(
             IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess,
             IProblemAccountServices problemAccountServices,
-            IDailyProblemClassificationServices dailyProblemClassificationServices,
             ICustClassToMainDBService custClassToMainDBService,
             IAntiFraudCenterServices antiFraudCenterServices,
             IRescanCustClassificationService rescanCustClassificationService)
         {
             this.affectedCustClassificationDataAccess = affectedCustClassificationDataAccess;
             this.problemAccountServices = problemAccountServices;
-            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
@@ -169,7 +166,7 @@
 
                 });
 
-                var paLosing = dailyProblemClassificationServices.GetProblemAccountLosingClassification(custIds, FunctionId.DownlineCustomerClassification);
+                var paLosing = problemAccountServices.GetProblemAccountLosingClassification(custIds, FunctionId.DownlineCustomerClassification);
 
                 var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, paLosing, InsertPA_ByType.Category, true, parameters.ServiceName);
 

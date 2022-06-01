@@ -11,8 +11,6 @@
     {
         ProblemClassificationDailyEntity GetCustomerForProblemDailyScanning();
 
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
-
         IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson);
     }
 
@@ -37,17 +35,6 @@
                 op_LastCategoryID = criteria.LastCategoryID,
                 op_LastCustID = criteria.LastCustID
             };
-        }
-
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
-        {
-            var criteria = new ProblemAccountLosingClassificationGetCriteria()
-            {
-                ListCustIds = custIds,
-                FunctionId = (int)funcId
-            };
-
-            return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
         }
 
         public IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson)

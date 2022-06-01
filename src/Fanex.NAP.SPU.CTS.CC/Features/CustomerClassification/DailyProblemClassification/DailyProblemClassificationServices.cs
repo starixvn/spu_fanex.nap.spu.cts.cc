@@ -19,8 +19,6 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId);
 
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
-
         IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification);
 
         bool PushCCToExternal(PushDataToExternalEntity paras);
@@ -76,21 +74,7 @@
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
-                var custIds = string.Join(",", scanningCustomers.CustID);
-
-                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIds, funcId);
-            }
-
-            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
-        }
-
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                var custIdsToString = string.Join(",", custIds);
-
-                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+                return problemAccountServices.GetProblemAccountLosingClassification(scanningCustomers.CustID, funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();

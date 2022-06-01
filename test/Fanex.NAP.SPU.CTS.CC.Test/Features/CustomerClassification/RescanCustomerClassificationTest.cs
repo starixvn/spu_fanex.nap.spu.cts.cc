@@ -66,8 +66,7 @@
                 problemAccountServices,
                 antiFraudCenterServices,
                 custClassToMainDBService,
-                dailyClassificationServices,
-                dailyProblemClassificationServices);
+                dailyClassificationServices);
         }
 
         [Fact]

@@ -25,7 +25,6 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly ITWProblemAccountService twProblemAccService;
-        private readonly IDailyProblemClassificationServices dailyPCServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices paServices;
         private readonly IAppSettings appSettings;
@@ -34,14 +33,12 @@
 
         public TWProblemAccountJobService(ITWProblemAccountService twProblemAccService
             , IProblemAccountServices paServices
-            , IDailyProblemClassificationServices dailyPCServices
             , ICustClassToMainDBService custClassToMainDBService
             , ISentryClient sentryClient
             , IAppSettings appSettings)
         {
             this.twProblemAccService = twProblemAccService;
             this.paServices = paServices;
-            this.dailyPCServices = dailyPCServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
@@ -87,7 +84,7 @@
                             
                             var custIds = paList.Select(x => (long)x.CustID);
 
-                            var paLosing = dailyPCServices.GetProblemAccountLosingClassification(custIds, FunctionId.TWProblemAccountInsert);
+                            var paLosing = paServices.GetProblemAccountLosingClassification(custIds, FunctionId.TWProblemAccountInsert);
 
                             var pas = paList.Select(x => new InsertProblemAccountEntity
                             {
