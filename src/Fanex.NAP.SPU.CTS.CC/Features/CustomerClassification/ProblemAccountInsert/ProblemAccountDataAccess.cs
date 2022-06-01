@@ -66,7 +66,7 @@
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
-                ByType = byType,
+                InputType = inputType,
                 IsFromQueue = isFromQueue
             };
 

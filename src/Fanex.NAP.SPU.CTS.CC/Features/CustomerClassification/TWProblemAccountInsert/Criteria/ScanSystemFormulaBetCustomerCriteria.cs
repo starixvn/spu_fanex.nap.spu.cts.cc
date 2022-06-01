@@ -5,11 +5,11 @@
 
     public class ScanSystemFormulaBetCustomerCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_LastCustID")]
+        [SpParam(SqlParamName = "op_LastCustID")]
         public uint LastCustId { get; set; }
 
         public override string GetSettingKey()
-            => "CTS_DC_TWProblemDetectionMonitor_Scan_Completed";
+            => "CTS_DC_TWProblemDetectionMonitor_Scan";
 
         public override bool IsValid()
             => true;
