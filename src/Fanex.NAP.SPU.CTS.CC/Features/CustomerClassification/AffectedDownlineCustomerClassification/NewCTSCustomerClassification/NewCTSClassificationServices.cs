@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
@@ -30,7 +30,7 @@
     public class NewCTSClassificationServices : INewCTSClassificationServices
     {
         private readonly INewCTSClassificationDataAccess newCTSClassificationDataAccess;
-        private readonly IAffectedCustomerClassificationService affectedCustomerClassificationService;
+        private readonly IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
@@ -42,7 +42,7 @@
 
         public NewCTSClassificationServices(
                 INewCTSClassificationDataAccess newCTSClassificationDataAccess,
-                IAffectedCustomerClassificationService affectedCustomerClassificationService,
+                IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService,
                 IDailyProblemClassificationServices dailyProblemClassificationServices,
                 IProblemAccountServices problemAccountServices,
                 IRescanCustClassificationService rescanCustClassificationService,

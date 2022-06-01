@@ -115,7 +115,8 @@
             InsertPAJob = 41,
             //UpdateCategory = 42,
             InsertPAM = 43,
-            TWProblemAccountInsert = 44
+            TWProblemAccountInsert = 44,
+            DownlineCustomerClassification = 45,
         };
 
         public enum HttpStatus
@@ -152,10 +153,12 @@
             ServiceInsertNew = 3
         }
 
-        public enum VVIP_ActionType
+        public enum DownlineClassification_ActionType
         {
-            Insert = 1,
-            Remove = 2
+            InsertVVIP = 1,
+            RemoveVVIP = 2,
+            InsertPA = 3,
+            RemovePA = 4,
         }
 
         public enum InsertPA_ByType

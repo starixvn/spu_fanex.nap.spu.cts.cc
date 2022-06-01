@@ -2,7 +2,7 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System.Linq;
 
@@ -29,7 +29,7 @@
 
             return new NewCTSCustomerClassificationEntity()
             {
-                VVIPClassification = result?.Read<VVIPCustomerEntity>() ?? Enumerable.Empty<VVIPCustomerEntity>(),
+                VVIPClassification = result?.Read<VVIPCategoryEntity>() ?? Enumerable.Empty<VVIPCategoryEntity>(),
                 PAClassification = result?.Read<InsertProblemAccountEntity>() ?? Enumerable.Empty<InsertProblemAccountEntity>(),
                 NormalClassification = result?.Read<NormalRescanEntity>() ?? Enumerable.Empty<NormalRescanEntity>(),
                 LastCTSCustID = criteria.LastCTSCustID

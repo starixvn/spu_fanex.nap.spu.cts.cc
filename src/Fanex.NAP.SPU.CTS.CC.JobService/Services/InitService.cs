@@ -5,7 +5,7 @@
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
@@ -53,8 +53,6 @@
             RegisterTWGroupBetting(services);
 
             RegisterTWProblemAccount(services);
-
-            RegisterCustomerCategory(services);
 
             RegisterAffectedCustomerClassification(services);
 
@@ -161,17 +159,11 @@
             services.AddSingleton<IAntiFraudCenterServices, AntiFraudCenterServices>();
         }
 
-        private static void RegisterCustomerCategory(this IServiceCollection services)
-        {
-            services.AddSingleton<ICustomerCategoryJobService, CustomerCategoryJobService>();
-            services.AddSingleton<ICustomerCategoryService, CustomerCategoryService>();
-            services.AddSingleton<ICustomerCategoryDataAccess, CustomerCategoryDataAccess>();
-        }
-
         private static void RegisterAffectedCustomerClassification(this IServiceCollection services)
         {
-            services.AddSingleton<IAffectedCustomerClassificationDataAccess, AffectedCustomerClassificationDataAccess>();
-            services.AddSingleton<IAffectedCustomerClassificationService, AffectedCustomerClassificationService>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationDataAccess, AffectedDownlineCustomerClassificationDataAccess>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationService, AffectedDownlineCustomerClassificationService>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationJobService, AffectedDownlineCustomerClassificationJobService>();
         }
 
         private static void RegisterNewCTSCustomerClassification(this IServiceCollection services)

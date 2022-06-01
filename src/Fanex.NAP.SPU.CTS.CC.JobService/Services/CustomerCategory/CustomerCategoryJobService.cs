@@ -4,14 +4,11 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;    
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
-    using System;    
-    using System.Linq;
+    using System;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerCategoryJobService
     {
@@ -22,7 +19,6 @@
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly ICustomerCategoryService customerCategoryService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IRescanCustClassificationService rescanClassificationService;
@@ -30,14 +26,12 @@
 
         public CustomerCategoryJobService(ISentryClient sentryClient
             , IAppSettings appSettings
-            , ICustomerCategoryService customerCategoryService
             , ICustClassToMainDBService custClassToMainDBService
             , IAntiFraudCenterServices antiFraudCenterServices
             , IRescanCustClassificationService rescanClassificationService)
         {
             this.serviceName = "CustomerCategoryQueue";
             this.sentryClient = sentryClient;
-            this.customerCategoryService = customerCategoryService;
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanClassificationService = rescanClassificationService;

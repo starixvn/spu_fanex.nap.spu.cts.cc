@@ -1,5 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification
 {
+    using System;
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -9,10 +10,10 @@
 
         public int? UplineRoleID { get; set; }
 
-        public int? QueueID { get; set; }
+        public Int64? QueueID { get; set; }
 
         public bool? IsAffectDownline { get; set; }        
 
-        public IEnumerable<VVIPCustomerEntity> CustInfo { get; set; }
+        public IEnumerable<VVIPCategoryEntity> CustInfo { get; set; }
     }
 }

@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -12,6 +13,8 @@
         IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
         InsertPAResultEntity InsertProblemAccount(string problemAccountJson, string byType, bool isFromQueue);
+
+        RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
 
@@ -59,6 +62,24 @@
                 ErrorMessage = criteria.ErrorMessage,
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 CustomerInfo = result ?? Enumerable.Empty<CustInfoEntity>()
+            };
+        }
+
+        public RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue)
+        {
+            var criteria = new ProblemAccountRemoveCriteria
+            {
+                ProblemAccountJson = JsonConvert.SerializeObject(problemAccounts),
+                IsFromQueue = isFromQueue
+            };
+
+            var custInfos = repository.Fetch<CustInfoEntity>(criteria);
+
+            return new RemovePAResultEntity
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMessage = criteria.ErrorMessage,
+                CustomerInfo = custInfos ?? Enumerable.Empty<CustInfoEntity>()
             };
         }
 

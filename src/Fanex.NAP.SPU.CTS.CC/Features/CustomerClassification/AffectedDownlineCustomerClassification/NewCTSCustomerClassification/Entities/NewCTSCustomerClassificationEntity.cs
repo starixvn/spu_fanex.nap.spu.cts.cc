@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AffectedCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System;
     using System.Collections.Generic;
@@ -10,14 +10,14 @@
     {
         public NewCTSCustomerClassificationEntity()
         {
-            VVIPClassification = Enumerable.Empty<VVIPCustomerEntity>();
+            VVIPClassification = Enumerable.Empty<VVIPCategoryEntity>();
             PAClassification = Enumerable.Empty<InsertProblemAccountEntity>();
             NormalClassification = Enumerable.Empty<NormalRescanEntity>();
         }
         
         public UInt64 LastCTSCustID { get; set; }
 
-        public IEnumerable<VVIPCustomerEntity> VVIPClassification { get; set; }
+        public IEnumerable<VVIPCategoryEntity> VVIPClassification { get; set; }
 
         public IEnumerable<InsertProblemAccountEntity> PAClassification { get; set; }
         

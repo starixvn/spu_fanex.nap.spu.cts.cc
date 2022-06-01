@@ -16,11 +16,15 @@
 
         InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
+        RemovePAResultEntity RemoveProblemAccountLogics(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
+  
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
         IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
+
+        void RemovePALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -67,6 +71,23 @@
             return result;
         }
 
+        public RemovePAResultEntity RemoveProblemAccountLogics(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        {
+            var result = new RemovePAResultEntity();
+
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                result = RemoveProblemAccount(problemAccounts, isFromQueue, serviceName);
+
+                if (result.ErrorCode == 0)
+                {
+                    RemovePALogics(result.CustomerInfo, serviceName);
+                }
+            }
+
+            return result;
+        }
+
         public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
         {
             if (customerInfo != null && customerInfo.Any())
@@ -76,6 +97,16 @@
                 var custIds = customerInfo.Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+            }
+        }
+
+        public void RemovePALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
+        {
+            if (customerInfo != null && customerInfo.Any())
+            {
+                var custIds = customerInfo.Select(x => x.CustID).Distinct();
+
+                UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
             }
         }
 
@@ -128,6 +159,23 @@
             }
 
             return new InsertPAResultEntity();
+        }
+
+        private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);
+
+                if (result.ErrorCode != 0)
+                {
+                    Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+                }
+
+                return result;
+            }
+
+            return new RemovePAResultEntity();
         }
 
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
@@ -208,6 +256,7 @@
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
         }       
+        
         #endregion
     }
 }
