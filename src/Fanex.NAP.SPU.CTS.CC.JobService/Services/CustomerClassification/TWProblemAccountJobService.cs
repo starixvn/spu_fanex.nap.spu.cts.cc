@@ -26,6 +26,7 @@
         private readonly ISentryClient sentryClient;
         private readonly ITWProblemAccountService twProblemAccService;
         private readonly IDailyProblemClassificationServices dailyPCServices;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices paServices;
         private readonly IAppSettings appSettings;
         private const string ServiceName = "TWProblemAccountInsert";
@@ -34,12 +35,14 @@
         public TWProblemAccountJobService(ITWProblemAccountService twProblemAccService
             , IProblemAccountServices paServices
             , IDailyProblemClassificationServices dailyPCServices
+            , ICustClassToMainDBService custClassToMainDBService
             , ISentryClient sentryClient
             , IAppSettings appSettings)
         {
             this.twProblemAccService = twProblemAccService;
             this.paServices = paServices;
             this.dailyPCServices = dailyPCServices;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
         }
@@ -96,17 +99,23 @@
                                 CreatedBy = x.UserId
                             });
 
-                            paServices.InsertProblemAccountLogics(pas, paLosing, InsertPA_ByType.Reason, true, ServiceName);
+                            var insertPAResult = paServices.InsertProblemAccountLogics(pas, paLosing, InsertPA_ByType.Reason, true, ServiceName);
 
-                            dailyPCServices.PushCCToExternal(new PushDataToExternalEntity
+                            if (insertPAResult.ErrorCode == 0 && 
+                                insertPAResult.CustomerInfo != null && insertPAResult.CustomerInfo.Any())
                             {
-                                ExternalBatchSize = batchSize,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                IsPushCCToSoon88 = true,
-                                IsUpdateDangerToMainDB = true,
-                                IsWriteLog = appSettings.ProblemAccountIsWriteLog,
-                                ServiceName = ServiceName
-                            });
+                                var custIdToPushCC = insertPAResult.CustomerInfo.Select(x => x.CustID).Distinct();
+
+                                custClassToMainDBService.PushDataToExternal(custIdToPushCC, new PushDataToExternalEntity
+                                {
+                                    ExternalBatchSize = batchSize,
+                                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                    IsPushCCToSoon88 = true,
+                                    IsUpdateDangerToMainDB = true,
+                                    IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                                    ServiceName = ServiceName
+                                });
+                            }
 
                             twProblemAccService.RemoveSystemFormulaBetCustomer(string.Join(",", paList.Select(c => c.CustID)));
                         }
