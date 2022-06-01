@@ -82,10 +82,6 @@
                         {
                             var firtItem = paList.FirstOrDefault();
                             
-                            var custIds = paList.Select(x => (long)x.CustID);
-
-                            var paLosing = paServices.GetProblemAccountLosingClassification(custIds, FunctionId.TWProblemAccountInsert);
-
                             var pas = paList.Select(x => new InsertProblemAccountEntity
                             {
                                 CustID = x.CustID,
@@ -96,7 +92,7 @@
                                 CreatedBy = x.UserId
                             });
 
-                            var insertPAResult = paServices.InsertProblemAccountLogics(pas, paLosing, InsertPA_ByType.Reason, true, ServiceName);
+                            var insertPAResult = paServices.InsertProblemAccountLogics(pas, FunctionId.TWProblemAccountInsert, InsertPA_ByType.Reason, true, ServiceName);
 
                             if (insertPAResult.ErrorCode == 0 && 
                                 insertPAResult.CustomerInfo != null && insertPAResult.CustomerInfo.Any())

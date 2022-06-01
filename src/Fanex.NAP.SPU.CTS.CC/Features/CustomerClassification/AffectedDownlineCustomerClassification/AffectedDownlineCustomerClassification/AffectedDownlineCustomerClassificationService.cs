@@ -67,7 +67,6 @@
             return this;
         }
 
-
         public IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters)
         {
             if (custClassificationFromQueue != null
@@ -166,9 +165,7 @@
 
                 });
 
-                var paLosing = problemAccountServices.GetProblemAccountLosingClassification(custIds, FunctionId.DownlineCustomerClassification);
-
-                var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, paLosing, InsertPA_ByType.Category, true, parameters.ServiceName);
+                var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
 
                 IsSuccess = insertPAResult.ErrorCode == 0;
 

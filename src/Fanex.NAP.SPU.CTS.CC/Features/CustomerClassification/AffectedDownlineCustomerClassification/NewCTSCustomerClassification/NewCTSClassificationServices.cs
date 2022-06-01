@@ -99,9 +99,7 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var paLosing = problemAccountServices.GetProblemAccountLosingClassification(newCustomerClassification.PAClassification.Select(c => c.CustID), FunctionId.InsertNewCustJob);
-
-                var result = problemAccountServices.InsertProblemAccountLogics(newCustomerClassification.PAClassification, paLosing, InsertPA_ByType.Category, false, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountLogics(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, false, parameters.ServiceName);
 
                 IsSuccess = result.ErrorCode == 0;
 
