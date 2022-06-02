@@ -30,7 +30,7 @@
 
         public Int64? CreatedBy { get; set; }
 
-        public DateTime LastModifiedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
 
         public string Remark { get; set; }
 
