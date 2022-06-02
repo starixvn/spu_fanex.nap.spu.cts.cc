@@ -76,7 +76,7 @@
                     UplineRoleID = null
                 };
 
-                IsSuccess = affectedCustomerClassificationService.InsertVVIPForDownline(parameters, custInfo);
+                IsSuccess = affectedCustomerClassificationService.InsertVVIPForDownlinePackage(parameters, custInfo);
             }
 
             return this;

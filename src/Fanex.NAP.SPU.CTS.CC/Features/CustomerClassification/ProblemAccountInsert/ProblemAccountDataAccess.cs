@@ -88,13 +88,13 @@
                 IsFromQueue = isFromQueue
             };
 
-            var custInfos = repository.Fetch<CustInfoEntity>(criteria);
+            var custInfos = repository.Fetch<CustRemovePAEntity>(criteria);
 
             return new RemovePAResultEntity
             {
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMessage = criteria.ErrorMessage,
-                CustomerInfo = custInfos ?? Enumerable.Empty<CustInfoEntity>()
+                CustomerInfo = custInfos ?? Enumerable.Empty<CustRemovePAEntity>()
             };
         }
 

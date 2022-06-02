@@ -25,7 +25,7 @@
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
-        void RemovePALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
+        void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -115,11 +115,11 @@
             }
         }
 
-        public void RemovePALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
+        public void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName)
         {
             if (customerInfo != null && customerInfo.Any())
             {
-                var custIds = customerInfo.Select(x => x.CustID).Distinct();
+                var custIds = customerInfo.Where(c=>c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
             }
@@ -271,8 +271,8 @@
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
-        }       
-        
+        }
+
         #endregion
     }
 }

@@ -19,7 +19,7 @@
 
         IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters);
 
-        bool InsertVVIPForDownline(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo);
+        bool InsertVVIPForDownlinePackage(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo);
 
         bool CompleteCustomerClassificationFromQueue();
 
@@ -78,22 +78,22 @@
                 {
                     case (int)DownlineClassification_ActionType.InsertVVIP:
                         {
-                            IsSuccess = InsertVVIPForDownline(parameters, MappingVVIPModel(custClassificationFromQueue));
+                            IsSuccess = InsertVVIPForDownlinePackage(parameters, MappingVVIPModel(custClassificationFromQueue));
                             break;
                         }
                     case (int)DownlineClassification_ActionType.RemoveVVIP:
                         {
-                            IsSuccess = RemoveVVIPForDownline(parameters, MappingVVIPModel(custClassificationFromQueue));
+                            IsSuccess = RemoveVVIPForDownlinePackage(parameters, MappingVVIPModel(custClassificationFromQueue));
                             break;
                         }
                     case (int)DownlineClassification_ActionType.InsertPA:
                         {
-                            IsSuccess = InsertDownlineProblemAccount(parameters, custClassificationFromQueue);
+                            IsSuccess = InsertPAForDownlinePackage(parameters, custClassificationFromQueue);
                             break;
                         }
                     case (int)DownlineClassification_ActionType.RemovePA:
                         {
-                            IsSuccess = RemoveDownlineProblemAccount(parameters, custClassificationFromQueue);
+                            IsSuccess = RemovePAFroDownlinePackage(parameters, custClassificationFromQueue);
                             break;
                         }
                 }
@@ -102,7 +102,7 @@
             return this;
         }
 
-        public bool InsertDownlineProblemAccount(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        public bool InsertPAForDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
             if (custInfo != null && custInfo.CustomerClassificationQueue.Any())
             {
@@ -134,7 +134,7 @@
             return true;
         }
 
-        public bool RemoveDownlineProblemAccount(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        public bool RemovePAFroDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
             var isSuccess = true;
 
@@ -159,6 +159,7 @@
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
                     parameters.IsRescanPA = false;
+                    parameters.CustIds = result.CustomerInfo.Select(c=>c.CustID).Distinct();
                     isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
                 }
             }
@@ -166,7 +167,7 @@
             return isSuccess;
         }
 
-        public bool InsertVVIPForDownline(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
+        public bool InsertVVIPForDownlinePackage(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
         {
             var isSuccess = true;
 
@@ -183,7 +184,7 @@
             return isSuccess;
         }
 
-        public bool RemoveVVIPForDownline(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
+        public bool RemoveVVIPForDownlinePackage(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
         {
             var isSuccess = true;
 

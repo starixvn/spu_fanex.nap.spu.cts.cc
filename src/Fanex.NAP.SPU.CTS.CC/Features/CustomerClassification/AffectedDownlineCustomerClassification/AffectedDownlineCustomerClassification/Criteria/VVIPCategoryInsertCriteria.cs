@@ -20,9 +20,6 @@
         [SpParam(SqlParamName = "ip_CustJson")]
         public string CustJson { get; set; }
 
-        [SpParam(SqlParamName = "op_ErrorMessage")]
-        public string ErrorMessage { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_DC_CustClassification_VVIP_Insert";

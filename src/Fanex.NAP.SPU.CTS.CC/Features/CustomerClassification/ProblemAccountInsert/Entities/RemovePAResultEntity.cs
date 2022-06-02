@@ -8,6 +8,6 @@
 
         public int ErrorCode { get; set; }
 
-        public IEnumerable<CustInfoEntity> CustomerInfo { get; set; }
+        public IEnumerable<CustRemovePAEntity> CustomerInfo { get; set; }
     }
 }
