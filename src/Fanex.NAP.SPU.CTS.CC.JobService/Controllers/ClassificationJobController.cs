@@ -21,6 +21,7 @@
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService;
+        private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             IProblemAccountJobService problemAccountInsertJobService,
@@ -31,7 +32,8 @@
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
-            INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService)
+            INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService,
+            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
         {
             this.sentryClient = sentryClient;
             this.problemAccountInsertJobService = problemAccountInsertJobService;
@@ -43,6 +45,7 @@
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
             this.newCTSCustomerClassificationJobService = newCTSCustomerClassificationJobService;
+            this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
         }
 
         [HttpPost("problemAccountInsert")]
@@ -102,12 +105,6 @@
             return await this.robotAccountInsertJobService.ScanningRobotDetection(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("InsertCustCategoryVVIPFromQueue")]
-        public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.customerCategoryJobService.Execute(batchExternalSize, batchInternalSize);
-        }
-
         [HttpPost("scan-tw-problem-account-customer")]
         public async Task<bool> ScanTWSystemFormulaBetCustomer()
         {
@@ -118,6 +115,12 @@
         public async Task<bool> NewCTSCustomerClassification([FromForm] int batchSize)
         {
             return await newCTSCustomerClassificationJobService.Execute(batchSize);
+        }
+
+        [HttpPost("affectedDownlineClassificationFromQueue")]
+        public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
+        {
+            return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("updatewritelog")]
