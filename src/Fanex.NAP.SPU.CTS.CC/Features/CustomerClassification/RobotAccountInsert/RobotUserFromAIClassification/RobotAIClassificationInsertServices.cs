@@ -131,7 +131,7 @@
                 custCategory = robotUsers.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
-                    CategoryID = (int)Category.AIRobot,
+                    CategoryID = (int)Category.AIRobotClassification,
                     IsFromTW = isFromTW,
                     RobotCounter = 0,
                     CreatedBy = StarixITId
