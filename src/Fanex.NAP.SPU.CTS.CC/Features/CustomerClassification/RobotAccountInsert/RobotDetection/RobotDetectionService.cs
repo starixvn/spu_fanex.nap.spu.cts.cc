@@ -116,7 +116,7 @@
             {
                 var latestScannedTime = this.robotDetections.FirstOrDefault().LastModifiedDate.ToString();
 
-                //systemParameterServices.UpdateTimingExecution(latestScannedTime, index);
+                systemParameterServices.UpdateTimingExecution(latestScannedTime, index);
             }
 
             return this;
