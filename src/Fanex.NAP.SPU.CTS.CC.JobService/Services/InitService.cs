@@ -84,7 +84,6 @@
         {
             services.AddSingleton<IProblemAccountDataAccess, ProblemAccountDataAccess>();
             services.AddSingleton<IProblemAccountServices, ProblemAccountServices>();
-            services.AddSingleton<IProblemAccountJobService, ProblemAccountJobService>();
         }
 
         private static void RegisterNormalAccount(this IServiceCollection services)

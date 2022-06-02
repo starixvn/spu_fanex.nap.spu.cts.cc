@@ -24,7 +24,6 @@
 
         public enum SystemParameters
         {
-            ProblemAccountLastScannedTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
             InsertNewCustomerMonitoring = 67,

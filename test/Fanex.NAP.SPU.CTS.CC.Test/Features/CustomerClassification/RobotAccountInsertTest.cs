@@ -99,68 +99,6 @@
         }
 
         [Fact]
-        public void MappingRobotCategory_WhenSuccess_ReturnProblemAccounts()
-        {
-            var robotAccounts = new List<RobotUserEntity>
-            {
-                new RobotUserEntity
-                {
-                    CustId =1,
-                    Counter = 1
-                },
-                new RobotUserEntity
-                {
-                    CustId = 2,
-                    Counter = 2
-                }
-            };
-
-            var problemAccounts = new List<RobotInsetViewEntity>
-            {
-                new RobotInsetViewEntity
-                {
-                    CustID=1,
-                    ReasonID=(int)Category.Robot,
-                    RobotCounter = 1
-                },
-                  new RobotInsetViewEntity
-                {
-                    CustID=2,
-                    ReasonID=(int)Category.Robot,
-                    RobotCounter = 2
-                }
-            };
-
-            var result = robotAccountInsertServices.MappingRobotCategory(robotAccounts, true);
-
-            result.Should().BeEquivalentTo(problemAccounts);
-        }
-
-        [Fact]
-        public void MappingRobotCategory_WhenFail_ReturnEmptyLists()
-        {
-            var problemAccounts = new List<RobotInsetViewEntity>
-            {
-               new RobotInsetViewEntity
-                {
-                    CustID=1,
-                    ReasonID=(int)Category.Robot,
-                    RobotCounter = 1
-                },
-                  new RobotInsetViewEntity
-                {
-                    CustID=2,
-                    ReasonID=(int)Category.Robot,
-                    RobotCounter = 2
-                }
-            };
-
-            var result = robotAccountInsertServices.MappingRobotCategory(null, false);
-
-            result.Should().NotBeEquivalentTo(problemAccounts);
-        }
-
-        [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
             var result = robotDetectionService.GetRobotDetections();

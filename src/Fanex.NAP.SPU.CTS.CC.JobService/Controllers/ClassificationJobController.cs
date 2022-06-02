@@ -12,7 +12,6 @@
     public class ClassificationJobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
-        private readonly IProblemAccountJobService problemAccountInsertJobService;
         private readonly INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
@@ -24,7 +23,6 @@
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
-            IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,
             IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
@@ -36,7 +34,6 @@
             IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
         {
             this.sentryClient = sentryClient;
-            this.problemAccountInsertJobService = problemAccountInsertJobService;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
@@ -46,12 +43,6 @@
             this.twProblemAccountJobService = twProblemAccountJobService;
             this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
-        }
-
-        [HttpPost("problemAccountInsert")]
-        public async Task<bool> InsertProblemAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.problemAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("insertNormalAccount")]
