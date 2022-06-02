@@ -15,9 +15,9 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
-        InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
+        InsertPAResultEntity InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
-        RemovePAResultEntity RemoveProblemAccountLogics(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
+        RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
   
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
@@ -65,7 +65,7 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public InsertPAResultEntity InsertProblemAccountLogics(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
+        public InsertPAResultEntity InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
         {
             var result = new InsertPAResultEntity();
 
@@ -86,7 +86,7 @@
             return result;
         }
 
-        public RemovePAResultEntity RemoveProblemAccountLogics(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        public RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
             var result = new RemovePAResultEntity();
 

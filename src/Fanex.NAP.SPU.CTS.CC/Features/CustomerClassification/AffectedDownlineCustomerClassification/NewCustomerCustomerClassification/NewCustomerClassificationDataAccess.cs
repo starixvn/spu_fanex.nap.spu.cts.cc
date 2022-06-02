@@ -6,28 +6,28 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System.Linq;
 
-    public interface INewCTSClassificationDataAccess
+    public interface INewCustomerClassificationDataAccess
     {
-        NewCTSCustomerClassificationEntity GetNewCTSCustomerCategory();
+        NewCustomerClassificationEntity GetNewCTSCustomerCategory();
     }
 
-    public class NewCTSClassificationDataAccess : INewCTSClassificationDataAccess
+    public class NewCustomerClassificationDataAccess : INewCustomerClassificationDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public NewCTSClassificationDataAccess()
+        public NewCustomerClassificationDataAccess()
         {
             repository = new DynamicRepository();
         }
 
-        public NewCTSCustomerClassificationEntity GetNewCTSCustomerCategory()
+        public NewCustomerClassificationEntity GetNewCTSCustomerCategory()
         {
-            var criteria = new NewCTSCustomerCategoryGetCriteria();
+            var criteria = new NewCustomerCategoryGetCriteria();
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
             var result = db.QueryMultiple(criteria);
 
-            return new NewCTSCustomerClassificationEntity()
+            return new NewCustomerClassificationEntity()
             {
                 VVIPClassification = result?.Read<VVIPCategoryEntity>() ?? Enumerable.Empty<VVIPCategoryEntity>(),
                 PAClassification = result?.Read<InsertProblemAccountEntity>() ?? Enumerable.Empty<InsertProblemAccountEntity>(),

@@ -6,9 +6,9 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class NewCTSCustomerClassificationEntity
+    public class NewCustomerClassificationEntity
     {
-        public NewCTSCustomerClassificationEntity()
+        public NewCustomerClassificationEntity()
         {
             VVIPClassification = Enumerable.Empty<VVIPCategoryEntity>();
             PAClassification = Enumerable.Empty<InsertProblemAccountEntity>();

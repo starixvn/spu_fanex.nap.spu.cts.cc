@@ -9,22 +9,22 @@
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface INewCTSCustomerClassificationJobService
+    public interface INewCustomerClassificationJobService
     {
         Task<bool> Execute(int batchSize);
     }
 
-    public class NewCTSCustomerClassificationJobService : INewCTSCustomerClassificationJobService
+    public class NewCustomerClassificationJobService : INewCustomerClassificationJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly INewCTSClassificationServices newCTSClassificationServices;
+        private readonly INewCustomerClassificationServices newCTSClassificationServices;
         private readonly IAppSettings appSettings;
 
-        public NewCTSCustomerClassificationJobService(
+        public NewCustomerClassificationJobService(
             ISentryClient sentryClient,
             IAppSettings appSettings,
-            INewCTSClassificationServices newCTSClassificationServices)
+            INewCustomerClassificationServices newCTSClassificationServices)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;

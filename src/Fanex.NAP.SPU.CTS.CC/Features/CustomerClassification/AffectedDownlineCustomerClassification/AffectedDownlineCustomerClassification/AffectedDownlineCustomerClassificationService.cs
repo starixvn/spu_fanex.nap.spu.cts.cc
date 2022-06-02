@@ -126,7 +126,7 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var insertPAResult = problemAccountServices.InsertProblemAccountLogics(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
+                var insertPAResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
 
                 return custClassToMainDBService.PushExternalProblemAcountPackage(insertPAResult, parameters);
             }
@@ -152,14 +152,14 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var result = problemAccountServices.RemoveProblemAccountLogics(probAccounts, true, parameters.ServiceName);
+                var result = problemAccountServices.RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
 
                 isSuccess = result.ErrorCode == 0;
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
                     parameters.IsRescanPA = false;
-                    parameters.CustIds = result.CustomerInfo.Select(c=>c.CustID).Distinct();
+                    parameters.CustIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
                     isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
                 }
             }

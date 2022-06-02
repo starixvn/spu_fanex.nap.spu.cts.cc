@@ -20,7 +20,7 @@
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
-        private readonly INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService;
+        private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
@@ -32,7 +32,7 @@
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
-            INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService,
+            INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
         {
             this.sentryClient = sentryClient;
@@ -44,7 +44,7 @@
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
-            this.newCTSCustomerClassificationJobService = newCTSCustomerClassificationJobService;
+            this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
         }
 
@@ -112,9 +112,9 @@
         }
 
         [HttpPost("newcustomerclassification")]
-        public async Task<bool> NewCTSCustomerClassification([FromForm] int batchSize)
+        public async Task<bool> NewCustomerClassification([FromForm] int batchSize)
         {
-            return await newCTSCustomerClassificationJobService.Execute(batchSize);
+            return await newCustomerClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("affectedDownlineClassificationFromQueue")]
@@ -128,6 +128,5 @@
         {
             return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
         }
-        
     }
 }

@@ -8,34 +8,34 @@
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface INewCTSClassificationServices
+    public interface INewCustomerClassificationServices
     {
-        INewCTSClassificationServices Start();
+        INewCustomerClassificationServices Start();
 
-        INewCTSClassificationServices GetCategoryForNewCTSCustomer();
+        INewCustomerClassificationServices GetCategoryForNewCTSCustomer();
 
-        INewCTSClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters);
+        INewCustomerClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters);
 
-        INewCTSClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters);
+        INewCustomerClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters);
 
-        INewCTSClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters);
+        INewCustomerClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters);
 
         bool UpdateComplete();
     }
 
-    public class NewCTSClassificationServices : INewCTSClassificationServices
+    public class NewCustomerClassificationServices : INewCustomerClassificationServices
     {
-        private readonly INewCTSClassificationDataAccess newCTSClassificationDataAccess;
+        private readonly INewCustomerClassificationDataAccess newCTSClassificationDataAccess;
         private readonly IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISystemParameterServices systemParameterServices;
-        private NewCTSCustomerClassificationEntity newCustomerClassification;
+        private NewCustomerClassificationEntity newCustomerClassification;
         private bool IsSuccess;
 
-        public NewCTSClassificationServices(
-                INewCTSClassificationDataAccess newCTSClassificationDataAccess,
+        public NewCustomerClassificationServices(
+                INewCustomerClassificationDataAccess newCTSClassificationDataAccess,
                 IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService,
                 IProblemAccountServices problemAccountServices,
                 IRescanCustClassificationService rescanCustClassificationService,
@@ -50,20 +50,20 @@
             this.systemParameterServices = systemParameterServices;
         }
 
-        public INewCTSClassificationServices Start()
+        public INewCustomerClassificationServices Start()
         {
-            newCustomerClassification = new NewCTSCustomerClassificationEntity();
+            newCustomerClassification = new NewCustomerClassificationEntity();
             IsSuccess = true;
             return this;
         }
 
-        public INewCTSClassificationServices GetCategoryForNewCTSCustomer()
+        public INewCustomerClassificationServices GetCategoryForNewCTSCustomer()
         {
             newCustomerClassification = newCTSClassificationDataAccess.GetNewCTSCustomerCategory();
             return this;
         }
 
-        public INewCTSClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters)
+        public INewCustomerClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters)
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.VVIPClassification.Any())
             {
@@ -82,18 +82,18 @@
             return this;
         }
 
-        public INewCTSClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters)
+        public INewCustomerClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters)
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountLogics(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, false, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, false, parameters.ServiceName);
                 IsSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters);
             }
 
             return this;
         }
 
-        public INewCTSClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters)
+        public INewCustomerClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters)
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {

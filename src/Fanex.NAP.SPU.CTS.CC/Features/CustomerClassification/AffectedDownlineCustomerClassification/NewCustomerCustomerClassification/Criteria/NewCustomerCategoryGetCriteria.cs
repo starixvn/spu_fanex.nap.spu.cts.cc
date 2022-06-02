@@ -4,7 +4,7 @@
     using Fanex.Data.Repository;
     using System;
 
-    public class NewCTSCustomerCategoryGetCriteria : NonQueryCommand
+    public class NewCustomerCategoryGetCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "op_LastCTSCustID")]
         public UInt64 LastCTSCustID { get; set; }

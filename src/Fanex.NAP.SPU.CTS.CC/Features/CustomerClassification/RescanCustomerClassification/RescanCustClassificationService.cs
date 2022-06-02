@@ -156,7 +156,7 @@
         {
             if (problemAccounts.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountLogics(problemAccounts, functionId, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
 
                 isSuccess = result.ErrorCode == 0;
 

@@ -168,9 +168,9 @@
 
         private static void RegisterNewCTSCustomerClassification(this IServiceCollection services)
         {
-            services.AddSingleton<INewCTSClassificationDataAccess, NewCTSClassificationDataAccess>();
-            services.AddSingleton<INewCTSClassificationServices, NewCTSClassificationServices>();
-            services.AddSingleton<INewCTSCustomerClassificationJobService, NewCTSCustomerClassificationJobService>();
+            services.AddSingleton<INewCustomerClassificationDataAccess, NewCustomerClassificationDataAccess>();
+            services.AddSingleton<INewCustomerClassificationServices, NewCustomerClassificationServices>();
+            services.AddSingleton<INewCustomerClassificationJobService, NewCustomerClassificationJobService>();
         }
     }
 }
