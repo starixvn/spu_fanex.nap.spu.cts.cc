@@ -19,7 +19,6 @@
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
-        private readonly ICustomerCategoryJobService customerCategoryJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService;
 
@@ -31,7 +30,6 @@
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
-            ICustomerCategoryJobService customerCategoryJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             INewCTSCustomerClassificationJobService newCTSCustomerClassificationJobService)
         {
@@ -43,7 +41,6 @@
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
-            this.customerCategoryJobService = customerCategoryJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
             this.newCTSCustomerClassificationJobService = newCTSCustomerClassificationJobService;
         }
