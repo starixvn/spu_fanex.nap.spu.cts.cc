@@ -51,7 +51,7 @@
                 QueueID = custInfo.QueueID,
                 IsAffectDownline = custInfo.IsAffectDownline,
                 UplineRoleID = custInfo.UplineRoleID,
-                CustJson = JsonConvert.SerializeObject(custInfo)
+                CustJson = JsonConvert.SerializeObject(custInfo.CustInfo)
             };
 
             return repository.Fetch<LatestClassificationEntity>(criteria) ?? Enumerable.Empty<LatestClassificationEntity>();

@@ -9,7 +9,7 @@
         [SpParam(SqlParamName = "ip_QueueID")]
         public UInt64 QueueID { get; set; }
 
-        [SpParam(SqlParamName = "ip_MaxCustID")]
+        [SpParam(SqlParamName = "ip_LastDownlineCTSCustID")]
         public UInt64 MaxCustID { get; set; }
 
         public override string GetSettingKey()
