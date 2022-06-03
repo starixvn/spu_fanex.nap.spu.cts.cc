@@ -146,7 +146,8 @@
                         WinlossRM = c.Winloss,
                         IsDirect = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
-                        CreatedBy = StarixITId
+                        CreatedBy = StarixITId,
+                        Remark = c.Remark
                     });
                 }
             }
