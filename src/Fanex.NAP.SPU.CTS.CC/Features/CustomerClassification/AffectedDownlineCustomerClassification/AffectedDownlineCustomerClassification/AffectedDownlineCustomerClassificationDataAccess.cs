@@ -16,7 +16,7 @@
 
         IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
 
-        void CustomerClassificationFromQueueComplete(UInt64 queueID, UInt64 maxCustId);
+        void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId);
     }
 
     public class AffectedDownlineCustomerClassificationDataAccess : IAffectedDownlineCustomerClassificationDataAccess
@@ -78,7 +78,7 @@
             return repository.Fetch<VVIPCustomerRemoveResultEntity>(criteria);
         }
 
-        public void CustomerClassificationFromQueueComplete(UInt64 queueID, UInt64 maxCustId)
+        public void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId)
         {
             var criteria = new CustClassificationQueueCompleteCriteria
             {

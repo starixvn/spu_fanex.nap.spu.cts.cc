@@ -19,6 +19,6 @@
 
         public UInt64 QueueID { get; set; }
 
-        public UInt64 LastDownlineCTSCustID { get; set; }
+        public Int64 LastDownlineCTSCustID { get; set; }
     }
 }

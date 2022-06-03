@@ -10,7 +10,7 @@
         public UInt64 QueueID { get; set; }
 
         [SpParam(SqlParamName = "op_LastDownlineCTSCustID")]
-        public UInt64 LastDownlineCTSCustID { get; set; }
+        public Int64 LastDownlineCTSCustID { get; set; }
 
         [SpParam(SqlParamName = "op_ActionType")]
         public int ActionType { get; set; }
