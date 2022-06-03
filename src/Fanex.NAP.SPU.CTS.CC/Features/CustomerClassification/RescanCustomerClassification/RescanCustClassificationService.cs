@@ -144,6 +144,8 @@
                         TurnoverRM = c.Turnover,
                         BetCount = c.BetCount,
                         WinlossRM = c.Winloss,
+                        IsDirect = c.IsDirect,
+                        IsFromCTS = c.IsFromCTS,
                         CreatedBy = StarixITId
                     });
                 }
