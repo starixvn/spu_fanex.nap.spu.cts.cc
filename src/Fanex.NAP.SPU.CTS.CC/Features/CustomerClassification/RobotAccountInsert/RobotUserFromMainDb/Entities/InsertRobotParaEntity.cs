@@ -25,5 +25,9 @@
         public string AFCInternalKey { get; set; }
 
         public bool IsFromTW { get; set; }
+
+        public bool IsFromCTS { get; set; }
+
+        public bool IsDirect { get; set; }
     }
 }

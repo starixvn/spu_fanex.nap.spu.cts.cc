@@ -184,7 +184,9 @@
                             IsPushCCToSoon88 = true,
                             Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
                             IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                            IsFromTW = false
+                            IsFromTW = false,
+                            IsFromCTS = true,
+                            IsDirect = false
                         });
 
             if (isSuccess)
