@@ -202,10 +202,7 @@
 
         public bool CompleteCustomerClassificationFromQueue()
         {
-            if (IsSuccess
-                 && custClassificationFromQueue != null
-                 && custClassificationFromQueue.CustomerClassificationQueue != null
-                 && custClassificationFromQueue.CustomerClassificationQueue.Any())
+            if (IsSuccess && custClassificationFromQueue != null)
             {
                 affectedCustClassificationDataAccess.CustomerClassificationFromQueueComplete(custClassificationFromQueue.QueueID, custClassificationFromQueue.LastDownlineCTSCustID);
             }
