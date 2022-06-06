@@ -15,7 +15,7 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
-        InsertPAResultEntity InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
+        IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName);
 
         RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
   
@@ -65,25 +65,25 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public InsertPAResultEntity InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
+        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
         {
-            var result = new InsertPAResultEntity();
-
             if (problemAccounts != null && problemAccounts.Any())
             {
                 var paLosing = GetProblemAccountLosingClassification(problemAccounts.Select(c => c.CustID).Distinct(), funcId);
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                result = InsertProblemAccount(paClassification, insertByType, isFromQueue, serviceName);
+                var custInfo = InsertProblemAccount(paClassification, insertByType, isFromQueue, serviceName);
 
-                if (result.ErrorCode == 0)
+                if (custInfo != null && custInfo.Any())
                 {
-                    InsertPALogics(result.CustomerInfo, serviceName);
+                    InsertPALogics(custInfo, serviceName);
+
+                    return custInfo.Select(c => c.CustID).Distinct();
                 }
             }
 
-            return result;
+            return Enumerable.Empty<long>();
         }
 
         public RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
@@ -159,21 +159,14 @@
             }
         }
 
-        private InsertPAResultEntity InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
+        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueue);
-
-                if (result.ErrorCode != 0)
-                {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
-                }
-
-                return result;
+               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueue);
             }
 
-            return new InsertPAResultEntity();
+            return Enumerable.Empty<CustInfoEntity>();
         }
 
         private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)

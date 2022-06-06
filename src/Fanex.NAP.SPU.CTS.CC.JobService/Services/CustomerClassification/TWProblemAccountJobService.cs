@@ -92,14 +92,11 @@
                                 CreatedBy = x.UserId
                             });
 
-                            var insertPAResult = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, InsertPA_ByType.Reason, true, ServiceName);
+                            var custIds = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, InsertPA_ByType.Reason, true, ServiceName);
 
-                            if (insertPAResult.ErrorCode == 0 && 
-                                insertPAResult.CustomerInfo != null && insertPAResult.CustomerInfo.Any())
+                            if (custIds != null && custIds.Any())
                             {
-                                var custIdToPushCC = insertPAResult.CustomerInfo.Select(x => x.CustID).Distinct();
-
-                                custClassToMainDBService.PushDataToExternal(custIdToPushCC, new PushDataToExternalEntity
+                                custClassToMainDBService.PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
                                 {
                                     ExternalBatchSize = batchSize,
                                     FeedSoon88API = appSettings.Soon88FeedDataAPI,

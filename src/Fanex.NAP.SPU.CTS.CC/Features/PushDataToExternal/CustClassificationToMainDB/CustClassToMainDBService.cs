@@ -13,8 +13,6 @@
 
     public interface ICustClassToMainDBService
     {
-        bool PushExternalProblemAcountPackage(InsertPAResultEntity insertResult, RescanParametersEntity parameters);
-
         bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters);
 
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
@@ -49,20 +47,6 @@
             this.feedSoon88Services = feedSoon88Services;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.sentryClient = sentryClient;
-        }
-
-        public bool PushExternalProblemAcountPackage(InsertPAResultEntity insertResult, RescanParametersEntity parameters)
-        {
-            var isSuccess = insertResult.ErrorCode == 0;
-
-            if (isSuccess && insertResult != null && insertResult.CustomerInfo != null && insertResult.CustomerInfo.Any())
-            {
-                var custIds = insertResult.CustomerInfo.Select(c => c.CustID).Distinct();
-
-                return PushExternalProblemAcountPackage(custIds, parameters);
-            }
-
-            return isSuccess;
         }
 
         public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters)

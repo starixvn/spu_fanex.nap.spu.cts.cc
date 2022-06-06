@@ -127,9 +127,9 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var insertPAResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
+                var insertResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
 
-                return custClassToMainDBService.PushExternalProblemAcountPackage(insertPAResult, parameters);
+                return custClassToMainDBService.PushExternalProblemAcountPackage(insertResult, parameters);
             }
 
             return true;

@@ -160,17 +160,13 @@
         {
             if (problemAccounts.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
+                var custIds = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
 
-                isSuccess = result.ErrorCode == 0;
-
-                if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
+                if (custIds != null && custIds.Any())
                 {
-                    var custIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
+                    custIdsToRemoveOldPA = custIds.Distinct();
 
-                    custIdsToRemoveOldPA = custIds;
-
-                    custIdsToRescanPA.AddRange(custIds);
+                    custIdsToRescanPA.AddRange(custIds.Distinct());
                 }
             }
 
