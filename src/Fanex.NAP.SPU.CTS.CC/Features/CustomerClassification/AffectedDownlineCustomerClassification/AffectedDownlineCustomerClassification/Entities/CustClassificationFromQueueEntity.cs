@@ -45,6 +45,8 @@
 
         public bool IsFromTVS { get; set; }
 
+        public int TVSRequestID { get; set; }
+
         public bool IsFromTW { get; set; }
 
         //True if only removing SpecialCC

@@ -257,6 +257,7 @@
                                                             IsDirectPA = group.pa.IsDirectPA,
                                                             IsFromCTS = false,
                                                             IsFromTVS = false,
+                                                            TVSRequestID = group.pa.TVSRequestID,
                                                             IsFromTW = false,
                                                             IsDataChanged = false,
                                                             ReasonID = group.pa.ReasonID,

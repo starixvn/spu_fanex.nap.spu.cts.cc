@@ -127,7 +127,7 @@
 	</Function>
 
 	<Function name="TVSProblemAccountInsert">
-		<Setting Key="TicketVoiding_CTS_SendProblemCustomerSelect" SpName="TicketVoiding_CTS_SendProblemCustomerSelect" DbName="SQL.bodb02.bodbSPUNet" />
+		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect" SpName="TicketVoiding_CTS_ProblemCustomerSelect" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect_Archive" SpName="TicketVoiding_CTS_ProblemCustomerSelect_Archive" DbName="SQL.bodb_Archive.bodbSPUNet" />
 	</Function>
 </Functions>

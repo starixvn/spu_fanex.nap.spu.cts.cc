@@ -52,7 +52,7 @@
                     CustID = c.CustID,
                     ReasonID = c.ReasonID,
                     CreatedBy = c.CreatedBy,
-                    //requestID TODO
+                    TVSRequestID = c.RequestID,
                     IsFromTVS = true
                 });
 

@@ -121,6 +121,7 @@
                     IsDirectPA = false,
                     IsFromCTS = c.IsFromCTS,
                     IsFromTVS = c.IsFromTVS,
+                    TVSRequestID = c.TVSRequestID,
                     IsFromTW = c.IsFromTW,
                     IsDataChanged = false,
                     CreatedBy = c.CreatedBy

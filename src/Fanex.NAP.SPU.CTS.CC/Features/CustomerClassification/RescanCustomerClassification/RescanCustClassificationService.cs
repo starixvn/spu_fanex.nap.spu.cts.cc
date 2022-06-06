@@ -129,6 +129,7 @@
                         IsDirectPA = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
                         IsFromTVS = c.IsFromTVS,
+                        TVSRequestID = c.TVSRequestID,
                         IsFromTW = c.IsFromTW,
                         IsDataChanged = false,
                         LastModifiedDate = c.LastModifiedDate,

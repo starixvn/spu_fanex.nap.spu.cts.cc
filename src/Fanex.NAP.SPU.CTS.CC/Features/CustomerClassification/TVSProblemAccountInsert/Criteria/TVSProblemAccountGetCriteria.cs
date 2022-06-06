@@ -17,7 +17,7 @@
 
         public override string GetSettingKey()
         {
-            return "TicketVoiding_CTS_SendProblemCustomerSelect";
+            return "TicketVoiding_CTS_ProblemCustomerSelect";
         }
 
         public override bool IsValid()
