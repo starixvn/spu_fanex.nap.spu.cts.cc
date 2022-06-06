@@ -25,6 +25,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
 
     public static class InitService
     {
@@ -57,6 +58,8 @@
             RegisterAffectedCustomerClassification(services);
 
             RegisterNewCTSCustomerClassification(services);
+
+            RegisterTVSProblemAccountInsert(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -170,6 +173,13 @@
             services.AddSingleton<INewCustomerClassificationDataAccess, NewCustomerClassificationDataAccess>();
             services.AddSingleton<INewCustomerClassificationServices, NewCustomerClassificationServices>();
             services.AddSingleton<INewCustomerClassificationJobService, NewCustomerClassificationJobService>();
+        }
+
+        private static void RegisterTVSProblemAccountInsert(this IServiceCollection services)
+        {
+            services.AddSingleton<ITVSProblemAccountDataAccess, TVSProblemAccountDataAccess>();
+            services.AddSingleton<ITVSProblemAccountServices, TVSProblemAccountServices>();
+            services.AddSingleton<ITVSProblemAccountJobService, TVSProblemAccountJobService>();
         }
     }
 }

@@ -39,7 +39,8 @@
             DailyProblemClassificationLastCategoryID = 88,
             DailyProblemClassificationLastCustID = 89,
             NewCTSCustomerClassificationLastCustID = 92,
-            RobotDetectionLastModifiedDate = 94
+            RobotDetectionLastModifiedDate = 94,
+            TVS_LastScanDateTime = 2
         };
 
         public enum Category
@@ -53,7 +54,13 @@
             VVIP = 213,
             Robot = 61,
             AIRobotClassification = 61,
-            AIRobotDetection = 63
+            AIRobotDetection = 63,
+        };
+
+        public enum Reason
+        {
+            Abnormal = 27,
+            AbnormalM = 101,
         };
 
         public enum CustomerRole
@@ -117,6 +124,7 @@
             InsertPAM = 43,
             TWProblemAccountInsert = 44,
             DownlineCustomerClassification = 45,
+            TVSProblemAccountInsert = 46,
         };
 
         public enum HttpStatus

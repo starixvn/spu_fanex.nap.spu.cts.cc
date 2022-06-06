@@ -99,4 +99,9 @@
 		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
+
+	<Function name="TVSProblemAccountInsert">
+		<Setting Key="TicketVoiding_CTS_SendProblemCustomerSelect" SpName="TicketVoiding_CTS_SendProblemCustomerSelect" DbName="SQL.bodb02.bodbSPUNet" />
+		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect_Archive" SpName="TicketVoiding_CTS_ProblemCustomerSelect_Archive" DbName="SQL.bodb_Archive.bodbSPUNet" />
+	</Function>
 </Functions>

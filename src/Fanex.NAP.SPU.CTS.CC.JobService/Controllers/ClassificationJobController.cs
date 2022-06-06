@@ -19,6 +19,7 @@
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
+        private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
 
@@ -30,6 +31,7 @@
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
+            ITVSProblemAccountJobService tvsProblemAccountJobService,
             INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
         {
@@ -41,6 +43,7 @@
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
+            this.tvsProblemAccountJobService = tvsProblemAccountJobService;
             this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
         }
@@ -100,6 +103,12 @@
         public async Task<bool> ScanTWSystemFormulaBetCustomer()
         {
             return await twProblemAccountJobService.Execute();
+        }
+
+        [HttpPost("tvsProblemAccountInsert")]
+        public async Task<bool> TVSProblemAccountInsert([FromForm] int batchSize)
+        {
+            return await tvsProblemAccountJobService.Execute(batchSize);
         }
 
         [HttpPost("newcustomerclassification")]
