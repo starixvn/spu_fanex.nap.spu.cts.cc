@@ -255,10 +255,10 @@
                                                             Remark = group.pa.Remark,
                                                            
                                                             IsDirectPA = group.pa.IsDirectPA,
-                                                            IsFromCTS = false,
-                                                            IsFromTVS = false,
+                                                            IsFromCTS = group.pa.IsFromCTS,
+                                                            IsFromTVS = group.pa.IsFromTVS,
                                                             TVSRequestID = group.pa.TVSRequestID,
-                                                            IsFromTW = false,
+                                                            IsFromTW = group.pa.IsFromTW,
                                                             IsDataChanged = false,
                                                             ReasonID = group.pa.ReasonID,
 
