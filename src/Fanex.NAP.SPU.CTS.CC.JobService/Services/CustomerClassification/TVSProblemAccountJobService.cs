@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -72,16 +73,13 @@
 
             if (tvsProblemAccounts != null && tvsProblemAccounts.ProblemAccounts.Any())
             {
-                var paramaters = new RescanParametersEntity()
+                var paramaters = new PushDataToExternalEntity()
                 {
-                    InternalBatchSize = batchSize,
-                    ExternalBatchSize = batchSize,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsPushCCToSoon88 = true,
+                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsUpdateDangerToMainDB = true,
-                    FunctionId = FunctionId.InsertNewCustJob,
+                    ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
-                    IsWriteLog = false,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
                     AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
                     AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL

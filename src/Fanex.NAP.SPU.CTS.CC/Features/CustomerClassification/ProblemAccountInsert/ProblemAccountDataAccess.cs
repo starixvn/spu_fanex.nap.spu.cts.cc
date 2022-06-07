@@ -15,7 +15,7 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
 
-        IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromQueue);
+        IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromDownlineQueue);
 
         RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
 
@@ -61,13 +61,13 @@
         }
 
 
-        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromQueue)
+        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromDownlineQueue)
         {
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
                 InputType = inputType,
-                IsFromQueue = isFromQueue
+                IsFromQueue = isFromDownlineQueue
             };
 
             return repository.Fetch<CustInfoEntity>(criteria);

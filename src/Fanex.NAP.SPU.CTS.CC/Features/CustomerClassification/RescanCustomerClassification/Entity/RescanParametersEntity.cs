@@ -1,37 +1,28 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using System.Collections.Generic;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class RescanParametersEntity
     {
-        public IEnumerable<long> CustIds { get; set; }
+        public RescanParametersEntity()
+        {
+            IsWriteLog = false;
+        }
 
         public bool IsRescanPA { get; set; }
 
-        public bool IsFromQueue { get; set; }
-
-        public bool IsPushCCToSoon88 { get; set; }
-
-        public bool IsUpdateDangerToMainDB { get; set; }
+        public bool IsFromDownlineQueue { get; set; }
 
         public FunctionId FunctionId { get; set; }
 
         public int InternalBatchSize { get; set; }
 
-        public int ExternalBatchSize { get; set; }
-
         public string ServiceName { get; set; }
 
         public bool IsWriteLog { get; set; }
 
-        public string FeedSoon88API { get; set; }
-
-        public bool IsSyncAFCData { get; set; }
-
-        public string AFCInsertAccountURL { get; set; }
-
-        public string AFCDeleteAccountURL { get; set; }
+        public PushDataToExternalEntity PushDataExternal { get; set; }
 
         public FunctionId FuncId_CheckRobotUser
         {

@@ -7,6 +7,8 @@
         public InsertRobotEntity()
         {
             IsFromTW = false;
+            IsFromCTS = false;
+            IsFromAI = false;
         }
 
         public Int64 CustID { get; set; }
@@ -27,6 +29,8 @@
         public bool IsFromTW { get; set; }
 
         public bool IsFromCTS { get; set; }
+
+        public bool IsFromAI { get; set; }
 
         public bool IsDirect { get; set; }
 

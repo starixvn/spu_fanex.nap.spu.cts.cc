@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -13,7 +11,7 @@
 
     public interface ICustClassToMainDBService
     {
-        bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters);
+        bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters);
 
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
@@ -49,21 +47,13 @@
             this.sentryClient = sentryClient;
         }
 
-        public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             var isSuccess = true;
 
             if (custIds != null && custIds.Any())
             {
-                isSuccess = PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
-                {
-                    ExternalBatchSize = parameters.ExternalBatchSize,
-                    FeedSoon88API = parameters.FeedSoon88API,
-                    IsPushCCToSoon88 = parameters.IsPushCCToSoon88,
-                    IsUpdateDangerToMainDB = parameters.IsUpdateDangerToMainDB,
-                    IsWriteLog = parameters.IsWriteLog,
-                    ServiceName = parameters.ServiceName
-                });
+                isSuccess = PushDataToExternal(custIds.Distinct(), parameters);
 
                 antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
             }
@@ -71,14 +61,14 @@
             return isSuccess;
         }
 
-        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
+        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             if (custIds == null || !custIds.Any())
             {
                 return true;
             }
 
-            var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
+            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
             {
@@ -86,7 +76,7 @@
 
                 if (lastestClassifications != null && lastestClassifications.Any())
                 {
-                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, paras);
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
 
                     if (!isSuccess)
                     {

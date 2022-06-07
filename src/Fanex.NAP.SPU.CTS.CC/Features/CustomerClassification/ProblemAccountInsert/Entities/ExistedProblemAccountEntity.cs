@@ -30,6 +30,8 @@
 
         public bool IsFromCTS { get; set; }
 
+        public bool IsFromAI { get; set; }
+
         public decimal? Turnover { get; set; }
 
         public decimal? Winloss { get; set; }

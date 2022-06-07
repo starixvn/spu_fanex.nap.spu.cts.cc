@@ -2,7 +2,14 @@
 {
     public class PushDataToExternalEntity
     {
+        public PushDataToExternalEntity()
+        {
+            IsWriteLog = false;
+        }
+
         public bool IsPushCCToSoon88 { get; set; }
+
+        public string FeedSoon88API { get; set; }
 
         public bool IsUpdateDangerToMainDB { get; set; }
 
@@ -12,6 +19,11 @@
 
         public bool IsWriteLog { get; set; }
 
-        public string FeedSoon88API { get; set; }
+        //AFC
+        public bool IsSyncAFCData { get; set; }
+
+        public string AFCInsertAccountURL { get; set; }
+
+        public string AFCDeleteAccountURL { get; set; }
     }
 }

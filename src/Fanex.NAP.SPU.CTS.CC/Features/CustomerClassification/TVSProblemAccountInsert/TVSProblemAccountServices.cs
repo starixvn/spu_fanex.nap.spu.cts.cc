@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
     using System;
@@ -14,7 +13,7 @@
     {
         TVSProblemAccountResultEntity GetTVSProblemAccounts(DateTime? lastDateTime);
 
-        bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, RescanParametersEntity parameters);
+        bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, PushDataToExternalEntity parameters);
     }
 
     public class TVSProblemAccountServices : ITVSProblemAccountServices
@@ -41,7 +40,7 @@
             return tvsProblemAccountDataAccess.GetTWProblemAccount(lastDateTime);
         }
 
-        public bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, RescanParametersEntity parameters)
+        public bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, PushDataToExternalEntity parameters)
         {
             bool isSuccess = true;
 

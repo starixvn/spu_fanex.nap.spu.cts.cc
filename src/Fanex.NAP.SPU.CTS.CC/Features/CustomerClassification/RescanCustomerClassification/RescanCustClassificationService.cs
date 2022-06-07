@@ -15,7 +15,7 @@
     {
         IRescanCustClassificationService Start();
 
-        bool RescanCustomerClassification(RescanParametersEntity paras);
+        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
 
         IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
 
@@ -29,9 +29,9 @@
 
         IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
 
-        IRescanCustClassificationService PushExternalProblemAccounts(RescanParametersEntity paras);
+        IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity paras);
 
-        IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras);
+        IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras);
 
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
 
@@ -85,24 +85,24 @@
             return this;
         }
 
-        public bool RescanCustomerClassification(RescanParametersEntity parameters)
+        public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
-            if (parameters.CustIds != null && parameters.CustIds.Any())
+            if (custIds != null && custIds.Any())
             {
                 Start();
 
                 if (parameters.IsRescanPA)
                 {
-                    GetExistedProblemAccounts(parameters.CustIds)
-                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsFromQueue, parameters.FunctionId)
-                   .GetTWRobotUsers(parameters.CustIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
+                    GetExistedProblemAccounts(custIds)
+                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsFromDownlineQueue, parameters.FunctionId)
+                   .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
-                   .PushExternalProblemAccounts(parameters)
+                   .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
                 }
 
-                GetAgentCusts(parameters.CustIds)
-               .RescanNormalAccount(parameters);
+                GetAgentCusts(custIds)
+               .RescanNormalAccount(custIds, parameters);
             }
 
             return isSuccess;
@@ -140,13 +140,14 @@
                     {
                         CustID = c.CustID,
                         CategoryID = c.CategoryID,
-                        IsFromTW = false,
                         ActiveDays = c.ActiveDays,
                         TurnoverRM = c.Turnover,
                         BetCount = c.BetCount,
                         WinlossRM = c.Winloss,
                         IsDirect = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
+                        IsFromTW = c.IsFromTW,
+                        IsFromAI = c.IsFromAI,
                         CreatedBy = StarixITId,
                         Remark = c.Remark
                     });
@@ -199,6 +200,7 @@
                             RobotCounter = c.Counter,
                             CategoryID = (int)Category.Robot,
                             IsFromTW = true,
+                            IsDirect = true,
                             CreatedBy = StarixITId
                         });
                     });
@@ -234,7 +236,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService PushExternalProblemAccounts(RescanParametersEntity parameters)
+        public IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity parameters)
         {
             if (isSuccess && custIdsToRescanPA.Any())
             {
@@ -261,21 +263,21 @@
             return this;
         }
 
-        public IRescanCustClassificationService RescanNormalAccount(RescanParametersEntity paras)
+        public IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            if (isSuccess && paras.CustIds != null && paras.CustIds.Any())
+            if (isSuccess && custIds != null && custIds.Any())
             {
-                var custToRescanNormal = paras.CustIds.ToList();
+                var custToRescanNormal = custIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
 
                 if (custToRescanNormal.Any())
                 {
-                    var custIdsChunk = custToRescanNormal.Chunk(paras.ExternalBatchSize);
+                    var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
 
-                    foreach (var custIds in custIdsChunk)
+                    foreach (var batchCustIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ScanningDailyNormalClassification(custIds, paras.FunctionId, false);
+                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId, false);
                     }
                 }
             }

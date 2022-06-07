@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -52,25 +53,28 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
-                IsPushCCToSoon88 = true,
-                IsFromQueue = true,
-                IsUpdateDangerToMainDB = true,
+                IsFromDownlineQueue = true,
                 FunctionId = FunctionId.DownlineCustomerClassification,
-                ServiceName = serviceName,
                 InternalBatchSize = batchSize,
-                ExternalBatchSize = batchSize,
-                IsWriteLog = false,
-                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                IsSyncAFCData = appSettings.IsSyncAFCData,
-                AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                ServiceName = serviceName,
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    IsPushCCToSoon88 = true,
+                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                    IsUpdateDangerToMainDB = true,
+                    ExternalBatchSize = batchSize,
+                    ServiceName = serviceName,
+                    IsSyncAFCData = appSettings.IsSyncAFCData,
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                }
             };
 
             return downlineCustomerClassificationService.Start()
                                                         .GetCustomerClassificationFromQueue()
                                                         .CustomerClassification(paramaters)
                                                         .CompleteCustomerClassificationFromQueue();
-}
+        }
     }
 
     #endregion Private Methods

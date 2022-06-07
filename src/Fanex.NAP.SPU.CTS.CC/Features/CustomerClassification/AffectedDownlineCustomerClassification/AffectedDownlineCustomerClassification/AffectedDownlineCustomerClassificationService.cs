@@ -127,9 +127,9 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var insertResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, true, parameters.ServiceName);
+                var insertResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, parameters.IsFromDownlineQueue, parameters.ServiceName);
 
-                return custClassToMainDBService.PushExternalProblemAcountPackage(insertResult, parameters);
+                return custClassToMainDBService.PushExternalProblemAcountPackage(insertResult, parameters.PushDataExternal);
             }
 
             return true;
@@ -159,9 +159,10 @@
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
+                    var custIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
+
                     parameters.IsRescanPA = false;
-                    parameters.CustIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
-                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIds, parameters);
                 }
             }
 
@@ -176,10 +177,10 @@
             {
                 var result = InsertVVIPCategory(custInfo);
 
-                isSuccess = custClassToMainDBService.RetryPushCCToMainDB(result, Constants.RetryPushCCToExternal, parameters.ServiceName);
+                isSuccess = custClassToMainDBService.RetryPushCCToMainDB(result, RetryPushCCToExternal, parameters.ServiceName);
 
                 var custIds = result.Select(c => c.CustId).Distinct();
-                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCDeleteAccountURL);
+                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, parameters.PushDataExternal.IsSyncAFCData, parameters.PushDataExternal.AFCDeleteAccountURL);
             }
 
             return isSuccess;
@@ -193,9 +194,10 @@
             {
                 var result = RemoveVVIPCategory(custInfo);
 
-                parameters.CustIds = result.Select(c => c.CustID).Distinct();
+                var custIds = result.Select(c => c.CustID).Distinct();
+
                 parameters.IsRescanPA = true;
-                isSuccess = rescanCustClassificationService.RescanCustomerClassification(parameters);
+                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIds, parameters);
             }
 
             return isSuccess;

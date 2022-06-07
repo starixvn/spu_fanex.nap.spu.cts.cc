@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -53,18 +53,21 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
-                IsPushCCToSoon88 = true,
-                IsFromQueue = false,
-                IsUpdateDangerToMainDB = true,
+                IsFromDownlineQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
-                ServiceName = "NewCTSCustomerClassification",
                 InternalBatchSize = batchSize,
-                ExternalBatchSize = batchSize,
-                IsWriteLog = false,
-                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                IsSyncAFCData = appSettings.IsSyncAFCData,
-                AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                ServiceName = serviceName,
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    IsPushCCToSoon88 = true,
+                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                    IsUpdateDangerToMainDB = true,
+                    ExternalBatchSize = batchSize,
+                    ServiceName = serviceName,
+                    IsSyncAFCData = appSettings.IsSyncAFCData,
+                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                },
             };
 
             var isSuccess = newCTSClassificationServices.Start()
@@ -74,7 +77,7 @@
                                                         .ResanNormalForNewCustomers(paramaters)
                                                         .UpdateComplete();
             return isSuccess;
-       }
+        }
     }
 
     #endregion Private Methods

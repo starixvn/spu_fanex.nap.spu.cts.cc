@@ -65,7 +65,7 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueueDownline, string serviceName)
+        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromDownlineQueue, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -73,7 +73,7 @@
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                var custInfo = InsertProblemAccount(paClassification, insertByType, isFromQueueDownline);
+                var custInfo = InsertProblemAccount(paClassification, insertByType, isFromDownlineQueue);
 
                 if (custInfo != null && custInfo.Any())
                 {
@@ -159,11 +159,11 @@
             }
         }
 
-        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueueDownline)
+        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromDownlineQueue)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueueDownline);
+               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromDownlineQueue);
             }
 
             return Enumerable.Empty<CustInfoEntity>();
