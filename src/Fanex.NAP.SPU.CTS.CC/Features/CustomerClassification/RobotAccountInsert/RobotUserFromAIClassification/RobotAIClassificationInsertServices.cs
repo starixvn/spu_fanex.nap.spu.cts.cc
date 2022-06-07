@@ -23,7 +23,7 @@
 
         IEnumerable<long> InsertPAToCTS(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras);
 
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers, bool isFromTW);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras);
     }
 
     public class RobotAIClassificationInsertServices : IRobotAIClassificationInsertServices
@@ -109,7 +109,7 @@
         {          
             if (robotUsers != null && robotUsers.Any())
             {
-                var robotToInsert = MappingRobotCategory(robotUsers, paras.IsFromTW);
+                var robotToInsert = MappingRobotCategory(robotUsers, paras);
 
                 var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
 
@@ -122,7 +122,7 @@
             return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers, bool isFromTW)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotAIEntity> robotUsers, InsertRobotParaEntity paras)
         {
             var custCategory = new List<InsertRobotEntity>();
 
@@ -132,7 +132,10 @@
                 {
                     CustID = c.CustID,
                     CategoryID = (int)Category.AIRobotClassification,
-                    IsFromTW = isFromTW,
+                    IsFromTW = paras.IsFromTW,
+                    IsFromCTS = paras.IsFromCTS,
+                    IsDirect = paras.IsDirect,
+                    IsFromAI = paras.IsFromAI,
                     RobotCounter = 0,
                     CreatedBy = StarixITId
                 }).ToList();

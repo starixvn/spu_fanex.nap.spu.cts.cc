@@ -136,7 +136,10 @@
                                                           IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                           IsSyncAFCData = appSettings.IsSyncAFCData,
                                                           AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                                          IsFromTW = true
+                                                          IsFromTW = true,
+                                                          IsFromCTS = false,                                                         
+                                                          IsDirect = true,
+                                                          IsFromAI = false
                                                       });
 
             if (isSuccess)
@@ -161,7 +164,10 @@
                                                                    IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                                    IsSyncAFCData = appSettings.IsSyncAFCData,
                                                                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                                                   IsFromTW = false
+                                                                   IsFromTW = false,
+                                                                   IsFromCTS = false,
+                                                                   IsDirect = true,
+                                                                   IsFromAI = false
                                                                });
 
             if (isSuccess)
@@ -185,8 +191,9 @@
                             Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
                             IsWriteLog = appSettings.RobotAccountIsWriteLog,
                             IsFromTW = false,
-                            IsFromCTS = true,
-                            IsDirect = false
+                            IsFromCTS = false,
+                            IsDirect = true,
+                            IsFromAI = true
                         });
 
             if (isSuccess)

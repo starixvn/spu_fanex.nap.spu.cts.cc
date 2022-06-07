@@ -30,6 +30,8 @@
 
         public bool IsDirect { get; set; }
 
+        public bool IsFromAI { get; set; }
+
         public string Remark { get; set; }
 
         public Int64? CreatedBy { get; set; }

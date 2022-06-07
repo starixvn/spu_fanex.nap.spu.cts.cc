@@ -152,6 +152,7 @@
                     IsFromTW = paras.IsFromTW,
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
+                    IsFromAI = paras.IsFromAI,
                     RobotCounter = 0,
                     CreatedBy = StarixITId
                 }).ToList();

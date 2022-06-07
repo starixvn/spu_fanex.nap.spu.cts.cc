@@ -21,7 +21,7 @@
 
         bool Process(InsertRobotParaEntity paras);
 
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, bool isFromTW);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
 
         void UpdateLastTimespan();
 
@@ -123,7 +123,7 @@
         {
             if (robotUsers != null && robotUsers.Any())
             {
-                var robotToInsert = MappingRobotCategory(robotUsers, paras.IsFromTW);
+                var robotToInsert = MappingRobotCategory(robotUsers, paras);
 
                 custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
 
@@ -138,7 +138,7 @@
             return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, bool isFromTW)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
             var custCategory = new List<InsertRobotEntity>();
 
@@ -148,7 +148,10 @@
                 {
                     CustID = c.CustId,
                     CategoryID = (int)Category.Robot,
-                    IsFromTW = isFromTW,
+                    IsFromTW = paras.IsFromTW,
+                    IsFromCTS = paras.IsFromCTS,
+                    IsDirect = paras.IsDirect,
+                    IsFromAI = paras.IsFromAI,
                     RobotCounter = c.Counter,
                     CreatedBy = StarixITId
                 }).ToList();
