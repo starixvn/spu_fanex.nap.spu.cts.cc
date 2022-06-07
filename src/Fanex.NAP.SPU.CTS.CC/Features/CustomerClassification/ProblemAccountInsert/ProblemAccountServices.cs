@@ -65,7 +65,7 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
+        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isFromQueueDownline, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
@@ -73,7 +73,7 @@
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                var custInfo = InsertProblemAccount(paClassification, insertByType, isFromQueue, serviceName);
+                var custInfo = InsertProblemAccount(paClassification, insertByType, isFromQueueDownline);
 
                 if (custInfo != null && custInfo.Any())
                 {
@@ -159,11 +159,11 @@
             }
         }
 
-        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueue, string serviceName)
+        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isFromQueueDownline)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueue);
+               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isFromQueueDownline);
             }
 
             return Enumerable.Empty<CustInfoEntity>();
@@ -243,7 +243,7 @@
                                                             CategoryID = group.pa.CategoryID,
                                                             CategoryGroup = group.pa.CategoryGroup,
                                                             IsLicensee = group.pa.IsLicensee,
-                                                            CreatedBy = StarixITId,
+                                                            CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
                                                             Remark = group.pa.Remark,
                                                            

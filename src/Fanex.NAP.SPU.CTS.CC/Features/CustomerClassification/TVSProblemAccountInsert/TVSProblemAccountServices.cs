@@ -53,7 +53,8 @@
                     ReasonID = c.ReasonID,
                     CreatedBy = c.CreatedBy,
                     TVSRequestID = c.RequestID,
-                    IsFromTVS = true
+                    IsFromTVS = true,
+                    IsDirectPA = true
                 });
 
                 var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, false, parameters.ServiceName);

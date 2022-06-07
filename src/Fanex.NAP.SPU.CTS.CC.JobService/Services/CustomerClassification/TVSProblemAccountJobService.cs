@@ -92,7 +92,7 @@
 
             if (isSuccess && tvsProblemAccounts != null)
             {
-                systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive.ToString(), SystemParameters.TVS_LastScanDateTime);
+                systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.TVS_LastScanDateTime);
             }
         }
     }

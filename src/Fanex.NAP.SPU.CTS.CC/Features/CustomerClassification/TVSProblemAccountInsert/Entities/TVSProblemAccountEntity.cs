@@ -6,8 +6,8 @@
 
         public int ReasonID { get; set; }
 
-        public long CreatedBy { get; set; }
+        public long? CreatedBy { get; set; }
 
-        public int RequestID { get; set; }
+        public int? RequestID { get; set; }
     }
 }
