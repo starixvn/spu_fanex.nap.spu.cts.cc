@@ -93,6 +93,7 @@
             rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds)).Returns(roleCusts);
 
             rescanCustClassificationService.Start().GetAgentCusts(custIds);
+
             var result = rescanCustClassificationService.CustIdsToRescanPA;
 
             result.Should().BeEquivalentTo(custTORescanPA);

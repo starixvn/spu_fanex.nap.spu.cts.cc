@@ -19,7 +19,7 @@
     {
         IRobotDetectionService Start();
 
-        IRobotDetectionService GetRobotDetections();
+        IRobotDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate);
 
         bool Process(InsertRobotParaEntity paras);
 
@@ -61,9 +61,9 @@
             return this;
         }
 
-        public IRobotDetectionService GetRobotDetections()
-        {
-            var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotDetectionLastModifiedDate);
+        public IRobotDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate)
+        {            
+            var lastScannedTime = systemParameterServices.GetLastScannedDateTime(robotDetectionLastModifiedDate);
 
             if (lastScannedTime != null)
             {

@@ -1,7 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RobotAccountInsert
 {
-    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System.Collections.Generic;
@@ -11,15 +15,23 @@
     {
         private readonly IRobotAIClassificationInsertDataAccess robotAIClassificationInsertDataAccess;
         private readonly IRobotAIClassificationInsertServices robotAIClassificationInsertServices;
+        private readonly ISystemParameterServices systemParameterServices;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IProblemAccountServices problemAccountServices;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
         public RobotAIClassificationInsertServicesTest()
         {
             robotAIClassificationInsertDataAccess = Substitute.For<IRobotAIClassificationInsertDataAccess>();
+            systemParameterServices = Substitute.For<ISystemParameterServices>();
+            problemAccountServices = Substitute.For<IProblemAccountServices>();
+            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
             robotAIClassificationInsertServices = new RobotAIClassificationInsertServices(robotAIClassificationInsertDataAccess
-               , null
-               , null
-               , null
-               , null);
+                , systemParameterServices
+                , custClassToMainDBService
+                , problemAccountServices
+                , antiFraudCenterServices);
         }
 
         [Fact]
@@ -35,9 +47,41 @@
         public void Process_WhenSuccess_ReturnTrue()
         {
             // Arrange
-            var paras = new InsertRobotParaEntity();
+            var paras = new InsertRobotParaEntity()
+            {
+                BatchExternalSize = 1,
+                BatchInternalSize = 1,
+                ServiceName = "robotAIClassServiceName",
+                IsPushCCToSoon88 = true,
+                Soon88FeedDataAPI = "",
+                IsWriteLog = false,
+                IsSyncAFCData = false,
+                AFCInsertAccountURL = "",
+                IsFromTW = false,
+                IsFromCTS = false,
+                IsDirect = true,
+                IsFromAI = false
+            };
+
+            var expectedRobotAIEntity = new List<RobotAIEntity> { new RobotAIEntity { CustID = 1, ReasonID = 1 } };
+
+            var expectedRobotAIViewEntity = new RobotAIViewEntity()
+            {
+                LastScannedId = 100,
+                RobotAIClassification = expectedRobotAIEntity
+            };
+
+            var expectedCustomerInfoInsertRobot = new List<CustInfoEntity> { new CustInfoEntity { CustID = 1, CTSCustID = 1 } };
+
+            var expectedInsertRobotEntity = new List<InsertRobotEntity> { new InsertRobotEntity { CustID = 1 } };
 
             // Act
+            robotAIClassificationInsertDataAccess.GetRobotUsersFromAIClassification().Returns(expectedRobotAIViewEntity);
+
+            robotAIClassificationInsertServices.GetRobotUserFromAIClassification();            
+
+            problemAccountServices.InsertRobotAccount(expectedInsertRobotEntity).Returns(expectedCustomerInfoInsertRobot);
+            
             var result = robotAIClassificationInsertServices.Process(paras);
 
             // Assert

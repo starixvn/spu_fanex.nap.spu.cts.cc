@@ -181,7 +181,7 @@
         public bool InsertRobotDetection(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                        .GetRobotDetections()
+                        .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
                         .Process(new InsertRobotParaEntity
                         {
                             BatchExternalSize = batchExternalSize,
