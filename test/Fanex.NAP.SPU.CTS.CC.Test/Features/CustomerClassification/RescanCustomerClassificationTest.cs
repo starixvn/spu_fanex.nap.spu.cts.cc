@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -41,6 +42,8 @@
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;
 
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
+
         public RescanCustomerClassificationTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
@@ -55,8 +58,6 @@
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
             dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
 
-            antiFraudCenterServices = new AntiFraudCenterServices(null);
-
             dailyProblemClassificationDataAccess = Substitute.For<IDailyProblemClassificationDataAccess>();
             dailyProblemClassificationServices = new DailyProblemClassificationServices(dailyProblemClassificationDataAccess, systemParameterService, problemAccountServices, custClassToMainDBService);
 
@@ -64,9 +65,9 @@
             rescanCustClassificationService = new RescanCustClassificationService(
                 rescanCustClassificationDataAccess, null,
                 problemAccountServices,
-                antiFraudCenterServices,
                 custClassToMainDBService,
-                dailyClassificationServices);
+                dailyClassificationServices,
+                dataLogTrackingServices);
         }
 
         [Fact]

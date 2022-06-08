@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -35,6 +36,7 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
         private long lastScannedTimespan;
         private RobotUserViewEntity robotInfo;
 
@@ -43,7 +45,8 @@
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IProblemAccountServices problemAccountServices,
-            IAntiFraudCenterServices antiFraudCenterServices)
+            IAntiFraudCenterServices antiFraudCenterServices,
+            IDataLogTrackingServices dataLogTrackingServices)
 
         {
             this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
@@ -51,6 +54,7 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
             this.antiFraudCenterServices = antiFraudCenterServices;
+            this.dataLogTrackingServices = dataLogTrackingServices;
         }
 
         public IRobotAccountInsertServices Start()
@@ -125,7 +129,7 @@
             {
                 var robotToInsert = MappingRobotCategory(robotUsers, paras);
 
-                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
+                dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
 
                 var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
 

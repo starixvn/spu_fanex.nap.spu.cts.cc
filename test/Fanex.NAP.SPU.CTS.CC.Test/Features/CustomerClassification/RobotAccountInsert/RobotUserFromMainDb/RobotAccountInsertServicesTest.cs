@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
@@ -20,6 +21,7 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
 
         public RobotAccountInsertServicesTest()
         {
@@ -28,11 +30,13 @@
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
+            dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
             robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
                 , problemAccountServices
-                , antiFraudCenterServices);
+                , antiFraudCenterServices
+                , dataLogTrackingServices);
         }
 
         [Fact]

@@ -1,9 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.DataLogTracking
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class LogInputDataCriteria : NonQueryCommand
+    public class InputDataLogInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_InputData")]
         public string InputData { get; set; }

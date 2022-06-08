@@ -26,6 +26,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
 
     public static class InitService
     {
@@ -60,6 +61,8 @@
             RegisterNewCTSCustomerClassification(services);
 
             RegisterTVSProblemAccountInsert(services);
+
+            RegisterDataLogTracking(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -180,6 +183,12 @@
             services.AddSingleton<ITVSProblemAccountDataAccess, TVSProblemAccountDataAccess>();
             services.AddSingleton<ITVSProblemAccountServices, TVSProblemAccountServices>();
             services.AddSingleton<ITVSProblemAccountJobService, TVSProblemAccountJobService>();
+        }
+
+        private static void RegisterDataLogTracking(this IServiceCollection services)
+        {
+            services.AddSingleton<IDataLogTrackingDataAccess, DataLogTrackingDataAccess>();
+            services.AddSingleton<IDataLogTrackingServices, DataLogTrackingServices>();
         }
     }
 }
