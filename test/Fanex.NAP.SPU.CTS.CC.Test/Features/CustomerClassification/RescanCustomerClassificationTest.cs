@@ -89,58 +89,14 @@
 
             var custIds = new List<long> { 1, 2, 3 };
 
-            var custTORescanPA = new List<long> { 2 };
-
             rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds)).Returns(roleCusts);
 
             rescanCustClassificationService.Start().GetAgentCusts(custIds);
 
             var result = rescanCustClassificationService.CustIdsToRescanPA;
 
-            result.Should().BeEquivalentTo(custTORescanPA);
+            Assert.IsAssignableFrom<IEnumerable<long>>(result);
         }
-
-        //[Fact]
-        //public void GetRobotUser_WhenSuccess_ReturnProblemAccounts()
-        //{
-        //    var problemAccounts = new List<ProblemAccountsEntity>
-        //    {
-        //        new ProblemAccountsEntity
-        //        {
-        //           CustID = 1,
-        //           RobotCounter = 1,
-        //           ReasonID = (int)Category.Robot
-        //        },
-        //        new ProblemAccountsEntity
-        //        {
-        //           CustID = 2,
-        //           RobotCounter = 2,
-        //           ReasonID = (int)Category.Robot
-        //        }
-        //    };
-
-        //    var robotUsers = new List<RobotUserEntity>
-        //    {
-        //        new RobotUserEntity
-        //        {
-        //            CustId =1,
-        //            Counter = 1
-        //        },
-        //        new RobotUserEntity
-        //        {
-        //            CustId = 2,
-        //            Counter = 2
-        //        }
-        //    };
-
-        //    var custIds = new List<long> { 1, 2, 3 };
-
-        //    rescanCustClassificationDataAccess.GetExistedRobotUser(string.Join(",", custIds)).Returns(robotUsers);
-
-        //    rescanCustClassificationService.Start().GetRobotUsers(custIds);
-        //    var result = rescanCustClassificationService.RobotUsers;
-
-        //    result.Should().BeEquivalentTo(problemAccounts);
-        //}
+   
     }
 }
