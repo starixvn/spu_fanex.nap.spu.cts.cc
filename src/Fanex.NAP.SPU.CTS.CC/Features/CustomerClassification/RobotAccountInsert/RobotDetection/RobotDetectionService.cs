@@ -114,7 +114,7 @@
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
-                var latestScannedTime = this.robotDetections.FirstOrDefault().LastModifiedDate.ToString();
+                var latestScannedTime = this.robotDetections.FirstOrDefault().LastModifiedDate.ToString(CONVERT_TO_SQL_DATETIME);
 
                 systemParameterServices.UpdateTimingExecution(latestScannedTime, index);
             }
