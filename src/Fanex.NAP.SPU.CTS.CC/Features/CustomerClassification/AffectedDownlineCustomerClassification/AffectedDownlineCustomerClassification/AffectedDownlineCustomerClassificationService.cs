@@ -238,7 +238,7 @@
             return new VVIPCustomerInsertEntity
             {
                 FromAction = VVIP_FromAction.Service,
-                IsAffectDownline = false,
+                IsAffectDownline = true,
                 QueueID = Convert.ToInt64(custInfo.QueueID),
                 UplineRoleID = custInfo.UplineRoleID,
                 CustInfo = custInfo.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity

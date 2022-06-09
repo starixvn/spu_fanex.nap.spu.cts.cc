@@ -71,7 +71,7 @@
                 {
                     CustInfo = newCustomerClassification.VVIPClassification,
                     FromAction = VVIP_FromAction.ServiceInsertNew,
-                    IsAffectDownline = null,
+                    IsAffectDownline = true,
                     QueueID = null,
                     UplineRoleID = null
                 };
