@@ -8,7 +8,7 @@
 
         public const string FeedSoon88_Salt = "!%HGDwweHqw#";
 
-        public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss.ffff";
+        public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss.fff";
 
         public const int Realtime_SleepTimes = 2000;
 
