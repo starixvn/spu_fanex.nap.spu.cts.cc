@@ -40,7 +40,7 @@
                     var step = item.Key;
                     var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
                     var lastTransId = twGroupBettingService.GetLastTransID(SystemParameters.TWGroupBetting_LastTransID);
-                    var toTime = fromTime.AddMinutes(1);
+                    var toTime = fromTime.AddMinutes(3);
                     if (toTime < DateTime.Now)
                     {
                         var maxTransId = twGroupBettingService.ScanTicket(fromTime, toTime, step, lastTransId);
