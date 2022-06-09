@@ -133,6 +133,6 @@
 	</Function>
 	
 	<Function name="LogData">
-		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="MySQL.CTS_Archive.DBArchive.ctsServiceAdmin" />
+		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 	</Function>
 </Functions>
