@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
     using System;
@@ -26,6 +27,7 @@
         private readonly ISentryClient sentryClient;
         private readonly ITWProblemAccountService twProblemAccService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
         private readonly IProblemAccountServices paServices;
         private readonly IAppSettings appSettings;
         private const string ServiceName = "TWProblemAccountInsert";
@@ -34,12 +36,14 @@
         public TWProblemAccountJobService(ITWProblemAccountService twProblemAccService
             , IProblemAccountServices paServices
             , ICustClassToMainDBService custClassToMainDBService
+            , IDataLogTrackingServices dataLogTrackingServices
             , ISentryClient sentryClient
             , IAppSettings appSettings)
         {
             this.twProblemAccService = twProblemAccService;
             this.paServices = paServices;
             this.custClassToMainDBService = custClassToMainDBService;
+            this.dataLogTrackingServices = dataLogTrackingServices;
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
         }
@@ -126,6 +130,8 @@
                 LogService.Error($"CTS - TWProblemAccountService - DailyScan exeption message:  {logMessage}");
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+
+                dataLogTrackingServices.LogErrorData(ex, ServiceName);
 
                 return Task.FromResult(false);
             }

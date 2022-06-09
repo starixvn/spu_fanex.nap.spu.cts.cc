@@ -10,6 +10,8 @@
     public interface IDataLogTrackingDataAccess
     {
         DBResult LogInputData(IEnumerable<LogInputDataEntity> content, FunctionId funcId);
+
+        void LogErrorData(LogErrorDataEntity logInfo);
     }
 
     public class DataLogTrackingDataAccess : IDataLogTrackingDataAccess
@@ -36,6 +38,16 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : 1,
                 ErrorMsg = criteria.ErrorMessage
             };
+        }
+
+        public void LogErrorData(LogErrorDataEntity logInfo)
+        {
+            var criteria = new InputErrorLogInsertCriteria
+            {
+                LogInfo = JsonConvert.SerializeObject(logInfo)
+            };
+
+            repository.Execute(criteria);
         }
     }
 }

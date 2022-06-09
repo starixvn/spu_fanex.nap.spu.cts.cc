@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking
 {
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -10,6 +12,8 @@
     public interface IDataLogTrackingServices
     {
         void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName);
+
+        void LogErrorData(Exception exception, string serviceName);
     }
 
     public class DataLogTrackingServices : IDataLogTrackingServices
@@ -35,15 +39,42 @@
 
                     if (!string.IsNullOrEmpty(result.ErrorMsg))
                     {
-                        Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), new Exception(result.ErrorMsg), sentryClient);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), ex, sentryClient);
+                Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), ex, sentryClient);
             }
         }
+
+        public void LogErrorData(Exception exception, string serviceName)
+        {
+            try
+            {                
+                var logInfo = new LogErrorDataEntity
+                {
+                    Message = new LogMessage(exception.Message)
+                                   .AddMessage($"{serviceName}")
+                                   .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(exception))
+                                   .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(exception))
+                                   .AddMessage($"{ DateTime.Now}").ToString(),
+                    FromFlow = serviceName,
+                    SPName = DatabaseInfoGetters.GetDbExceptionInfo(exception)?.Where(c => c.Key == "SpName")?.FirstOrDefault().Value?.ToString(),
+                    Parameters = DatabaseInfoGetters.GetDbExceptionInfo(exception)?.Where(c => c.Key == "Parameters")?.FirstOrDefault().Value?.ToString(),
+                };
+
+                dataLogTrackingDataAccess.LogErrorData(logInfo);
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, "InsertErrorData fail", exception, ex, sentryClient);
+            }
+        }
+
+
+        #region Private Methods
 
         private static IEnumerable<LogInputDataEntity> MappingLogInputData(LogInputViewEntity content)
         {
@@ -63,5 +94,7 @@
 
             return logInputData;
         }
+
+        #endregion
     }
 }

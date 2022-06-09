@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -20,15 +21,18 @@
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly IAffectedDownlineCustomerClassificationService downlineCustomerClassificationService;
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
 
         public AffectedDownlineCustomerClassificationJobService(
             ISentryClient sentryClient,
             IAppSettings appSettings,
-            IAffectedDownlineCustomerClassificationService downlineCustomerClassificationService)
+            IAffectedDownlineCustomerClassificationService downlineCustomerClassificationService,
+            IDataLogTrackingServices dataLogTrackingServices)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.downlineCustomerClassificationService = downlineCustomerClassificationService;
+            this.dataLogTrackingServices = dataLogTrackingServices;
             this.serviceName = "AffectedDownlineCustomerClassification";
         }
 
@@ -41,6 +45,8 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                dataLogTrackingServices.LogErrorData(ex, serviceName);
 
                 return Task.FromResult(false);
             }

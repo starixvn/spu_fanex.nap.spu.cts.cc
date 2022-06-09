@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -23,18 +23,20 @@
         private readonly IAppSettings appSettings;
         private readonly ITVSProblemAccountServices tvsProblemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
-    
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
 
         public TVSProblemAccountJobService(
             ISentryClient sentryClient,
             IAppSettings appSettings,
             ITVSProblemAccountServices tvsProblemAccountServices,
-            ISystemParameterServices systemParameterServices)
+            ISystemParameterServices systemParameterServices,
+            IDataLogTrackingServices dataLogTrackingServices)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.tvsProblemAccountServices = tvsProblemAccountServices;
             this.systemParameterServices = systemParameterServices;
+            this.dataLogTrackingServices = dataLogTrackingServices;
             this.serviceName = "TVSProblemAccountInsert";
         }
 
@@ -54,6 +56,8 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                dataLogTrackingServices.LogErrorData(ex, serviceName);
 
                 return Task.FromResult(false);
             }
