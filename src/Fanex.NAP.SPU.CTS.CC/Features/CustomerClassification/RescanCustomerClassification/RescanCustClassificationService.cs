@@ -148,6 +148,8 @@
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,
                         IsFromAI = c.IsFromAI,
+                        IsFromTVS =c.IsFromTVS,
+                        TVSRequestID = c.TVSRequestID,
                         CreatedBy = StarixITId,
                         Remark = c.Remark
                     });
