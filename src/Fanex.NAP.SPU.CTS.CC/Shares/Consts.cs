@@ -54,13 +54,14 @@
             VVIP = 213,
             Robot = 61,
             AIRobotClassification = 61,
-            AIRobotDetection = 63,
+            AIRobotDetection = 63
         };
 
         public enum Reason
         {
             Abnormal = 27,
             AbnormalM = 101,
+            RobotBetting = 36
         };
 
         public enum CustomerRole

@@ -46,7 +46,7 @@
             {
                 if (batchSize > 0)
                 {
-                    JobRun(batchSize);
+                    return Task.FromResult(JobRun(batchSize));
                 }
                 else
                 {
@@ -67,7 +67,7 @@
 
         #region Private Methods
 
-        private void JobRun(int batchSize)
+        private bool JobRun(int batchSize)
         {
             var isSuccess = true;
 
@@ -90,12 +90,19 @@
                 };
 
                 isSuccess = tvsProblemAccountServices.InsertTVSProblemAccounts(tvsProblemAccounts.ProblemAccounts, paramaters);
+
+                if (isSuccess)
+                {
+                    isSuccess = tvsProblemAccountServices.InsertTVSRobot(tvsProblemAccounts.ProblemAccounts, paramaters);
+                }
             }
 
             if (isSuccess && tvsProblemAccounts != null)
             {
                 systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.TVS_LastScanDateTime);
             }
+
+            return isSuccess;
         }
     }
 

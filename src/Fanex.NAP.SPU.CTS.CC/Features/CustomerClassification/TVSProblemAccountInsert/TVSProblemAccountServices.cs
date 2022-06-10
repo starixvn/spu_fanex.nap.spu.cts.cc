@@ -14,6 +14,8 @@
         TVSProblemAccountResultEntity GetTVSProblemAccounts(DateTime? lastDateTime);
 
         bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, PushDataToExternalEntity parameters);
+
+        bool InsertTVSRobot(IEnumerable<TVSProblemAccountEntity> robots, PushDataToExternalEntity parameters);
     }
 
     public class TVSProblemAccountServices : ITVSProblemAccountServices
@@ -46,19 +48,45 @@
 
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var insertedPA = problemAccounts.Where(c=>c.ReasonID != (int)Reason.Abnormal && c.ReasonID != (int)Reason.AbnormalM).Select(c => new InsertProblemAccountEntity
-                {
-                    CustID = c.CustID,
-                    ReasonID = c.ReasonID,
-                    CreatedBy = c.CreatedBy,
-                    TVSRequestID = c.RequestID,
-                    IsFromTVS = true,
-                    IsDirectPA = true
-                });
+                var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.Abnormal
+                                                       && c.ReasonID != (int)Reason.AbnormalM
+                                                       && c.ReasonID != (int)Reason.RobotBetting).Select(c => new InsertProblemAccountEntity
+                                                       {
+                                                           CustID = c.CustID,
+                                                           ReasonID = c.ReasonID,
+                                                           CreatedBy = c.CreatedBy,
+                                                           TVSRequestID = c.RequestID,
+                                                           IsFromTVS = true,
+                                                           IsDirectPA = true
+                                                       });
 
                 var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, false, parameters.ServiceName);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters);
+            }
+
+            return isSuccess;
+        }
+
+        public bool InsertTVSRobot(IEnumerable<TVSProblemAccountEntity> robots, PushDataToExternalEntity parameters)
+        {
+            bool isSuccess = true;
+
+            if (robots != null && robots.Any())
+            {
+                var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.RobotBetting).Select(c => new InsertRobotEntity
+                {
+                    CustID = c.CustID,
+                    CategoryID = (int)Category.Robot,
+                    CreatedBy = c.CreatedBy,
+                    TVSRequestID = c.RequestID,
+                    IsFromTVS = true,
+                    IsDirect = true
+                });
+
+                var result = problemAccountServices.InsertRobotAccount(insertRobot);
+
+                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
             }
 
             return isSuccess;
