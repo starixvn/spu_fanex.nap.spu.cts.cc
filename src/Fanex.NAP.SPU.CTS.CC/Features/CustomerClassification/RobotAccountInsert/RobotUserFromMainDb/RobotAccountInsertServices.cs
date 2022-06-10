@@ -98,24 +98,14 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
-                        {
-                            ExternalBatchSize = paras.BatchExternalSize,
-                            FeedSoon88API = paras.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                            IsUpdateDangerToMainDB = true,
-                            IsWriteLog = paras.IsWriteLog,
-                            ServiceName = paras.ServiceName
-                        });
-
-                        antiFraudCenterServices.InsertAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
+                        var isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custIds, paras.PushDataExternal);
 
                         if (!isSuccess)
                         {
                             return false;
                         }
                     }
-                    
+
                     Thread.Sleep(RobotUsers_SleepTimes);
                 }
             }
@@ -129,7 +119,7 @@
             {
                 var robotToInsert = MappingRobotCategory(robotUsers, paras);
 
-                dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.ServiceName);
+                dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.PushDataExternal.ServiceName);
 
                 var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
 
@@ -156,6 +146,7 @@
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
                     IsFromAI = paras.IsFromAI,
+                    IsFromTVS = paras.IsFromTVS,
                     RobotCounter = c.Counter,
                     CreatedBy = StarixITId
                 }).ToList();

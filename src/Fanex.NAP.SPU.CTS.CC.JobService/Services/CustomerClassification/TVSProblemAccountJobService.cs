@@ -93,6 +93,7 @@
 
                 if (isSuccess)
                 {
+                    paramaters.IsSyncAFCData = false;
                     isSuccess = tvsProblemAccountServices.InsertTVSRobot(tvsProblemAccounts.ProblemAccounts, paramaters);
                 }
             }

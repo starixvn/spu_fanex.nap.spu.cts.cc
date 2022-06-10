@@ -67,16 +67,20 @@
             // Arrange
             var paras = new InsertRobotParaEntity()
             {
-                BatchExternalSize = 1,
                 BatchInternalSize = 1,
-                ServiceName = "robotDetectionServiceName",
-                IsPushCCToSoon88 = true,
-                Soon88FeedDataAPI = "",
-                IsWriteLog = false,
                 IsFromTW = false,
                 IsFromCTS = false,
                 IsDirect = true,
-                IsFromAI = true
+                IsFromAI = true,
+                IsFromTVS = false,
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    ExternalBatchSize = 1,
+                    ServiceName = "robotDetectionServiceName",
+                    IsPushCCToSoon88 = true,
+                    IsWriteLog = false,
+                    IsSyncAFCData = false,
+                }
             };
             var expectedRobotDetectionLastModifiedDate = DateTime.Now;
             var expectedRobotDetections = new List<RobotDetectionEntity>()

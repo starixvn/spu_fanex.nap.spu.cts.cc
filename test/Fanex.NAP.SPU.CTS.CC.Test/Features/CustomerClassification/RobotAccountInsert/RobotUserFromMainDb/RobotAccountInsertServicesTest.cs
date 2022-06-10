@@ -63,19 +63,22 @@
         public void Process_WhenSuccess_ReturnTrue()
         {
             // Arrange
-            var paras = new InsertRobotParaEntity {
-                BatchExternalSize = 1,
+            var paras = new InsertRobotParaEntity 
+            {
                 BatchInternalSize = 1,
-                ServiceName = "robotAccountServiceName",
-                Soon88FeedDataAPI = "",
-                IsPushCCToSoon88 = true,
-                IsWriteLog = false,
-                IsSyncAFCData = false,
-                AFCInsertAccountURL = "",
                 IsFromTW = true,
                 IsFromCTS = false,
                 IsDirect = true,
-                IsFromAI = false
+                IsFromAI = false,
+                IsFromTVS = false,
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    ExternalBatchSize = 1,
+                    ServiceName = "robotAIClassServiceName",
+                    IsPushCCToSoon88 = true,
+                    IsWriteLog = false,
+                    IsSyncAFCData = false,
+                }
             };
 
             long expectedLastTimespan = 1;

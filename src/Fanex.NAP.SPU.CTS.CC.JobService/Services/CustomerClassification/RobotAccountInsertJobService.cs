@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -128,18 +129,24 @@
                                                       .GetRobotUser()
                                                       .Process(new InsertRobotParaEntity
                                                       {
-                                                          BatchExternalSize = batchExternalSize,
                                                           BatchInternalSize = batchInternalSize,
-                                                          ServiceName = robotAccountServiceName,
-                                                          Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
-                                                          IsPushCCToSoon88 = true,
-                                                          IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                                                          IsSyncAFCData = appSettings.IsSyncAFCData,
-                                                          AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
                                                           IsFromTW = true,
                                                           IsFromCTS = false,                                                         
                                                           IsDirect = true,
-                                                          IsFromAI = false
+                                                          IsFromAI = false,
+                                                          IsFromTVS = false,
+                                                          PushDataExternal = new PushDataToExternalEntity
+                                                          {
+                                                              IsUpdateDangerToMainDB = true,
+                                                              IsPushCCToSoon88 = true,
+                                                              FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                                              ServiceName = robotAccountServiceName,
+                                                              ExternalBatchSize = batchExternalSize,
+                                                              IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                              IsSyncAFCData = false,
+                                                              AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                                              AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                                                          }
                                                       });
 
             if (isSuccess)
@@ -156,18 +163,24 @@
                                                                .GetRobotUserFromAIClassification()
                                                                .Process(new InsertRobotParaEntity
                                                                {
-                                                                   BatchExternalSize = batchExternalSize,
                                                                    BatchInternalSize = batchInternalSize,
-                                                                   ServiceName = robotAIClassServiceName,
-                                                                   IsPushCCToSoon88 = true,
-                                                                   Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
-                                                                   IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                                                                   IsSyncAFCData = appSettings.IsSyncAFCData,
-                                                                   AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
                                                                    IsFromTW = false,
                                                                    IsFromCTS = false,
                                                                    IsDirect = true,
-                                                                   IsFromAI = false
+                                                                   IsFromAI = false,
+                                                                   IsFromTVS = false,
+                                                                   PushDataExternal = new PushDataToExternalEntity
+                                                                   {
+                                                                       IsUpdateDangerToMainDB = true,
+                                                                       IsPushCCToSoon88 = true,
+                                                                       FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                                                       ServiceName = robotAIClassServiceName,
+                                                                       ExternalBatchSize = batchExternalSize,
+                                                                       IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                                       IsSyncAFCData = false,
+                                                                       AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                                                       AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                                                                   }
                                                                });
 
             if (isSuccess)
@@ -181,20 +194,28 @@
         public bool InsertRobotDetection(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                        .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
-                        .Process(new InsertRobotParaEntity
-                        {
-                            BatchExternalSize = batchExternalSize,
-                            BatchInternalSize = batchInternalSize,
-                            ServiceName = robotDetectionServiceName,
-                            IsPushCCToSoon88 = true,
-                            Soon88FeedDataAPI = appSettings.Soon88FeedDataAPI,
-                            IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                            IsFromTW = false,
-                            IsFromCTS = false,
-                            IsDirect = true,
-                            IsFromAI = true
-                        });
+                                                 .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
+                                                 .Process(new InsertRobotParaEntity
+                                                 {
+                                                     BatchInternalSize = batchInternalSize,
+                                                     IsFromTW = false,
+                                                     IsFromCTS = false,
+                                                     IsDirect = true,
+                                                     IsFromAI = true,
+                                                     IsFromTVS = false,
+                                                     PushDataExternal = new PushDataToExternalEntity
+                                                     {
+                                                         IsUpdateDangerToMainDB = true,
+                                                         IsPushCCToSoon88 = true,
+                                                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                                         ServiceName = robotDetectionServiceName,
+                                                         ExternalBatchSize = batchExternalSize,
+                                                         IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                         IsSyncAFCData = false,
+                                                         AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                                         AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                                                     }
+                                                 });
 
             if (isSuccess)
             {

@@ -49,18 +49,20 @@
             // Arrange
             var paras = new InsertRobotParaEntity()
             {
-                BatchExternalSize = 1,
                 BatchInternalSize = 1,
-                ServiceName = "robotAIClassServiceName",
-                IsPushCCToSoon88 = true,
-                Soon88FeedDataAPI = "",
-                IsWriteLog = false,
-                IsSyncAFCData = false,
-                AFCInsertAccountURL = "",
                 IsFromTW = false,
                 IsFromCTS = false,
                 IsDirect = true,
-                IsFromAI = false
+                IsFromAI = false,
+                IsFromTVS = false,
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    ExternalBatchSize = 1,
+                    ServiceName = "robotAIClassServiceName",
+                    IsPushCCToSoon88 = true,
+                    IsWriteLog = false,
+                    IsSyncAFCData = false,
+                }
             };
 
             var expectedRobotAIEntity = new List<RobotAIEntity> { new RobotAIEntity { CustID = 1, ReasonID = 1 } };

@@ -80,17 +80,7 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, new PushDataToExternalEntity
-                        {
-                            ExternalBatchSize = paras.BatchExternalSize,
-                            FeedSoon88API = paras.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = paras.IsPushCCToSoon88,
-                            IsUpdateDangerToMainDB = true,                            
-                            IsWriteLog = paras.IsWriteLog,
-                            ServiceName = paras.ServiceName
-                        });
-
-                        antiFraudCenterServices.InsertAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCInsertAccountURL);
+                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, paras.PushDataExternal);
 
                         if (!isSuccess)
                         {
@@ -136,6 +126,7 @@
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
                     IsFromAI = paras.IsFromAI,
+                    IsFromTVS = paras.IsFromTVS,
                     RobotCounter = 0,
                     CreatedBy = StarixITId
                 }).ToList();
