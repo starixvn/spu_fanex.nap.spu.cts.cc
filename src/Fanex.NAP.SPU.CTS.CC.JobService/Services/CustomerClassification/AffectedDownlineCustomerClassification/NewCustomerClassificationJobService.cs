@@ -59,7 +59,7 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
-                IsFromDownlineQueue = false,
+                IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,

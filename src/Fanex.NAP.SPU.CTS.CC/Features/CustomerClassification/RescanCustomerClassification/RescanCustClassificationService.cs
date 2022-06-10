@@ -94,7 +94,7 @@
                 if (parameters.IsRescanPA)
                 {
                     GetExistedProblemAccounts(custIds)
-                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsFromDownlineQueue, parameters.FunctionId)
+                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
                    .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot(parameters)
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
@@ -159,11 +159,11 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue, FunctionId functionId)
+        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isToQueue, FunctionId functionId)
         {
             if (problemAccounts.Any())
             {
-                var custIds = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isRescanPAFromQueue, serviceName);
+                var custIds = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isToQueue, serviceName);
 
                 if (custIds != null && custIds.Any())
                 {

@@ -61,13 +61,13 @@
         }
 
 
-        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromDownlineQueue)
+        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
         {
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
                 InputType = inputType,
-                IsFromQueue = isFromDownlineQueue
+                IsToQueue = isToQueue
             };
 
             return repository.Fetch<CustInfoEntity>(criteria);

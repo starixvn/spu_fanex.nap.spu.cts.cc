@@ -86,7 +86,7 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, parameters.IsFromDownlineQueue, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, parameters.IsToQueue, parameters.ServiceName);
                 IsSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters.PushDataExternal);
             }
 

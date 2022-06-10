@@ -60,7 +60,7 @@
                                                            IsDirectPA = true
                                                        });
 
-                var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, false, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, true, parameters.ServiceName);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters);
             }

@@ -59,7 +59,7 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
-                IsFromDownlineQueue = true,
+                IsToQueue = false,
                 FunctionId = FunctionId.DownlineCustomerClassification,
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
