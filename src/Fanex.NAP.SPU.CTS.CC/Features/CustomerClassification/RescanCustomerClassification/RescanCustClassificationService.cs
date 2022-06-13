@@ -299,7 +299,6 @@
                 if (custToRemovePA.Any())
                 {
                     isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
-                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
                 }
             }
 
