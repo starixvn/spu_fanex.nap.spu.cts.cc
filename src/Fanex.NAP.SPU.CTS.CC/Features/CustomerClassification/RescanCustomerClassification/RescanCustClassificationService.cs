@@ -33,6 +33,8 @@
 
         IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras);
 
+        IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
+
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
@@ -102,7 +104,8 @@
                 }
 
                 GetAgentCusts(custIds)
-               .RescanNormalAccount(custIds, parameters);
+               .RescanNormalAccount(custIds, parameters)
+               .RemovePAForSMA(parameters.PushDataExternal);
             }
 
             return isSuccess;
@@ -148,7 +151,7 @@
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,
                         IsFromAI = c.IsFromAI,
-                        IsFromTVS =c.IsFromTVS,
+                        IsFromTVS = c.IsFromTVS,
                         TVSRequestID = c.TVSRequestID,
                         CreatedBy = StarixITId,
                         Remark = c.Remark
@@ -281,6 +284,22 @@
                     {
                         dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId, false);
                     }
+                }
+            }
+
+            return this;
+        }
+
+        public IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters)
+        {
+            if (isSuccess && smaCustIds != null && smaCustIds.Any())
+            {
+                var custToRemovePA = smaCustIds.Distinct().Except(custIdsToRescanPA);
+
+                if (custToRemovePA.Any())
+                {
+                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
+                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
                 }
             }
 
