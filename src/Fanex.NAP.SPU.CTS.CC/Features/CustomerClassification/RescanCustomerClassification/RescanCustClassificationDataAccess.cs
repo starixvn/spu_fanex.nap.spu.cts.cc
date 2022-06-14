@@ -2,16 +2,13 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.Evidence;
     using System.Collections.Generic;
 
     public interface IRescanCustClassificationDataAccess
     {
         IEnumerable<RoleCustomerEntity> GetRoleCustomer(string custIds);
 
-        IEnumerable<CustEvidenceEntity> GetExistedEvidences(string custIDs);
-
-        IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds);
+        IEnumerable<RobotUserEntity> GetExistedTWRobotUser(string custIds);
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -33,19 +30,9 @@
             return repository.Fetch<RoleCustomerEntity>(criteria);
         }
 
-        public IEnumerable<CustEvidenceEntity> GetExistedEvidences(string custIDs)
+        public IEnumerable<RobotUserEntity> GetExistedTWRobotUser(string custIds)
         {
-            var criteria = new ExistedEvidencesGetCriteria
-            {
-                CustIds = custIDs
-            };
-
-            return repository.Fetch<CustEvidenceEntity>(criteria);
-        }
-
-        public IEnumerable<RobotUserEntity> GetExistedRobotUser(string custIds)
-        {
-            var criteria = new ExistedRobotUserGetCriteria
+            var criteria = new ExistedTWRobotUserGetCriteria
             {
                 CustIds = custIds
             };

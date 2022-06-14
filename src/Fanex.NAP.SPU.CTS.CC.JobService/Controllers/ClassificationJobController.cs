@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -11,40 +12,40 @@
     public class ClassificationJobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
-        private readonly IProblemAccountJobService problemAccountInsertJobService;
         private readonly INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
         private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
-        private readonly ICustomerCategoryJobService customerCategoryJobService;
+        private readonly ITWProblemAccountJobService twProblemAccountJobService;
+        private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
+        private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
+        private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
-            IProblemAccountJobService problemAccountInsertJobService,
             INormalAccountJobService normalAccountInsertJobService,
             IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeClassificationJobService realtimeClassificationJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
-            ICustomerCategoryJobService customerCategoryJobService)
+            ITWProblemAccountJobService twProblemAccountJobService,
+            ITVSProblemAccountJobService tvsProblemAccountJobService,
+            INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
+            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
         {
             this.sentryClient = sentryClient;
-            this.problemAccountInsertJobService = problemAccountInsertJobService;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
-            this.customerCategoryJobService = customerCategoryJobService;
-        }
-
-        [HttpPost("problemAccountInsert")]
-        public async Task<bool> InsertProblemAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.problemAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
+            this.twProblemAccountJobService = twProblemAccountJobService;
+            this.tvsProblemAccountJobService = tvsProblemAccountJobService;
+            this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
+            this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -92,10 +93,34 @@
             return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("InsertCustCategoryVVIPFromQueue")]
-        public async Task<bool> InsertCustCategoryVVIPFromQueue([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("robotDetection")]
+        public async Task<bool> RobotDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.customerCategoryJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningRobotDetection(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("scan-tw-problem-account-customer")]
+        public async Task<bool> ScanTWSystemFormulaBetCustomer()
+        {
+            return await twProblemAccountJobService.Execute();
+        }
+
+        [HttpPost("tvsProblemAccountInsert")]
+        public async Task<bool> TVSProblemAccountInsert([FromForm] int batchSize)
+        {
+            return await tvsProblemAccountJobService.Execute(batchSize);
+        }
+
+        [HttpPost("newcustomerclassification")]
+        public async Task<bool> NewCustomerClassification([FromForm] int batchSize)
+        {
+            return await newCustomerClassificationJobService.Execute(batchSize);
+        }
+
+        [HttpPost("affectedDownlineClassificationFromQueue")]
+        public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
+        {
+            return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("updatewritelog")]
@@ -103,6 +128,5 @@
         {
             return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
         }
-        
     }
 }

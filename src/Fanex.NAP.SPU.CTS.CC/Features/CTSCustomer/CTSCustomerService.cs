@@ -1,9 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerCategory;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -16,7 +15,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
@@ -57,7 +55,7 @@
 
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
 
-        CustInsertedInfoModel TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList);
+        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
 
         IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
@@ -81,25 +79,18 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IRescanCustClassificationService rescanClassificationService;
-        private readonly ICustomerCategoryService customerCategoryService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
             IRescanCustClassificationService rescanClassificationService,
-            ICustomerCategoryService customerCategoryService,
             ICustClassToMainDBService custClassToMainDBService,
             IAntiFraudCenterServices antiFraudCenterServices,
             ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
             this.rescanClassificationService = rescanClassificationService;
-            this.customerCategoryService = customerCategoryService;
-            this.custClassToMainDBService = custClassToMainDBService;
-            this.antiFraudCenterServices = antiFraudCenterServices;
             this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
@@ -126,95 +117,36 @@
             return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
         }
 
-        public CustInsertedInfoModel TransformCustomerFromMainDB(List<CustomerMainDBModel> customerList)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-
-            try
-            {
-                return dataAccess.TransformCustomerFromMainDB(customerJson);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError("InsertNewCustomer", "TransformCustomerFromMainDB exception:", customerJson, ex, sentryClient);
-
-                return new CustInsertedInfoModel();
-            }
-        }
-
         public bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
         {
             if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
-                var customers = data.CustomerInfos;
-                var lastCustID = data.LastInsertCustID;
+                var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
 
-                try
+                foreach (var batchCust in chunkCusts)
                 {
-                    var customersChunk = customers.Distinct().Chunk(paras.InternalBatchSize);                    
+                    var customers = InsertNewCTSCustomer(batchCust.ToList());
 
-                    foreach (var custs in customersChunk)
+                    if (customers != null && customers.Any())
                     {
-                        var isSuccess = true;
+                        UpdateAssociationCustomerForArchive(customers);
 
-                        var custInfoInserted = TransformCustomerFromMainDB(custs.ToList());
-
-                        var updateCompleteCusts = custInfoInserted.MergeCustForUpdateComplete();
-
-                        if (updateCompleteCusts.Any())
-                        {
-                            UpdateAssociationCustomerForArchive(updateCompleteCusts);
-                        }
-
-                        if (custInfoInserted.InsertCustomer != null && custInfoInserted.InsertCustomer.Any())
-                        {
-                            isSuccess = RescanCCForNewCustomer(custInfoInserted.InsertCustomer, paras);
-                        }
-
-                        /* insert case VVIP */
-                        if (isSuccess && custInfoInserted.CustInfoVVip != null && custInfoInserted.CustInfoVVip.Any())
-                        {
-                            var lastestCustClassification = customerCategoryService.AddCustomerCategory(custInfoInserted.CustInfoVVip);
-
-                            isSuccess = custClassToMainDBService.RetryPushCCToMainDB(lastestCustClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
-
-                            Parallel.Invoke(() =>
-                            {
-                                var custIds = lastestCustClassification.Select(x => x.CustId);
-                                antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, paras.IsSyncAFCData, paras.AFCDeleteAccountURL);
-                            });
-                        }
-
-                        if (isSuccess && updateCompleteCusts.Any())
-                        {
-                            NotifyCompleteForNewCustomer(updateCompleteCusts, lastCustID, paras.IsInsertMissingCust);
-                        }
-
-                        /* end case VVIP */
+                        UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
                     }
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "InsertNewCustomer throws exception", customers, ex, sentryClient);
-
-                    return false;
                 }
             }
 
             return true;
         }
 
-        public void RescanCCAndNotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras, long? lastCustID)
+        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers)
         {
-            if (custIdList != null && custIdList.Any())
+            if (customers != null && customers.Any())
             {
-                var isSuccess = RescanCCForNewCustomer(custIdList, paras);
-
-                if (isSuccess)
-                {
-                    NotifyCompleteForNewCustomer(custIdList, lastCustID, paras.IsInsertMissingCust);
-                }
+                return dataAccess.InsertNewCTSCustomer(customers);
             }
+
+            return Enumerable.Empty<InsertNewCustomerResultModel>();
         }
 
         public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
@@ -223,94 +155,29 @@
             dataAccess.InsertMissingCust(customerJson, scannedDate);
         }
 
-        private void NotifyCompleteForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, long? lastCustID, bool isInsertMissingCust)
+        private void UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
         {
-            try
+            if (custIdList != null && custIdList.Any())
             {
-                dataAccess.ReTransformAccount(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RReTransformAccount throws exception", custIdList, ex, sentryClient);
+                dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
             }
         }
 
-        private bool RescanCCForNewCustomer(IEnumerable<InsertCustomerModel> custIdList, InsertNewCustRescanEntity paras)
-        {
-            var result = false;
-
-            try
-            {
-                var custToRescan = custIdList.Select(c => c.CustID).Distinct();
-
-                var rescanParam = new RescanParametersEntity
-                {
-                    CustIds = custToRescan,
-                    FunctionId = FunctionId.InsertNewCustJob,
-                    IsCheckPAFromNAP = true,
-                    IsPushCCToSoon88 = true,
-                    IsUpdateDangerToMainDB = true,
-                    DangerLevelType = DangerLevel.ABI,
-                    ServiceName = serviceName,
-                    FeedSoon88API = paras.FeedSoon88API,
-                    IsWriteLog = paras.IsWriteLog,
-                    InternalBatchSize = paras.InternalBatchSize,
-                    ExternalBatchSize = paras.ExternalBatchSize,
-                    IsSyncAFCData = paras.IsSyncAFCData,
-                    AFCInsertAccountURL = paras.AFCInsertAccountURL
-                };
-
-                result = rescanClassificationService.RescanCustomerClassify(rescanParam);
-
-                Utilities.LogSentryInfo(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custToRescan, paras.IsWriteLog, sentryClient);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "InsertNewCustomer - RescanCustomerClassify done", custIdList, ex, sentryClient);
-            }
-
-            return result;
-        }
-
-        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertCustomerModel> customerList)
+        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertNewCustomerResultModel> customerList)
         {
             if (customerList != null && customerList.Any())
             {
-                try
+                var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
                 {
-                    var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
-                    {
-                        CustID = x.CustID,
-                        CTSCustID = x.CTSCustID,
-                        CustSubID = x.CustSubID,
-                        RoleID = x.RoleID
-                    });
+                    CustID = x.CustID,
+                    CTSCustID = x.CTSCustID,
+                    CustSubID = x.CustSubID,
+                    RoleID = x.RoleID
+                });
 
-                    var custInfoJson = JsonConvert.SerializeObject(custList);
+                var custInfoJson = JsonConvert.SerializeObject(custList);
 
-                    var updateResult = dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForArchive throws exception", customerList, ex, sentryClient);
-                }
-            }
-        }
-
-        private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
-        {
-            if (assCustForRollbacks != null && assCustForRollbacks.Any())
-            {
-                try
-                {
-                    var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
-
-                    var updateResult = dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, "UpdateAssociationCustomerForRollback throws exception", assCustForRollbacks, ex, sentryClient);
-                }
+                dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
             }
         }
 
@@ -356,11 +223,9 @@
 
                     var custInfoToUpdate = GetCustInfoToUpdate(custs, sourceType, isWriteLog, out assCustForRollbacks);
 
-                    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, sourceType);
-
                     UpdateAssociationCustomerForRollback(assCustForRollbacks);
 
-                    Utilities.LogSentryInfo(serviceName, "UpdateCustomer - done", isWriteLog, sentryClient);
+                    UpdateCustomerComplete(custInfoToUpdate, custs.LastUpdatedTime, custs.LastCustId, sourceType);
                 }
             }
             catch (Exception ex)
@@ -506,6 +371,16 @@
         public TranformCustModel GetUpdatedCustFromProductStatusHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
         {
             return dataAccess.GetUpdatedCustFromProductStatus(lastUpdatedTime, lastUpdatedCustId, numOfAccount);
+        }
+
+        private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
+            }
         }
 
         public void UpdateCustomerComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID, UpdateCustomer sourceType)

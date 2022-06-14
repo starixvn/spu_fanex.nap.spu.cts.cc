@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -8,90 +7,149 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProblemAccountServices
     {
-        IEnumerable<ProblemAccountsEntity> GetProblemAccounts(DateTime? dateTime, string serviceName, bool isWriteLog);
+        IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
-        InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing, bool isRescanFlow, string serviceName);
+        IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName);
 
-        InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName);
+        RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
+  
+        void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
-        void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks);
+        IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
+
+        void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
+
+        void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
     {
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;                
         private readonly ISentryClient sentryClient;
 
-        public ProblemAccountServices(IProblemAccountDataAccess problemAccountDataAccess, ISentryClient sentryClient)
+        public ProblemAccountServices(
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ISentryClient sentryClient)
         {
             this.problemAccountDataAccess = problemAccountDataAccess;
             this.sentryClient = sentryClient;
         }
 
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts(DateTime? dateTime, string serviceName, bool isWriteLog)
+        public IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(IEnumerable<long> custIds)
         {
-            string custIDs = (dateTime == null) ? Constants.InitialProblemAccounts : Constants.ProblemAccountByDateTime;
+            if (custIds != null && custIds.Any())
+            {
+                var custIdsToString = string.Join(",", custIds);
 
-            var problemAccounts = problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
+                return problemAccountDataAccess.GetExistedProblemAccounts(custIdsToString);
+            }
 
-            return problemAccounts ?? new List<ProblemAccountsEntity>();
+            return Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
         {
-            return problemAccountDataAccess.GetProblemAccounts_IBC(custIDs, dateTime);
+            if (custIds != null && custIds.Any())
+            {
+                var custIdsToString = string.Join(",", custIds);
+
+                return problemAccountDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+            }
+
+            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
-        public InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing, bool isRescanFlow, string serviceName)
+        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var proAccountClassification = MergeProblemAccountClassification(problemAccounts, probAccountLosing);
+                var paLosing = GetProblemAccountLosingClassification(problemAccounts.Select(c => c.CustID).Distinct(), funcId);
 
-                if (proAccountClassification.Any())
+                var paClassification = MergePALosingClassification(problemAccounts, paLosing);
+
+                var custInfo = InsertProblemAccount(paClassification, insertByType, isToQueue);
+
+                if (custInfo != null && custInfo.Any())
                 {
-                    var problemAccountJson = JsonConvert.SerializeObject(proAccountClassification);
+                    InsertPALogics(custInfo, serviceName);
 
-                    var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
-
-                    if (result.ErrorCode == 0)
-                    {
-                        CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback);
-                    }
-
-                    return result;
+                    return custInfo.Select(c => c.CustID).Distinct();
                 }
             }
 
-            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+            return Enumerable.Empty<long>();
         }
 
-
-        public InsertCategoryResultEntity InsertProblemAccount(IEnumerable<ProblemAccountsEntity> problemAccounts, bool isRescanFlow, string serviceName)
+        public RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
+            var result = new RemovePAResultEntity();
+
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var problemAccountJson = JsonConvert.SerializeObject(problemAccounts);
-
-                var result = InsertProblemAccount(problemAccountJson, isRescanFlow, serviceName);
+                result = RemoveProblemAccount(problemAccounts, isFromQueue, serviceName);
 
                 if (result.ErrorCode == 0)
                 {
-                    CheckNewPAAssociationCustomerForRollback(result.NewPAAssociationCustomerForRollback);
+                    RemovePALogics(result.CustomerInfo, serviceName);
                 }
-
-                return result;
             }
 
-            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+            return result;
         }
 
-        public void CheckNewPAAssociationCustomerForRollback(IEnumerable<CheckPACustomerAssociationForRollbackEntity> assCustForRollbacks)
+        public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
+        {
+            if (customerInfo != null && customerInfo.Any())
+            {
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
+
+                var custIds = customerInfo.Select(x => x.CustID).Distinct();
+
+                UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+            }
+        }
+
+        public void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName)
+        {
+            if (customerInfo != null && customerInfo.Any())
+            {
+                var custIds = customerInfo.Where(c=>c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
+
+                UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
+            }
+        }
+
+        public void RemoveOldProblemAccount(IEnumerable<long> custIds)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                problemAccountDataAccess.RemoveOldProblemAccount(string.Join(",", custIds.Distinct()));
+            }
+        }
+
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
+        {
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                var customerInfo = problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
+
+                return customerInfo;
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
+        }
+
+        #region Private Methods
+
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
         {
             if (assCustForRollbacks != null && assCustForRollbacks.Any())
             {
@@ -101,52 +159,114 @@
             }
         }
 
-        #region Private methods
-
-        private static IEnumerable<InsertProblemAccountEntity> MergeProblemAccountClassification(IEnumerable<ProblemAccountsEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> probAccountLosing)
+        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isToQueue)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                return problemAccounts.GroupJoin(probAccountLosing,
-                                            pa => pa.CustID,
-                                            paLosing => paLosing.CustId,
-                                            (pa, paLosing) => new { pa, paLosing })
-                                            .SelectMany(
-                                                 group => group.paLosing.DefaultIfEmpty(),
-                                                 (group, temp) => new InsertProblemAccountEntity
-                                                 {
-                                                     CustID = group.pa.CustID,
-                                                     ReasonID = group.pa.ReasonID,
-                                                     RobotCounter = group.pa.RobotCounter,
-                                                     CreatedBy = group.pa.Creator,
-                                                     BetCount = temp?.BetCount,
-                                                     ActiveDays = temp?.ActiveDays,
-                                                     TurnoverRM = temp?.TurnoverRM,
-                                                     WinlossRM = temp?.WinlossRM,
-                                                     WinlossStatus = temp?.WinlossStatus
-                                                 });
+               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
             }
 
-            return Enumerable.Empty<InsertProblemAccountEntity>();
+            return Enumerable.Empty<CustInfoEntity>();
         }
 
-        private InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescanFlow, string serviceName)
+        private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
-            if (!string.IsNullOrEmpty(problemAccountJson))
+            if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.InsertProblemAccount(problemAccountJson, isRescanFlow);
+                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);
 
-                if (result.ErrorCode == -1)
+                if (result.ErrorCode != 0)
                 {
-                    Utilities.LogSentryError(serviceName, "InsertProblemAccountToCTS throws Exception", problemAccountJson, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
                 }
 
                 return result;
             }
 
-            return new InsertCategoryResultEntity { CustIds = new List<long>(), ErrorCode = 0, ErrorMessage = string.Empty };
+            return new RemovePAResultEntity();
         }
 
-        #endregion Private methods
+        private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
+        {
+            if (custId != null && custId.Any())
+            {
+                var custIdsToString = string.Join(",", custId);
+
+                var result = problemAccountDataAccess.UpdateBetLimitOfFlaggedCustomer(custIdsToString);
+
+                if (result.ErrorCode != 0)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfFlaggedCustomer", custId, new Exception(result.ErrorMsg), sentryClient);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool UpdateBetLimitOfUnflaggedCustomer(IEnumerable<long> custId, string serviceName)
+        {
+            if (custId != null && custId.Any())
+            {
+                var custIdsToString = string.Join(",", custId);
+
+                var result = problemAccountDataAccess.UpdateBetLimitOfUnflaggedCustomer(custIdsToString);
+
+                if (result.ErrorCode != 0)
+                {
+                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfUnflaggedCustomer", custId, new Exception(result.ErrorMsg), sentryClient);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                return problemAccounts.GroupJoin(paLosing ?? Enumerable.Empty<ProblemAccountLosingClassificationEntity>(),
+                                                 pa => pa.CustID,
+                                                 pl => pl.CustId,
+                                                (pa, pl) => new { pa, pl })
+                                                .SelectMany(
+                                                        group => group.pl.DefaultIfEmpty(),
+                                                        (group, temp) => new InsertProblemAccountEntity
+                                                        {
+                                                            CTSCustID = group.pa.CTSCustID,
+                                                            CustID = group.pa.CustID,
+                                                            RoleID = group.pa.RoleID,
+                                                            SubscriberID = group.pa.SubscriberID,
+                                                            CategoryID = group.pa.CategoryID,
+                                                            CategoryGroup = group.pa.CategoryGroup,
+                                                            IsLicensee = group.pa.IsLicensee,
+                                                            CreatedBy = group.pa.CreatedBy,
+                                                            LastModifiedDate = group.pa.LastModifiedDate,
+                                                            Remark = group.pa.Remark,
+                                                           
+                                                            IsDirectPA = group.pa.IsDirectPA,
+                                                            IsFromCTS = group.pa.IsFromCTS,
+                                                            IsFromTVS = group.pa.IsFromTVS,
+                                                            TVSRequestID = group.pa.TVSRequestID,
+                                                            IsFromTW = group.pa.IsFromTW,
+                                                            IsDataChanged = false,
+                                                            ReasonID = group.pa.ReasonID,
+
+                                                            BetCount = temp?.BetCount,
+                                                            ActiveDays = temp?.ActiveDays,
+                                                            TurnoverRM = temp?.TurnoverRM,
+                                                            WinlossRM = temp?.WinlossRM,
+                                                            WinlossStatus = temp?.WinlossStatus,
+                                                           
+                                                        }); ;
+            }
+
+            return Enumerable.Empty<InsertProblemAccountEntity>();
+        }
+
+        #endregion
     }
 }

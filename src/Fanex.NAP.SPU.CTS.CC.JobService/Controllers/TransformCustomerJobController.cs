@@ -21,9 +21,9 @@
         }
 
         [HttpPost("InsertNewCustomer")]
-        public async Task<bool> InsertNewCustomer()
+        public async Task<bool> InsertNewCustomer([FromForm] int batchSize)
         {
-            return await ctsCustomerJobService.InsertNewCustomer();
+            return await ctsCustomerJobService.InsertNewCustomer(batchSize);
         }
 
         [HttpPost("UpdateCTSCustomerInfo")]
@@ -55,11 +55,5 @@
         {
             return await ctsCustomerJobService.InactivateNewCustomers();
         } 
-        
-        [HttpPost("InitInactivateNewCustomers")]
-        public async Task<bool> InitInactivateNewCustomers()
-        {
-            return await ctsCustomerJobService.InitInactivateNewCustomers();
-        }
     }
 }

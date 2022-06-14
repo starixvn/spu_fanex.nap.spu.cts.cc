@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -11,55 +11,70 @@
 
     public interface ICustClassToMainDBService
     {
-        IEnumerable<LatestClassificationEntity> GetLatestClassification(IEnumerable<long> custIds, string serviceName, bool isWriteLog);
+        bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters);
 
-        bool PushCustClassificationToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog);
+        IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
+
+        bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName);
 
         bool RetryPushCCToMainDB(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName);
 
-        bool UpdateAppliedCustClassification(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName);
+        bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName);
 
-        bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, DangerLevel dangerLevelType, string serviceName, bool isWriteLog);
-
-        bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, DangerLevel typeId, int retryTime, string serviceName);
+        bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName);
 
         bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
-
-        void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName);
     }
 
     public class CustClassToMainDBService : ICustClassToMainDBService
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
             ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
             ISentryClient sentryClient,
-            IFeedSoon88Services feedSoon88Services)
+            IFeedSoon88Services feedSoon88Services,
+            IAntiFraudCenterServices antiFraudCenterServices)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
             this.feedSoon88Services = feedSoon88Services;
+            this.antiFraudCenterServices = antiFraudCenterServices;
             this.sentryClient = sentryClient;
         }
 
-        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras)
+        public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
+        {
+            var isSuccess = true;
+
+            if (custIds != null && custIds.Any())
+            {
+                isSuccess = PushDataToExternal(custIds.Distinct(), parameters);
+
+                antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
+            }
+
+            return isSuccess;
+        }
+
+        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             if (custIds == null || !custIds.Any())
             {
                 return true;
             }
 
-            var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
+            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
             {
-                var lastestClassifications = GetLatestClassification(custids, paras.ServiceName, paras.IsWriteLog);
+                var lastestClassifications = GetLatestCCAndDangerLevel(custids);
 
                 if (lastestClassifications != null && lastestClassifications.Any())
                 {
-                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, paras);
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
 
                     if (!isSuccess)
                     {
@@ -71,104 +86,79 @@
             return true;
         }
 
-        public bool IsPushExternalSuccess(IEnumerable<LatestClassificationEntity> lastestClassifications, PushDataToExternalEntity paras)
+        public bool IsPushExternalSuccess(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, PushDataToExternalEntity paras)
         {
             bool isSuccess = true;
 
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName, paras.IsWriteLog);
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName);
 
                 if (paras.IsPushCCToSoon88)
                 {
-                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName, paras.IsWriteLog);
+                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName);
                 }
 
                 if (paras.IsUpdateDangerToMainDB && isSuccess)
                 {
-                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.DangerLevelType, paras.ServiceName, paras.IsWriteLog);
+                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
                 }
             }
 
             return isSuccess;
         }
 
-        public bool PushCustClassificationToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName, bool isWriteLog)
-        {
-            bool isSuccess = true;
-
-            if (lastestClassifications != null && lastestClassifications.Any())
-            {
-                isSuccess = RetryPushCCToMainDB(lastestClassifications, Constants.RetryPushCCToExternal, serviceName);
-
-                if (isSuccess)
-                {
-                    UpdateAppliedCustClassification(lastestClassifications, serviceName);
-                }
-            }
-
-            Utilities.LogSentryInfo(serviceName, "PushCCToMainDB done", (isSuccess, lastestClassifications), isWriteLog, sentryClient);
-            return isSuccess;
-        }
-
-        public IEnumerable<LatestClassificationEntity> GetLatestClassification(IEnumerable<long> custIds, string serviceName, bool isWriteLog)
-        {
-            var lastestClassification = new List<LatestClassificationEntity>();
-
-            if (custIds != null && custIds.Any())
-            {
-                string custIdsToString = string.Join(",", custIds);
-
-                lastestClassification = custClassToMainDBDataAccess.GetLatestClassification(custIdsToString)?.ToList();
-            }
-
-            Utilities.LogSentryInfo(serviceName, "Get lastestClassifications", lastestClassification, isWriteLog, sentryClient);
-            return lastestClassification;
-        }
-
-        public bool UpdateAppliedCustClassification(IEnumerable<LatestClassificationEntity> lastestClassifications, string serviceName)
+        public bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
         {
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                var jsonData = JsonConvert.SerializeObject(lastestClassifications);
-
-                var result = custClassToMainDBDataAccess.UpdateAppliedCustomerClassification(jsonData);
-
-                if (result.ErrorCode == -1)
+                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity()
                 {
-                    Utilities.LogSentryError(serviceName, "Update Apllied CC throw exception", lastestClassifications, new Exception(result.ErrorMsg), sentryClient);
+                    CustId = c.CustID,
+                    Category = c.CategoryID,
+                    CustomerClass = c.CustomerClass
+                });
 
-                    return false;
-                }
+                return RetryPushCCToMainDB(custClassification, Constants.RetryPushCCToExternal, serviceName);
             }
 
             return true;
         }
 
-        public bool UpdateDangerLevelToMainDB(IEnumerable<LatestClassificationEntity> lastestClassifications, DangerLevel dangerLevelType, string serviceName, bool isWriteLog)
+        public IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds)
         {
-            if (lastestClassifications == null || !lastestClassifications.Any())
+            if (custIds != null && custIds.Any())
             {
-                return true;
+                return custClassToMainDBDataAccess.GetLatestCCAndDangerLevel(custIds.Distinct());
             }
 
-            var dangerLevels = custClassToMainDBDataAccess.GetDangerLevel(string.Join(",", lastestClassifications.Select(c => c.CustId)), dangerLevelType);
-            Utilities.LogSentryInfo(serviceName, "Get GetDangerLevel", dangerLevels, isWriteLog, sentryClient);
+            return Enumerable.Empty<LatestCCDangerLevelEntity>();
+        }
 
-            if (dangerLevels != null && dangerLevels.Any())
+        public bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
+        {
+            if (lastestClassifications != null && lastestClassifications.Any())
             {
-                var isUpdateSuccessful = RetryUpdateDangerLevelToMainDB(dangerLevels, dangerLevelType, Constants.RetryPushCCToExternal, serviceName);
+                var groupDangerType = lastestClassifications.Where(c=>c.DangerLevel != null).GroupBy(c => c.DangerLevelType);
 
-                if (isUpdateSuccessful)
+                if (groupDangerType != null && groupDangerType.Any())
                 {
-                    var jsonUpdateApplyCCs = JsonConvert.SerializeObject(dangerLevels);
+                    foreach (var dangerBatch in groupDangerType)
+                    {
+                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity()
+                        {
+                            CustId = c.CustID,
+                            DangerLevel = c.DangerLevel.Value
+                        });
 
-                    custClassToMainDBDataAccess.UpdateAppliedDangerLevel(jsonUpdateApplyCCs, dangerLevelType);
+                        var isUpdateSuccessful = RetryUpdateDangerLevelToMainDB(updateDangerLevel, dangerBatch.Key.Value, Constants.RetryPushCCToExternal, serviceName);
+
+                        if (!isUpdateSuccessful)
+                        {
+                            return isUpdateSuccessful;
+                        }
+                    }
                 }
-
-                Utilities.LogSentryInfo(serviceName, "UpdateDangerLevelToMainDB done", (isUpdateSuccessful, lastestClassifications), isWriteLog, sentryClient);
-
-                return isUpdateSuccessful;
             }
 
             return true;
@@ -216,7 +206,7 @@
             return true;
         }
 
-        public bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, DangerLevel typeId, int retryTime, string serviceName)
+        public bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName)
         {
             if (dangerLevels == null || !dangerLevels.Any())
             {
@@ -227,11 +217,11 @@
             {
                 try
                 {
-                    var result = custClassToMainDBDataAccess.UpdateDangerLevelToMainDB(dangerLevels, typeId);
+                    var result = custClassToMainDBDataAccess.UpdateDangerLevelToMainDB(dangerLevels, dangerTypeId);
 
                     if (result.ErrorCode != 0 && retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain fail", (dangerLevels, typeId), new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain fail", (dangerLevels, dangerTypeId), new Exception(result.ErrorMsg), sentryClient);
                         return false;
                     }
                     else if (result.ErrorCode != 0)
@@ -247,7 +237,7 @@
                 {
                     if (retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain thrown exception", (dangerLevels, typeId), ex, sentryClient);
+                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain thrown exception", (dangerLevels, dangerTypeId), ex, sentryClient);
                         return false;
                     }
 
@@ -256,59 +246,6 @@
             }
 
             return true;
-        }
-
-        public void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName)
-        {
-            try
-            {
-                var inputData = MappingLogInputData(content);
-
-                if (inputData != null && inputData.Any())
-                {
-                    var result = custClassToMainDBDataAccess.LogInputData(inputData, funcId);
-
-                    if (!string.IsNullOrEmpty(result.ErrorMsg))
-                    {
-                        Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), new Exception(result.ErrorMsg), sentryClient);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, "LogInputData fail", (content, funcId), ex, sentryClient);
-            }
-        }
-
-        private IEnumerable<LogInputDataEntity> MappingLogInputData(LogInputViewEntity content)
-        {
-            var logInputData = new List<LogInputDataEntity>();
-
-            if (content != null && content.RobotUser != null && content.RobotUser.Any())
-            {
-                content.RobotUser.ToList().ForEach(c =>
-                {
-                    logInputData.Add(new LogInputDataEntity
-                    {
-                        CustId = c.CustId,
-                        InputValue = c.Counter
-                    });
-                });
-            }
-
-            if (content != null && content.ProblemAccounts != null && content.ProblemAccounts.Any())
-            {
-                content.ProblemAccounts.ToList().ForEach(c =>
-                {
-                    logInputData.Add(new LogInputDataEntity
-                    {
-                        CustId = c.CustID,
-                        InputValue = new { c.ReasonID, CreatedBy = c.Creator }.ToString()
-                    });
-                });
-            }
-
-            return logInputData;
         }
     }
 }

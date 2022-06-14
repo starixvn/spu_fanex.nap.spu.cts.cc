@@ -85,16 +85,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
             }
         }
 
-        public static void LogSentryInfo(string serviceName, string message, bool isWriteLog, ISentryClient sentryClient)
-        {
-            if (isWriteLog)
-            {
-                var logMessage = $"{serviceName} - {message} - {DateTime.Now}";
-
-                sentryClient.CaptureMessage(logMessage);
-            }
-        }
-
         public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string dataType = "Data")
         {
             var logMessage = new LogMessage(ex.Message)

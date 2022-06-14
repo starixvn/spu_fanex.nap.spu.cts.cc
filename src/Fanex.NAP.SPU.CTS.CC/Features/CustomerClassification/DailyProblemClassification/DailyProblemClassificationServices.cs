@@ -19,15 +19,13 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId);
 
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
-
         IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification);
-
-        IDailyProblemClassificationServices CheckNewPAAssociationCustomerForRollback();
 
         bool PushCCToExternal(PushDataToExternalEntity paras);
 
         bool UpdateLastScan();
+
+        IDailyProblemClassificationServices InsertPALogic();
     }
 
     public class DailyProblemClassificationServices : IDailyProblemClassificationServices
@@ -37,7 +35,8 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private ProblemClassificationDailyEntity scanningCustomers;
-        private IEnumerable<CheckPACustomerAssociationForRollbackEntity> problemAccounts;
+        private IEnumerable<CustInfoEntity> problemAccounts;
+        private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
             IDailyProblemClassificationDataAccess dailyClassificationDataAccess,
@@ -54,13 +53,12 @@
         public IDailyProblemClassificationServices Start()
         {
             scanningCustomers = new ProblemClassificationDailyEntity();
-
             return this;
         }
 
         public IDailyProblemClassificationServices Reset()
         {
-            problemAccounts = Enumerable.Empty<CheckPACustomerAssociationForRollbackEntity>();
+            problemAccounts = Enumerable.Empty<CustInfoEntity>();
 
             return this;
         }
@@ -76,21 +74,7 @@
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
-                var custIds = string.Join(",", scanningCustomers.CustID);
-
-                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIds, funcId);
-            }
-
-            return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
-        }
-
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                var custIdsToString = string.Join(",", custIds);
-
-                return dailyClassificationDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+                return problemAccountServices.GetProblemAccountLosingClassification(scanningCustomers.CustID, funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
@@ -108,11 +92,11 @@
             return this;
         }
 
-        public IDailyProblemClassificationServices CheckNewPAAssociationCustomerForRollback()
+        public IDailyProblemClassificationServices InsertPALogic()
         {
             if (problemAccounts != null & problemAccounts.Any())
             {
-                problemAccountServices.CheckNewPAAssociationCustomerForRollback(problemAccounts);
+                problemAccountServices.InsertPALogics(problemAccounts, serviceName);
             }
 
             return this;

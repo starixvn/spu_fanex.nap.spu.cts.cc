@@ -38,7 +38,7 @@
         }
 
         [Theory]
-        [InlineData(SystemParameters.ProblemAccountLastScannedTime)]
+        [InlineData(SystemParameters.DailyNormalClassificationLastCategoryID)]
         [InlineData(SystemParameters.RobotAccountLastScannedTime)]
         public void GetLastScannedTime_WhenSuccess_ReturnLastScannedTime(SystemParameters paraID)
         {
@@ -56,7 +56,7 @@
         }
 
         [Theory]
-        [InlineData(SystemParameters.ProblemAccountLastScannedTime, "2021-07-05 22:50:53")]
+        [InlineData(SystemParameters.DailyNormalClassificationLastCategoryID, "2021-07-05 22:50:53")]
         public void UpdateTimingExecution_WhenSuccess(SystemParameters paraId, string lastScannedTime)
         {
             systemParameterDataAccess.UpdateTimingExecution(lastScannedTime, paraId);

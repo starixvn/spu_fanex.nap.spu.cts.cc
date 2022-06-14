@@ -1,6 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -19,7 +22,7 @@
 
         bool Process(InsertRobotParaEntity paras);
 
-        IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
 
         void UpdateLastTimespan();
 
@@ -32,6 +35,8 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly IDataLogTrackingServices dataLogTrackingServices;
         private long lastScannedTimespan;
         private RobotUserViewEntity robotInfo;
 
@@ -39,13 +44,17 @@
             IRobotAccountInsertDataAccess robotAccountInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IProblemAccountServices problemAccountServices)
+            IProblemAccountServices problemAccountServices,
+            IAntiFraudCenterServices antiFraudCenterServices,
+            IDataLogTrackingServices dataLogTrackingServices)
 
         {
             this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
+            this.antiFraudCenterServices = antiFraudCenterServices;
+            this.dataLogTrackingServices = dataLogTrackingServices;
         }
 
         public IRobotAccountInsertServices Start()
@@ -81,68 +90,65 @@
                 && robotInfo.RobotUsers != null
                 && robotInfo.RobotUsers.Any())
             {
-                custClassToMainDBService.LogInputData(new LogInputViewEntity { RobotUser = robotInfo.RobotUsers }, FunctionId.RobotUserJob, paras.ServiceName);
-
                 var robotUsersChunks = robotInfo.RobotUsers.Chunk(paras.BatchInternalSize).ToList();
 
                 foreach (var robot in robotUsersChunks)
                 {
-                    bool isSuccess = InsertRobotUsers(robot, paras);
+                    var custIds = InsertRobotUsers(robot, paras);
 
-                    if (!isSuccess)
+                    if (custIds != null && custIds.Any())
                     {
-                        return false;
+                        var isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custIds, paras.PushDataExternal);
+
+                        if (!isSuccess)
+                        {
+                            return false;
+                        }
                     }
+
+                    Thread.Sleep(RobotUsers_SleepTimes);
                 }
             }
 
             return true;
         }
 
-        public bool InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
+        public IEnumerable<long> InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
-            bool isSuccess = true;
-
             if (robotUsers != null && robotUsers.Any())
             {
-                var custCategory = MappingRobotCategory(robotUsers);
+                var robotToInsert = MappingRobotCategory(robotUsers, paras);
 
-                var result = problemAccountServices.InsertProblemAccount(custCategory, false, paras.ServiceName);
+                dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.PushDataExternal.ServiceName);
 
-                isSuccess = (result != null && result.ErrorCode == 0);
+                var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
 
-                if (isSuccess && result.CustIds != null && result.CustIds.Any())
+                if (customerInfo != null && customerInfo.Any())
                 {
-                    isSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                    {
-                        ExternalBatchSize = paras.BatchExternalSize,
-                        FeedSoon88API = paras.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
-                        IsUpdateDangerToMainDB = true,
-                        DangerLevelType = DangerLevel.ABI,
-                        IsWriteLog = paras.IsWriteLog,
-                        ServiceName = paras.ServiceName
-                    });
-
-                    Thread.Sleep(RobotUsers_SleepTimes);
+                    return customerInfo.Select(x => x.CustID).Distinct();
                 }
             }
 
-            return isSuccess;
+            return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<ProblemAccountsEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
-            var custCategory = new List<ProblemAccountsEntity>();
+            var custCategory = new List<InsertRobotEntity>();
 
             if (robotUsers != null && robotUsers.Any())
             {
-                custCategory = robotUsers.Select(c => new ProblemAccountsEntity
+                custCategory = robotUsers.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustId,
-                    ReasonID = (int)Category.Robot,
+                    CategoryID = (int)Category.Robot,
+                    IsFromTW = paras.IsFromTW,
+                    IsFromCTS = paras.IsFromCTS,
+                    IsDirect = paras.IsDirect,
+                    IsFromAI = paras.IsFromAI,
+                    IsFromTVS = paras.IsFromTVS,
                     RobotCounter = c.Counter,
-                    Creator = StarixITId
+                    CreatedBy = StarixITId
                 }).ToList();
             }
 

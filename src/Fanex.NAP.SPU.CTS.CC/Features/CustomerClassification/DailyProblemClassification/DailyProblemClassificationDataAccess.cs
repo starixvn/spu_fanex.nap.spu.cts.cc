@@ -11,9 +11,7 @@
     {
         ProblemClassificationDailyEntity GetCustomerForProblemDailyScanning();
 
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
-
-        IEnumerable<CheckPACustomerAssociationForRollbackEntity> InsertProblemProbationClassification(string problemAccountJson);
+        IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson);
     }
 
     public class DailyProblemClassificationDataAccess : IDailyProblemClassificationDataAccess
@@ -39,25 +37,14 @@
             };
         }
 
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
-        {
-            var criteria = new ProblemAccountLosingClassificationGetCriteria()
-            {
-                ListCustIds = custIds,
-                FunctionId = (int)funcId
-            };
-
-            return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
-        }
-
-        public IEnumerable<CheckPACustomerAssociationForRollbackEntity> InsertProblemProbationClassification(string problemAccountJson)
+        public IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson)
         {
             var criteria = new ProblemAccountProbationInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson
             };
 
-            return repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
+            return repository.Fetch<CustInfoEntity>(criteria);
         }
     }
 }

@@ -1,25 +1,23 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+
     public class InsertRobotParaEntity
     {
-        public int BatchExternalSize { get; set; }
+        public PushDataToExternalEntity PushDataExternal { get; set; }
 
         public int BatchInternalSize { get; set; }
 
-        public string ServiceName { get; set; }
+        public bool IsFromTW { get; set; }
 
-        public bool IsWriteLog { get; set; }
+        public bool IsFromCTS { get; set; }
 
-        public string Soon88FeedDataAPI { get; set; }
+        public bool IsDirect { get; set; }
 
-        public bool IsSyncAFCData { get; set; }
+        public bool IsFromAI { get; set; }
 
-        public string AFCInsertAccountURL { get; set; }
+        public bool IsFromTVS { get; set; }
 
-        public string AFCUpdateAccountURL { get; set; }
-
-        public string AFCGetAccountURL { get; set; }
-
-        public string AFCInternalKey { get; set; }
+        public int? TVSRequestID { get; set; }
     }
 }

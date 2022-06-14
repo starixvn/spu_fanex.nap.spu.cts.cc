@@ -12,7 +12,7 @@
 
     public interface IFeedSoon88Services
     {
-        void FeedCCToSoon88(IEnumerable<LatestClassificationEntity> custsToMainDB, string url, string serviceName, bool isWriteLog);
+        void FeedCCToSoon88(IEnumerable<LatestCCDangerLevelEntity> custsToMainDB, string url, string serviceName);
     }
 
     public class FeedSoon88Services : IFeedSoon88Services
@@ -26,20 +26,18 @@
             this.sentryClient = sentryClient;
         }
 
-        public void FeedCCToSoon88(IEnumerable<LatestClassificationEntity> custsToMainDB, string url, string serviceName, bool isWriteLog)
+        public void FeedCCToSoon88(IEnumerable<LatestCCDangerLevelEntity> custsToMainDB, string url, string serviceName)
         {
             if (custsToMainDB != null && custsToMainDB.Any())
             {
                 var custClassList = custsToMainDB.Select(c => new CustomerClassEntity
                 {
-                    CustID = c.CustId,
+                    CustID = c.CustID,
                     CustomerClass = c.CustomerClass
                 });
 
                 FeedDataToSoon88(custClassList, url);
             }
-
-            Utilities.LogSentryInfo(serviceName, "FeedSoon88 done", custsToMainDB, isWriteLog, sentryClient);
         }
 
         public void FeedDataToSoon88(IEnumerable<CustomerClassEntity> custClasses, string url)

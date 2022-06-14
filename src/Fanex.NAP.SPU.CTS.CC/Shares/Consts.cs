@@ -6,25 +6,15 @@
 
         public const int InternalRetry = 3;
 
-        public const string InitialProblemAccounts = "0";
-
-        public const string ProblemAccountByDateTime = "";
-
         public const string FeedSoon88_Salt = "!%HGDwweHqw#";
 
-        public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
+        public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss.fff";
 
         public const int Realtime_SleepTimes = 2000;
 
         public const int RobotUsers_SleepTimes = 300;
 
-        public const int RemoveEvidences_ClearActionId = 3;
-
         public const int StarixITId = 10278938;
-
-        public const int ImportEvidence_SleepTimes = 5000; //5s
-
-        public const int ProblemAccountLosing_BatchSize = 2000;
 
         public enum MatchMonitorQueryTypes
         {
@@ -32,15 +22,8 @@
             Report = 2,
         };
 
-        public enum ImportEvidenceSourceTypesFrom
-        {
-            Evidence = 0,
-            MarkPA = 1
-        };
-
         public enum SystemParameters
         {
-            ProblemAccountLastScannedTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
             InsertNewCustomerMonitoring = 67,
@@ -54,15 +37,11 @@
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastCategoryID = 88,
-            DailyProblemClassificationLastCustID = 89
+            DailyProblemClassificationLastCustID = 89,
+            NewCTSCustomerClassificationLastCustID = 92,
+            RobotDetectionLastModifiedDate = 94,
+            TVS_LastScanDateTime = 2
         };
-
-        public enum DangerLevel
-        {
-            Original = 1,
-            ABI = 2,
-            Other = 3
-        }
 
         public enum Category
         {
@@ -73,7 +52,17 @@
             VIP = 205,
             Probation = 206,
             VVIP = 213,
-            Robot = 61
+            Robot = 61,
+            AIRobotClassification = 61,
+            AIRobotDetection = 63
+        };
+
+        public enum Reason
+        {
+            Abnormal = 27,
+            AbnormalM = 101,
+            RobotBetting = 36,
+            ABBet = 32
         };
 
         public enum CustomerRole
@@ -99,12 +88,6 @@
             FromProductStatus = 3
         };
 
-        public enum EvidenceActionType
-        {
-            Insert = 0,
-            Remove = 2
-        };
-
         public enum FunctionId
         {
             RealtimeJob = 1,
@@ -113,33 +96,37 @@
             InsertNewCustJob = 4,
             RemoveVIPWeb = 5,
             RemoveSpecialCCWeb = 6,
-            RemovePAAPI = 7,
-            RemoveFlaggedEvidenceWeb = 8,
-            RemoveMultiEvidencesWeb = 9,
+            //RemovePAAPI = 7,
+            //RemoveFlaggedEvidenceWeb = 8,
+            //RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
             ProblemDailyJob = 12,
-            InsertEvidenceJob = 13,
-            PlaceSingleEvidence = 14,
-            PlaceEvidenceForMultiCustAPI = 21,
-            PlaceMultiEvidencesForMultiCustAPI = 22,
+            //InsertEvidenceJob = 13,
+            //PlaceSingleEvidence = 14,
+            //PlaceEvidenceForMultiCustAPI = 21,
+            //PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
-            InsertNewCus_CheckPA = 24,
-            RemoveVVIP_CheckPA = 25,
-            RemoveSpecial_CheckPA = 26,
-            RemovePA_CheckPA = 27,
-            RemoveFlaggedEvidence_CheckPA = 28,
-            RemoveMultiEvidences_CheckPA = 29,
-            ExcludeTaggingByAss_CheckPA = 30,
+            //InsertNewCus_CheckPA = 24,
+            //RemoveVVIP_CheckPA = 25,
+            //RemoveSpecial_CheckPA = 26,
+            //RemovePA_CheckPA = 27,
+            //RemoveFlaggedEvidence_CheckPA = 28,
+            //RemoveMultiEvidences_CheckPA = 29,
+            //ExcludeTaggingByAss_CheckPA = 30,
             InsertNewCus_CheckRobotUser = 34,
             RemoveVVIP_CheckRobotUser = 35,
             RemoveSpecial_CheckRobotUser = 36,
-            RemovePA_CheckRobotUser = 37,
-            RemoveFlaggedEvi_CheckRobotUser = 38,
-            RemoveMultiEvi_CheckRobotUser = 39,
-            ExcludeTaggingAss_CheckRobotUser = 40,
+            //RemovePA_CheckRobotUser = 37,
+            //RemoveFlaggedEvi_CheckRobotUser = 38,
+            //RemoveMultiEvi_CheckRobotUser = 39,
+            //ExcludeTaggingAss_CheckRobotUser = 40,
             InsertPAJob = 41,
-            UpdateCategory = 42
+            //UpdateCategory = 42,
+            InsertPAM = 43,
+            TWProblemAccountInsert = 44,
+            DownlineCustomerClassification = 45,
+            TVSProblemAccountInsert = 46,
         };
 
         public enum HttpStatus
@@ -169,17 +156,25 @@
             GetByCustId = 2
         };
 
-        public enum FromAction
+        public enum VVIP_FromAction
         {
             WebSite = 1,
             Service = 2,
             ServiceInsertNew = 3
         }
 
-        public enum VVIPActionType
+        public enum DownlineClassification_ActionType
         {
-            Insert = 1,
-            Remove = 2
+            InsertVVIP = 1,
+            RemoveVVIP = 2,
+            InsertPA = 3,
+            RemovePA = 4,
         }
+
+        public enum InsertPA_ByType
+        {
+            Category = 1,
+            Reason = 2,
+        };
     }
 }

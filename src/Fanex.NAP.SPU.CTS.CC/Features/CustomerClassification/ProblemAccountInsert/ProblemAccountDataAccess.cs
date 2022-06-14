@@ -3,17 +3,31 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using System;
+    using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProblemAccountDataAccess
     {
-        IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime);
+        IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
 
-        InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescan);
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
+
+        IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromDownlineQueue);
+
+        RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
+
+        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
+
+        void RemoveOldProblemAccount(string custIds);
 
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
+
+        DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
+
+        DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
     }
 
     public class ProblemAccountDataAccess : IProblemAccountDataAccess
@@ -25,34 +39,76 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProblemAccountsEntity> GetProblemAccounts_IBC(string custIDs, DateTime? dateTime)
+        public IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds)
         {
-            var criteria = new ProblemAccountsGetCriteria
+            var criteria = new ProblemAccountGetCriteria()
             {
-                CustIds = custIDs,
-                Datetime = dateTime
+                CustIds = custIds,
             };
 
-            return repository.Fetch<ProblemAccountsEntity>(criteria);
+            return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
         }
 
-        public InsertCategoryResultEntity InsertProblemAccount(string problemAccountJson, bool isRescan)
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
+        {
+            var criteria = new ProblemAccountLosingClassificationGetCriteria()
+            {
+                ListCustIds = custIds,
+                FunctionId = (int)funcId
+            };
+
+            return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
+        }
+
+
+        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
         {
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
-                IsRescan = isRescan
+                InputType = inputType,
+                IsToQueue = isToQueue
             };
 
-            var assCustForRollback = repository.Fetch<CheckPACustomerAssociationForRollbackEntity>(criteria);
+            return repository.Fetch<CustInfoEntity>(criteria);
+        }
 
-            return new InsertCategoryResultEntity
+        public RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue)
+        {
+            var criteria = new ProblemAccountRemoveCriteria
             {
-                ErrorMessage = criteria.ErrorMessage,
-                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                CustIds = assCustForRollback?.Select(x => x.CustID) ?? Enumerable.Empty<long>(),
-                NewPAAssociationCustomerForRollback = assCustForRollback
+                ProblemAccountJson = JsonConvert.SerializeObject(problemAccounts),
+                IsFromQueue = isFromQueue
             };
+
+            var custInfos = repository.Fetch<CustRemovePAEntity>(criteria);
+
+            return new RemovePAResultEntity
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMessage = criteria.ErrorMessage,
+                CustomerInfo = custInfos ?? Enumerable.Empty<CustRemovePAEntity>()
+            };
+        }
+
+        public void RemoveOldProblemAccount(string custIds)
+        {
+            var criteria = new OldProblemAccountRemoveCriteria
+            {
+                CustId = custIds
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson)
+        {
+            var criteria = new RobotAccountInsertCriteria
+            {
+                CustInfo = robotAccountJson
+            };
+
+            return repository.Fetch<CustInfoEntity>(criteria) ?? Enumerable.Empty<CustInfoEntity>();
         }
 
         public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
@@ -63,6 +119,38 @@
             };
 
             return repository.Execute(criteria);
+        }
+
+        public DBResult UpdateBetLimitOfFlaggedCustomer(string custIds)
+        {
+            var criteria = new BetLimitByEvidenceUpdateCriteria
+            {
+                CustIDList = custIds
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
+            };
+        }
+
+        public DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds)
+        {
+            var criteria = new BetLimitByEvidenceRemoveCriteria
+            {
+                CustIDList = custIds
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
+                ErrorMsg = criteria.ErrorMessage
+            };
         }
     }
 }
