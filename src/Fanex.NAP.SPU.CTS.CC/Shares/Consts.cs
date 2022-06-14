@@ -61,7 +61,8 @@
         {
             Abnormal = 27,
             AbnormalM = 101,
-            RobotBetting = 36
+            RobotBetting = 36,
+            ABBet = 32
         };
 
         public enum CustomerRole

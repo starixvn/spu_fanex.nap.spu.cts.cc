@@ -50,6 +50,7 @@
             {
                 var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.Abnormal
                                                        && c.ReasonID != (int)Reason.AbnormalM
+                                                       && c.ReasonID != (int)Reason.ABBet
                                                        && c.ReasonID != (int)Reason.RobotBetting).Select(c => new InsertProblemAccountEntity
                                                        {
                                                            CustID = c.CustID,
