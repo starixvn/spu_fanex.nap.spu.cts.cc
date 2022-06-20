@@ -43,5 +43,7 @@
         public int Danger2 { get; set; }
 
         public int Danger3 { get; set; }
+
+        public bool IsLicensee { get; set; }
     }
 }
