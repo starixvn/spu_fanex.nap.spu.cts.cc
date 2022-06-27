@@ -142,7 +142,6 @@
                     robotClassificationPerformance = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
                     {
                         CustID = c.CustID,
-                        CategoryID = c.CategoryID,
                         ActiveDays = c.ActiveDays,
                         TurnoverRM = c.Turnover,
                         BetCount = c.BetCount,
@@ -203,7 +202,6 @@
                         {
                             CustID = c.CustId,
                             RobotCounter = c.Counter,
-                            CategoryID = (int)Category.Robot,
                             IsFromTW = true,
                             IsDirect = true,
                             CreatedBy = StarixITId
@@ -229,7 +227,7 @@
                 robotToInsert.AddRange(robotClassificationPerformance);
             }
 
-            var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
+            var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
 
             if (isSuccess && customerInfo.Any())
             {

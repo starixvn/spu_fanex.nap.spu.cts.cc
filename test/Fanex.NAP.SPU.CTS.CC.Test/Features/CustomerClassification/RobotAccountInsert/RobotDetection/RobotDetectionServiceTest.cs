@@ -20,7 +20,6 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;        
 
         public RobotDetectionServiceTest()
         {
@@ -28,12 +27,10 @@
             systemParameterServices = Substitute.For<ISystemParameterServices>();
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
             robotDetectionService = new RobotAIDetectionService(robotDetectionDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
-                , problemAccountServices
-                , antiFraudCenterServices);
+                , problemAccountServices);
         }
 
         [Fact]

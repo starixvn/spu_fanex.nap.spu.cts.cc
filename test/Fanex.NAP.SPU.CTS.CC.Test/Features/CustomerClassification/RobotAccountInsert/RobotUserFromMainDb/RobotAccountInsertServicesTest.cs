@@ -20,7 +20,6 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
 
         public RobotAccountInsertServicesTest()
@@ -29,13 +28,11 @@
             systemParameterServices = Substitute.For<ISystemParameterServices>();
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
             dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
-            robotAccountInsertServices = new TWRobotInsertServices(robotAccountInsertDataAccess
+            robotAccountInsertServices = new RobotTWInsertServices(robotAccountInsertDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
                 , problemAccountServices
-                , antiFraudCenterServices
                 , dataLogTrackingServices);
         }
 

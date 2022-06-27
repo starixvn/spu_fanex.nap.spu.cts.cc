@@ -78,14 +78,13 @@
                 var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.RobotBetting).Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
-                    CategoryID = (int)Category.Robot,
                     CreatedBy = c.CreatedBy,
                     TVSRequestID = c.RequestID,
                     IsFromTVS = true,
                     IsDirect = true
                 });
 
-                var result = problemAccountServices.InsertRobotAccount(insertRobot);
+                var result = problemAccountServices.InsertRobotAccountPackage(insertRobot);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
             }
