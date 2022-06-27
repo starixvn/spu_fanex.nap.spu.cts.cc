@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\CustomerClassification\RobotAccountInsert\RobotUserFromMainDb\Entities\RobotInsetViewEntity.cs" />
+    <Compile Remove="Features\CustomerClassification\RobotAccountInsert\TWRobot\Entities\RobotInsetViewEntity.cs" />
   </ItemGroup>
 
   <ItemGroup>

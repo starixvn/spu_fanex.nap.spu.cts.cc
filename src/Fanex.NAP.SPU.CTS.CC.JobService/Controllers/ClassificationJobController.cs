@@ -87,12 +87,6 @@
             return await this.robotAccountInsertJobService.ScanningRobotClassification(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("robotAIClassification")]
-        public async Task<bool> RobotAIScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
-        }
-
         [HttpPost("robotDetection")]
         public async Task<bool> RobotDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {

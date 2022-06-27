@@ -138,7 +138,6 @@
                 custCategory = robotDetections.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
-                    CategoryID = (int)Category.AIRobotDetection,
                     IsFromTW = paras.IsFromTW,
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
