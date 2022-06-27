@@ -15,8 +15,8 @@
 
     public class RobotDetectionServiceTest
     {
-        private readonly IRobotDetectionDataAccess robotDetectionDataAccess;
-        private readonly IRobotDetectionService robotDetectionService;
+        private readonly IRobotAIDetectionDataAccess robotDetectionDataAccess;
+        private readonly IRobotAIDetectionService robotDetectionService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
@@ -24,12 +24,12 @@
 
         public RobotDetectionServiceTest()
         {
-            robotDetectionDataAccess = Substitute.For<IRobotDetectionDataAccess>();           
+            robotDetectionDataAccess = Substitute.For<IRobotAIDetectionDataAccess>();           
             systemParameterServices = Substitute.For<ISystemParameterServices>();
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
-            robotDetectionService = new RobotDetectionService(robotDetectionDataAccess
+            robotDetectionService = new RobotAIDetectionService(robotDetectionDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
                 , problemAccountServices
@@ -42,7 +42,7 @@
             var result = robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate);
 
             // Assert
-            Assert.IsAssignableFrom<IRobotDetectionService>(result);
+            Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
         }
 
         [Fact]
@@ -54,7 +54,7 @@
             var expectedResult = new List<long>();
 
             // Act
-            var result = robotDetectionService.InsertProblemAccount(robotDetections, paras);
+            var result = robotDetectionService.InsertRobotAI(robotDetections, paras);
 
             // Assert
             result.Should().NotBeNull();
@@ -93,7 +93,7 @@
             robotDetectionDataAccess.GetRobotDetections(expectedRobotDetectionLastModifiedDate).Returns(expectedRobotDetections);
             robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate);
             
-            var result = robotDetectionService.Process(paras);
+            var result = robotDetectionService.InsertRobotAIPackage(paras);
 
             // Assert
             result.Should().BeTrue();

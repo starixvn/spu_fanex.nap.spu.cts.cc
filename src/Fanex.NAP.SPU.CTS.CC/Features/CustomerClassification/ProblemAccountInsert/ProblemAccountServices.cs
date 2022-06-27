@@ -21,7 +21,7 @@
   
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
-        IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
+        IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
@@ -133,11 +133,15 @@
             }
         }
 
-        public IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
+        public IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts)
         {
             if (robotAccounts != null && robotAccounts.Any())
             {
-                var customerInfo = problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+                var paLosing = GetProblemAccountLosingClassification(robotAccounts.Select(c => c.CustID).Distinct(), FunctionId.RobotUserJob);
+
+                var robotClassification = MergeRobotLosingClassification(robotAccounts, paLosing);
+
+                var customerInfo = InsertRobotAccount(robotClassification);
 
                 CheckNewPAAssociationCustomerForRollback(customerInfo);
 
@@ -184,6 +188,16 @@
             }
 
             return new RemovePAResultEntity();
+        }
+
+        private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
+        {
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                return problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
         }
 
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
@@ -267,6 +281,39 @@
             return Enumerable.Empty<InsertProblemAccountEntity>();
         }
 
+        private IEnumerable<InsertRobotEntity> MergeRobotLosingClassification(IEnumerable<InsertRobotEntity> robotAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        {
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                return robotAccounts.GroupJoin(paLosing ?? Enumerable.Empty<ProblemAccountLosingClassificationEntity>(),
+                                                 pa => pa.CustID,
+                                                 pl => pl.CustId,
+                                                (pa, pl) => new { pa, pl })
+                                                .SelectMany(
+                                                        group => group.pl.DefaultIfEmpty(),
+                                                        (group, temp) => new InsertRobotEntity
+                                                        {
+                                                            CustID = group.pa.CustID,
+                                                            RobotCounter = group.pa.RobotCounter,
+                                                            CreatedBy = group.pa.CreatedBy,
+                                                            IsDirect = group.pa.IsDirect,
+                                                            IsFromCTS = group.pa.IsFromCTS,
+                                                            IsFromAI = group.pa.IsFromAI,
+                                                            IsFromTVS = group.pa.IsFromTVS,
+                                                            IsFromTW = group.pa.IsFromTW,
+                                                            TVSRequestID = group.pa.TVSRequestID,
+                                                            Remark = group.pa.Remark,
+
+                                                            BetCount = temp?.BetCount,
+                                                            ActiveDays = temp?.ActiveDays,
+                                                            TurnoverRM = temp?.TurnoverRM,
+                                                            WinlossRM = temp?.WinlossRM,
+                                                            WinlossStatus = temp?.WinlossStatus,
+                                                        }); ;
+            }
+
+            return Enumerable.Empty<InsertRobotEntity>();
+        }
         #endregion
     }
 }

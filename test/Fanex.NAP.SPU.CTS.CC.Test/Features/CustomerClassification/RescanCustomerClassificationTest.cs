@@ -36,8 +36,8 @@
 
         private readonly ISystemParameterServices systemParameterService;
 
-        private readonly IRobotAccountInsertServices robotAccountInsertServices;
-        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
+        private readonly IRobotTWInsertServices robotAccountInsertServices;
+        private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
 
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;

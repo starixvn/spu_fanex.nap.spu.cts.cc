@@ -8,7 +8,7 @@
     {
         IEnumerable<RoleCustomerEntity> GetRoleCustomer(string custIds);
 
-        IEnumerable<RobotUserEntity> GetExistedTWRobotUser(string custIds);
+        IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds);
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -30,14 +30,14 @@
             return repository.Fetch<RoleCustomerEntity>(criteria);
         }
 
-        public IEnumerable<RobotUserEntity> GetExistedTWRobotUser(string custIds)
+        public IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds)
         {
             var criteria = new ExistedTWRobotUserGetCriteria
             {
                 CustIds = custIds
             };
 
-            return repository.Fetch<RobotUserEntity>(criteria);
+            return repository.Fetch<TWRobotUserEntity>(criteria);
         }
     }
 }

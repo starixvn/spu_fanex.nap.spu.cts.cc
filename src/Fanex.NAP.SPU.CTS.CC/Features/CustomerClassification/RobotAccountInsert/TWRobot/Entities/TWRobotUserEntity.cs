@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
-    public class RobotUserEntity
+    public class TWRobotUserEntity
     {
         public long CustId { get; set; }
 

@@ -12,40 +12,38 @@
     using System.Threading;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface IRobotAccountInsertServices
+    public interface IRobotTWInsertServices
     {
-        IRobotAccountInsertServices Start();
+        IRobotTWInsertServices Start();
 
-        IRobotAccountInsertServices GetLastTimespan();
+        IRobotTWInsertServices GetLastTimespan();
 
-        IRobotAccountInsertServices GetRobotUser();
+        IRobotTWInsertServices GetTWRobotUser();
 
-        bool Process(InsertRobotParaEntity paras);
+        bool InsertTWRobotPackage(InsertRobotParaEntity paras);
 
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras);
+        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras);
 
         void UpdateLastTimespan();
 
-        RobotUserViewEntity RobotUserInfo { get; }
+        TWRobotUserViewEntity RobotUserInfo { get; }
     }
 
-    public class RobotAccountInsertServices : IRobotAccountInsertServices
+    public class RobotTWInsertServices : IRobotTWInsertServices
     {
-        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
+        private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private long lastScannedTimespan;
-        private RobotUserViewEntity robotInfo;
+        private TWRobotUserViewEntity robotInfo;
 
-        public RobotAccountInsertServices(
-            IRobotAccountInsertDataAccess robotAccountInsertDataAccess,
+        public RobotTWInsertServices(
+            IRobotTWInsertDataAccess robotAccountInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IProblemAccountServices problemAccountServices,
-            IAntiFraudCenterServices antiFraudCenterServices,
             IDataLogTrackingServices dataLogTrackingServices)
 
         {
@@ -53,52 +51,49 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
-            this.antiFraudCenterServices = antiFraudCenterServices;
             this.dataLogTrackingServices = dataLogTrackingServices;
         }
 
-        public IRobotAccountInsertServices Start()
+        public IRobotTWInsertServices Start()
         {
             lastScannedTimespan = 0;
 
-            robotInfo = new RobotUserViewEntity
+            robotInfo = new TWRobotUserViewEntity
             {
-                RobotUsers = new List<RobotUserEntity>(),
+                RobotUsers = new List<TWRobotUserEntity>(),
                 MaxTimestamp = 0
             };
 
             return this;
         }
 
-        public IRobotAccountInsertServices GetLastTimespan()
+        public IRobotTWInsertServices GetLastTimespan()
         {
             lastScannedTimespan = systemParameterServices.GetLastScannedId(SystemParameters.RobotAccountLastScannedTime);
 
             return this;
         }
 
-        public IRobotAccountInsertServices GetRobotUser()
+        public IRobotTWInsertServices GetTWRobotUser()
         {
-            robotInfo = robotAccountInsertDataAccess.GetRobotUsersFromMainDb(lastScannedTimespan);
+            robotInfo = robotAccountInsertDataAccess.GetTWRobotUsers(lastScannedTimespan);
 
             return this;
         }
 
-        public bool Process(InsertRobotParaEntity paras)
+        public bool InsertTWRobotPackage(InsertRobotParaEntity paras)
         {
-            if (robotInfo != null
-                && robotInfo.RobotUsers != null
-                && robotInfo.RobotUsers.Any())
+            if (robotInfo != null && robotInfo.RobotUsers != null && robotInfo.RobotUsers.Any())
             {
                 var robotUsersChunks = robotInfo.RobotUsers.Chunk(paras.BatchInternalSize).ToList();
 
-                foreach (var robot in robotUsersChunks)
+                foreach (var robotBatch in robotUsersChunks)
                 {
-                    var custIds = InsertRobotUsers(robot, paras);
+                    var custIds = InsertTWRobot(robotBatch, paras);
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custIds, paras.PushDataExternal);
+                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, paras.PushDataExternal);
 
                         if (!isSuccess)
                         {
@@ -113,7 +108,7 @@
             return true;
         }
 
-        public IEnumerable<long> InsertRobotUsers(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
+        public IEnumerable<long> InsertTWRobot(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
             if (robotUsers != null && robotUsers.Any())
             {
@@ -121,7 +116,7 @@
 
                 dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.PushDataExternal.ServiceName);
 
-                var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
+                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
 
                 if (customerInfo != null && customerInfo.Any())
                 {
@@ -132,7 +127,7 @@
             return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotUserEntity> robotUsers, InsertRobotParaEntity paras)
+        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras)
         {
             var custCategory = new List<InsertRobotEntity>();
 
@@ -141,7 +136,6 @@
                 custCategory = robotUsers.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustId,
-                    CategoryID = (int)Category.Robot,
                     IsFromTW = paras.IsFromTW,
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
@@ -167,6 +161,6 @@
             }
         }
 
-        public RobotUserViewEntity RobotUserInfo => robotInfo;
+        public TWRobotUserViewEntity RobotUserInfo => robotInfo;
     }
 }

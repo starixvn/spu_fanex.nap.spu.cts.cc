@@ -3,25 +3,25 @@
     using Fanex.Data.Repository;
     using System.Collections.Generic;
 
-    public interface IRobotAccountInsertDataAccess
+    public interface IRobotTWInsertDataAccess
     {
-        RobotUserViewEntity GetRobotUsersFromMainDb(long lastTimestamp);
+        TWRobotUserViewEntity GetTWRobotUsers(long lastTimestamp);
     }
 
-    public class RobotAccountInsertDataAccess : IRobotAccountInsertDataAccess
+    public class RobotTWInsertDataAccess : IRobotTWInsertDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public RobotAccountInsertDataAccess()
+        public RobotTWInsertDataAccess()
         {
             repository = new DynamicRepository();
         }
 
-        public RobotUserViewEntity GetRobotUsersFromMainDb(long lastTimestamp)
+        public TWRobotUserViewEntity GetTWRobotUsers(long lastTimestamp)
         {
-            var result = new RobotUserViewEntity
+            var result = new TWRobotUserViewEntity
             {
-                RobotUsers = new List<RobotUserEntity>(),
+                RobotUsers = new List<TWRobotUserEntity>(),
                 MaxTimestamp = 0
             };
 
@@ -30,7 +30,7 @@
                 LastTimestamp = lastTimestamp
             };
 
-            result.RobotUsers = repository.Fetch<RobotUserEntity>(criteria);
+            result.RobotUsers = repository.Fetch<TWRobotUserEntity>(criteria);
             result.MaxTimestamp = criteria.MaxTimestamp;
 
             return result;

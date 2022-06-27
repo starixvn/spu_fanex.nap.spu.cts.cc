@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class RobotUserViewEntity
+    public class TWRobotUserViewEntity
     {
-        public IEnumerable<RobotUserEntity> RobotUsers { get; set; }
+        public IEnumerable<TWRobotUserEntity> RobotUsers { get; set; }
 
         public long MaxTimestamp { get; set; }
     }

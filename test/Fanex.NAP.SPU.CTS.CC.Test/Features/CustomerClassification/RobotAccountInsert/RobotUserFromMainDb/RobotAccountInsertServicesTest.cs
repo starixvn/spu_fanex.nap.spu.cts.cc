@@ -15,8 +15,8 @@
 
     public class RobotAccountInsertServicesTest
     {
-        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
-        private readonly IRobotAccountInsertServices robotAccountInsertServices;
+        private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
+        private readonly IRobotTWInsertServices robotAccountInsertServices;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
@@ -25,13 +25,13 @@
 
         public RobotAccountInsertServicesTest()
         {
-            robotAccountInsertDataAccess = Substitute.For<IRobotAccountInsertDataAccess>();
+            robotAccountInsertDataAccess = Substitute.For<IRobotTWInsertDataAccess>();
             systemParameterServices = Substitute.For<ISystemParameterServices>();
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
             dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
-            robotAccountInsertServices = new RobotAccountInsertServices(robotAccountInsertDataAccess
+            robotAccountInsertServices = new TWRobotInsertServices(robotAccountInsertDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
                 , problemAccountServices
@@ -46,17 +46,17 @@
             var result = robotAccountInsertServices.GetLastTimespan();
 
             // Assert
-            Assert.IsAssignableFrom<IRobotAccountInsertServices>(result);
+            Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
         }
 
         [Fact]
         public void GetRobotUser_WhenSuccess()
         {
             // Act
-            var result = robotAccountInsertServices.GetRobotUser();
+            var result = robotAccountInsertServices.GetTWRobotUser();
 
             // Assert
-            Assert.IsAssignableFrom<IRobotAccountInsertServices>(result);
+            Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
         }
 
         [Fact]
@@ -83,10 +83,10 @@
 
             long expectedLastTimespan = 1;
 
-            var expectedRobotInfo = new RobotUserViewEntity
+            var expectedRobotInfo = new TWRobotUserViewEntity
             {
                 MaxTimestamp = 1,
-                RobotUsers = new List<RobotUserEntity> { new RobotUserEntity { CustId = 1, Counter = 1 } }
+                RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity { CustId = 1, Counter = 1 } }
             };
 
 
@@ -95,11 +95,11 @@
 
             robotAccountInsertServices.GetLastTimespan();
 
-            robotAccountInsertDataAccess.GetRobotUsersFromMainDb(expectedLastTimespan).Returns(expectedRobotInfo);
+            robotAccountInsertDataAccess.GetTWRobotUsers(expectedLastTimespan).Returns(expectedRobotInfo);
 
-            robotAccountInsertServices.GetRobotUser();
+            robotAccountInsertServices.GetTWRobotUser();
 
-            var result = robotAccountInsertServices.Process(paras);
+            var result = robotAccountInsertServices.InsertTWRobotPackage(paras);
 
             // Assert
             result.Should().BeTrue();

@@ -84,13 +84,13 @@
         [HttpPost("robotClassification")]
         public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.ScanningRobotClassification(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningTWRobotAccount(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("robotDetection")]
         public async Task<bool> RobotDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.ScanningRobotDetection(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningAIRobotDetection(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("scan-tw-problem-account-customer")]

@@ -129,13 +129,13 @@
 
         private static void RegisteRobotAccountInsert(this IServiceCollection services)
         {
-            services.AddSingleton<IRobotAccountInsertDataAccess, RobotAccountInsertDataAccess>();
-            services.AddSingleton<IRobotAccountInsertServices, RobotAccountInsertServices>();
+            services.AddSingleton<IRobotTWInsertDataAccess, RobotTWInsertDataAccess>();
+            services.AddSingleton<IRobotTWInsertServices, RobotTWInsertServices>();
 
             services.AddSingleton<IRobotAccountInsertJobService, RobotAccountInsertJobService>();
 
-            services.AddSingleton<IRobotDetectionDataAccess, RobotDetectionDataAccess>();
-            services.AddSingleton<IRobotDetectionService, RobotDetectionService>();
+            services.AddSingleton<IRobotAIDetectionDataAccess, RobotAIDetectionDataAccess>();
+            services.AddSingleton<IRobotAIDetectionService, RobotAIDetectionService>();
         }
 
         private static void RegisteCustomer(this IServiceCollection services)

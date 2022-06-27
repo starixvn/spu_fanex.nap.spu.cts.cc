@@ -7,61 +7,55 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface IRobotDetectionService
+    public interface IRobotAIDetectionService
     {
-        IRobotDetectionService Start();
+        IRobotAIDetectionService Start();
 
-        IRobotDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate);
+        IRobotAIDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate);
 
-        bool Process(InsertRobotParaEntity paras);
+        bool InsertRobotAIPackage(InsertRobotParaEntity paras);
 
-        IEnumerable<long> InsertProblemAccount(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
+        IEnumerable<long> InsertRobotAI(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
         IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
-        IRobotDetectionService UpdateLastScannedId(SystemParameters index);
+        IRobotAIDetectionService UpdateLastScannedId(SystemParameters index);
     }
 
-    public class RobotDetectionService : IRobotDetectionService
+    public class RobotAIDetectionService : IRobotAIDetectionService
     {
-        private readonly IRobotDetectionDataAccess dataAccess;
+        private readonly IRobotAIDetectionDataAccess dataAccess;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private IEnumerable<RobotDetectionEntity> robotDetections;
 
-        public RobotDetectionService(IRobotDetectionDataAccess dataAccess,
+        public RobotAIDetectionService(IRobotAIDetectionDataAccess dataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IProblemAccountServices problemAccountServices,
-            IAntiFraudCenterServices antiFraudCenterServices)
+            IProblemAccountServices problemAccountServices)
         {
             this.dataAccess = dataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;
-            this.antiFraudCenterServices = antiFraudCenterServices;            
         }
 
         public IEnumerable<RobotDetectionEntity> RobotDetections => robotDetections;
 
-        public IRobotDetectionService Start()
+        public IRobotAIDetectionService Start()
         {
             this.robotDetections = new List<RobotDetectionEntity>();
 
             return this;
         }
 
-        public IRobotDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate)
+        public IRobotAIDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate)
         {            
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(robotDetectionLastModifiedDate);
 
@@ -73,7 +67,7 @@
             return this;
         }
 
-        public bool Process(InsertRobotParaEntity paras)
+        public bool InsertRobotAIPackage(InsertRobotParaEntity paras)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
@@ -81,7 +75,7 @@
 
                 foreach (var robot in robotDetectionChunks)
                 {
-                    var custIds = InsertProblemAccount(robot, paras);
+                    var custIds = InsertRobotAI(robot, paras);
 
                     if (custIds != null && custIds.Any())
                     {
@@ -100,7 +94,7 @@
             return true;
         }
 
-        public IRobotDetectionService UpdateLastScannedId(SystemParameters index)
+        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters index)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
@@ -112,13 +106,13 @@
             return this;
         }
 
-        public IEnumerable<long> InsertProblemAccount(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
+        public IEnumerable<long> InsertRobotAI(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
         {
             if (robotDetections != null && robotDetections.Any())
             {
                 var robotToInsert = MappingRobotCategory(robotDetections, paras);
 
-                var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
+                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
 
                 if (customerInfo != null && customerInfo.Any())
                 {
@@ -143,7 +137,7 @@
                     IsDirect = paras.IsDirect,
                     IsFromAI = paras.IsFromAI,
                     IsFromTVS = paras.IsFromTVS,
-                    RobotCounter = 0,
+                    RobotCounter = null,
                     CreatedBy = StarixITId
                 }).ToList();
             }

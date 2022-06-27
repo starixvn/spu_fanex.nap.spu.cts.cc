@@ -10,9 +10,9 @@
 
     public interface IRobotAccountInsertJobService
     {
-        Task<bool> ScanningRobotClassification(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> ScanningRobotDetection(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize);
     }
 
     public class RobotAccountInsertJobService : IRobotAccountInsertJobService
@@ -20,25 +20,25 @@
         private readonly string robotAccountServiceName;
         private readonly string robotDetectionServiceName;
         private readonly ISentryClient sentryClient;
-        private readonly IRobotAccountInsertServices robotAccountInsertServices;
-        private readonly IRobotDetectionService robotDetectionService;
+        private readonly IRobotTWInsertServices robotAccountInsertServices;
+        private readonly IRobotAIDetectionService robotDetectionService;
         private readonly IAppSettings appSettings;
 
         public RobotAccountInsertJobService(
             ISentryClient sentryClient,
-            IRobotAccountInsertServices robotAccountInsertServices,
-            IRobotDetectionService robotDetectionService,
+            IRobotTWInsertServices robotAccountInsertServices,
+            IRobotAIDetectionService robotDetectionService,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.robotAccountInsertServices = robotAccountInsertServices;
             this.robotDetectionService = robotDetectionService;
             this.appSettings = appSettings;
-            this.robotAccountServiceName = "RobotAccountInsert";
-            this.robotDetectionServiceName = "RobotDetection";
+            this.robotAccountServiceName = "TWRobotAccount";
+            this.robotDetectionServiceName = "AIRobotDetection";
         }
 
-        public Task<bool> ScanningRobotClassification(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -63,7 +63,7 @@
             return Task.FromResult(response);
         }
 
-        public Task<bool> ScanningRobotDetection(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -94,8 +94,8 @@
         {
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
-                                                      .GetRobotUser()
-                                                      .Process(new InsertRobotParaEntity
+                                                      .GetTWRobotUser()
+                                                      .InsertTWRobotPackage(new InsertRobotParaEntity
                                                       {
                                                           BatchInternalSize = batchInternalSize,
                                                           IsFromTW = true,
@@ -129,7 +129,7 @@
         {
             var isSuccess = robotDetectionService.Start()
                                                  .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
-                                                 .Process(new InsertRobotParaEntity
+                                                 .InsertRobotAIPackage(new InsertRobotParaEntity
                                                  {
                                                      BatchInternalSize = batchInternalSize,
                                                      IsFromTW = false,
