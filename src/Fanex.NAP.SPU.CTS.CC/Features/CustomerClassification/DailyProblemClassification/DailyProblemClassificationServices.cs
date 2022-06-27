@@ -35,7 +35,7 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private ProblemClassificationDailyEntity scanningCustomers;
-        private IEnumerable<CustInfoEntity> problemAccounts;
+        private IEnumerable<InsertPAProbationResult> problemAccounts;
         private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
@@ -58,7 +58,7 @@
 
         public IDailyProblemClassificationServices Reset()
         {
-            problemAccounts = Enumerable.Empty<CustInfoEntity>();
+            problemAccounts = Enumerable.Empty<InsertPAProbationResult>();
 
             return this;
         }
@@ -96,7 +96,11 @@
         {
             if (problemAccounts != null & problemAccounts.Any())
             {
-                problemAccountServices.InsertPALogics(problemAccounts, serviceName);
+                var probAccountToInsertLogic = problemAccounts.Where(c => !c.IsRobot).Select(c => new CustInfoEntity { CTSCustID = c.CTSCustID, CustID = c.CustID });
+                problemAccountServices.InsertPALogics(probAccountToInsertLogic, serviceName);
+
+                var robotToInsertLogic = problemAccounts.Where(c => c.IsRobot).Select(c => new CustInfoEntity { CTSCustID = c.CTSCustID, CustID = c.CustID });
+                problemAccountServices.InsertRobotLogics(robotToInsertLogic);
             }
 
             return this;

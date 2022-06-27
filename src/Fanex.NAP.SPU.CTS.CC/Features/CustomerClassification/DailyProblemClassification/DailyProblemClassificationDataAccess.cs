@@ -11,7 +11,7 @@
     {
         ProblemClassificationDailyEntity GetCustomerForProblemDailyScanning();
 
-        IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson);
+        IEnumerable<InsertPAProbationResult> InsertProblemProbationClassification(string problemAccountJson);
     }
 
     public class DailyProblemClassificationDataAccess : IDailyProblemClassificationDataAccess
@@ -37,14 +37,14 @@
             };
         }
 
-        public IEnumerable<CustInfoEntity> InsertProblemProbationClassification(string problemAccountJson)
+        public IEnumerable<InsertPAProbationResult> InsertProblemProbationClassification(string problemAccountJson)
         {
             var criteria = new ProblemAccountProbationInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson
             };
 
-            return repository.Fetch<CustInfoEntity>(criteria);
+            return repository.Fetch<InsertPAProbationResult>(criteria);
         }
     }
 }

@@ -26,6 +26,8 @@
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
         void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
+
+        void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -143,7 +145,7 @@
 
                 var customerInfo = InsertRobotAccount(robotClassification);
 
-                CheckNewPAAssociationCustomerForRollback(customerInfo);
+                InsertRobotLogics(customerInfo);
 
                 return customerInfo;
             }
@@ -151,17 +153,15 @@
             return Enumerable.Empty<CustInfoEntity>();
         }
 
-        #region Private Methods
-
-        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
+        public void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo)
         {
-            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            if (customerInfo != null && customerInfo.Any())
             {
-                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
-
-                problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
             }
         }
+
+        #region Private Methods
 
         private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isToQueue)
         {
@@ -198,6 +198,16 @@
             }
 
             return Enumerable.Empty<CustInfoEntity>();
+        }
+
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+            }
         }
 
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
