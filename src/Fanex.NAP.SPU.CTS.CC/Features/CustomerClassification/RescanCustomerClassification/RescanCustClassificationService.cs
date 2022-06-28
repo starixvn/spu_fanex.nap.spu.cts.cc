@@ -51,7 +51,7 @@
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
-        private IEnumerable<InsertRobotEntity> robotClassificationPerformance;
+        private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
         private IEnumerable<long> custIdsToRemoveOldPA;
@@ -78,7 +78,7 @@
         {
             this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
             this.robotUsers = new List<InsertRobotEntity>();
-            this.robotClassificationPerformance = Enumerable.Empty<InsertRobotEntity>();
+            this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
             this.custIdsToRemoveOldPA = Enumerable.Empty<long>();
             this.smaCustIds = new List<long>();
@@ -139,13 +139,9 @@
                         CreatedBy = StarixITId
                     });
 
-                    robotClassificationPerformance = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
+                    robotClassification = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
                     {
                         CustID = c.CustID,
-                        ActiveDays = c.ActiveDays,
-                        TurnoverRM = c.Turnover,
-                        BetCount = c.BetCount,
-                        WinlossRM = c.Winloss,
                         IsDirect = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,
@@ -222,9 +218,9 @@
                 robotToInsert.AddRange(robotUsers);
             }
 
-            if (robotClassificationPerformance.Any())
+            if (robotClassification.Any())
             {
-                robotToInsert.AddRange(robotClassificationPerformance);
+                robotToInsert.AddRange(robotClassification);
             }
 
             var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
