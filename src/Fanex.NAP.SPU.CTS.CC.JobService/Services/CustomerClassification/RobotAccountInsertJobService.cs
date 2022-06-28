@@ -99,7 +99,7 @@
                                                       {
                                                           BatchInternalSize = batchInternalSize,
                                                           IsFromTW = true,
-                                                          IsFromCTS = false,                                                         
+                                                          IsFromCTS = false,
                                                           IsDirect = true,
                                                           IsFromAI = false,
                                                           IsFromTVS = false,

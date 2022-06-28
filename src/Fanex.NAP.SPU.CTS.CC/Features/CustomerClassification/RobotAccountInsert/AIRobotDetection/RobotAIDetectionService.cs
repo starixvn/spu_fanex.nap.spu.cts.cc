@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
@@ -56,13 +55,13 @@
         }
 
         public IRobotAIDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate)
-        {            
+        {
             var lastScannedTime = systemParameterServices.GetLastScannedDateTime(robotDetectionLastModifiedDate);
 
             if (lastScannedTime != null)
             {
                 this.robotDetections = this.dataAccess.GetRobotDetections(lastScannedTime.Value);
-            }            
+            }
 
             return this;
         }
@@ -98,7 +97,7 @@
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
-                var latestScannedTime = this.robotDetections.Max(x=>x.LastModifiedDate).ToString(CONVERT_TO_SQL_DATETIME);
+                var latestScannedTime = this.robotDetections.Max(x => x.LastModifiedDate).ToString(CONVERT_TO_SQL_DATETIME);
 
                 systemParameterServices.UpdateTimingExecution(latestScannedTime, index);
             }
@@ -143,7 +142,6 @@
             }
 
             return custCategory;
-        }     
-
+        }
     }
 }

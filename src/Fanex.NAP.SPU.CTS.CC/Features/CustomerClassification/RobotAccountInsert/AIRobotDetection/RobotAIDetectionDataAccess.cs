@@ -29,6 +29,5 @@
 
             return repository.Fetch<RobotDetectionEntity>(criteria);
         }
-
     }
 }

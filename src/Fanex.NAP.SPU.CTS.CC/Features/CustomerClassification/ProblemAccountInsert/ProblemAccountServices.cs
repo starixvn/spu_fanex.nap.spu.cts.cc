@@ -18,7 +18,7 @@
         IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName);
 
         RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
-  
+
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
         IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts);
@@ -32,7 +32,7 @@
 
     public class ProblemAccountServices : IProblemAccountServices
     {
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;                
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ISentryClient sentryClient;
 
         public ProblemAccountServices(
@@ -121,7 +121,7 @@
         {
             if (customerInfo != null && customerInfo.Any())
             {
-                var custIds = customerInfo.Where(c=>c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
+                var custIds = customerInfo.Where(c => c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
             }
@@ -167,7 +167,7 @@
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
+                return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
             }
 
             return Enumerable.Empty<CustInfoEntity>();
@@ -270,7 +270,7 @@
                                                             CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
                                                             Remark = group.pa.Remark,
-                                                           
+
                                                             IsDirectPA = group.pa.IsDirectPA,
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromTVS = group.pa.IsFromTVS,
@@ -284,7 +284,6 @@
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
                                                             WinlossStatus = temp?.WinlossStatus,
-                                                           
                                                         }); ;
             }
 
@@ -305,14 +304,15 @@
                                                         {
                                                             CustID = group.pa.CustID,
                                                             RobotCounter = group.pa.RobotCounter,
+                                                            Remark = group.pa.Remark,
                                                             CreatedBy = group.pa.CreatedBy,
-                                                            IsDirect = group.pa.IsDirect,
+
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromAI = group.pa.IsFromAI,
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             IsFromTW = group.pa.IsFromTW,
                                                             TVSRequestID = group.pa.TVSRequestID,
-                                                            Remark = group.pa.Remark,
+                                                            IsDirect = group.pa.IsDirect,
 
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
@@ -324,6 +324,7 @@
 
             return Enumerable.Empty<InsertRobotEntity>();
         }
-        #endregion
+
+        #endregion Private Methods
     }
 }
