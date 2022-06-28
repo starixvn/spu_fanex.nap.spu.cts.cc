@@ -8,7 +8,7 @@
 
     public interface ITWGroupBettingService
     {
-        Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID);
+        Int64 ScanTicket(int batchSize, int step, Int64 lastTransID);
 
         void CountGroupBettingTicket();
 
@@ -72,9 +72,9 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
-        public Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID) 
+        public Int64 ScanTicket(int batchSize, int step, Int64 lastTransID) 
         {
-            return twGroupBettingDataAccess.ScanTicket(fromTime, toTime, step, lastTransID);
+            return twGroupBettingDataAccess.ScanTicket(batchSize, step, lastTransID);
         }
 
         public void CountGroupBettingTicket()

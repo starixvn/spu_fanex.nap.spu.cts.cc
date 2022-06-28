@@ -20,9 +20,9 @@
         }
 
         [HttpPost("scan-tw-group-betting")]
-        public async Task<bool> ScanTWGroupBetting()
+        public async Task<bool> ScanTWGroupBetting([FromForm] int batchSize)
         {
-            return await this.twGroupBettingJobService.DetectGroupBettingTicket();
+            return await this.twGroupBettingJobService.DetectGroupBettingTicket(batchSize);
         }
 
         [HttpPost("count-cust-total-ticket")]
