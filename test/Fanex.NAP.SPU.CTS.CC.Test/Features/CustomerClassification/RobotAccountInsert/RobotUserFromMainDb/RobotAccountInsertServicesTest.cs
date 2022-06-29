@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RobotAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -10,13 +10,14 @@
     using NSubstitute;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class RobotAccountInsertServicesTest
     {
         private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
-        private readonly IRobotTWInsertServices robotAccountInsertServices;
+        private readonly IRobotTWInsertServices robotTWInsertServices;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
@@ -29,7 +30,7 @@
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
-            robotAccountInsertServices = new RobotTWInsertServices(robotAccountInsertDataAccess
+            robotTWInsertServices = new RobotTWInsertServices(robotAccountInsertDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
                 , problemAccountServices
@@ -40,7 +41,7 @@
         public void GetLastTimespan_WhenSuccess()
         {
             // Act
-            var result = robotAccountInsertServices.GetLastTimespan();
+            var result = robotTWInsertServices.GetLastTimespan();
 
             // Assert
             Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
@@ -50,14 +51,31 @@
         public void GetRobotUser_WhenSuccess()
         {
             // Act
-            var result = robotAccountInsertServices.GetTWRobotUser();
+            var result = robotTWInsertServices.GetTWRobotUser();
 
             // Assert
             Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
         }
 
+
         [Fact]
-        public void Process_WhenSuccess_ReturnTrue()
+        public void InsertTWRobot_WhenSuccess_ReturnData()
+        {
+            // Arrange
+            var robotTWs = new List<TWRobotUserEntity> { };
+            var paras = new InsertRobotParaEntity();
+            var expectedResult = new List<long>();
+
+            // Act
+            var result = robotTWInsertServices.InsertTWRobot(robotTWs, paras);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public void InsertTWRobotPackage_WhenSuccess_ReturnTrue()
         {
             // Arrange
             var paras = new InsertRobotParaEntity 
@@ -83,23 +101,67 @@
             var expectedRobotInfo = new TWRobotUserViewEntity
             {
                 MaxTimestamp = 1,
-                RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity { CustId = 1, Counter = 1 } }
+                RobotUsers = Enumerable.Empty<TWRobotUserEntity>()
             };
 
 
             // Act
             systemParameterServices.GetLastScannedId(SystemParameters.RobotAccountLastScannedTime).Returns(expectedLastTimespan);
 
-            robotAccountInsertServices.GetLastTimespan();
+            robotTWInsertServices.GetLastTimespan();
 
             robotAccountInsertDataAccess.GetTWRobotUsers(expectedLastTimespan).Returns(expectedRobotInfo);
 
-            robotAccountInsertServices.GetTWRobotUser();
+            robotTWInsertServices.GetTWRobotUser();
 
-            var result = robotAccountInsertServices.InsertTWRobotPackage(paras);
+            var result = robotTWInsertServices.InsertTWRobotPackage(paras);
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        [Fact]
+        public void MappingRobotCategory_WhenSuccess_ReturnData()
+        {
+            // Arrange
+            var robotTW = new List<TWRobotUserEntity> { new TWRobotUserEntity { CustId = 0, Counter = 0 } };
+            var paras = new InsertRobotParaEntity();
+            var expectedResult = new List<InsertRobotEntity>()
+            {
+                CreateSampleRobotModel()
+            };
+
+            // Act
+            var result = robotTWInsertServices.MappingRobotCategory(robotTW, paras);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        private InsertRobotEntity CreateSampleRobotModel()
+        {
+            var rd = new Random();
+            var data = new InsertRobotEntity
+            {
+                CustID = 0,
+                IsFromTW = false,
+                IsFromCTS = false,
+                IsDirect = false,
+                IsFromAI = false,
+                IsFromTVS = false,
+                RobotCounter = 0,
+                CreatedBy = StarixITId,
+                Remark = null,
+                BetCount = null,
+                TVSRequestID = null,
+                ActiveDays = null,
+                TurnoverRM = null,
+                WinlossRM = null,
+                WinlossStatus = null
+            };
+
+            return data;
         }
     }
 }

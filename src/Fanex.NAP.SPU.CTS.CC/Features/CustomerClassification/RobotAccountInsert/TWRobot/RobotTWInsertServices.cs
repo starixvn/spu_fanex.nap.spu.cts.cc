@@ -21,6 +21,8 @@
 
         bool InsertTWRobotPackage(InsertRobotParaEntity paras);
 
+        IEnumerable<long> InsertTWRobot(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras);
+
         IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras);
 
         void UpdateLastTimespan();

@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RobotAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -46,7 +46,7 @@
         public void InsertProblemAccount_WhenSuccess_ReturnData()
         {
             // Arrange
-            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 11, LastModifiedDate = DateTime.Now } };
+            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 0, LastModifiedDate = DateTime.Now } };
             var paras = new InsertRobotParaEntity();
             var expectedResult = new List<long>();
 
@@ -80,10 +80,7 @@
                 }
             };
             var expectedRobotDetectionLastModifiedDate = DateTime.Now;
-            var expectedRobotDetections = new List<RobotDetectionEntity>()
-            {
-                new RobotDetectionEntity { CustID = 1, LastModifiedDate = DateTime.Now }
-            };
+            var expectedRobotDetections = new List<RobotDetectionEntity>();
 
             // Act
             systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotDetectionLastModifiedDate).Returns(expectedRobotDetectionLastModifiedDate);
@@ -94,6 +91,50 @@
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        [Fact]
+        public void MappingRobotCategory_WhenSuccess_ReturnData()
+        {
+            // Arrange
+            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 0, LastModifiedDate = DateTime.Now } };
+            var paras = new InsertRobotParaEntity();
+            var expectedResult = new List<InsertRobotEntity>()
+            {
+                CreateSampleRobotModel()
+            };
+
+            // Act
+            var result = robotDetectionService.MappingRobotCategory(robotDetections, paras);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        private InsertRobotEntity CreateSampleRobotModel()
+        {
+            var rd = new Random();
+            var data = new InsertRobotEntity
+            {
+                CustID = 0,
+                IsFromTW = false,
+                IsFromCTS = false,
+                IsDirect = false,
+                IsFromAI = false,
+                IsFromTVS = false,
+                RobotCounter = null,
+                CreatedBy = StarixITId,
+                Remark = null,
+                BetCount = null,
+                TVSRequestID = null,
+                ActiveDays = null,
+                TurnoverRM = null,
+                WinlossRM = null,
+                WinlossStatus = null
+            };
+
+            return data;
         }
     }
 }
