@@ -37,6 +37,9 @@
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_NormalAccountsClassification_Probation" SpName="CTS_NormalAccountsClassification_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="900" />
 	</Function>
+	<Function Name="MatchMonitorClassification">
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel_xtest" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
 		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
