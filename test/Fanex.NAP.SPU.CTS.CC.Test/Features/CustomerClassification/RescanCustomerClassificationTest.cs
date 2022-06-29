@@ -10,7 +10,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using FluentAssertions;
     using NSubstitute;
     using System.Collections.Generic;
     using Xunit;
@@ -32,12 +31,7 @@
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
-
         private readonly ISystemParameterServices systemParameterService;
-
-        private readonly IRobotTWInsertServices robotAccountInsertServices;
-        private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
 
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;
