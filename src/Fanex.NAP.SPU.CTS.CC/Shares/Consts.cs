@@ -125,6 +125,7 @@
             TWProblemAccountInsert = 44,
             DownlineCustomerClassification = 45,
             TVSProblemAccountInsert = 46,
+            ClassifyGBMatchMonitor = 47
         };
 
         public enum HttpStatus

@@ -5,6 +5,9 @@
 
     public class ClassifyGBMatchMonitorCompletedCriteria : NonQueryCommand
     {
+        [SpParam(SqlParamName = "ip_MatchID")]
+        public int MatchID { get; set; }
+
         [SpParam(SqlParamName = "ip_MMDetailsList")]
         public string MMDetailsJson { get; set; }
 

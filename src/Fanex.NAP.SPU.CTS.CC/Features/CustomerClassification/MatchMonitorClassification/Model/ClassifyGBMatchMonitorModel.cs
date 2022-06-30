@@ -4,8 +4,10 @@
 
     public class ClassifyGBMatchMonitorModel
     {
-        public IEnumerable<CustInfosEntity> CustInfos { get; set; }
+        public IEnumerable<ClassifyGBMMCustInfosEntity> CustInfos { get; set; }
 
         public IEnumerable<int> MMDetailIDs { get; set; }
+
+        public int? MatchID { get; set; }
     }
 }

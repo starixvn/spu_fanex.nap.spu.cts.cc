@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System;
 
     public class InsertProblemAccountEntity
@@ -10,6 +12,25 @@
             IsFromCTS = false;
             IsFromTW = false;
             IsDataChanged = false;
+        }
+
+        public InsertProblemAccountEntity(ClassifyGBMMCustInfosEntity gbMMCust)
+        {
+            this.CTSCustID = gbMMCust.CTSCustID;
+            this.CustID = gbMMCust.CustID;
+            this.RoleID = gbMMCust.RoleID;
+            this.SubscriberID = gbMMCust.SubscriberID;
+            this.CategoryID = gbMMCust.CategoryID;
+            this.CategoryGroup = gbMMCust.CategoryGroup;
+            this.IsLicensee = gbMMCust.IsLicensee;
+            this.MatchID = gbMMCust.MatchID;
+            this.CreatedBy = Constants.StarixITId;
+            this.Remark = string.Empty;
+            this.IsDirectPA = false;
+            this.IsFromCTS = true;
+            this.IsFromTVS = false;
+            this.IsFromTW = false;
+            this.IsDataChanged = false;            
         }
 
         public Int64 CustID { get; set; }
@@ -56,5 +77,7 @@
 
         //True if only removing SpecialCC
         public bool IsDataChanged { get; set; }
+
+        public int? MatchID { get; set; }
     }
 }

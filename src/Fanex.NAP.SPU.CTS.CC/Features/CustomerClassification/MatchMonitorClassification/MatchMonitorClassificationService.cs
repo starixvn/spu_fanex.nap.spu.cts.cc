@@ -1,10 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification
-{   
+{
+    using System.Linq;
+
     public interface IMatchMonitorClassificationService
     {
         ClassifyGBMatchMonitorModel ClassifyGBMatchMonitor();
 
-        void ClassifyGBMatchMonitorCompleted(string mmDetailIDs);
+        void ClassifyGBMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel);
     }
 
     public class MatchMonitorClassificationService : IMatchMonitorClassificationService
@@ -16,9 +18,14 @@
             return matchDataAccess.ClassifyGBMatchMonitor();
         }
 
-        public void ClassifyGBMatchMonitorCompleted(string mmDetailIDs)
+        public void ClassifyGBMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel)
         {
-            matchDataAccess.ClassifyGBMatchMonitorCompleted(mmDetailIDs);
+            if (classifyGBMMModel.MatchID.HasValue)
+            {
+                var mmDetailIDList = string.Join(",", classifyGBMMModel.MMDetailIDs.Select(x => x));
+
+                matchDataAccess.ClassifyGBMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, mmDetailIDList);
+            }            
         }
     }
 }
