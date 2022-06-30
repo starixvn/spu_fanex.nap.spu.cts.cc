@@ -27,7 +27,7 @@
 
         IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
+        IRescanCustClassificationService InsertRobot();
 
         IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity paras);
 
@@ -40,6 +40,12 @@
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
+
+        IEnumerable<InsertProblemAccountEntity> ExistedPA { get; }
+
+        IEnumerable<InsertRobotEntity> ExistedRobot { get; }
+
+        IEnumerable<InsertRobotEntity> TWRobots { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -98,7 +104,7 @@
                     GetExistedProblemAccounts(custIds)
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
                    .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
-                   .InsertRobot(parameters)
+                   .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
                 }
@@ -209,7 +215,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertRobot(RescanParametersEntity paras)
+        public IRescanCustClassificationService InsertRobot()
         {
             var robotToInsert = new List<InsertRobotEntity>();
 
@@ -309,5 +315,11 @@
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
         public IEnumerable<InsertRobotEntity> RobotUsers => robotUsers;
+
+        public IEnumerable<InsertProblemAccountEntity> ExistedPA => problemAccounts;
+
+        public IEnumerable<InsertRobotEntity> ExistedRobot => robotClassification;
+
+        public IEnumerable<InsertRobotEntity> TWRobots => robotUsers;
     }
 }
