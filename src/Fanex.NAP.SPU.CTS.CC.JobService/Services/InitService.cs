@@ -27,6 +27,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
 
     public static class InitService
     {
@@ -61,6 +62,8 @@
             RegisterNewCTSCustomerClassification(services);
 
             RegisterTVSProblemAccountInsert(services);
+
+            RegisterClassifyGBMatchMonitor(services);
 
             RegisterDataLogTracking(services);
         }
@@ -181,6 +184,13 @@
             services.AddSingleton<ITVSProblemAccountDataAccess, TVSProblemAccountDataAccess>();
             services.AddSingleton<ITVSProblemAccountServices, TVSProblemAccountServices>();
             services.AddSingleton<ITVSProblemAccountJobService, TVSProblemAccountJobService>();
+        }
+        
+        public static void RegisterClassifyGBMatchMonitor(this IServiceCollection services)
+        {
+            services.AddSingleton<IMatchMonitorClassificationDataAccess, MatchMonitorClassificationDataAccess>();
+            services.AddSingleton<IMatchMonitorClassificationService, MatchMonitorClassificationService>();
+            services.AddSingleton<IMatchMonitorClassificationJobService, MatchMonitorClassificationJobService>();
         }
 
         private static void RegisterDataLogTracking(this IServiceCollection services)

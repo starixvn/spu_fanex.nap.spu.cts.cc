@@ -8,7 +8,7 @@
         [SpParam(SqlParamName = "ip_MatchID")]
         public int MatchID { get; set; }
 
-        [SpParam(SqlParamName = "ip_MMDetailsList")]
+        [SpParam(SqlParamName = "ip_MMDetailsIDList")]
         public string MMDetailsJson { get; set; }
 
         public override string GetSettingKey()

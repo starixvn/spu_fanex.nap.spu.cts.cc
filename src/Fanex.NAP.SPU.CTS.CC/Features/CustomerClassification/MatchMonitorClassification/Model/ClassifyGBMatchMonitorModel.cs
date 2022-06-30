@@ -6,7 +6,7 @@
     {
         public IEnumerable<ClassifyGBMMCustInfosEntity> CustInfos { get; set; }
 
-        public IEnumerable<int> MMDetailIDs { get; set; }
+        public string MMDetailIDList { get; set; }
 
         public int? MatchID { get; set; }
     }

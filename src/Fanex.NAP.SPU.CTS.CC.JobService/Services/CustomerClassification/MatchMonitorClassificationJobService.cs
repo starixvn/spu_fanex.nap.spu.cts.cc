@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -18,20 +19,24 @@
     {
         private readonly IMatchMonitorClassificationService mmClassificationService;
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly string serviceName;
+        private const int batchSize = 500;
 
         public MatchMonitorClassificationJobService(ISentryClient sentryClient
             , IAppSettings appSettings
             , IMatchMonitorClassificationService mmClassificationService
-            , IProblemAccountServices problemAccountServices)
+            , IProblemAccountServices problemAccountServices
+            , ICustClassToMainDBService custClassToMainDBService)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.serviceName = "MatchMonitorClassicationStatus";
             this.mmClassificationService = mmClassificationService;
             this.problemAccountServices = problemAccountServices;
+            this.custClassToMainDBService = custClassToMainDBService;
         }
 
         public Task<bool> ClassifyGBMatchMonitor()
@@ -44,14 +49,24 @@
                 {    
                     var problemAccounts = classifyGBMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
 
-                    problemAccountServices.InsertProblemAccountPackage(problemAccounts
+                    var custIdsResult = problemAccountServices.InsertProblemAccountPackage(problemAccounts
                         , Shares.Constants.FunctionId.ClassifyGBMatchMonitor
                         , Shares.Constants.InsertPA_ByType.Category
                         , false
                         , serviceName);
-                }
 
-                mmClassificationService.ClassifyGBMatchMonitorCompleted(classifyGBMMModel);
+                    custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult.Distinct(), new PushDataToExternalEntity
+                    {
+                        ExternalBatchSize = batchSize,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsPushCCToSoon88 = true,
+                        IsUpdateDangerToMainDB = true,
+                        IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                        ServiceName = serviceName
+                    });
+
+                    mmClassificationService.ClassifyGBMatchMonitorCompleted(classifyGBMMModel);
+                }                
 
                 return Task.FromResult(true);
             }

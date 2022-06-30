@@ -23,13 +23,13 @@
         {
             var criteria = new ClassifyGBMatchMonitorCriteria();
 
-            var (custInfos, mmDetailIDs, matchIDs) = repository.FetchMultiple<CustInfosEntity, int, int>(criteria);
+            var (custInfos, MMDetailIDs, matchIDs) = repository.FetchMultiple<ClassifyGBMMCustInfosEntity, string, int?>(criteria);
 
             return new ClassifyGBMatchMonitorModel
             {
                 CustInfos = custInfos,
-                MMDetailIDs = mmDetailIDs,
-                MatchID = matchIDs != null ? matchIDs.FirstOrDefault(): null
+                MMDetailIDList = MMDetailIDs != null ? MMDetailIDs.FirstOrDefault() : null,
+                MatchID = matchIDs != null ? matchIDs.FirstOrDefault() : null
             };
         }
 

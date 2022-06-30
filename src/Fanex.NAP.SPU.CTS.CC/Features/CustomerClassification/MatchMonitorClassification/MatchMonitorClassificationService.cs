@@ -13,6 +13,11 @@
     {
         private readonly IMatchMonitorClassificationDataAccess matchDataAccess;
 
+        public MatchMonitorClassificationService(IMatchMonitorClassificationDataAccess matchDataAccess)
+        {
+            this.matchDataAccess = matchDataAccess;
+        }
+
         public ClassifyGBMatchMonitorModel ClassifyGBMatchMonitor()
         {
             return matchDataAccess.ClassifyGBMatchMonitor();
@@ -21,10 +26,8 @@
         public void ClassifyGBMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel)
         {
             if (classifyGBMMModel.MatchID.HasValue)
-            {
-                var mmDetailIDList = string.Join(",", classifyGBMMModel.MMDetailIDs.Select(x => x));
-
-                matchDataAccess.ClassifyGBMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, mmDetailIDList);
+            {                
+                matchDataAccess.ClassifyGBMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
             }            
         }
     }
