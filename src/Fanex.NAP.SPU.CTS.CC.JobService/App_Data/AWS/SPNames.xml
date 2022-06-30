@@ -33,7 +33,8 @@
 		<Setting Key="CTS_NormalAccountsClassification_Probation" SpName="CTS_NormalAccountsClassification_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="900" />
 	</Function>
 	<Function Name="MatchMonitorClassification">
-		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Completed" SpName="CTS_DC_CustClassification_MatchMonitor_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />

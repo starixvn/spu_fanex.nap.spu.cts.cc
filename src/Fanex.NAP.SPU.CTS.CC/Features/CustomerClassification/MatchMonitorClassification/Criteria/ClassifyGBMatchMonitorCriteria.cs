@@ -1,9 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class MatchMonitorClassifyCriteria : NonQueryCommand
+    public class ClassifyGBMatchMonitorCriteria : NonQueryCommand
     {       
         public override string GetSettingKey()
         {
