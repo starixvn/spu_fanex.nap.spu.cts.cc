@@ -6,7 +6,10 @@
     public class RobotAccountInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustInfo")]
-        public string CustInfo { get; set; }
+        public string CustInfo { get; set; }       
+        
+        [SpParam(SqlParamName = "ip_IsRescan")]
+        public bool IsRescan { get; set; }
 
         public override string GetSettingKey()
         {

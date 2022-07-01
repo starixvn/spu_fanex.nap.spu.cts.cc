@@ -21,7 +21,7 @@
 
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
-        IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts);
+        IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
@@ -137,7 +137,7 @@
             }
         }
 
-        public IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts)
+        public IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
         {
             if (robotAccounts != null && robotAccounts.Any())
             {
@@ -145,7 +145,7 @@
 
                 var robotClassification = MergeRobotLosingClassification(robotAccounts, paLosing);
 
-                var customerInfo = InsertRobotAccount(robotClassification);
+                var customerInfo = InsertRobotAccount(robotClassification, isRescan);
 
                 InsertRobotLogics(customerInfo);
 
@@ -207,11 +207,11 @@
             return new RemovePAResultEntity();
         }
 
-        private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
+        private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
         {
             if (robotAccounts != null && robotAccounts.Any())
             {
-                return problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+                return problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts), isRescan);
             }
 
             return Enumerable.Empty<CustInfoEntity>();

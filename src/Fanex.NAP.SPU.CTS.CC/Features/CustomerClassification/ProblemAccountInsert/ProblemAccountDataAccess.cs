@@ -19,7 +19,7 @@
 
         RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
 
-        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
+        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan);
 
         void RemoveOldProblemAccount(string custIds);
 
@@ -102,11 +102,12 @@
             repository.Execute(criteria);
         }
 
-        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson)
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan)
         {
             var criteria = new RobotAccountInsertCriteria
             {
-                CustInfo = robotAccountJson
+                CustInfo = robotAccountJson,
+                IsRescan = isRescan
             };
 
             return repository.Fetch<CustInfoEntity>(criteria) ?? Enumerable.Empty<CustInfoEntity>();

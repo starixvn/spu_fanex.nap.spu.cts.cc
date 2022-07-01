@@ -84,7 +84,7 @@
                     IsDirect = true
                 });
 
-                var result = problemAccountServices.InsertRobotAccountPackage(insertRobot);
+                var result = problemAccountServices.InsertRobotAccountPackage(insertRobot, false);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
 

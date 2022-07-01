@@ -111,7 +111,7 @@
             {
                 var robotToInsert = MappingRobotCategory(robotDetections, paras);
 
-                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
+                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, false);
 
                 if (customerInfo != null && customerInfo.Any())
                 {

@@ -134,7 +134,7 @@
             };
 
             // Act
-            var result = problemAccountServices.InsertRobotAccountPackage(robot);
+            var result = problemAccountServices.InsertRobotAccountPackage(robot, false);
 
             // Assert
             Assert.IsAssignableFrom<IEnumerable<CustInfoEntity>>(result);

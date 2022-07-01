@@ -117,7 +117,7 @@
 
                 dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.PushDataExternal.ServiceName);
 
-                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert);
+                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, false);
 
                 if (customerInfo != null && customerInfo.Any())
                 {
