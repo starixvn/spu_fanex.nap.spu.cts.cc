@@ -87,6 +87,11 @@
                 var result = problemAccountServices.InsertRobotAccountPackage(insertRobot);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
+
+                if (isSuccess)
+                {
+                    isSuccess = problemAccountServices.CheckPAToUnflagBetlimit(result?.Select(c => c.CTSCustID)?.Distinct(), parameters.ServiceName);
+                }
             }
 
             return isSuccess;

@@ -28,6 +28,8 @@
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
 
         DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
+
+        IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds);
     }
 
     public class ProblemAccountDataAccess : IProblemAccountDataAccess
@@ -59,7 +61,6 @@
 
             return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
         }
-
 
         public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
         {
@@ -151,6 +152,16 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
+        }
+
+        public IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds)
+        {
+            var criteria = new CheckCleanPAEvidenceCriteria
+            {
+                CTSCustIds = ctsCustIds
+            };
+
+            return repository.Fetch<CustInfoEntity>(criteria);
         }
     }
 }

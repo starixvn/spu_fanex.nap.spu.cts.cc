@@ -6,6 +6,7 @@
 		<Setting Key="CTS_DC_SystemParameter_Update" SpName="CTS_DC_SystemParameter_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="Acc_CustomerUpdateCustomerClass" SpName="Acc_CustomerUpdateCustomerClass_xtest" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_GetForSoon88" SpName="CTS_DC_CustClassification_GetForSoon88" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustEvidence_CheckCleanCust" SpName="CTS_DC_CustEvidence_CheckCleanCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="NormalAccount">
 		<Setting Key="CTS_DC_CustClassification_InsertNormalAccount" SpName="CTS_DC_CustClassification_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />

@@ -28,6 +28,8 @@
         void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
 
         void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);
+
+        bool CheckPAToUnflagBetlimit(IEnumerable<long> ctsCustIds, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
@@ -161,6 +163,21 @@
             }
         }
 
+        public bool CheckPAToUnflagBetlimit(IEnumerable<long> ctsCustIds, string serviceName)
+        {
+            if (ctsCustIds != null && ctsCustIds.Any())
+            {
+                var custCleanPA = CheckCleanCustFlaggedEvidence(ctsCustIds);
+
+                if (custCleanPA != null && custCleanPA.Any())
+                {
+                    UpdateBetLimitOfUnflaggedCustomer(custCleanPA?.Select(c => c.CustID)?.Distinct(), serviceName);
+                }
+            }
+
+            return true;
+        }
+
         #region Private Methods
 
         private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isToQueue)
@@ -227,6 +244,18 @@
             }
 
             return true;
+        }
+
+        private IEnumerable<CustInfoEntity> CheckCleanCustFlaggedEvidence(IEnumerable<long> ctsCustIds)
+        {
+            if (ctsCustIds != null && ctsCustIds.Any())
+            {
+                var ctsCustIdsToString = string.Join(",", ctsCustIds.Distinct());
+
+                return problemAccountDataAccess.CheckCleanPAEvidence(ctsCustIdsToString);
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
         }
 
         private bool UpdateBetLimitOfUnflaggedCustomer(IEnumerable<long> custId, string serviceName)
