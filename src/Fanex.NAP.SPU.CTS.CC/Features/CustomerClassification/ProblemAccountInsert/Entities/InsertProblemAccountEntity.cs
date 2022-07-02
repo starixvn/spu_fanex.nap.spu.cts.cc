@@ -25,7 +25,7 @@
             this.IsLicensee = gbMMCust.IsLicensee;
             this.MatchID = gbMMCust.MatchID;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = string.Empty;
+            this.Remark = gbMMCust.MatchID.ToString();
             this.IsDirectPA = false;
             this.IsFromCTS = true;
             this.IsFromTVS = false;

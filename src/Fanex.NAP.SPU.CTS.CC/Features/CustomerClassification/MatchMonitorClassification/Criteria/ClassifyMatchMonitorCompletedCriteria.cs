@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class ClassifyGBMatchMonitorCompletedCriteria : NonQueryCommand
+    public class ClassifyMatchMonitorCompletedCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_MatchID")]
         public int MatchID { get; set; }

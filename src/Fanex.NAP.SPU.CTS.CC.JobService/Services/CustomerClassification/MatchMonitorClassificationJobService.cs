@@ -5,14 +5,15 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Sentry;
-    using System;
-    using System.Collections.Generic;
+    using System;    
     using System.Linq;
     using System.Threading.Tasks;
 
     public interface IMatchMonitorClassificationJobService
     {
-        Task<bool> ClassifyGBMatchMonitor();
+        Task<bool> UpdateStatusMatchMonitor();
+
+        Task<bool> ClassifyMatchMonitor();
     }
 
     public class MatchMonitorClassificationJobService : IMatchMonitorClassificationJobService
@@ -39,15 +40,44 @@
             this.custClassToMainDBService = custClassToMainDBService;
         }
 
-        public Task<bool> ClassifyGBMatchMonitor()
+        public Task<bool> UpdateStatusMatchMonitor()
         {
             try
             {
-                var classifyGBMMModel = mmClassificationService.ClassifyGBMatchMonitor();
+                var matcheIDs = mmClassificationService.GetMatchMonitor();
 
-                if (classifyGBMMModel.CustInfos != null && classifyGBMMModel.CustInfos.Any())
+                var matchInfos = mmClassificationService.GetMatchInfosByIDs(string.Join(",", matcheIDs));
+
+                if (matchInfos != null && matchInfos.Any())
+                {
+                    var matchStatus = matchInfos.Select(x => new MatchStatusModel
+                    {
+                        MatchID = x.MatchID,
+                        EventStatus = x.EventStatus
+                    });
+
+                    mmClassificationService.UpdateStatusMatchMonitor(matchStatus);
+                }
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> ClassifyMatchMonitor()
+        {
+            try
+            {
+                var classifyMMModel = mmClassificationService.ClassifyMatchMonitor();
+
+                if (classifyMMModel.CustInfos != null && classifyMMModel.CustInfos.Any())
                 {    
-                    var problemAccounts = classifyGBMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
+                    var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
 
                     var custIdsResult = problemAccountServices.InsertProblemAccountPackage(problemAccounts
                         , Shares.Constants.FunctionId.ClassifyGBMatchMonitor
@@ -65,7 +95,7 @@
                         ServiceName = serviceName
                     });
 
-                    mmClassificationService.ClassifyGBMatchMonitorCompleted(classifyGBMMModel);
+                    mmClassificationService.ClassifyMatchMonitorCompleted(classifyMMModel);
                 }                
 
                 return Task.FromResult(true);

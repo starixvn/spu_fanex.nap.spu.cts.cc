@@ -299,7 +299,8 @@
                                                             CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
                                                             Remark = group.pa.Remark,
-
+                                                            MatchID = group.pa.MatchID,
+                                                           
                                                             IsDirectPA = group.pa.IsDirectPA,
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromTVS = group.pa.IsFromTVS,
@@ -312,7 +313,11 @@
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
+<<<<<<< .mine
+                                                            WinlossStatus = temp?.WinlossStatus                                                            
+=======
                                                             WinlossStatus = temp?.WinlossStatus,
+>>>>>>> .theirs
                                                         }); ;
             }
 

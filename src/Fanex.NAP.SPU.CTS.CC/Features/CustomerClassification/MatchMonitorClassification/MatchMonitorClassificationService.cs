@@ -1,12 +1,19 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     public interface IMatchMonitorClassificationService
     {
-        ClassifyGBMatchMonitorModel ClassifyGBMatchMonitor();
+        IEnumerable<int> GetMatchMonitor();
 
-        void ClassifyGBMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel);
+        IEnumerable<MatchesInfosEntity> GetMatchInfosByIDs(string matchIDs);
+
+        void UpdateStatusMatchMonitor(IEnumerable<MatchStatusModel> matchStatuses);
+
+        ClassifyGBMatchMonitorModel ClassifyMatchMonitor();
+
+        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel);
     }
 
     public class MatchMonitorClassificationService : IMatchMonitorClassificationService
@@ -18,16 +25,36 @@
             this.matchDataAccess = matchDataAccess;
         }
 
-        public ClassifyGBMatchMonitorModel ClassifyGBMatchMonitor()
+        public IEnumerable<int> GetMatchMonitor()
         {
-            return matchDataAccess.ClassifyGBMatchMonitor();
+            return matchDataAccess.GetMatchMonitor();
         }
 
-        public void ClassifyGBMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel)
+        public IEnumerable<MatchesInfosEntity> GetMatchInfosByIDs(string matchIDs)
+        {
+            if (!string.IsNullOrEmpty(matchIDs))
+            {
+                return matchDataAccess.GetMatchInfosByIDs(matchIDs);
+            }
+
+            return Enumerable.Empty<MatchesInfosEntity>();
+        }
+
+        public void UpdateStatusMatchMonitor(IEnumerable<MatchStatusModel> matchStatuses)
+        {
+            matchDataAccess.UpdateStatusMatchMonitor(matchStatuses);
+        }
+
+        public ClassifyGBMatchMonitorModel ClassifyMatchMonitor()
+        {
+            return matchDataAccess.ClassifyMatchMonitor();
+        }
+
+        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel)
         {
             if (classifyGBMMModel.MatchID.HasValue)
             {                
-                matchDataAccess.ClassifyGBMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
+                matchDataAccess.ClassifyMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
             }            
         }
     }

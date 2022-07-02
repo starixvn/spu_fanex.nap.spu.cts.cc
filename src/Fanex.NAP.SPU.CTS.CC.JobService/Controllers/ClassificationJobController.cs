@@ -121,10 +121,16 @@
             return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
         }
 
-        [HttpPost("classifyGBMatchMonitor")]
-        public async Task<bool> ClassifyGBMatchMonitor()
+        [HttpPost("UpdateStatusMatchMonitor")]
+        public async Task<bool> UpdateStatusMatchMonitor()
         {
-            return await this.mmClassificationJobService.ClassifyGBMatchMonitor();
+            return await this.mmClassificationJobService.UpdateStatusMatchMonitor();
+        }
+
+        [HttpPost("ClassifyMatchMonitor")]
+        public async Task<bool> ClassifyMatchMonitor()
+        {
+            return await this.mmClassificationJobService.ClassifyMatchMonitor();
         }
 
         [HttpPost("updatewritelog")]
