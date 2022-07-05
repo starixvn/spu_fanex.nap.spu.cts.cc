@@ -6,16 +6,16 @@
     using System;
     using System.Collections.Generic;
 
-    public interface IRobotDetectionDataAccess
+    public interface IRobotAIDetectionDataAccess
     {
         IEnumerable<RobotDetectionEntity> GetRobotDetections(DateTime latestScannedTime);
     }
 
-    public class RobotDetectionDataAccess : IRobotDetectionDataAccess
+    public class RobotAIDetectionDataAccess : IRobotAIDetectionDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public RobotDetectionDataAccess()
+        public RobotAIDetectionDataAccess()
         {
             repository = new DynamicRepository();
         }
@@ -29,6 +29,5 @@
 
             return repository.Fetch<RobotDetectionEntity>(criteria);
         }
-
     }
 }

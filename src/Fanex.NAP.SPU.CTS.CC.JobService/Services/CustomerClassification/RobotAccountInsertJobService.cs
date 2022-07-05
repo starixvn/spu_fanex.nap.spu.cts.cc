@@ -10,42 +10,35 @@
 
     public interface IRobotAccountInsertJobService
     {
-        Task<bool> ScanningRobotClassification(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> ScanningRobotAIClassification(int batchExternalSize, int batchInternalSize);
-
-        Task<bool> ScanningRobotDetection(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize);
     }
 
     public class RobotAccountInsertJobService : IRobotAccountInsertJobService
     {
         private readonly string robotAccountServiceName;
-        private readonly string robotAIClassServiceName;
         private readonly string robotDetectionServiceName;
         private readonly ISentryClient sentryClient;
-        private readonly IRobotAccountInsertServices robotAccountInsertServices;
-        private readonly IRobotAIClassificationInsertServices robotAIClassificationInsertServices;
-        private readonly IRobotDetectionService robotDetectionService;
+        private readonly IRobotTWInsertServices robotAccountInsertServices;
+        private readonly IRobotAIDetectionService robotDetectionService;
         private readonly IAppSettings appSettings;
 
         public RobotAccountInsertJobService(
             ISentryClient sentryClient,
-            IRobotAccountInsertServices robotAccountInsertServices,
-            IRobotAIClassificationInsertServices robotAIClassificationInsertServices,
-            IRobotDetectionService robotDetectionService,
+            IRobotTWInsertServices robotAccountInsertServices,
+            IRobotAIDetectionService robotDetectionService,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.robotAccountInsertServices = robotAccountInsertServices;
-            this.robotAIClassificationInsertServices = robotAIClassificationInsertServices;
             this.robotDetectionService = robotDetectionService;
             this.appSettings = appSettings;
-            this.robotAccountServiceName = "RobotAccountInsert";
-            this.robotAIClassServiceName = "RobotAIClassification";
-            this.robotDetectionServiceName = "RobotDetection";
+            this.robotAccountServiceName = "TWRobotAccount";
+            this.robotDetectionServiceName = "AIRobotDetection";
         }
 
-        public Task<bool> ScanningRobotClassification(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -53,7 +46,7 @@
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    response = InsertRobotCategoryFromMainDB(batchExternalSize, batchInternalSize);
+                    response = InsertTWRobot(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -70,7 +63,7 @@
             return Task.FromResult(response);
         }
 
-        public Task<bool> ScanningRobotAIClassification(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -78,32 +71,7 @@
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    response = InsertRobotCategoryFromAIClassification(batchExternalSize, batchInternalSize);
-                }
-                else
-                {
-                    Utilities.LogSentryError(robotAIClassServiceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new Exception(), sentryClient);
-                }
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(robotAIClassServiceName, ex.Message, string.Empty, ex, sentryClient);
-
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(response);
-        }
-
-        public Task<bool> ScanningRobotDetection(int batchExternalSize, int batchInternalSize)
-        {
-            var response = true;
-
-            try
-            {
-                if (batchExternalSize > 0 && batchInternalSize > 0)
-                {
-                    response = InsertRobotDetection(batchExternalSize, batchInternalSize);
+                    response = InsertAIRobot(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -122,16 +90,16 @@
 
         #region Private Methods
 
-        private bool InsertRobotCategoryFromMainDB(int batchExternalSize, int batchInternalSize)
+        private bool InsertTWRobot(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
-                                                      .GetRobotUser()
-                                                      .Process(new InsertRobotParaEntity
+                                                      .GetTWRobotUser()
+                                                      .InsertTWRobotPackage(new InsertRobotParaEntity
                                                       {
                                                           BatchInternalSize = batchInternalSize,
                                                           IsFromTW = true,
-                                                          IsFromCTS = false,                                                         
+                                                          IsFromCTS = false,
                                                           IsDirect = true,
                                                           IsFromAI = false,
                                                           IsFromTVS = false,
@@ -157,45 +125,11 @@
             return isSuccess;
         }
 
-        private bool InsertRobotCategoryFromAIClassification(int batchExternalSize, int batchInternalSize)
-        {
-            var isSuccess = robotAIClassificationInsertServices.Start()
-                                                               .GetRobotUserFromAIClassification()
-                                                               .Process(new InsertRobotParaEntity
-                                                               {
-                                                                   BatchInternalSize = batchInternalSize,
-                                                                   IsFromTW = false,
-                                                                   IsFromCTS = false,
-                                                                   IsDirect = true,
-                                                                   IsFromAI = false,
-                                                                   IsFromTVS = false,
-                                                                   PushDataExternal = new PushDataToExternalEntity
-                                                                   {
-                                                                       IsUpdateDangerToMainDB = true,
-                                                                       IsPushCCToSoon88 = true,
-                                                                       FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                                                       ServiceName = robotAIClassServiceName,
-                                                                       ExternalBatchSize = batchExternalSize,
-                                                                       IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                                                                       IsSyncAFCData = false,
-                                                                       AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                                                       AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
-                                                                   }
-                                                               });
-
-            if (isSuccess)
-            {
-                robotAIClassificationInsertServices.UpdateLastScannedId(SystemParameters.RobotAIClassificationLastScannedID);
-            }
-
-            return isSuccess;
-        }
-
-        public bool InsertRobotDetection(int batchExternalSize, int batchInternalSize)
+        public bool InsertAIRobot(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
                                                  .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
-                                                 .Process(new InsertRobotParaEntity
+                                                 .InsertRobotAIPackage(new InsertRobotParaEntity
                                                  {
                                                      BatchInternalSize = batchInternalSize,
                                                      IsFromTW = false,

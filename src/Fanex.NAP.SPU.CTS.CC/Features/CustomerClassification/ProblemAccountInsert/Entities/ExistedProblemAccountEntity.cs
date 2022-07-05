@@ -32,14 +32,6 @@
 
         public bool IsFromAI { get; set; }
 
-        public decimal? Turnover { get; set; }
-
-        public decimal? Winloss { get; set; }
-
-        public Int64? BetCount { get; set; }
-
-        public int? ActiveDays { get; set; }
-
         public DateTime LastModifiedDate { get; set; }
 
         public string Remark { get; set; }

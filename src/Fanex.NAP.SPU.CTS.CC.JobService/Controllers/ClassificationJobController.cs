@@ -81,22 +81,16 @@
             return await this.probationClassificationJobService.Execute(batchSize);
         }
 
-        [HttpPost("robotClassification")]
-        public async Task<bool> RobotScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("robotTWClassification")]
+        public async Task<bool> RobotTWClassication([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.ScanningRobotClassification(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningTWRobotAccount(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("robotAIClassification")]
-        public async Task<bool> RobotAIScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("robotAIDetection")]
+        public async Task<bool> RobotAIDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.ScanningRobotAIClassification(batchExternalSize, batchInternalSize);
-        }
-
-        [HttpPost("robotDetection")]
-        public async Task<bool> RobotDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.robotAccountInsertJobService.ScanningRobotDetection(batchExternalSize, batchInternalSize);
+            return await this.robotAccountInsertJobService.ScanningAIRobotDetection(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("scan-tw-problem-account-customer")]

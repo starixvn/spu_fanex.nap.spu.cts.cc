@@ -18,19 +18,23 @@
         IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName);
 
         RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
-  
+
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
-        IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts);
+        IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
         void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
+
+        void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);
+
+        bool CheckPAToUnflagBetlimit(IEnumerable<long> ctsCustIds, string serviceName);
     }
 
     public class ProblemAccountServices : IProblemAccountServices
     {
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;                
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ISentryClient sentryClient;
 
         public ProblemAccountServices(
@@ -119,7 +123,7 @@
         {
             if (customerInfo != null && customerInfo.Any())
             {
-                var custIds = customerInfo.Where(c=>c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
+                var custIds = customerInfo.Where(c => c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
             }
@@ -133,13 +137,17 @@
             }
         }
 
-        public IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts)
+        public IEnumerable<CustInfoEntity> InsertRobotAccountPackage(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
         {
             if (robotAccounts != null && robotAccounts.Any())
             {
-                var customerInfo = problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts));
+                var paLosing = GetProblemAccountLosingClassification(robotAccounts.Select(c => c.CustID).Distinct(), FunctionId.RobotUserJob);
 
-                CheckNewPAAssociationCustomerForRollback(customerInfo);
+                var robotClassification = MergeRobotLosingClassification(robotAccounts, paLosing);
+
+                var customerInfo = InsertRobotAccount(robotClassification, isRescan);
+
+                InsertRobotLogics(customerInfo);
 
                 return customerInfo;
             }
@@ -147,23 +155,36 @@
             return Enumerable.Empty<CustInfoEntity>();
         }
 
-        #region Private Methods
-
-        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
+        public void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo)
         {
-            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            if (customerInfo != null && customerInfo.Any())
             {
-                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
-
-                problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+                CheckNewPAAssociationCustomerForRollback(customerInfo);
             }
         }
+
+        public bool CheckPAToUnflagBetlimit(IEnumerable<long> ctsCustIds, string serviceName)
+        {
+            if (ctsCustIds != null && ctsCustIds.Any())
+            {
+                var custCleanPA = CheckCleanCustFlaggedEvidence(ctsCustIds);
+
+                if (custCleanPA != null && custCleanPA.Any())
+                {
+                    UpdateBetLimitOfUnflaggedCustomer(custCleanPA?.Select(c => c.CustID)?.Distinct(), serviceName);
+                }
+            }
+
+            return true;
+        }
+
+        #region Private Methods
 
         private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isToQueue)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-               return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
+                return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
             }
 
             return Enumerable.Empty<CustInfoEntity>();
@@ -186,6 +207,26 @@
             return new RemovePAResultEntity();
         }
 
+        private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
+        {
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                return problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts), isRescan);
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
+        }
+
+        private void CheckNewPAAssociationCustomerForRollback(IEnumerable<CustInfoEntity> assCustForRollbacks)
+        {
+            if (assCustForRollbacks != null && assCustForRollbacks.Any())
+            {
+                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+
+                problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
+            }
+        }
+
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
         {
             if (custId != null && custId.Any())
@@ -203,6 +244,18 @@
             }
 
             return true;
+        }
+
+        private IEnumerable<CustInfoEntity> CheckCleanCustFlaggedEvidence(IEnumerable<long> ctsCustIds)
+        {
+            if (ctsCustIds != null && ctsCustIds.Any())
+            {
+                var ctsCustIdsToString = string.Join(",", ctsCustIds.Distinct());
+
+                return problemAccountDataAccess.CheckCleanPAEvidence(ctsCustIdsToString);
+            }
+
+            return Enumerable.Empty<CustInfoEntity>();
         }
 
         private bool UpdateBetLimitOfUnflaggedCustomer(IEnumerable<long> custId, string serviceName)
@@ -246,7 +299,7 @@
                                                             CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
                                                             Remark = group.pa.Remark,
-                                                           
+
                                                             IsDirectPA = group.pa.IsDirectPA,
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromTVS = group.pa.IsFromTVS,
@@ -260,13 +313,47 @@
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
                                                             WinlossStatus = temp?.WinlossStatus,
-                                                           
                                                         }); ;
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
         }
 
-        #endregion
+        private IEnumerable<InsertRobotEntity> MergeRobotLosingClassification(IEnumerable<InsertRobotEntity> robotAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
+        {
+            if (robotAccounts != null && robotAccounts.Any())
+            {
+                return robotAccounts.GroupJoin(paLosing ?? Enumerable.Empty<ProblemAccountLosingClassificationEntity>(),
+                                                 pa => pa.CustID,
+                                                 pl => pl.CustId,
+                                                (pa, pl) => new { pa, pl })
+                                                .SelectMany(
+                                                        group => group.pl.DefaultIfEmpty(),
+                                                        (group, temp) => new InsertRobotEntity
+                                                        {
+                                                            CustID = group.pa.CustID,
+                                                            RobotCounter = group.pa.RobotCounter,
+                                                            Remark = group.pa.Remark,
+                                                            CreatedBy = group.pa.CreatedBy,
+
+                                                            IsFromCTS = group.pa.IsFromCTS,
+                                                            IsFromAI = group.pa.IsFromAI,
+                                                            IsFromTVS = group.pa.IsFromTVS,
+                                                            IsFromTW = group.pa.IsFromTW,
+                                                            TVSRequestID = group.pa.TVSRequestID,
+                                                            IsDirect = group.pa.IsDirect,
+
+                                                            BetCount = temp?.BetCount,
+                                                            ActiveDays = temp?.ActiveDays,
+                                                            TurnoverRM = temp?.TurnoverRM,
+                                                            WinlossRM = temp?.WinlossRM,
+                                                            WinlossStatus = temp?.WinlossStatus,
+                                                        }); ;
+            }
+
+            return Enumerable.Empty<InsertRobotEntity>();
+        }
+
+        #endregion Private Methods
     }
 }

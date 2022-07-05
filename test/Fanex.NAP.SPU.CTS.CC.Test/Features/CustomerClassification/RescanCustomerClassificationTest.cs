@@ -1,19 +1,18 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
+    using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class RescanCustomerClassificationTest
     {
@@ -32,18 +31,6 @@
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
-
-        private readonly ISystemParameterServices systemParameterService;
-
-        private readonly IRobotAccountInsertServices robotAccountInsertServices;
-        private readonly IRobotAccountInsertDataAccess robotAccountInsertDataAccess;
-
-        private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
-        private readonly IDailyProblemClassificationDataAccess dailyProblemClassificationDataAccess;
-
-        private readonly IDataLogTrackingServices dataLogTrackingServices;
-
         public RescanCustomerClassificationTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
@@ -53,13 +40,10 @@
             feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null,  feedSoon88Services, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
 
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
-
-            dailyProblemClassificationDataAccess = Substitute.For<IDailyProblemClassificationDataAccess>();
-            dailyProblemClassificationServices = new DailyProblemClassificationServices(dailyProblemClassificationDataAccess, systemParameterService, problemAccountServices, custClassToMainDBService);
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, null);
 
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
@@ -67,7 +51,7 @@
                 problemAccountServices,
                 custClassToMainDBService,
                 dailyClassificationServices,
-                dataLogTrackingServices);
+                null);
         }
 
         [Fact]
@@ -97,6 +81,182 @@
 
             Assert.IsAssignableFrom<IEnumerable<long>>(result);
         }
-   
+
+        [Fact]
+        public void GetExistedProblemAccounts_WhenSuccess_ReturnData()
+        {
+            var existedPA = CreateSampleExistedPAModel();
+
+            var custIds = new List<long> { 1, 2, 3 };
+
+            var expectPA = CreateSampleProblemAccountModel();
+            var expectRobot = CreateSampleRobotModel();
+
+            problemAccountDataAccess.GetExistedProblemAccounts(string.Join(",", custIds)).Returns(existedPA);
+            rescanCustClassificationService.Start().GetExistedProblemAccounts(custIds);
+
+            var paResult = rescanCustClassificationService.ExistedPA;
+            var rebotResult = rescanCustClassificationService.ExistedRobot;
+
+            paResult.Should().BeEquivalentTo(expectPA);
+            rebotResult.Should().BeEquivalentTo(expectRobot);
+        }
+
+        [Fact]
+        public void InsertProblemAccounts_WhenSuccess_ReturnData()
+        {
+            var existedPA = CreateSampleExistedPAModel();
+
+            var problemAccount = new List<InsertProblemAccountEntity>
+            {
+                CreateSampleProblemAccountModel()
+            };
+
+            var custIds = new List<long> { 1, 2, 3 };
+
+            problemAccountDataAccess.GetExistedProblemAccounts(string.Join(",", custIds)).Returns(existedPA);
+
+            Action action = () => rescanCustClassificationService
+                                    .Start()
+                                    .GetExistedProblemAccounts(custIds)
+                                    .InsertProblemAccountLogics(null, false, FunctionId.InsertPAJob);
+
+            action.Should().NotThrow<Exception>();
+        }
+
+
+        [Fact]
+        public void GetTWRobots_WhenSuccess_ReturnData()
+        {
+            var expectData = new List<InsertRobotEntity>
+            {
+                CreateSampleTWRobotModel()
+            };
+
+            var inputData = new List<TWRobotUserEntity>
+            {
+                new TWRobotUserEntity { CustId = 0, Counter = 0}
+            };
+
+            var custIds = new List<long> { 1, 2, 3 };
+
+            rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
+
+            rescanCustClassificationService
+                                    .Start()
+                                    .GetTWRobotUsers(custIds);
+
+            var robots = rescanCustClassificationService.TWRobots;
+
+            robots.Should().BeEquivalentTo(expectData);
+        }
+
+        [Fact]
+        public void InsertRobots_WhenSuccess_ReturnData()
+        {
+            var expectData = new List<InsertRobotEntity>
+            {
+                CreateSampleTWRobotModel()
+            };
+
+            var inputData = new List<TWRobotUserEntity>
+            {
+                new TWRobotUserEntity { CustId = 0, Counter = 0}
+            };
+
+            var custIds = new List<long> { 1, 2, 3 };
+
+            rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
+
+            Action action = () =>  rescanCustClassificationService
+                                            .Start()
+                                            .GetTWRobotUsers(custIds)
+                                            .InsertRobot();
+
+
+            action.Should().NotThrow<Exception>();
+
+        }
+
+        private List<ExistedProblemAccountEntity> CreateSampleExistedPAModel()
+        {
+            var rd = new Random();
+            var data = new List<ExistedProblemAccountEntity>
+            {
+                new ExistedProblemAccountEntity
+                {
+                   CustID = 0,
+                   CTSCustID = 0,
+                   CategoryID = 0,
+                   LastModifiedDate = DateTime.MinValue,
+                   IsRobot = false
+                },
+                new ExistedProblemAccountEntity
+                {
+                   CustID = 0,
+                   CTSCustID = 0,
+                   CategoryID = 0,
+                   LastModifiedDate = DateTime.MinValue,
+                   IsRobot = true
+                }
+            };
+
+            return data;
+        }
+
+        private InsertRobotEntity CreateSampleRobotModel()
+        {
+            var rd = new Random();
+            var data = new InsertRobotEntity
+            {
+                CustID = 0,
+                IsFromTW = false,
+                IsFromCTS = false,
+                IsDirect = false,
+                IsFromAI = false,
+                IsFromTVS = false,
+                RobotCounter = null,
+                CreatedBy = StarixITId,
+                Remark = null,
+                BetCount = null,
+                TVSRequestID = null,
+                ActiveDays = null,
+                TurnoverRM = null,
+                WinlossRM = null,
+                WinlossStatus = null
+            };
+
+            return data;
+        }
+
+        private InsertRobotEntity CreateSampleTWRobotModel()
+        {
+            var rd = new Random();
+            var data = new InsertRobotEntity
+            {
+                CustID = 0,
+                RobotCounter = 0,
+                IsFromTW = true,
+                IsDirect = true,
+                CreatedBy = StarixITId
+            };
+
+            return data;
+        }
+
+        private InsertProblemAccountEntity CreateSampleProblemAccountModel()
+        {
+            var rd = new Random();
+            var data = new InsertProblemAccountEntity
+            {
+                CustID = 0,
+                CTSCustID = 0,
+                CategoryID = 0,
+                LastModifiedDate = DateTime.MinValue,
+                CreatedBy = StarixITId
+            };
+
+            return data;
+        }
     }
 }

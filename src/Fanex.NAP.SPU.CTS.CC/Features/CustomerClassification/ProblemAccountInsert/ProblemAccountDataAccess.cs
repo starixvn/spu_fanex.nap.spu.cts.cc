@@ -19,7 +19,7 @@
 
         RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
 
-        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson);
+        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan);
 
         void RemoveOldProblemAccount(string custIds);
 
@@ -28,6 +28,8 @@
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
 
         DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
+
+        IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds);
     }
 
     public class ProblemAccountDataAccess : IProblemAccountDataAccess
@@ -59,7 +61,6 @@
 
             return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
         }
-
 
         public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
         {
@@ -101,11 +102,12 @@
             repository.Execute(criteria);
         }
 
-        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson)
+        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan)
         {
             var criteria = new RobotAccountInsertCriteria
             {
-                CustInfo = robotAccountJson
+                CustInfo = robotAccountJson,
+                IsRescan = isRescan
             };
 
             return repository.Fetch<CustInfoEntity>(criteria) ?? Enumerable.Empty<CustInfoEntity>();
@@ -151,6 +153,16 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
+        }
+
+        public IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds)
+        {
+            var criteria = new CheckCleanPAEvidenceCriteria
+            {
+                CTSCustIds = ctsCustIds
+            };
+
+            return repository.Fetch<CustInfoEntity>(criteria);
         }
     }
 }

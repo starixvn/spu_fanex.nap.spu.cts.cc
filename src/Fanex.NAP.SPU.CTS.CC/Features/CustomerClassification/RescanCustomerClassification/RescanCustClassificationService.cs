@@ -27,7 +27,7 @@
 
         IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertRobot(RescanParametersEntity paras);
+        IRescanCustClassificationService InsertRobot();
 
         IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity paras);
 
@@ -40,6 +40,12 @@
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
+
+        IEnumerable<InsertProblemAccountEntity> ExistedPA { get; }
+
+        IEnumerable<InsertRobotEntity> ExistedRobot { get; }
+
+        IEnumerable<InsertRobotEntity> TWRobots { get; }
     }
 
     public class RescanCustClassificationService : IRescanCustClassificationService
@@ -51,7 +57,7 @@
         private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
-        private IEnumerable<InsertRobotEntity> robotClassificationPerformance;
+        private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
         private IEnumerable<long> custIdsToRemoveOldPA;
@@ -78,7 +84,7 @@
         {
             this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
             this.robotUsers = new List<InsertRobotEntity>();
-            this.robotClassificationPerformance = Enumerable.Empty<InsertRobotEntity>();
+            this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
             this.custIdsToRemoveOldPA = Enumerable.Empty<long>();
             this.smaCustIds = new List<long>();
@@ -98,7 +104,7 @@
                     GetExistedProblemAccounts(custIds)
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
                    .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
-                   .InsertRobot(parameters)
+                   .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
                 }
@@ -139,14 +145,9 @@
                         CreatedBy = StarixITId
                     });
 
-                    robotClassificationPerformance = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
+                    robotClassification = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
                     {
                         CustID = c.CustID,
-                        CategoryID = c.CategoryID,
-                        ActiveDays = c.ActiveDays,
-                        TurnoverRM = c.Turnover,
-                        BetCount = c.BetCount,
-                        WinlossRM = c.Winloss,
                         IsDirect = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,
@@ -203,7 +204,6 @@
                         {
                             CustID = c.CustId,
                             RobotCounter = c.Counter,
-                            CategoryID = (int)Category.Robot,
                             IsFromTW = true,
                             IsDirect = true,
                             CreatedBy = StarixITId
@@ -215,7 +215,7 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertRobot(RescanParametersEntity paras)
+        public IRescanCustClassificationService InsertRobot()
         {
             var robotToInsert = new List<InsertRobotEntity>();
 
@@ -224,12 +224,12 @@
                 robotToInsert.AddRange(robotUsers);
             }
 
-            if (robotClassificationPerformance.Any())
+            if (robotClassification.Any())
             {
-                robotToInsert.AddRange(robotClassificationPerformance);
+                robotToInsert.AddRange(robotClassification);
             }
 
-            var customerInfo = problemAccountServices.InsertRobotAccount(robotToInsert);
+            var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, true);
 
             if (isSuccess && customerInfo.Any())
             {
@@ -315,5 +315,11 @@
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
         public IEnumerable<InsertRobotEntity> RobotUsers => robotUsers;
+
+        public IEnumerable<InsertProblemAccountEntity> ExistedPA => problemAccounts;
+
+        public IEnumerable<InsertRobotEntity> ExistedRobot => robotClassification;
+
+        public IEnumerable<InsertRobotEntity> TWRobots => robotUsers;
     }
 }

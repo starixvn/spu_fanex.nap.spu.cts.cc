@@ -78,16 +78,20 @@
                 var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.RobotBetting).Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
-                    CategoryID = (int)Category.Robot,
                     CreatedBy = c.CreatedBy,
                     TVSRequestID = c.RequestID,
                     IsFromTVS = true,
                     IsDirect = true
                 });
 
-                var result = problemAccountServices.InsertRobotAccount(insertRobot);
+                var result = problemAccountServices.InsertRobotAccountPackage(insertRobot, false);
 
                 isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
+
+                if (isSuccess)
+                {
+                    isSuccess = problemAccountServices.CheckPAToUnflagBetlimit(result?.Select(c => c.CTSCustID)?.Distinct(), parameters.ServiceName);
+                }
             }
 
             return isSuccess;
