@@ -313,12 +313,8 @@
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
-<<<<<<< .mine
-                                                            WinlossStatus = temp?.WinlossStatus                                                            
-=======
-                                                            WinlossStatus = temp?.WinlossStatus,
->>>>>>> .theirs
-                                                        }); ;
+                                                            WinlossStatus = temp?.WinlossStatus                                                                                                            
+                                                        });
             }
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
