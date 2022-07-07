@@ -42,8 +42,10 @@
                     var maxTransId = twGroupBettingService.ScanTicket(batchSize, step, lastTransId);
 
                     twGroupBettingService.CountGroupBettingTicket();
-                    twGroupBettingService.UpdateMaxTransID(maxTransId, SystemParameters.TWGroupBetting_LastTransID);
-
+                    if (maxTransId > 0)
+                    {
+                        twGroupBettingService.UpdateMaxTransID(maxTransId, SystemParameters.TWGroupBetting_LastTransID);
+                    }
                 }
             }
             catch (Exception ex)
