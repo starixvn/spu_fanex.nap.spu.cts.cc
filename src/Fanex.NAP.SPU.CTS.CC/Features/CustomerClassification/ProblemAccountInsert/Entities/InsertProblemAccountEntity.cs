@@ -26,7 +26,7 @@
             this.MatchID = gbMMCust.MatchID;
             this.CreatedBy = Constants.StarixITId;
             this.Remark = gbMMCust.MatchID.ToString();
-            this.IsDirectPA = false;
+            this.IsDirectPA = true;
             this.IsFromCTS = true;
             this.IsFromTVS = false;
             this.IsFromTW = false;

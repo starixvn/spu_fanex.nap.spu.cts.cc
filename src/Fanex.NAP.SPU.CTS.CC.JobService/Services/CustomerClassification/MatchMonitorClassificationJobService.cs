@@ -93,10 +93,10 @@
                         IsUpdateDangerToMainDB = true,
                         IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                         ServiceName = serviceName
-                    });
+                    });                   
+                }
 
-                    mmClassificationService.ClassifyMatchMonitorCompleted(classifyMMModel);
-                }                
+                mmClassificationService.ClassifyMatchMonitorCompleted(classifyMMModel);
 
                 return Task.FromResult(true);
             }
