@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.Data.Repository;
+    using Fanex.Logging;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -61,6 +63,8 @@
                 };
 
                 repository.Execute(criteria);
+
+                LogService.Info($"UpdateDangerLevelToMainDB testing dangerLevels {JsonConvert.SerializeObject(dangerLevel)}");
 
                 return new DBResult { ErrorCode = criteria.ErrorCode, ErrorMsg = criteria.ErrorMessage };
             }
