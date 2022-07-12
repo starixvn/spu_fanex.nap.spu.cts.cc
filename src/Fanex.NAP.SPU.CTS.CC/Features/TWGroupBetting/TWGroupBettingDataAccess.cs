@@ -9,7 +9,7 @@
 
     public interface ITWGroupBettingDataAccess
     {
-        Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID);
+        Int64 ScanTicket(int batchSize, int step, Int64 lastTransID);
 
         void CountGroupBettingTicket();
 
@@ -34,12 +34,11 @@
             repository = new DynamicRepository();
         }
 
-        public Int64 ScanTicket(DateTime fromTime, DateTime toTime, int step, Int64 lastTransID)
+        public Int64 ScanTicket(int batchSize, int step, Int64 lastTransID)
         {
             var criteria = new TWGroupBetting_ScanTicketCriteria
             {
-                FromTime = fromTime,
-                ToTime = toTime,
+                BatchSize = batchSize,
                 Step = step,
                 LastTransID = lastTransID
             };

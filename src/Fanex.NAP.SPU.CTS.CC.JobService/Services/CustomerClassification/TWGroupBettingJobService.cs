@@ -10,7 +10,7 @@
 
     public interface ITWGroupBettingJobService
     {
-        Task<bool> DetectGroupBettingTicket();
+        Task<bool> DetectGroupBettingTicket(int batchSize);
 
         Task<bool> CountTotalTicket();
     }
@@ -30,7 +30,7 @@
             this.serviceName = "TWGroupBetting";
         }
 
-        public Task<bool> DetectGroupBettingTicket()
+        public Task<bool> DetectGroupBettingTicket(int batchSize)
         {
             try
             {
@@ -38,15 +38,12 @@
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
                     var step = item.Key;
-                    var fromTime = twGroupBettingService.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime).AddSeconds(-step + 1);
                     var lastTransId = twGroupBettingService.GetLastTransID(SystemParameters.TWGroupBetting_LastTransID);
-                    var toTime = fromTime.AddMinutes(3);
-                    if (toTime < DateTime.Now)
-                    {
-                        var maxTransId = twGroupBettingService.ScanTicket(fromTime, toTime, step, lastTransId);
-                        twGroupBettingService.CountGroupBettingTicket();
+                    var maxTransId = twGroupBettingService.ScanTicket(batchSize, step, lastTransId);
 
-                        twGroupBettingService.UpdateLastScanTime(toTime, SystemParameters.TWGroupBetting_LastScanTime);
+                    twGroupBettingService.CountGroupBettingTicket();
+                    if (maxTransId > 0)
+                    {
                         twGroupBettingService.UpdateMaxTransID(maxTransId, SystemParameters.TWGroupBetting_LastTransID);
                     }
                 }

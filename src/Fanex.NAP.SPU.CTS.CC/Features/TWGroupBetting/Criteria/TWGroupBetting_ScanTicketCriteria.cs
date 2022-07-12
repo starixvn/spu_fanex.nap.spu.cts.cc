@@ -5,9 +5,8 @@
 
     public class TWGroupBetting_ScanTicketCriteria : CriteriaBase
     {
-        public DateTime FromTime { get; set; }
 
-        public DateTime ToTime { get; set; }
+        public int BatchSize { get; set; }
 
         public int Step { get; set; }
 
@@ -22,7 +21,7 @@
 
         public override bool IsValid()
         {
-            return FromTime != DateTime.MinValue && ToTime != DateTime.MinValue;
+            return BatchSize > 0 && Step > 0;
         }
     }
 }
