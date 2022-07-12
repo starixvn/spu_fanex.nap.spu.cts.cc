@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;    
     using System.Linq;
@@ -102,7 +103,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
 
                 return Task.FromResult(false);
             }
