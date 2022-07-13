@@ -62,9 +62,7 @@
                     DangerType = dangerTypeId
                 };
 
-                repository.Execute(criteria);
-
-                LogService.Info($"UpdateDangerLevelToMainDB testing dangerLevels {JsonConvert.SerializeObject(dangerLevel)}");
+                repository.Execute(criteria);                
 
                 return new DBResult { ErrorCode = criteria.ErrorCode, ErrorMsg = criteria.ErrorMessage };
             }
