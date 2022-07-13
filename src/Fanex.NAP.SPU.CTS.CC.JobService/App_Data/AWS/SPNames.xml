@@ -37,7 +37,7 @@
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Completed" SpName="CTS_DC_CustClassification_MatchMonitor_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Get" SpName="CTS_DC_CustClassification_MatchMonitor_Get" DbName="MySQL.CTS_DataCenter.ctsService"></Setting>
 		<Setting Key="CTS_MatchInfo_Get" SpName="CTS_MatchInfo_Get" DbName="SQL.bodb02.bodbSPUNet"></Setting>
-		<Setting Key="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" SpName="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" DbName="MySQL.CTS_DataCenter.ctsService"></Setting>
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" SpName="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin"></Setting>
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
