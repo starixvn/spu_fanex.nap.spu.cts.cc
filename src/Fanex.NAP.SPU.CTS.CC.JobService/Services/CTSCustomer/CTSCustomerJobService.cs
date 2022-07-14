@@ -77,7 +77,6 @@
                     serviceName = "InsertNewCustomer"
                 });
 
-
                 return Task.FromResult(result);
             }
             catch (Exception ex)
