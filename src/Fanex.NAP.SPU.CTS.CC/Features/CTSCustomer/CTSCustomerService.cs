@@ -13,8 +13,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
     {
@@ -27,7 +27,7 @@
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
         bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
-        
+
         LastUpdateValueModel GetLastUpdatedTime();
 
         TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
@@ -135,7 +135,7 @@
 
                         if (!isSuccess)
                         {
-                           return false;
+                            return false;
                         }
 
                         UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
@@ -225,7 +225,6 @@
 
                 try
                 {
-
                     if (custIdsToInsertVIP != null && custIdsToInsertVIP.Any())
                     {
                         await CallAPIInsertVIPBA(custIdsToInsertVIP, insertVIPUrl);
@@ -238,7 +237,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA}, ex, sentryClient);
+                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA }, ex, sentryClient);
 
                     return false;
                 }
@@ -247,23 +246,19 @@
             return true;
         }
 
-
         private static async Task<string> CallAPIInsertVIPBA(IEnumerable<int> custIds, string url)
         {
-
-                if (custIds != null && custIds.Any())
+            if (custIds != null && custIds.Any())
+            {
+                var para = new
                 {
-                    var para = new
-                    {
-                        CustIDs = string.Join(",", custIds.Distinct()),
-                        CreatedBy = StarixITId,
-                        IsFromExternal = false
-                    };
+                    CustIDs = string.Join(",", custIds.Distinct()),
+                    CreatedBy = StarixITId,
+                    IsFromExternal = false
+                };
 
-                    return await ApiHelper.Post<string>(url, para, 300);
-                }
-
-
+                return await ApiHelper.Post<string>(url, para, 300);
+            }
 
             return string.Empty;
         }
