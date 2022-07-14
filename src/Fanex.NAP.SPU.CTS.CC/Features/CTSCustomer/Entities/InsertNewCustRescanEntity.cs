@@ -12,9 +12,10 @@
 
         public bool IsInsertMissingCust { get; set; }
 
-        public bool IsSyncAFCData { get; set; }
+        public string InsertVIPURL { get; set; }
 
-        public string AFCInsertAccountURL { get; set; }
-        public string AFCDeleteAccountURL { get; set; }
+        public string InsertBAURL { get; set; }
+
+        public string serviceName { get; set; }
     }
 }

@@ -72,10 +72,11 @@
                     IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
                     FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsInsertMissingCust = false,
-                    IsSyncAFCData = appSettings.IsSyncAFCData,
-                    AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                    InsertVIPURL = appSettings.InsertVIPURL,
+                    InsertBAURL = appSettings.InsertBAURL,
+                    serviceName = "InsertNewCustomer"
                 });
+
 
                 return Task.FromResult(result);
             }
@@ -165,7 +166,7 @@
             try
             {
                 var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
-
+                var isSuccess = true;
                 var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
                 var toDate = fromDate.AddHours(2);
                 if (toDate <= DateTime.Now.AddHours(-0.5))
@@ -189,15 +190,16 @@
                                 LastInsertCustID = 0
                             };
 
-                            ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
+                            isSuccess = ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
                             {
                                 InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                                 ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                                 IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
                                 FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                 IsInsertMissingCust = true,
-                                IsSyncAFCData = appSettings.IsSyncAFCData,
-                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                                InsertVIPURL = appSettings.InsertVIPURL,
+                                InsertBAURL = appSettings.InsertBAURL,
+                                serviceName = "MonitorInsertNewCustomer"
                             });
                         }
                         else
@@ -206,10 +208,13 @@
                         }
                     }
 
-                    ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
+                    if (isSuccess)
+                    {
+                        ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
+                    }
                 }
 
-                return Task.FromResult(true);
+                return Task.FromResult(isSuccess);
             }
             catch (Exception ex)
             {
@@ -262,8 +267,9 @@
                             IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
                             IsInsertMissingCust = false,
-                            IsSyncAFCData = appSettings.IsSyncAFCData,
-                            AFCInsertAccountURL = appSettings.AFCInsertAccountURL
+                            InsertVIPURL = appSettings.InsertVIPURL,
+                            InsertBAURL = appSettings.InsertBAURL,
+                            serviceName = "ReactivatedCustomer"
                         });
                     }
 

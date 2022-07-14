@@ -20,7 +20,6 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly IRescanCustClassificationService rescanClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
@@ -28,7 +27,7 @@
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, custClassToMainDBService, antiFraudCenterServices, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, custClassToMainDBService, systemParameterDataAccess);
         }
 
         [Fact]
