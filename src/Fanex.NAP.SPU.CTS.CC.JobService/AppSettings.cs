@@ -38,6 +38,10 @@
 
         bool MonitorInsertNewCustIsAutoInsertMissingCust { get; }
 
+        bool InsertReactivatedCustomersIsWriteLog { get; }
+
+        int InsertReactivatedCustomersBatchSize { get; }
+
         string SentryDsn { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
@@ -121,6 +125,10 @@
         public int TransformCTSCustomerBatchSize => GetValue<int>("TransformCTSCustomer:BatchSize");
 
         public bool MonitorInsertNewCustIsAutoInsertMissingCust => GetValue<bool>("MonitorInsertNewCustomer:IsAutoInsertMissingCust");
+
+        public bool InsertReactivatedCustomersIsWriteLog => GetValue<bool>("InsertReactivatedCustomers:IsWriteLog");
+
+        public int InsertReactivatedCustomersBatchSize => GetValue<int>("InsertReactivatedCustomers:BatchSize");
 
         #endregion Variables
 

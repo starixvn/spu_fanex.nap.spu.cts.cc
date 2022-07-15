@@ -71,6 +71,8 @@
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
+        IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs);
+
         InactivateNewCustomer GetInactivateNewCustomers();
     }
 
@@ -450,6 +452,11 @@
             }
 
             return Enumerable.Empty<ReactivatedCustModel>();
+        }
+
+        public IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs)
+        {
+            return dataAccess.CheckExistCTSArchiveCustomer(custIDs);
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)

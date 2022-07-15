@@ -4,7 +4,7 @@
 	<Function Name="ProblemAccount">
 		<Setting Key="CTS_DC_SystemParameter_Get" SpName="CTS_DC_SystemParameter_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_SystemParameter_Update" SpName="CTS_DC_SystemParameter_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="Acc_CustomerUpdateCustomerClass" SpName="Acc_CustomerUpdateCustomerClass_xtest" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
+		<Setting Key="Acc_CustomerUpdateCustomerClass" SpName="Acc_CustomerUpdateCustomerClass" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_GetForSoon88" SpName="CTS_DC_CustClassification_GetForSoon88" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustEvidence_CheckCleanCust" SpName="CTS_DC_CustEvidence_CheckCleanCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
@@ -87,6 +87,7 @@
 
   <Function Name="InsertReactivatedCustomer">
     <Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
+	<Setting Key="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" SpName="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
   </Function>
 
   <Function Name="InactivateNewCustomer">

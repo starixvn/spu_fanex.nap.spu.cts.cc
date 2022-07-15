@@ -4,6 +4,7 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.Notification.Services;
@@ -35,6 +36,7 @@
         private readonly ICTSCustomerService ctscustomerService;
         private readonly IDailyNormalClassificationServices dailyClassificationService;
         private readonly ISystemParameterServices systemParameterServices;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
@@ -42,11 +44,13 @@
             ICTSCustomerService ctscustomerService,
             IDailyNormalClassificationServices dailyClassificationService,
             ISystemParameterServices systemParameterServices,
+            ICustClassToMainDBService custClassToMainDBService,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.ctscustomerService = ctscustomerService;
             this.dailyClassificationService = dailyClassificationService;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
         }
@@ -232,16 +236,25 @@
                 if (custToReactive != null && custToReactive.Any())
                 {
                     var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
-                    string custIds = string.Join(",", custToReactive.Select(c => c.CustID).Distinct());
+                    var custIDs = string.Join(",", custToReactive.Select(c => c.CustID).Distinct());
 
-                    var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(custIds, UpdateCustomer.ForNewCustomer);
-                    var subCusts = ctscustomerService.GetCustSubFromMainDB(custIds);
+                    var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(custIDs);
+
+                    /* 1. Push CC to MainDB */
+                    var isPushCCSuccess = this.PushDataToExternal(exitedCTSArchiveCustIDs, "InsertReactivatedCustomers");
+
+                    /* 2. Insert New Customer */
+                    var insertNewCusts = custToReactive.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs);
+                    var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
+
+                    var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
+                    var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
 
                     custInfo.CustomerInfos.AddRange(mainCusts);
                     custInfo.CustomerInfos.AddRange(subCusts);
 
                     if (custInfo != null && custInfo.CustomerInfos.Any())
-                    {
+                    {                        
                         isSuccess = ctscustomerService.InsertNewCustomer(custInfo, new InsertNewCustRescanEntity
                         {
                             InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
@@ -254,7 +267,7 @@
                         });
                     }
 
-                    if (isSuccess)
+                    if (isPushCCSuccess && isSuccess)
                     {
                         isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
@@ -273,7 +286,7 @@
                 return Task.FromResult(false);
             }
         }
-
+       
         public Task<bool> InactivateNewCustomers()
         {
             try
@@ -315,6 +328,19 @@
         }
 
         #region Private Methods
+
+        private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
+        {           
+            return custClassToMainDBService.PushDataToExternal(custIDs.Distinct(), new PushDataToExternalEntity
+            {
+                ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
+                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                IsPushCCToSoon88 = true,
+                IsUpdateDangerToMainDB = true,
+                IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,
+                ServiceName = serviceName
+            });
+        }
 
         private void NotifyTelegramMessage(string message)
         {
