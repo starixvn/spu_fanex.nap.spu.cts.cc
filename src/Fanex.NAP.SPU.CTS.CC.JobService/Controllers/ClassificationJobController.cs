@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
+        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             INormalAccountJobService normalAccountInsertJobService,
@@ -33,7 +35,8 @@
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
             INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
-            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService)
+            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
+            IMatchMonitorClassificationJobService mmClassificationJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
@@ -46,6 +49,7 @@
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
             this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
+            this.mmClassificationJobService = mmClassificationJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -115,6 +119,18 @@
         public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
         {
             return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
+        }
+
+        [HttpPost("UpdateStatusMatchMonitor")]
+        public async Task<bool> UpdateStatusMatchMonitor()
+        {
+            return await this.mmClassificationJobService.UpdateStatusMatchMonitor();
+        }
+
+        [HttpPost("ClassifyMatchMonitor")]
+        public async Task<bool> ClassifyMatchMonitor()
+        {
+            return await this.mmClassificationJobService.ClassifyMatchMonitor();
         }
 
         [HttpPost("updatewritelog")]

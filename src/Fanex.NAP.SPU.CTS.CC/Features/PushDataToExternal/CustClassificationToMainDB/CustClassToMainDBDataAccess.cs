@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.Data.Repository;
+    using Fanex.Logging;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -60,7 +62,7 @@
                     DangerType = dangerTypeId
                 };
 
-                repository.Execute(criteria);
+                repository.Execute(criteria);                
 
                 return new DBResult { ErrorCode = criteria.ErrorCode, ErrorMsg = criteria.ErrorMessage };
             }
