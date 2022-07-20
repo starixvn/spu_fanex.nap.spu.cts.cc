@@ -64,9 +64,7 @@
         }
 
         public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
-        {
-            LogService.Info($"InsertProblemAccount for testing with inputType {inputType }, isToQueue {isToQueue}, json { problemAccountJson }");
-
+        {           
             var criteria = new ProblemAccountInsertCriteria
             {
                 ProblemAccountJson = problemAccountJson,
