@@ -91,13 +91,13 @@
 
                 foreach (var listClassification in generalClassificationChunk)
                 {
-                    var custAssociationPA = normalAccountServices.GetCustomerAssociationProblemAccount(listClassification);
+                    var twDetection = normalAccountServices.GetGroupBettingAndRejectCustomer(listClassification);
 
-                    var custClassificationAfterCheckPA = normalAccountServices.MergeWithTaggedCust(listClassification, custAssociationPA);
+                    var custClassificationAfterCheckTWDetection = normalAccountServices.MergeWithTaggedCust(listClassification, twDetection);
 
-                    var custGroupBettingAndReject = normalAccountServices.GetGroupBettingAndRejectCustomer(custClassificationAfterCheckPA.Where(c => c.TaggingID == 0));
+                    var custAssociationWithPA = normalAccountServices.GetCustomerAssociationProblemAccount(custClassificationAfterCheckTWDetection.Where(c=>c.TaggingID==0));
 
-                    var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckPA, custGroupBettingAndReject);
+                    var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckTWDetection, custAssociationWithPA);
 
                     var result = normalAccountServices.InsertMainCustomerClassification(finalCustClassification, serviceName, appSettings.NormalAccountIsWriteLog);
 
