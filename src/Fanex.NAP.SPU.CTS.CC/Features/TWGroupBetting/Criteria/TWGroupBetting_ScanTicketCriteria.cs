@@ -11,8 +11,15 @@
         public int Step { get; set; }
 
         public Int64 LastTransID { get; set; }
+        
+        public Int64 LastTransSec { get; set; }
+        
+        public int SkipTransCount { get; set; }
 
-        public Int64 MaxTransID { get; set; }
+        
+        public Int64 LastTransID_New { get; set; }
+        public Int64 LastTransSec_New { get; set; }
+        public int SkipTransCount_New { get; set; }
 
         public override string GetSettingKey()
         {

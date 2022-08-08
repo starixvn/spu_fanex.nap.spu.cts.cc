@@ -9,7 +9,7 @@
 
     public interface ITWGroupBettingDataAccess
     {
-        Int64 ScanTicket(int batchSize, int step, Int64 lastTransID);
+        TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
         void CountGroupBettingTicket();
 
@@ -34,17 +34,10 @@
             repository = new DynamicRepository();
         }
 
-        public Int64 ScanTicket(int batchSize, int step, Int64 lastTransID)
+        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria)
         {
-            var criteria = new TWGroupBetting_ScanTicketCriteria
-            {
-                BatchSize = batchSize,
-                Step = step,
-                LastTransID = lastTransID
-            };
-
             repository.Fetch<TWGroupBettingTicket>(criteria);
-            return criteria.MaxTransID;
+            return criteria;
         }
 
         public void CountGroupBettingTicket()
