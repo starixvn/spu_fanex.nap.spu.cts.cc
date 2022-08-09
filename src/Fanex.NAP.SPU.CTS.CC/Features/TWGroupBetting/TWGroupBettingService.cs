@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
     using System;
     using System.Collections.Generic;
@@ -8,7 +9,7 @@
 
     public interface ITWGroupBettingService
     {
-        Int64 ScanTicket(int batchSize, int step, Int64 lastTransID);
+        TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
         void CountGroupBettingTicket();
 
@@ -24,9 +25,13 @@
 
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
 
-        Int64 GetLastTransID(SystemParameters paraID);
+        Int64 GetConfig_Int64(SystemParameters paraID);
 
-        void UpdateMaxTransID(Int64 transId, SystemParameters paraID);
+        void UpdateConfig_Int64(Int64 value, SystemParameters paraID);
+
+        int GetConfig_Int(SystemParameters paraID);
+
+        void UpdateConfig_Int(int value, SystemParameters paraID);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -48,16 +53,28 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
-        public Int64 GetLastTransID(SystemParameters paraID)
+        public Int64 GetConfig_Int64(SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
             Int64 defaultValue = 0;
             return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
-
-        public void UpdateMaxTransID(Int64 transId, SystemParameters paraID)
+        
+        public int GetConfig_Int(SystemParameters paraID)
         {
-            systemParameterDataAccess.UpdateTimingExecution(transId.ToString(), paraID);
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            int defaultValue = 0;
+            return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : defaultValue;
+        }
+
+        public void UpdateConfig_Int64(Int64 value, SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
+        }
+        
+        public void UpdateConfig_Int(int value, SystemParameters paraID)
+        {
+            systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
 
         public void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID)
@@ -72,9 +89,9 @@
             return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
-        public Int64 ScanTicket(int batchSize, int step, Int64 lastTransID) 
+        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria) 
         {
-            return twGroupBettingDataAccess.ScanTicket(batchSize, step, lastTransID);
+            return twGroupBettingDataAccess.ScanTicket(criteria);
         }
 
         public void CountGroupBettingTicket()
