@@ -27,15 +27,15 @@
         [Fact]
         public void GetLastScanTime_WhenSuccess_RunSuccessfully()
         {
-            var result = twGroupbettingServices.GetLastScanTime(SystemParameters.TWGroupBetting_LastScanTime);
-            result.Should().NotBe(DateTime.MinValue);
+            var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastTransID);
+            result.Should().NotBe(0);
         }
 
         [Fact]
         public void GetLastTimeCountTotalTicket_WhenSuccess_RunSuccessfully()
         {
-            var result = twGroupbettingServices.GetLastTimeCountTotalTicket(SystemParameters.TWGroupBetting_LastTimeCountTotalTicket);
-            result.Should().NotBe(DateTime.MinValue);
+            var result = twGroupbettingServices.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
+            result.Should().NotBe(0);
         }
 
         [Fact]
@@ -55,26 +55,5 @@
             var result = twGroupbettingServices.GetAllRules();
             result.Should().NotBeEmpty();
         }
-
-        //public void Abc()
-        //{
-        //    DateTime fromDate = DateTime.MinValue;
-        //    DateTime toDate = DateTime.MinValue;
-        //    int step = 5;
-        //    twGroupbettingServices.ScanTicket(fromDate, toDate, step);
-        //}
-
-        //[Theory]
-        //[InlineData(0)]
-        //[InlineData(-1)]
-        //public void GetProbationCustForScanning_WhenFail_ReturnEmptyList(int batchSize)
-        //{
-        //    probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
-
-        //    probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
-        //    var result = probationClassificationServices.CustomerClassification;
-
-        //    result.Should().BeEquivalentTo(new List<ProbationEntity>());
-        //}
     }
 }

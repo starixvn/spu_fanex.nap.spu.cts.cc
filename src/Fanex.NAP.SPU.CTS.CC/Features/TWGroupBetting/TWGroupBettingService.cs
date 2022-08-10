@@ -15,15 +15,7 @@
 
         void CountTotalTicket();
 
-        DateTime GetLastScanTime(SystemParameters paraID);
-
-        DateTime GetLastTimeCountTotalTicket(SystemParameters paraID);
-
-        void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID);
-
         IEnumerable<TWGroupBettingRule> GetAllRules();
-
-        void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
 
         Int64 GetConfig_Int64(SystemParameters paraID);
 
@@ -44,13 +36,6 @@
         {
             this.twGroupBettingDataAccess = twGroupBettingDataAccess;
             this.systemParameterDataAccess = systemParameterDataAccess;
-        }
-
-        public DateTime GetLastScanTime(SystemParameters paraID)
-        {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            var defaultDate = new DateTime(2022, 1, 1);
-            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
         public Int64 GetConfig_Int64(SystemParameters paraID)
@@ -75,18 +60,6 @@
         public void UpdateConfig_Int(int value, SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
-        }
-
-        public void UpdateLastScanTime(DateTime lastScannedDate, SystemParameters paraID)
-        {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss.fff"), paraID);
-        }
-
-        public DateTime GetLastTimeCountTotalTicket(SystemParameters paraID)
-        {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            var defaultDate = new DateTime(2022, 1, 1);
-            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : defaultDate;
         }
 
         public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria) 
@@ -120,11 +93,6 @@
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {
             return twGroupBettingDataAccess.GetAllRules();
-        }
-
-        public void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets)
-        {
-            twGroupBettingDataAccess.SyncGroupBettingTicketToDB062(gbTickets);
         }
     }
 }
