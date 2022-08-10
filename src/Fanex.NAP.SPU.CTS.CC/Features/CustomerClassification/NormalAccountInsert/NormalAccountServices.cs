@@ -138,12 +138,12 @@
                                         LastXDaysMargin = group.custClass.LastXDaysMargin,
                                         ProbationPeriodWinloss = group.custClass.ProbationPeriodWinloss,
                                         IsGeneralCategory = group.custClass.IsGeneralCategory,
-                                        TaggingID = (temp != null) ? temp.TaggingID : group.custClass.TaggingID,
-                                        TaggingType = (temp != null) ? temp.TaggingType : group.custClass.TaggingType,
-                                        TWBetCount = (temp != null) ? temp.TWBetCount : 0,
-                                        TWDesktopUsageRate = (temp != null) ? temp.TWDesktopUsageRate : 0,
-                                        TWGroupBettingRate = (temp != null) ? temp.TWGroupBettingRate : 0,
-                                        TWTicketRejectRate = (temp != null) ? temp.TWTicketRejectRate : 0
+                                        TaggingID = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TaggingID : group.custClass.TaggingID) : group.custClass.TaggingID,
+                                        TaggingType = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TaggingType : group.custClass.TaggingType) : group.custClass.TaggingType,
+                                        TWBetCount = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TWBetCount : 0) : group.custClass.TWBetCount,
+                                        TWDesktopUsageRate = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TWDesktopUsageRate : 0) : group.custClass.TWDesktopUsageRate,
+                                        TWGroupBettingRate = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TWGroupBettingRate : 0) : group.custClass.TWGroupBettingRate,
+                                        TWTicketRejectRate = group.custClass.TaggingID == 0 ? ((temp != null) ? temp.TWTicketRejectRate : 0) : group.custClass.TWTicketRejectRate
                                     });
 
             return result.ToList();

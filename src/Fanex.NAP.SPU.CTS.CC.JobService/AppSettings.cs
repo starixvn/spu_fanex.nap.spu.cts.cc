@@ -44,6 +44,10 @@
 
         string SentryDsn { get; }
 
+        string InsertVIPURL { get; }
+
+        string InsertBAURL { get; }
+
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
     }
 
@@ -59,6 +63,8 @@
         private readonly string afcDeleteAccountURL;
         private readonly bool isSyncAFCData;
         private readonly string sentryDsn;
+        private readonly string insertVIPURL;
+        private readonly string insertBAURL;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -72,6 +78,8 @@
             afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
             sentryDsn = GetValue<string>("Sentry:Dsn");
+            insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
+            insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
         }
 
         #region Variables
@@ -107,6 +115,10 @@
         public bool IsSyncAFCData => isSyncAFCData;
 
         public string SentryDsn => sentryDsn;
+
+        public string InsertVIPURL => insertVIPURL;
+
+        public string InsertBAURL => insertBAURL;
 
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 

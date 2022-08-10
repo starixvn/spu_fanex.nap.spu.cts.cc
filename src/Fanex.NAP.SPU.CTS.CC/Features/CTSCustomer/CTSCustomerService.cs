@@ -1,7 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -15,6 +13,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
@@ -88,7 +87,6 @@
             ISentryClient sentryClient,
             IRescanCustClassificationService rescanClassificationService,
             ICustClassToMainDBService custClassToMainDBService,
-            IAntiFraudCenterServices antiFraudCenterServices,
             ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
@@ -132,6 +130,13 @@
                     if (customers != null && customers.Any())
                     {
                         UpdateAssociationCustomerForArchive(customers);
+
+                        var isSuccess = InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result;
+
+                        if (!isSuccess)
+                        {
+                            return false;
+                        }
 
                         UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
                     }
@@ -209,6 +214,53 @@
         {
             var customerJson = JsonConvert.SerializeObject(customerList);
             return dataAccess.CompareCustomerDataForMonitor(customerJson);
+        }
+
+        private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBModel> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
+        {
+            if (customer != null && customer.Any())
+            {
+                var custIdsToInsertVIP = customer.Where(c => c.IsLicenseeVIP == true)?.Select(c => c.CustID);
+                var custIdsToInsertBA = customer.Where(c => c.IsLicenseeBA == true)?.Select(c => c.CustID);
+
+                try
+                {
+                    if (custIdsToInsertVIP != null && custIdsToInsertVIP.Any())
+                    {
+                        await CallAPIInsertVIPBA(custIdsToInsertVIP, insertVIPUrl);
+                    }
+
+                    if (custIdsToInsertBA != null && custIdsToInsertBA.Any())
+                    {
+                        await CallAPIInsertVIPBA(custIdsToInsertBA, insertBAUrl);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA }, ex, sentryClient);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static async Task<string> CallAPIInsertVIPBA(IEnumerable<int> custIds, string url)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                var para = new
+                {
+                    CustIDs = string.Join(",", custIds.Distinct()),
+                    CreatedBy = StarixITId,
+                    IsFromExternal = false
+                };
+
+                return await ApiHelper.Post<string>(url, para, 300);
+            }
+
+            return string.Empty;
         }
 
         #endregion Insert New Customers
