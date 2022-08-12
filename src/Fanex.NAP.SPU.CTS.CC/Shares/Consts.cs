@@ -39,7 +39,10 @@
             DailyProblemClassificationLastCustID = 89,
             NewCTSCustomerClassificationLastCustID = 92,
             RobotDetectionLastModifiedDate = 94,
-            TVS_LastScanDateTime = 2
+            TVS_LastScanDateTime = 2,
+            SabaDangerLevel_LastHistoryID = 102,
+            SabaDangerLevel_LastCategoryID = 103,
+            SabaDangerLevel_LastCustID = 104
         };
 
         public enum Category
