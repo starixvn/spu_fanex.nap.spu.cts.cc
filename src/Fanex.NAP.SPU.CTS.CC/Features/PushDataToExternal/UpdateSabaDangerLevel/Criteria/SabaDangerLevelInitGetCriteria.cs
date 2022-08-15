@@ -7,8 +7,8 @@
     public class SabaDangerLevelInitGetCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "op_LastCategoryID")]
-        public int LastCategoryID { get; set; }        
-        
+        public int LastCategoryID { get; set; }
+
         [SpParam(SqlParamName = "op_LastCustID")]
         public Int64 LastCustID { get; set; }
 
