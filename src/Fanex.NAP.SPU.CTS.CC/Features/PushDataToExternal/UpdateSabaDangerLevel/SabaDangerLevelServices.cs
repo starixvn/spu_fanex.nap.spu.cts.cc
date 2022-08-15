@@ -11,9 +11,11 @@
 
         ISabaDangerLevelServices GetSabaDangerLevelForScanning();
 
+        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB();
+
         ISabaDangerLevelServices UpdateLogSabaDangerLevel();
 
-        ISabaDangerLevelServices UpdateLastScan();
+        bool UpdateLastScan();
 
         #region For Initialzing Data
 
@@ -21,9 +23,11 @@
 
         ISabaDangerLevelServices GetSabaDangerLevelForInitializing();
 
+        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitializing();
+
         ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitializing();
 
-        ISabaDangerLevelServices UpdateLastScanForInitializing();
+        bool UpdateLastScanForInitializing();
 
         #endregion For Initialzing Data
     }
@@ -55,9 +59,19 @@
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateLogSabaDangerLevel()
+        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB()
         {
             if (sabaDangerLevel.CustSabaDangerLevel.Any())
+            {
+                sabaDangerLevel.UpdatedResult = sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(sabaDangerLevel.CustSabaDangerLevel);
+            }
+
+            return this;
+        }
+
+        public ISabaDangerLevelServices UpdateLogSabaDangerLevel()
+        {
+            if (sabaDangerLevel.CustSabaDangerLevel.Any() && sabaDangerLevel.UpdatedResult.ErrCode == 0)
             {
                 var custDangerLevelJson = JsonConvert.SerializeObject(sabaDangerLevel.CustSabaDangerLevel);
 
@@ -67,11 +81,16 @@
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateLastScan()
+        public bool UpdateLastScan()
         {
-            systemParameterServices.UpdateTimingExecution(sabaDangerLevel.LastHistoryID.ToString(), SystemParameters.SabaDangerLevel_LastHistoryID);
+            if (sabaDangerLevel.UpdatedResult.ErrCode == 0)
+            {
+                systemParameterServices.UpdateTimingExecution(sabaDangerLevel.LastHistoryID.ToString(), SystemParameters.SabaDangerLevel_LastHistoryID);
 
-            return this;
+                return true;
+            }
+
+            return false;
         }
 
         #region For Initialzing Data
@@ -90,9 +109,19 @@
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitializing()
+        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitializing()
         {
             if (initSabaDangerLevel.CustSabaDangerLevel.Any())
+            {
+                initSabaDangerLevel.UpdatedResult = sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(initSabaDangerLevel.CustSabaDangerLevel);
+            }
+
+            return this;
+        }
+
+        public ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitializing()
+        {
+            if (initSabaDangerLevel.CustSabaDangerLevel.Any() && initSabaDangerLevel.UpdatedResult.ErrCode == 0)
             {
                 var custDangerLevelJson = JsonConvert.SerializeObject(initSabaDangerLevel.CustSabaDangerLevel);
 
@@ -102,13 +131,18 @@
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateLastScanForInitializing()
+        public bool UpdateLastScanForInitializing()
         {
-            systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCategoryID.ToString(), SystemParameters.SabaDangerLevel_LastCategoryID);
+            if (initSabaDangerLevel.UpdatedResult.ErrCode == 0)
+            {
+                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCategoryID.ToString(), SystemParameters.SabaDangerLevel_LastCategoryID);
 
-            systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCustID.ToString(), SystemParameters.SabaDangerLevel_LastCustID);
+                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCustID.ToString(), SystemParameters.SabaDangerLevel_LastCustID);
 
-            return this;
+                return true;
+            }
+
+            return false;
         }
 
         #endregion For Initialzing Data

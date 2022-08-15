@@ -13,5 +13,7 @@
         public IEnumerable<SabaDangerLevelEntity> CustSabaDangerLevel { get; set; }
 
         public int LastHistoryID { get; set; }
+
+        public SabaDangerLevelUpdateResultEntity UpdatedResult { get; set; }
     }
 }

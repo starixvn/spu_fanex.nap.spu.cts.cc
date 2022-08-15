@@ -1,6 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.Shares;
+    using System.Collections.Generic;
     using System.Linq;
 
     public interface ISabaDangerLevelDataAccess
@@ -10,6 +12,8 @@
         SabaDangerLevelInitResultEntity GetSabaDangerLevelForInitializing();
 
         void UpdateLogSabaDangerLevel(string custInfoJson);
+
+        SabaDangerLevelUpdateResultEntity UpdateDabaDangerLevelToMainDB(IEnumerable<SabaDangerLevelEntity> custSabaDangerLevel);
     }
 
     public class SabaDangerLevelDataAccess : ISabaDangerLevelDataAccess
@@ -45,6 +49,22 @@
                 CustSabaDangerLevel = result ?? Enumerable.Empty<SabaDangerLevelEntity>(),
                 LastCategoryID = criteria.LastCategoryID,
                 LastCustID = criteria.LastCustID
+            };
+        }
+
+        public SabaDangerLevelUpdateResultEntity UpdateDabaDangerLevelToMainDB(IEnumerable<SabaDangerLevelEntity> custSabaDangerLevel)
+        {
+            var criteria = new SabaDangerLevelUpdateCriteria()
+            {
+                CustList = custSabaDangerLevel.ToXmlString()
+            };
+
+            repository.Execute(criteria);
+
+            return new SabaDangerLevelUpdateResultEntity
+            {
+                ErrCode = criteria.ErrCode,
+                ErrMsg = criteria.ErrMsg
             };
         }
 

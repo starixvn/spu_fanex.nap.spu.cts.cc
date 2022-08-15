@@ -32,7 +32,7 @@
         {
             try
             {
-                JobRun();
+                return Task.FromResult(JobRun());
             }
             catch (Exception ex)
             {
@@ -40,15 +40,13 @@
 
                 return Task.FromResult(false);
             }
-
-            return Task.FromResult(true);
         }
 
         public Task<bool> InitializeData()
         {
             try
             {
-                JobRunForInitializing();
+                return Task.FromResult(JobRunForInitializing());
             }
             catch (Exception ex)
             {
@@ -56,28 +54,28 @@
 
                 return Task.FromResult(false);
             }
-
-            return Task.FromResult(true);
         }
 
         #region Private Methods
 
-        private void JobRun()
+        private bool JobRun()
         {
-            sabaDangerLevelServices
-                .Start()
-                .GetSabaDangerLevelForScanning()
-                .UpdateLogSabaDangerLevel()
-                .UpdateLastScan();
+            return sabaDangerLevelServices
+                     .Start()
+                     .GetSabaDangerLevelForScanning()
+                     .UpdateSabaDangerLevelToMainDB()
+                     .UpdateLogSabaDangerLevel()
+                     .UpdateLastScan();
         }
 
-        private void JobRunForInitializing()
+        private bool JobRunForInitializing()
         {
-            sabaDangerLevelServices
-                .StartForInitialzingData()
-                .GetSabaDangerLevelForInitializing()
-                .UpdateLogSabaDangerLevelForInitializing()
-                .UpdateLastScanForInitializing();
+            return sabaDangerLevelServices
+                     .StartForInitialzingData()
+                     .GetSabaDangerLevelForInitializing()
+                     .UpdateSabaDangerLevelToMainDBForInitializing()
+                     .UpdateLogSabaDangerLevelForInitializing()
+                     .UpdateLastScanForInitializing();
         }
     }
 

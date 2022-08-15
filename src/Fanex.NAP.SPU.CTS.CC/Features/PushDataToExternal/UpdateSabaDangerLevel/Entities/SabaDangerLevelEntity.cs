@@ -6,13 +6,16 @@
     [XName("Root")]
     public class SabaDangerLevelEntity
     {
-        [XName("custid")]
+        [XName("CustID")]
         public Int64 CustID { get; set; }
 
         [XName("SportType")]
         public int SportType { get; set; }
 
-        [XName("action")]
+        /// <summary>
+        /// -1 - remove, <>-1 - insert
+        /// </summary>
+        [XName("Action")]
         public int Action { get; set; }
     }
 }
