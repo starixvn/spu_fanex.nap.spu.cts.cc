@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_SabaDangerLevel_UpdateLog";
+            return "CTS_DC_CustClassification_SabaDangerLevel_Update";
         }
 
         public override bool IsValid()
