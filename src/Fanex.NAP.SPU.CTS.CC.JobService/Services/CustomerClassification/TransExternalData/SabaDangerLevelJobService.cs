@@ -8,9 +8,9 @@
 
     public interface ISabaDangerLevelJobService
     {
-        Task<bool> Execute();
+        Task<bool> Execute(int batchSize);
 
-        Task<bool> InitializeData();
+        Task<bool> InitializeData(int batchSize);
     }
 
     public class SabaDangerLevelJobService : ISabaDangerLevelJobService
@@ -28,11 +28,11 @@
             this.serviceName = "SabaDangerLevelJobService";
         }
 
-        public Task<bool> Execute()
+        public Task<bool> Execute(int batchSize)
         {
             try
             {
-                return Task.FromResult(JobRun());
+                return Task.FromResult(JobRun(batchSize));
             }
             catch (Exception ex)
             {
@@ -42,11 +42,11 @@
             }
         }
 
-        public Task<bool> InitializeData()
+        public Task<bool> InitializeData(int batchSize)
         {
             try
             {
-                return Task.FromResult(JobRunForInitializing());
+                return Task.FromResult(JobRunForInitializing(batchSize));
             }
             catch (Exception ex)
             {
@@ -58,36 +58,39 @@
 
         #region Private Methods
 
-        private bool JobRun()
+        private bool JobRun(int batchSize)
         {
-            return sabaDangerLevelServices
-                     .Start()
-                     .GetSabaDangerLevelForScanning()
-                     .UpdateSabaDangerLevelToMainDB()
-                     .UpdateLogSabaDangerLevel()
-                     .UpdateLastScan();
+            var isContinue = sabaDangerLevelServices
+                                             .Start()
+                                             .GetSabaDangerLevelForScanning();
+
+            var isSuccess = sabaDangerLevelServices
+                                             .UpdateSabaDangerLevelToMainDB(sentryClient, serviceName, batchSize)
+                                             .UpdateLogSabaDangerLevel()
+                                             .UpdateLastScan();
+            if (isContinue && isSuccess)
+            {
+                JobRun(batchSize);
+            }
+
+            return isSuccess;
         }
 
-        private bool JobRunForInitializing()
+        private bool JobRunForInitializing(int batchSize)
         {
             var isContinue = sabaDangerLevelServices.StartForInitialzingData()
                                                     .GetSabaDangerLevelForInitialization();
 
-            var isSuccess = sabaDangerLevelServices.UpdateSabaDangerLevelToMainDBForInitialization()
+            var isSuccess = sabaDangerLevelServices.UpdateSabaDangerLevelToMainDBForInitialization(sentryClient, serviceName, batchSize)
                                                    .UpdateLogSabaDangerLevelForInitialization()
                                                    .UpdateLastScanForInitialization();
 
-            if (!isSuccess)
+            if (isContinue && isSuccess)
             {
-                return false;
-            }    
-
-            if (isContinue)
-            {
-                JobRunForInitializing();
+                JobRunForInitializing(batchSize);
             }
 
-            return true;
+            return isSuccess;
         }
     }
 

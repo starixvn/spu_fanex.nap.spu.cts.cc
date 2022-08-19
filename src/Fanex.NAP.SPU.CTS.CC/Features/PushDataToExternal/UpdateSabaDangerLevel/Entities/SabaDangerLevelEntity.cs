@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
 
-    [XName("Root")]
+    [XName("r")]
     public class SabaDangerLevelEntity
     {
         [XName("CustID")]

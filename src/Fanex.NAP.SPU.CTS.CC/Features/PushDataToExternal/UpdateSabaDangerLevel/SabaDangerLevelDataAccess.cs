@@ -64,7 +64,8 @@
             return new SabaDangerLevelUpdateResultEntity
             {
                 ErrCode = criteria.ErrCode,
-                ErrMsg = criteria.ErrMsg
+                ErrMsg = criteria.ErrMsg,
+                IsSuccess = string.IsNullOrEmpty(criteria.ErrMsg) && criteria.ErrCode == 0
             };
         }
 

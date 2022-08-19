@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -21,15 +20,15 @@
         }
 
         [HttpPost("sabaDangerLevel")]
-        public async Task<bool> UpdateSabaDangerLevel()
+        public async Task<bool> UpdateSabaDangerLevel([FromForm] int batchSize)
         {
-            return await this.sabaDangerLevelJobService.Execute();
+            return await this.sabaDangerLevelJobService.Execute(batchSize);
         }
 
         [HttpPost("initSabaDangerLevel")]
-        public async Task<bool> InitSabaDangerLevel()
+        public async Task<bool> InitSabaDangerLevel([FromForm] int batchSize)
         {
-            return await this.sabaDangerLevelJobService.InitializeData();
+            return await this.sabaDangerLevelJobService.InitializeData(batchSize);
         }
     }
 }
