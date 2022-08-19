@@ -104,7 +104,7 @@
 
         public ISabaDangerLevelServices GetSabaDangerLevelForInitialization()
         {
-            initSabaDangerLevel = sabaDangerLevelDataAccess.GetSabaDangerLevelForInitializing();
+            initSabaDangerLevel = sabaDangerLevelDataAccess.GetSabaDangerLevelForInitialization();
 
             return this;
         }

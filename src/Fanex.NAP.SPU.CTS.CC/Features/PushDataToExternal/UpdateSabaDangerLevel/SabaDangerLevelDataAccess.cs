@@ -9,7 +9,7 @@
     {
         SabaDangerLevelResultEntity GetSabaDangerLevelForScanning();
 
-        SabaDangerLevelInitResultEntity GetSabaDangerLevelForInitializing();
+        SabaDangerLevelInitResultEntity GetSabaDangerLevelForInitialization();
 
         void UpdateLogSabaDangerLevel(string custInfoJson);
 
@@ -38,7 +38,7 @@
             };
         }
 
-        public SabaDangerLevelInitResultEntity GetSabaDangerLevelForInitializing()
+        public SabaDangerLevelInitResultEntity GetSabaDangerLevelForInitialization()
         {
             var criteria = new SabaDangerLevelInitGetCriteria();
 

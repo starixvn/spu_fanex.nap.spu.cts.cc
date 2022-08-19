@@ -103,7 +103,7 @@
 		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ClearOld" SpName="CTS_DC_CustClassification_PA_ClearOld" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		
+
 		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
@@ -112,8 +112,15 @@
 		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect" SpName="TicketVoiding_CTS_ProblemCustomerSelect" DbName="DBTP10C.bodb02.bodbSPUNet" />
 		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect_Archive" SpName="TicketVoiding_CTS_ProblemCustomerSelect_Archive" DbName="SQL.bodb_Archive.bodbSPUNet" />
 	</Function>
-	
+
 	<Function name="LogData">
 		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
+	</Function>
+
+	<Function name="SabaDangeLevel">
+		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Init" SpName="CTS_DC_CustClassification_SabaDangerLevel_Init" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Scan" SpName="CTS_DC_CustClassification_SabaDangerLevel_Scan" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Update" SpName="CTS_DC_CustClassification_SabaDangerLevel_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="Acc_CustomerUdpDanger_JobExclusion" SpName="Acc_CustomerUdpDanger_JobExclusion" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 	</Function>
 </Functions>
