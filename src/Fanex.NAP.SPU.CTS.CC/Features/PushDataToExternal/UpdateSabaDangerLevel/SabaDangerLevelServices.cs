@@ -21,13 +21,13 @@
 
         ISabaDangerLevelServices StartForInitialzingData();
 
-        ISabaDangerLevelServices GetSabaDangerLevelForInitializing();
+        ISabaDangerLevelServices GetSabaDangerLevelForInitialization();
 
-        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitializing();
+        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization();
 
-        ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitializing();
+        ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitialization();
 
-        bool UpdateLastScanForInitializing();
+        bool UpdateLastScanForInitialization();
 
         #endregion For Initialzing Data
     }
@@ -102,14 +102,14 @@
             return this;
         }
 
-        public ISabaDangerLevelServices GetSabaDangerLevelForInitializing()
+        public ISabaDangerLevelServices GetSabaDangerLevelForInitialization()
         {
             initSabaDangerLevel = sabaDangerLevelDataAccess.GetSabaDangerLevelForInitializing();
 
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitializing()
+        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization()
         {
             if (initSabaDangerLevel.CustSabaDangerLevel.Any())
             {
@@ -119,7 +119,7 @@
             return this;
         }
 
-        public ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitializing()
+        public ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitialization()
         {
             if (initSabaDangerLevel.CustSabaDangerLevel.Any() && initSabaDangerLevel.UpdatedResult.ErrCode == 0)
             {
@@ -131,7 +131,7 @@
             return this;
         }
 
-        public bool UpdateLastScanForInitializing()
+        public bool UpdateLastScanForInitialization()
         {
             if (initSabaDangerLevel.UpdatedResult.ErrCode == 0)
             {

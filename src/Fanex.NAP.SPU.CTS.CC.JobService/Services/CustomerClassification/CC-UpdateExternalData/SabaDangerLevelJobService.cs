@@ -72,10 +72,10 @@
         {
             return sabaDangerLevelServices
                      .StartForInitialzingData()
-                     .GetSabaDangerLevelForInitializing()
-                     .UpdateSabaDangerLevelToMainDBForInitializing()
-                     .UpdateLogSabaDangerLevelForInitializing()
-                     .UpdateLastScanForInitializing();
+                     .GetSabaDangerLevelForInitialization()
+                     .UpdateSabaDangerLevelToMainDBForInitialization()
+                     .UpdateLogSabaDangerLevelForInitialization()
+                     .UpdateLastScanForInitialization();
         }
     }
 

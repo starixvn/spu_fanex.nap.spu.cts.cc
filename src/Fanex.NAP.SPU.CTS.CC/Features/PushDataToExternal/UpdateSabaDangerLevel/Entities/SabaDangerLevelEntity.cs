@@ -13,7 +13,7 @@
         public int SportType { get; set; }
 
         /// <summary>
-        /// -1 - remove, <>-1 - insert
+        /// -1: remove, <>-1: insert
         /// </summary>
         [XName("Action")]
         public int Action { get; set; }
