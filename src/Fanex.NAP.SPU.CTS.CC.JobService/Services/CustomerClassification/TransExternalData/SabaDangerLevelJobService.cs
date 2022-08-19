@@ -70,12 +70,24 @@
 
         private bool JobRunForInitializing()
         {
-            return sabaDangerLevelServices
-                     .StartForInitialzingData()
-                     .GetSabaDangerLevelForInitialization()
-                     .UpdateSabaDangerLevelToMainDBForInitialization()
-                     .UpdateLogSabaDangerLevelForInitialization()
-                     .UpdateLastScanForInitialization();
+            var isContinue = sabaDangerLevelServices.StartForInitialzingData()
+                                                    .GetSabaDangerLevelForInitialization();
+
+            var isSuccess = sabaDangerLevelServices.UpdateSabaDangerLevelToMainDBForInitialization()
+                                                   .UpdateLogSabaDangerLevelForInitialization()
+                                                   .UpdateLastScanForInitialization();
+
+            if (!isSuccess)
+            {
+                return false;
+            }    
+
+            if (isContinue)
+            {
+                JobRunForInitializing();
+            }
+
+            return true;
         }
     }
 

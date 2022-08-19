@@ -21,7 +21,7 @@
 
         ISabaDangerLevelServices StartForInitialzingData();
 
-        ISabaDangerLevelServices GetSabaDangerLevelForInitialization();
+        bool GetSabaDangerLevelForInitialization();
 
         ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization();
 
@@ -102,11 +102,11 @@
             return this;
         }
 
-        public ISabaDangerLevelServices GetSabaDangerLevelForInitialization()
+        public bool GetSabaDangerLevelForInitialization()
         {
             initSabaDangerLevel = sabaDangerLevelDataAccess.GetSabaDangerLevelForInitialization();
 
-            return this;
+            return initSabaDangerLevel.LastCategoryID != -1;
         }
 
         public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization()

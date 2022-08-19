@@ -7,13 +7,13 @@
     using System.Threading.Tasks;
 
     [ApiController]
-    [Route("api/updateExternalDataJobs")]
-    public class UpdateExternalDataJobController : ControllerBase
+    [Route("api/transExternalDataJobs")]
+    public class TransExternalDataJobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
         private readonly ISabaDangerLevelJobService sabaDangerLevelJobService;
 
-        public UpdateExternalDataJobController(ISentryClient sentryClient,
+        public TransExternalDataJobController(ISentryClient sentryClient,
             ISabaDangerLevelJobService sabaDangerLevelJobService)
         {
             this.sentryClient = sentryClient;
