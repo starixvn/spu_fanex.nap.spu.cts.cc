@@ -7,7 +7,7 @@
     public class SabaDangerLevelEntity
     {
         [XName("CustID")]
-        public Int64 CustID { get; set; }
+        public UInt64 CustID { get; set; }
 
         [XName("SportType")]
         public int SportType { get; set; }

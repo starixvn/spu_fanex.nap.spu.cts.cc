@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -12,7 +13,7 @@
 
         public IEnumerable<SabaDangerLevelEntity> CustSabaDangerLevel { get; set; }
 
-        public int LastHistoryID { get; set; }
+        public UInt64 LastHistoryID { get; set; }
 
         public SabaDangerLevelUpdateResultEntity UpdatedResult { get; set; }
     }

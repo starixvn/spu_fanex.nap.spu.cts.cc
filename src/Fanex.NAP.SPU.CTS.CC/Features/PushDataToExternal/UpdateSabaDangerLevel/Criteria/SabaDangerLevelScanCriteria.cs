@@ -2,11 +2,12 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class SabaDangerLevelScanCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "op_LastHistoryID")]
-        public int LastHistoryID { get; set; }
+        public UInt64 LastHistoryID { get; set; }
 
         public override string GetSettingKey()
         {
