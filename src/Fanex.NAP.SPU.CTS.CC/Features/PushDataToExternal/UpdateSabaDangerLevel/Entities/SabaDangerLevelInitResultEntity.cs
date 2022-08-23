@@ -9,6 +9,7 @@
         public SabaDangerLevelInitResultEntity()
         {
             CustSabaDangerLevel = Enumerable.Empty<SabaDangerLevelEntity>();
+            UpdatedResult = new SabaDangerLevelUpdateResultEntity();
         }
 
         public IEnumerable<SabaDangerLevelEntity> CustSabaDangerLevel { get; set; }
