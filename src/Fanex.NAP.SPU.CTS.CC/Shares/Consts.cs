@@ -32,7 +32,7 @@
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastTransSec = 77,
             TWGroupBetting_SkipTransCount = 78,
-            TWGroupBetting_LastTransID = 90,
+            TWGroupBetting_LastSequenceId = 90,
             InactiveNewMember_LastCategoryID = 80,
             InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
