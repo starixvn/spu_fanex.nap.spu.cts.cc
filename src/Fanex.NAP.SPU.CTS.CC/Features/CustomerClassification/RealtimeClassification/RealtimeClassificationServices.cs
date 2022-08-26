@@ -107,9 +107,7 @@
         {
             if (classification.CustClassification != null && classification.CustClassification.Any())
             {
-                var custCategoryToClassify = classification.CustCategories.Where(c => c.CategoryId != -1);
-
-                var custsClassify = classification.CustClassification.GroupJoin(custCategoryToClassify,
+                var custsClassify = classification.CustClassification.GroupJoin(classification.CustCategories,
                                                     custsHaschanges => custsHaschanges.CustId,
                                                     custsCategories => custsCategories.CustId,
                                                     (custsHaschanges, custsCategories) => new { custsHaschanges, custsCategories })
@@ -122,7 +120,12 @@
                                                             CategoryId = (temp != null) ? temp.CategoryId : 0
                                                         });
 
-                realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custsClassify);
+                var finalCustToClassify = custsClassify.Where(c => c.CategoryId != -1);
+
+                if (finalCustToClassify.Any())
+                {
+                    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(finalCustToClassify);
+                }
             }
         }
 
