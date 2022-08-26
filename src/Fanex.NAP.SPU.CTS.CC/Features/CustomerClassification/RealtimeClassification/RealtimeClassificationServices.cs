@@ -120,7 +120,12 @@
                                                             CategoryId = (temp != null) ? temp.CategoryId : 0
                                                         });
 
-                realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custsClassify);
+                var finalCustToClassify = custsClassify.Where(c => c.CategoryId != -1);
+
+                if (finalCustToClassify.Any())
+                {
+                    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(finalCustToClassify);
+                }
             }
         }
 
