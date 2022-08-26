@@ -107,7 +107,9 @@
         {
             if (classification.CustClassification != null && classification.CustClassification.Any())
             {
-                var custsClassify = classification.CustClassification.GroupJoin(classification.CustCategories,
+                var custCategoryToClassify = classification.CustCategories.Where(c => c.CategoryId != -1);
+
+                var custsClassify = classification.CustClassification.GroupJoin(custCategoryToClassify,
                                                     custsHaschanges => custsHaschanges.CustId,
                                                     custsCategories => custsCategories.CustId,
                                                     (custsHaschanges, custsCategories) => new { custsHaschanges, custsCategories })
