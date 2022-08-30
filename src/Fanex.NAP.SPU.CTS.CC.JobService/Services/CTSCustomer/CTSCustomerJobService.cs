@@ -175,7 +175,7 @@
                     var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(custList);
                     if (missingCusts.Any())
                     {
-                        var mess = $"Scan from {fromDate.ToString("dd/MM/yyyy HH:mm:ss")} to {toDate.ToString("dd/MM/yyyy HH:mm:ss")} \n" +
+                        var mess = $"Scan from {fromDate:dd/MM/yyyy HH:mm:ss} to {toDate:dd/MM/yyyy HH:mm:ss} \n" +
                         $"{missingCusts.Count()} missing customers";
 
                         NotifyTelegramMessage(mess);
@@ -350,10 +350,11 @@
         private void NotifyTelegramMessage(string message)
         {
             var telegramService = new NotificationService();
+            string proxy = appSettings.EvironmentName == "PROD" ? "10.2.252.100:8801" : null;
             telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
-               .SendWithoutDelay(isInfo: true);
+               .SendWithoutDelay();
         }
 
         #endregion Private Methods
