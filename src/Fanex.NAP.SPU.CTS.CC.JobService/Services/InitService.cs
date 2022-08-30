@@ -28,6 +28,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
 
     public static class InitService
     {
@@ -66,6 +67,8 @@
             RegisterClassifyGBMatchMonitor(services);
 
             RegisterDataLogTracking(services);
+
+            RegisterSabaDangerLevel(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -197,6 +200,13 @@
         {
             services.AddSingleton<IDataLogTrackingDataAccess, DataLogTrackingDataAccess>();
             services.AddSingleton<IDataLogTrackingServices, DataLogTrackingServices>();
+        }
+
+        private static void RegisterSabaDangerLevel(this IServiceCollection services)
+        {
+            services.AddSingleton<ISabaDangerLevelDataAccess, SabaDangerLevelDataAccess>();
+            services.AddSingleton<ISabaDangerLevelServices, SabaDangerLevelServices>();
+            services.AddSingleton<ISabaDangerLevelJobService, SabaDangerLevelJobService>();
         }
     }
 }
