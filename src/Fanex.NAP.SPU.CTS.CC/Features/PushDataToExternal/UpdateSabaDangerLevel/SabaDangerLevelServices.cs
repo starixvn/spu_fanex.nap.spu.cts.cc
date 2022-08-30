@@ -6,6 +6,7 @@
     using Sentry;
     using System;
     using System.Linq;
+    using System.Threading;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ISabaDangerLevelServices
@@ -78,6 +79,8 @@
 
                         return this;
                     }
+
+                    Thread.Sleep(Constants.SabaDangerLevel_SleepTimes);
                 }
             }
 
@@ -140,6 +143,8 @@
 
                         return this;
                     }
+
+                    Thread.Sleep(Constants.SabaDangerLevel_SleepTimes);
                 }
             }
 

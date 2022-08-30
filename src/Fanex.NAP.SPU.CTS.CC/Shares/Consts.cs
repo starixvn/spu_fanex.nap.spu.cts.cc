@@ -12,6 +12,8 @@
 
         public const int Realtime_SleepTimes = 2000;
 
+        public const int SabaDangerLevel_SleepTimes = 5000;
+
         public const int RobotUsers_SleepTimes = 300;
 
         public const int StarixITId = 10278938;
