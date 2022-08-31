@@ -27,7 +27,7 @@
         [Fact]
         public void GetLastScanTime_WhenSuccess_RunSuccessfully()
         {
-            var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastTransID);
+            var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
             result.Should().NotBe(0);
         }
 

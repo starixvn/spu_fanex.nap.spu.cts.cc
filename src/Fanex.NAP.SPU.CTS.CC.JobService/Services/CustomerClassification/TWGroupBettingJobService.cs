@@ -38,7 +38,7 @@
                 var rules = twGroupBettingService.GetAllRules();
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
-                    var lastTransId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_LastTransID);
+                    var lastTransId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
                     var lastTransSec = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_LastTransSec);
                     var skipTransCount = twGroupBettingService.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
 
@@ -46,16 +46,16 @@
                     {
                         BatchSize = batchSize,
                         Step = item.Key,
-                        LastTransID = lastTransId,
+                        LastSequenceId = lastTransId,
                         LastTransSec = lastTransSec,
                         SkipTransCount = skipTransCount
                     };
                     var outputParams = twGroupBettingService.ScanTicket(configs);
-
+                    
                     twGroupBettingService.CountGroupBettingTicket();
-                    if (outputParams.LastTransID_New > 0)
+                    if (outputParams.LastSequenceId_New > 0)
                     {
-                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastTransID_New, SystemParameters.TWGroupBetting_LastTransID);
+                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, SystemParameters.TWGroupBetting_LastSequenceId);
                         twGroupBettingService.UpdateConfig_Int64(outputParams.LastTransSec_New, SystemParameters.TWGroupBetting_LastTransSec);
                         twGroupBettingService.UpdateConfig_Int(outputParams.SkipTransCount_New, SystemParameters.TWGroupBetting_SkipTransCount);
                     }
