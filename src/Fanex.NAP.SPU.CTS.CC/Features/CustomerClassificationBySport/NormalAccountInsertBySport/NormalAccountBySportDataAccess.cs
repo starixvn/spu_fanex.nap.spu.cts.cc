@@ -11,7 +11,9 @@
     {
         IEnumerable<CustomerClassificationBySportEntity> GetNewClassificationBySport();
 
-        InsertNormalAccountResultEntity InsertCustomerClassification(string newClassification);
+        InsertNormalAccountResultEntity InsertCustomerClassificationBySport(string newClassification);
+
+        void UpdateAppliedStatusClassificationBySport(string custIdList);
     }
 
     public class NormalAccountBySportDataAccess : INormalAccountBySportDataAccess
@@ -30,7 +32,7 @@
             return repository.Fetch<CustomerClassificationBySportEntity>(criteria);
         }
 
-        public InsertNormalAccountResultEntity InsertCustomerClassification(string newClassification)
+        public InsertNormalAccountResultEntity InsertCustomerClassificationBySport(string newClassification)
         {
             var criteria = new InsertNormalAccountBySportCriteria
             {
@@ -40,6 +42,16 @@
             var custIDs = repository.Fetch<long>(criteria);
 
             return new InsertNormalAccountResultEntity { ErrorMessage = criteria.ErrorMessage, CustIDs = custIDs };
+        }
+
+        public void UpdateAppliedStatusClassificationBySport(string custIdList)
+        {
+            var criteria = new UpdateAppliedStatusClassificationBySportCriteria
+            {
+                ListCustIds = custIdList                
+            };
+
+            repository.Execute(criteria);
         }
 
     }

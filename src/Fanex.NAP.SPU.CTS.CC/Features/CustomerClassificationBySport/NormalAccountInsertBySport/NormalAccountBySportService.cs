@@ -4,13 +4,16 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections.Generic;   
+    using System.Collections.Generic;
+    using System.Linq;
 
     public interface INormalAccountBySportService
     {
-        IEnumerable<CustomerClassificationBySportEntity> GetNewClassification();
+        IEnumerable<CustomerClassificationBySportEntity> GetNewClassificationBySport();
 
-        InsertNormalAccountResultEntity InsertNormalAccountBySport(IEnumerable<CustomerClassificationBySportEntity> listClassification, string serviceName, bool isWriteLog);
+        InsertNormalAccountResultEntity InsertCustomerClassificationBySport(IEnumerable<CustomerClassificationBySportEntity> listClassification, string serviceName, bool isWriteLog);
+
+        bool UpdateAppliedStatusClassificationBySport(IEnumerable<CustomerClassificationBySportEntity> custClassifications, bool isSuccess);
     }
 
     public class NormalAccountBySportService : INormalAccountBySportService
@@ -24,30 +27,41 @@
             this.sentryClient = sentryClient;
         }
 
-        public IEnumerable<CustomerClassificationBySportEntity> GetNewClassification()
+        public IEnumerable<CustomerClassificationBySportEntity> GetNewClassificationBySport()
         {
             return normalAccountBySportDataAccess.GetNewClassificationBySport();
         }
 
-        public InsertNormalAccountResultEntity InsertNormalAccountBySport(IEnumerable<CustomerClassificationBySportEntity> listClassification, string serviceName, bool isWriteLog)
+        public InsertNormalAccountResultEntity InsertCustomerClassificationBySport(IEnumerable<CustomerClassificationBySportEntity> listClassification, string serviceName, bool isWriteLog)
         {
             var result = new InsertNormalAccountResultEntity();
             var custClassJsonData = JsonConvert.SerializeObject(listClassification);
             
-
             if (!string.IsNullOrEmpty(custClassJsonData))
             {
-                result = normalAccountBySportDataAccess.InsertCustomerClassification(custClassJsonData);
+                result = normalAccountBySportDataAccess.InsertCustomerClassificationBySport(custClassJsonData);
 
-                Utilities.LogSentryInfo(serviceName, "InsertNormalAccountBySport done", custClassJsonData, isWriteLog, sentryClient);
+                Utilities.LogSentryInfo(serviceName, "InsertCustomerClassificationBySport done", custClassJsonData, isWriteLog, sentryClient);
 
                 if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccountBySport throws Exception", custClassJsonData, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertCustomerClassificationBySport throws Exception", custClassJsonData, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
 
             return result;
+        }
+
+        public bool UpdateAppliedStatusClassificationBySport(IEnumerable<CustomerClassificationBySportEntity> custClassifications, bool isSuccess)
+        {
+            if (isSuccess && custClassifications != null && custClassifications.Any())
+            {
+                var custIds = custClassifications.Select(x => x.CustId).Distinct();
+
+                normalAccountBySportDataAccess.UpdateAppliedStatusClassificationBySport(string.Join(",", custIds));
+            }
+
+            return true;
         }
     }
 }

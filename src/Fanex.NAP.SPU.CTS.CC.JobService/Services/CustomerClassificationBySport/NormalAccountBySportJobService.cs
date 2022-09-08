@@ -24,6 +24,18 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAppSettings appSettings;
 
+        public NormalAccountBySportJobService(ISentryClient sentryClient,
+            INormalAccountBySportService normalAccountBySportService,
+            ICustClassToMainDBService pushDataToExternalService,           
+            IAppSettings appSettings)
+        {
+            this.sentryClient = sentryClient;
+            this.normalAccountBySportService = normalAccountBySportService;
+            this.custClassToMainDBService = pushDataToExternalService;
+            this.appSettings = appSettings;        
+            this.serviceName = "InsertNormalAccountBySport";
+        }
+
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
             try
@@ -34,12 +46,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
+                    Utilities.LogSentryError(this.serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(this.serviceName, ex.Message, string.Empty, ex, sentryClient);
 
                 return Task.FromResult(false);
             }
@@ -64,9 +76,26 @@
 
         private void JobRun(int batchExternalSize, int batchInternalSize)
         {
-            var newClassification = normalAccountBySportService.GetNewClassification();
+            var newClassifications = normalAccountBySportService.GetNewClassificationBySport();
 
+            if (newClassifications != null && newClassifications.Any())
+            {
+                var newClassificationChunks = newClassifications.Chunk(batchInternalSize).ToList();
 
+                foreach (var classifications in newClassificationChunks)
+                {
+                    var insertNAResult = normalAccountBySportService.InsertCustomerClassificationBySport(classifications, this.serviceName, appSettings.NormalAccountBySportIsWriteLog);
+
+                    if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
+                    {                       
+                        var ccBySports = custClassToMainDBService.GetCustomerClassificationBySports(insertNAResult.CustIDs);
+
+                        var isPushCCSuccess = custClassToMainDBService.RetryPushCustClassificationBySportToMainDB(ccBySports, Constants.InternalRetry, this.serviceName);
+
+                        normalAccountBySportService.UpdateAppliedStatusClassificationBySport(classifications, isPushCCSuccess);
+                    }
+                }
+            }
         }
     }
 }

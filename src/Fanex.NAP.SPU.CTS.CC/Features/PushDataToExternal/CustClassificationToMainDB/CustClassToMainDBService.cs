@@ -24,6 +24,10 @@
         bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName);
 
         bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+
+        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs);
+
+        bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName);
     }
 
     public class CustClassToMainDBService : ICustClassToMainDBService
@@ -246,6 +250,63 @@
             }
 
             return true;
+        }
+
+        public bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
+        {
+            if (classificationBySports != null && classificationBySports.Any())
+            {
+                var custClassification = classificationBySports.Select(x => new CustomerClassificationUpdateBySportToMainDBEntity
+                {
+                    CustID = x.CustID,
+                    SportID = x.SportID,
+                    CustomerClass = x.CustomerClass
+                });
+
+                while (retryTime >= 0)
+                {
+                    try
+                    {
+                        var result = custClassToMainDBDataAccess.UpdateCustomerClassificationBySportToMainDB(custClassification);
+
+                        if (result.ErrorCode != 0 && retryTime == 0)
+                        {
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB failed", custClassification, new Exception(result.ErrorMsg), sentryClient);
+                            return false;
+                        }
+                        else if (result.ErrorCode != 0)
+                        {
+                            retryTime--;
+                        }
+                        else
+                        {
+                            retryTime = -1;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (retryTime == 0)
+                        {
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB thrown exception", custClassification, ex, sentryClient);
+                            return false;
+                        }
+
+                        retryTime--;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs)
+        {
+            if (custIDs != null && custIDs.Any())
+            {
+                return custClassToMainDBDataAccess.GetCustomerClassificationBySports(custIDs.Distinct());
+            }
+
+            return Enumerable.Empty<GetCustomerClassificationBySportEntity>();
         }
     }
 }

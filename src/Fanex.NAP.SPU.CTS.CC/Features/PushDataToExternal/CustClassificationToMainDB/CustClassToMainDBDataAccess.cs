@@ -14,7 +14,11 @@
 
         DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification);
 
-        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);
+        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
+
+        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs);
+
+        DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification);
     }
 
     public class CustClassToMainDBDataAccess : ICustClassToMainDBDataAccess
@@ -68,6 +72,32 @@
             }
 
             return new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+        }
+      
+        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs)
+        {
+            var criteria = new GetCustomerClassificationBySportCriteria
+            {
+                CustIDs = string.Join(",", custIDs)
+            };
+
+            return repository.Fetch<GetCustomerClassificationBySportEntity>(criteria) ?? Enumerable.Empty<GetCustomerClassificationBySportEntity>();
+        }
+
+        public DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification)
+        {
+            var criteria = new CustomerClassificationUpdateBySportCriteria
+            {
+                custList = custClassification.ToXmlString()
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = criteria.ErrorCode,
+                ErrorMsg = criteria.ErrorMessage
+            };
         }
     }
 }
