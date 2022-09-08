@@ -150,4 +150,10 @@
 		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Update" SpName="CTS_DC_CustClassification_SabaDangerLevel_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="Acc_CustomerUdpDanger_JobExclusion" SpName="Acc_CustomerUdpDanger_JobExclusion" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 	</Function>
+
+	<Function Name="NormalAccountBySport">
+		<Setting Key="CTS_DC_CustClassification_BySport_InsertNormalAccount" SpName="CTS_DC_CustClassification_BySport_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_NormalAccountsClassification_BySport_GetNewClassification" SpName="CTS_NormalAccountsClassification_BySport_GetNewClassification" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<!--<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" />-->
+	</Function>
 </Functions>
