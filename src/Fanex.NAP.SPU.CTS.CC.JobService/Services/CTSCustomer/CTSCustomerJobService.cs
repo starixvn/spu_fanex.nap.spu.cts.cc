@@ -305,17 +305,19 @@
                     if (inactivateCusts.CustIDs != null && inactivateCusts.CustIDs.Any())
                     {
                         dailyClassificationService.ScanningDailyNormalClassification(inactivateCusts.CustIDs, FunctionId.InactivateNewCustomer, false);
-                        systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), SystemParameters.InactiveNewMember_LastCategoryID);
-                        systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
 
                         isContinue = true;
-
-                        Thread.Sleep(10000);
                     }
                     else
                     {
                         isContinue = false;
                     }
+
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), SystemParameters.InactiveNewMember_LastCategoryID);
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
+
+                    Thread.Sleep(10000);
+
                 } while (isContinue);
 
                 return Task.FromResult(true);
