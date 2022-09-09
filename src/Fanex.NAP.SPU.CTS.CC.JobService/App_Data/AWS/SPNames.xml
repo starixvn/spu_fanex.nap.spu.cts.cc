@@ -131,4 +131,9 @@
 		<Setting Key="CTS_DC_CustClassification_BySport_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_BySport_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_NormalAccountsClassification_BySport_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_BySport_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
+
+	<Function Name="DailyNormalClassificationBySport">
+		<Setting Key="CTS_DC_CustClassification_BySport_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_BySport_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_NormalAccountsClassification_BySport_Daily" SpName="CTS_NormalAccountsClassification_BySport_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+	</Function>
 </Functions>

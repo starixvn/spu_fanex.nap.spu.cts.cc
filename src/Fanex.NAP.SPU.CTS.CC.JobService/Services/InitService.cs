@@ -31,6 +31,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
 
     public static class InitService
     {
@@ -73,6 +74,8 @@
             RegisterSabaDangerLevel(services);
 
             RegisterNormalAccountBySport(services);
+
+            RegisterDailyNormalClassificationBySport(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -218,6 +221,13 @@
             services.AddSingleton<INormalAccountBySportDataAccess, NormalAccountBySportDataAccess>();
             services.AddSingleton<INormalAccountBySportService, NormalAccountBySportService>();
             services.AddSingleton<INormalAccountBySportJobService, NormalAccountBySportJobService>();
+        }
+
+        private static void RegisterDailyNormalClassificationBySport(this IServiceCollection services)
+        {
+            services.AddSingleton<IDailyNormalClassificationBySportDataAccess, DailyNormalClassificationBySportDataAccess>();
+            services.AddSingleton<IDailyNormalClassificationBySportServices, DailyNormalClassificationBySportServices>();
+            services.AddSingleton<IDailyNormalClassificationBySportJobService, DailyNormalClassificationBySportJobService>();
         }
     }
 }
