@@ -12,7 +12,7 @@
         public long LastCustID { get; set; }
 
         [SpParam(SqlParamName = "op_LastSportID")]
-        public int op_LastSportID { get; set; }
+        public int LastSportID { get; set; }
 
         public override string GetSettingKey()
         {

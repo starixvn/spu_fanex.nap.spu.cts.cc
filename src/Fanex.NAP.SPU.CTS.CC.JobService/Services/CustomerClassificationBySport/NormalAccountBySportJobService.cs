@@ -40,13 +40,19 @@
         {
             try
             {
-                if (batchExternalSize > 0 && batchInternalSize > 0)
+                var isContinue = true;                
+
+                if (batchInternalSize > 0)
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
+                    do
+                    {
+                        isContinue = JobRun(batchInternalSize);
+
+                    } while (isContinue);
                 }
                 else
                 {
-                    Utilities.LogSentryError(this.serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
+                    Utilities.LogSentryError(this.serviceName, "InValid Batch size", (batchInternalSize), new NullReferenceException(), sentryClient);
                 }
             }
             catch (Exception ex)
@@ -74,8 +80,10 @@
             }
         }
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private bool JobRun(int batchInternalSize)
         {
+            var isContinue = false;
+
             var newClassifications = normalAccountBySportService.GetNewClassificationBySport();
 
             if (newClassifications != null && newClassifications.Any())
@@ -87,7 +95,7 @@
                     var insertNAResult = normalAccountBySportService.InsertCustomerClassificationBySport(classifications, this.serviceName, appSettings.NormalAccountBySportIsWriteLog);
 
                     if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
-                    {                       
+                    {
                         var ccBySports = custClassToMainDBService.GetCustomerClassificationBySports(insertNAResult.CustIDs);
 
                         var isPushCCSuccess = custClassToMainDBService.RetryPushCustClassificationBySportToMainDB(ccBySports, Constants.InternalRetry, this.serviceName);
@@ -95,7 +103,11 @@
                         normalAccountBySportService.UpdateAppliedStatusClassificationBySport(classifications, isPushCCSuccess);
                     }
                 }
+
+                isContinue = true;
             }
+
+            return isContinue;
         }
     }
 }

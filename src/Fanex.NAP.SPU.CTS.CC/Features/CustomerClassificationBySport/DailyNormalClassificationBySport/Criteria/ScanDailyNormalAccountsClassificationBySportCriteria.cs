@@ -7,10 +7,7 @@
     {
         [SpParam(SqlParamName = "ListCustIds")]
         public string ListCustIDs { get; set; }
-
-        [SpParam(SqlParamName = "IsCheckLast14Days")]
-        public bool IsCheckLast14Days { get; set; }
-
+      
         [SpParam(SqlParamName = "FunctionId")]
         public int FunctionID { get; set; }
 
