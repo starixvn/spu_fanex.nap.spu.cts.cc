@@ -6,9 +6,9 @@
     {
         public int LastCategoryID { get; set; }
 
-        public long LastCustID { get; set; }
+        public ulong LastCustID { get; set; }
 
-        public int LastSportID { get; set; }
+        public uint LastSportID { get; set; }
 
         public IEnumerable<long> CustID { get; set; }
     }

@@ -225,9 +225,9 @@
 
         private static void RegisterDailyNormalClassificationBySport(this IServiceCollection services)
         {
-            //services.AddSingleton<IDailyNormalClassificationBySportDataAccess, DailyNormalClassificationBySportDataAccess>();
-            //services.AddSingleton<IDailyNormalClassificationBySportServices, DailyNormalClassificationBySportServices>();
-            //services.AddSingleton<IDailyNormalClassificationBySportJobService, DailyNormalClassificationBySportJobService>();
+            services.AddSingleton<IDailyNormalClassificationBySportDataAccess, DailyNormalClassificationBySportDataAccess>();
+            services.AddSingleton<IDailyNormalClassificationBySportServices, DailyNormalClassificationBySportServices>();
+            services.AddSingleton<IDailyNormalClassificationBySportJobService, DailyNormalClassificationBySportJobService>();
         }
     }
 }

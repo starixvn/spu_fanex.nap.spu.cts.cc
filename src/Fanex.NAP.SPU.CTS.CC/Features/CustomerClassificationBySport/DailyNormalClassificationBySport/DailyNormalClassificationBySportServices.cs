@@ -18,11 +18,11 @@
 
     public class DailyNormalClassificationBySportServices : IDailyNormalClassificationBySportServices
     {
-        private readonly DailyNormalClassificationBySportDataAccess dailyDataAccess;
+        private readonly IDailyNormalClassificationBySportDataAccess dailyDataAccess;
         private readonly ISystemParameterServices systemParameterService;
         private DailyNormalAccountsClassificationBySportEntity scanningCustomers;
 
-        public DailyNormalClassificationBySportServices(DailyNormalClassificationBySportDataAccess dailyDataAccess
+        public DailyNormalClassificationBySportServices(IDailyNormalClassificationBySportDataAccess dailyDataAccess
             , ISystemParameterServices systemParameterService)
         {
             this.dailyDataAccess = dailyDataAccess;

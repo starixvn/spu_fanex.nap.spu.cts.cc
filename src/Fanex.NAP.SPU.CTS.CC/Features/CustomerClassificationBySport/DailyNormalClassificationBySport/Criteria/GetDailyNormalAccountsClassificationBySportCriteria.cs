@@ -9,10 +9,10 @@
         public int LastCategoryID { get; set; }
 
         [SpParam(SqlParamName = "op_LastCustID")]
-        public long LastCustID { get; set; }
+        public ulong LastCustID { get; set; }
 
         [SpParam(SqlParamName = "op_LastSportID")]
-        public int LastSportID { get; set; }
+        public uint LastSportID { get; set; }
 
         public override string GetSettingKey()
         {
