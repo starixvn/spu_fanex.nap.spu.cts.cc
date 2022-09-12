@@ -4,7 +4,7 @@
 
     public class UpdateAppliedStatusClassificationBySportCriteria : NonQueryCommand
     {
-        public string ListCustIds { get; set; }
+        public string CustomersXML { get; set; }
        
         public override string GetSettingKey()
         {

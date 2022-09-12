@@ -56,9 +56,15 @@
         {
             if (isSuccess && custClassifications != null && custClassifications.Any())
             {
-                var custIds = custClassifications.Select(x => x.CustId).Distinct();
+                var custs = custClassifications.Select(x => new UpdateApplyStatusCustEntity
+                {
+                    CustId = x.CustId,
+                    SportId = x.SportId
+                }).Distinct();
 
-                normalAccountBySportDataAccess.UpdateAppliedStatusClassificationBySport(string.Join(",", custIds));
+                var custStr = JsonConvert.SerializeObject(custs);
+
+                normalAccountBySportDataAccess.UpdateAppliedStatusClassificationBySport(custStr);
             }
 
             return true;

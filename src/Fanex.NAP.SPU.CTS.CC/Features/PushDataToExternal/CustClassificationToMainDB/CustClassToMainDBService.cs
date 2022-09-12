@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -25,7 +26,9 @@
 
         bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
 
-        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs);
+        bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize);
+
+        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
 
         bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName);
     }
@@ -252,6 +255,35 @@
             return true;
         }
 
+        public bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize)
+        {
+            var custInfoChunks = custInfos.Chunk(batchExternalSize).ToList();
+
+            foreach (var custs in custInfoChunks)
+            {
+                var ccBySports = this.GetCustomerClassificationBySports(custs);
+
+                var isSuccess = this.RetryPushCustClassificationBySportToMainDB(ccBySports, Constants.InternalRetry, serviceName);
+
+                if (!isSuccess)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
+        {
+            if (custInfos != null && custInfos.Any())
+            {
+                return custClassToMainDBDataAccess.GetCustomerClassificationBySports(custInfos.Distinct());
+            }
+
+            return Enumerable.Empty<GetCustomerClassificationBySportEntity>();
+        }
+
         public bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
         {
             if (classificationBySports != null && classificationBySports.Any())
@@ -298,15 +330,6 @@
 
             return true;
         }
-
-        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs)
-        {
-            if (custIDs != null && custIDs.Any())
-            {
-                return custClassToMainDBDataAccess.GetCustomerClassificationBySports(custIDs.Distinct());
-            }
-
-            return Enumerable.Empty<GetCustomerClassificationBySportEntity>();
-        }
+        
     }
 }

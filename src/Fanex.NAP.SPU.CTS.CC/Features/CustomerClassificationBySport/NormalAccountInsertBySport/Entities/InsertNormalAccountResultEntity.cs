@@ -6,6 +6,6 @@
     {
         public string ErrorMessage { get; set; }
 
-        public IEnumerable<long> CustIDs { get; set; }
+        public IEnumerable<InsertNormalAccountCustInfoEntity> CustInfos { get; set; }
     }
 }

@@ -5,11 +5,11 @@
 
     public class GetCustomerClassificationBySportCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_Custs")]
+        public string CustInfos { get; set; }
 
         public override string GetSettingKey()
-            => "CTS_DC_CustClassification_BySport_GetCCAndDangerLevel";
+            => "CTS_DC_CustClassification_BySport_GetCC";
 
         public override bool IsValid()
             => true;

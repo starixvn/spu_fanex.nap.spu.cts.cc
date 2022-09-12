@@ -39,16 +39,16 @@
                 NewClassification = newClassification
             };
 
-            var custIDs = repository.Fetch<long>(criteria);
+            var custInfos = repository.Fetch<InsertNormalAccountCustInfoEntity>(criteria);
 
-            return new InsertNormalAccountResultEntity { ErrorMessage = criteria.ErrorMessage, CustIDs = custIDs };
+            return new InsertNormalAccountResultEntity { ErrorMessage = criteria.ErrorMessage, CustInfos = custInfos };
         }
 
-        public void UpdateAppliedStatusClassificationBySport(string custIdList)
+        public void UpdateAppliedStatusClassificationBySport(string custs)
         {
             var criteria = new UpdateAppliedStatusClassificationBySportCriteria
             {
-                ListCustIds = custIdList                
+                CustomersXML = custs
             };
 
             repository.Execute(criteria);

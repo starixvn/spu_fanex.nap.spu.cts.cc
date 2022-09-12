@@ -46,7 +46,7 @@
                 {
                     do
                     {
-                        isContinue = JobRun(batchInternalSize);
+                        isContinue = JobRun(batchExternalSize, batchInternalSize);
 
                     } while (isContinue);
                 }
@@ -80,7 +80,7 @@
             }
         }
 
-        private bool JobRun(int batchInternalSize)
+        private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var isContinue = false;
 
@@ -96,9 +96,7 @@
 
                     if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
                     {
-                        var ccBySports = custClassToMainDBService.GetCustomerClassificationBySports(insertNAResult.CustIDs);
-
-                        var isPushCCSuccess = custClassToMainDBService.RetryPushCustClassificationBySportToMainDB(ccBySports, Constants.InternalRetry, this.serviceName);
+                        var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustInfos, this.serviceName, batchExternalSize);
 
                         normalAccountBySportService.UpdateAppliedStatusClassificationBySport(classifications, isPushCCSuccess);
                     }
@@ -108,6 +106,6 @@
             }
 
             return isContinue;
-        }
+        }       
     }
 }

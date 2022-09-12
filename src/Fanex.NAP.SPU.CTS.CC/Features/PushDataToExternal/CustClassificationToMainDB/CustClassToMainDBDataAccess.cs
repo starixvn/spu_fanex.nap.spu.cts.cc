@@ -2,6 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using Newtonsoft.Json;
@@ -16,7 +17,7 @@
 
         DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
 
-        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs);
+        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
 
         DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification);
     }
@@ -74,11 +75,11 @@
             return new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
         }
       
-        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<long> custIDs)
+        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
         {
             var criteria = new GetCustomerClassificationBySportCriteria
             {
-                CustIDs = string.Join(",", custIDs)
+                CustInfos = JsonConvert.SerializeObject(custInfos)
             };
 
             return repository.Fetch<GetCustomerClassificationBySportEntity>(criteria) ?? Enumerable.Empty<GetCustomerClassificationBySportEntity>();
