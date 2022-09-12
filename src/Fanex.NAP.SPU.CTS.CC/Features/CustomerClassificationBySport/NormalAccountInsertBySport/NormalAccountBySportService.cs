@@ -61,10 +61,8 @@
                     CustId = x.CustId,
                     SportId = x.SportId
                 }).Distinct();
-
-                var custStr = JsonConvert.SerializeObject(custs);
-
-                normalAccountBySportDataAccess.UpdateAppliedStatusClassificationBySport(custStr);
+               
+                normalAccountBySportDataAccess.UpdateAppliedStatusClassificationBySport(custs.ToXmlString());
             }
 
             return true;
