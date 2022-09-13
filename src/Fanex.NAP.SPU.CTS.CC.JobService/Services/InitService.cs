@@ -32,6 +32,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
 
     public static class InitService
     {
@@ -76,6 +77,8 @@
             RegisterNormalAccountBySport(services);
 
             RegisterDailyNormalClassificationBySport(services);
+
+            RegisterProbationClassificationBySport(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -228,6 +231,13 @@
             services.AddSingleton<IDailyNormalClassificationBySportDataAccess, DailyNormalClassificationBySportDataAccess>();
             services.AddSingleton<IDailyNormalClassificationBySportServices, DailyNormalClassificationBySportServices>();
             services.AddSingleton<IDailyNormalClassificationBySportJobService, DailyNormalClassificationBySportJobService>();
+        }
+
+        private static void RegisterProbationClassificationBySport(this IServiceCollection services)
+        {
+            services.AddSingleton<IProbationClassificationBySportDataAccess, ProbationClassificationBySportDataAccess>();
+            services.AddSingleton<IProbationClassificationBySportService, ProbationClassificationBySportService>();
+            services.AddSingleton<IProbationClassificationBySportJobService, ProbationClassificationBySportJobService>();
         }
     }
 }
