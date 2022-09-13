@@ -13,14 +13,17 @@
         private readonly ISentryClient sentryClient;
         private readonly INormalAccountBySportJobService normalAccountBySportJobService;
         private readonly IDailyNormalClassificationBySportJobService dailyClassificationBySportServices;
+        private readonly IProbationClassificationBySportJobService probationClassificationBySportJobService;
 
         public ClassificationBySportJobController(ISentryClient sentryClient
             , INormalAccountBySportJobService normalAccountBySportJobService
-            , IDailyNormalClassificationBySportJobService dailyClassificationBySportServices)
+            , IDailyNormalClassificationBySportJobService dailyClassificationBySportServices
+            , IProbationClassificationBySportJobService probationClassificationBySportJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountBySportJobService = normalAccountBySportJobService;
             this.dailyClassificationBySportServices = dailyClassificationBySportServices;
+            this.probationClassificationBySportJobService = probationClassificationBySportJobService;
         }
 
         [HttpPost("InsertNormalAccountBySport")]
@@ -35,6 +38,14 @@
             //sentryClient.CaptureMessage($"Scanning Daily Normal By Sport Service is running at {DateTime.Now}");
 
             return await this.dailyClassificationBySportServices.Execute();
+        }
+
+        [HttpPost("ScanningProbationClassificationBySport")]
+        public async Task<bool> ScanningProbationClassificationBySport([FromForm] int batchSize)
+        {
+            //sentryClient.CaptureMessage($"Probation By Sport Service is running at {DateTime.Now}");
+
+            return await this.probationClassificationBySportJobService.Execute(batchSize);
         }
     }
 }

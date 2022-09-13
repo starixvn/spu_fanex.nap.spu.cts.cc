@@ -1,7 +1,7 @@
-﻿using Fanex.NAP.SPU.CTS.Shares;
-
-namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport
 {
+    using Fanex.NAP.SPU.CTS.Shares;
+
     [XName("r")]
     public class NormalAccountBySportEntity
     {
