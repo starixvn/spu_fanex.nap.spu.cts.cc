@@ -5,12 +5,9 @@
 
     public class ScanDailyNormalAccountsClassificationBySportCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ListCustIds")]
-        public string ListCustIDs { get; set; }
-      
-        [SpParam(SqlParamName = "FunctionId")]
-        public int FunctionID { get; set; }
-
+        [SpParam(SqlParamName = "CustomersXML")]
+        public string CustomersXML { get; set; }
+            
         public override string GetSettingKey()
         {
             return "CTS_NormalAccountsClassification_BySport_Daily";

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -11,7 +12,7 @@
 
         IDailyNormalClassificationBySportServices GetCustClassificationForDailyScanning();
 
-        IDailyNormalClassificationBySportServices ScanningDailyNormalClassification(FunctionId funcID);
+        IDailyNormalClassificationBySportServices ScanningDailyNormalClassification();
 
         bool UpdateLastScan();
     }
@@ -43,13 +44,11 @@
             return this;
         }
 
-        public IDailyNormalClassificationBySportServices ScanningDailyNormalClassification(FunctionId funcID)
+        public IDailyNormalClassificationBySportServices ScanningDailyNormalClassification()
         {
-            if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
-            {
-                var custIds = string.Join(",", scanningCustomers.CustID);
-
-                this.dailyDataAccess.ScanDailyNormalAccountsClassificationBySport(custIds, funcID);
+            if (scanningCustomers != null && scanningCustomers.NormalAccounts != null && scanningCustomers.NormalAccounts.Any())
+            {                
+                this.dailyDataAccess.ScanDailyNormalAccountsClassificationBySport(scanningCustomers.NormalAccounts.ToXmlString());
             }
 
             return this;
@@ -63,7 +62,7 @@
                 systemParameterService.UpdateTimingExecution(scanningCustomers.LastSportID.ToString(), SystemParameters.DailyNormalClassificationBySportLastSportID);
                 systemParameterService.UpdateTimingExecution(scanningCustomers.LastCustID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCustID);
 
-                return (this.scanningCustomers.CustID != null && this.scanningCustomers.CustID.Any());
+                return (this.scanningCustomers.NormalAccounts != null && this.scanningCustomers.NormalAccounts.Any());
             }
 
             return false;

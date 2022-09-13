@@ -10,6 +10,6 @@
 
         public uint LastSportID { get; set; }
 
-        public IEnumerable<long> CustID { get; set; }
+        public IEnumerable<NormalAccountBySportEntity> NormalAccounts { get; set; }
     }
 }

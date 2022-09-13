@@ -54,7 +54,7 @@
         {
             return this.dailyClassificationBySportServices.Start()
                                                        .GetCustClassificationForDailyScanning()
-                                                       .ScanningDailyNormalClassification(FunctionId.NormalDailyJob)
+                                                       .ScanningDailyNormalClassification()
                                                        .UpdateLastScan();            
         }
     }

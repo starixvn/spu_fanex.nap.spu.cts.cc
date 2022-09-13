@@ -8,7 +8,7 @@
     {
         DailyNormalAccountsClassificationBySportEntity GetDailyNormalAccountsClassificationBySport();
 
-        void ScanDailyNormalAccountsClassificationBySport(string custs, FunctionId funcID);
+        void ScanDailyNormalAccountsClassificationBySport(string custs);
 
     }
 
@@ -25,25 +25,24 @@
         {
             var criteria = new GetDailyNormalAccountsClassificationBySportCriteria();
 
-            var result = repository.Fetch<long>(criteria);
+            var data = repository.Fetch<NormalAccountBySportEntity>(criteria);
 
             return new DailyNormalAccountsClassificationBySportEntity
             {
-                CustID = result ?? Enumerable.Empty<long>(),
+                NormalAccounts = data ?? Enumerable.Empty<NormalAccountBySportEntity>(),
                 LastCategoryID = criteria.LastCategoryID,
                 LastCustID = criteria.LastCustID,
                 LastSportID = criteria.LastSportID
             };
         }
 
-        public void ScanDailyNormalAccountsClassificationBySport(string custs, FunctionId funcID)
+        public void ScanDailyNormalAccountsClassificationBySport(string custs)
         {
             if (!string.IsNullOrEmpty(custs))
             {
                 var criteria = new ScanDailyNormalAccountsClassificationBySportCriteria
                 {
-                    ListCustIDs = custs,                  
-                    FunctionID = (int)funcID
+                    CustomersXML = custs
                 };
 
                 repository.Execute(criteria);
