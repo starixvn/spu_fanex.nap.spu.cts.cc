@@ -17,11 +17,15 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
                 SentrySdk.CaptureMessage(string.Format("{0} has been started at {1}", typeof(Program).FullName, DateTime.Now));
 
                 host.Run();
+                
             }
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
+                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
             }
+
+            Console.ReadLine();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)

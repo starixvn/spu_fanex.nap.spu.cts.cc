@@ -134,6 +134,10 @@
             services.AddSingleton<IRealtimeClassificationDataAccess, RealtimeClassificationDataAccess>();
             services.AddSingleton<IRealtimeClassificationServices, RealtimeClassificationServices>();
             services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();
+
+            services.AddSingleton<IRealtimeClassificationBySportDataAccess, RealtimeClassificationBySportDataAccess>();
+            services.AddSingleton<IRealtimeClassificationBySportServices, RealtimeClassificationBySportServices>();
+            services.AddSingleton<IRealtimeClassificationBySportJobService, RealtimeClassificationBySportJobService>();
         }
 
         private static void RegisterProbationClassification(this IServiceCollection services)

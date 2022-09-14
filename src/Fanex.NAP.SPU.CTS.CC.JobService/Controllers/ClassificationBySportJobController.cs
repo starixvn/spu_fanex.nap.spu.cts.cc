@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
@@ -13,16 +14,19 @@
         private readonly ISentryClient sentryClient;
         private readonly INormalAccountBySportJobService normalAccountBySportJobService;
         private readonly IDailyNormalClassificationBySportJobService dailyClassificationBySportServices;
+        private readonly IRealtimeClassificationBySportJobService realtimeClassificationJobService;
         private readonly IProbationClassificationBySportJobService probationClassificationBySportJobService;
 
-        public ClassificationBySportJobController(ISentryClient sentryClient
-            , INormalAccountBySportJobService normalAccountBySportJobService
-            , IDailyNormalClassificationBySportJobService dailyClassificationBySportServices
-            , IProbationClassificationBySportJobService probationClassificationBySportJobService)
+        public ClassificationBySportJobController(ISentryClient sentryClient,
+            INormalAccountBySportJobService normalAccountBySportJobService,
+            IDailyNormalClassificationBySportJobService dailyClassificationBySportServices,
+            IRealtimeClassificationBySportJobService realtimeClassificationJobService,
+            IProbationClassificationBySportJobService probationClassificationBySportJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountBySportJobService = normalAccountBySportJobService;
             this.dailyClassificationBySportServices = dailyClassificationBySportServices;
+            this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationBySportJobService = probationClassificationBySportJobService;
         }
 
@@ -30,6 +34,12 @@
         public async Task<bool> InsertNormalAccountBySport([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.normalAccountBySportJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("ScanRealtimeClassificationBySport")]
+        public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await this.realtimeClassificationJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("ScanningDailyNormalClassificationBySport")]
