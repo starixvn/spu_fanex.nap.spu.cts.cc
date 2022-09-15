@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
 
-    [XName("CustomerClassificationModel")]
+    [XName("r")]
     public class CustClassificationRealtimeBySportEntity
     {
         [XName("CustId")]

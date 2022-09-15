@@ -11,7 +11,7 @@
     {
         IRealtimeClassificationBySportServices Start();
 
-        IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
+        IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChange();
 
         IRealtimeClassificationBySportServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize);
 
@@ -45,7 +45,7 @@
             return this;
         }
 
-        public IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
+        public IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChange()
         {
             this.customerClassification = realtimeClassificationDataAccess.GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
@@ -99,7 +99,7 @@
                 return realtimeClassificationDataAccess.GetCustomerGeneralCategoryForRunRealtime(custSportJson) ?? new List<CustClassificationRealtimeBySportEntity>();
             }
 
-            return new List<CustClassificationRealtimeBySportEntity>();
+            return Enumerable.Empty<CustClassificationRealtimeBySportEntity>();
         }
 
         public void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeBySportViewEntity classification)
@@ -119,11 +119,9 @@
                                                             CategoryId = (temp != null) ? temp.CategoryId : 0
                                                         });
 
-                var finalCustToClassify = custsClassify.Where(c => c.CategoryId != -1);
-
-                if (finalCustToClassify.Any())
+                if (custsClassify.Any())
                 {
-                    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(finalCustToClassify);
+                    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(custsClassify);
                 }
             }
         }

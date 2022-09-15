@@ -55,7 +55,7 @@
         {
             realtimeClassificationServices
                 .Start()
-                .GetCustomerGeneralCategoryHasChangeForRunRealtime()
+                .GetCustomerGeneralCategoryHasChange()
                 .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
                 .RealtimeUpdateLastScanTime(true);
         }
