@@ -9,6 +9,9 @@
         public long CustId { get; set; }
 
         [XName("SportId")]
-        public int SportId { get; set; }      
+        public int SportId { get; set; }
+
+        [XName("IsProbationLastDay")]
+        public int IsProbationLastDay { get; set; }
     }
 }

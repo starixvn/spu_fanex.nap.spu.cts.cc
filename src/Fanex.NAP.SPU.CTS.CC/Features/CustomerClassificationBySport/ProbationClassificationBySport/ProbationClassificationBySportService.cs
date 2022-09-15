@@ -52,7 +52,8 @@
                 var probations = this.probationClassification.Select(x => new ScanProbationClassificationBySportEntity
                 {
                     CustId = x.CustID,
-                    SportId = x.SportID
+                    SportId = x.SportID,
+                    IsProbationLastDay = x.IsProbationLastDay
                 });
 
                 probationClassificationDataAccess.ScanProbationClassificationBySport(probations);               
