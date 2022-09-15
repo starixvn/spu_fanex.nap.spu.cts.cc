@@ -57,7 +57,7 @@
                 .Start()
                 .GetCustomerGeneralCategoryHasChange()
                 .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
-                .RealtimeUpdateLastScanTime(true);
+                .RealtimeUpdateLastScanTime();
         }
     }
 

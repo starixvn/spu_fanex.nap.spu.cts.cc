@@ -9,11 +9,11 @@
     {
         IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerGeneralCategoryForRunRealtime(string custSportJson);
+        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(string custSportJson);
 
-        void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
+        void ClassifyCustomerBySportRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
-        void RealtimeUpdateLastScanTime(bool isGeneralCategory);
+        void RealtimeUpdateLastScanTime();
     }
 
     public class RealtimeClassificationBySportDataAccess : IRealtimeClassificationBySportDataAccess
@@ -32,7 +32,7 @@
             return repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
         }
 
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerGeneralCategoryForRunRealtime(string custSportJson)
+        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(string custSportJson)
         {
             var criteria = new GetCustClassificationBySportByCustIDCriteria
             {
@@ -42,7 +42,7 @@
             return repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
         }
 
-        public void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
+        public void ClassifyCustomerBySportRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
         {
             var criteria = new NormalAccountsClassificationBySportCategorizeRealtimeCriteria
             {
@@ -52,7 +52,7 @@
             repository.Execute(criteria);
         }
 
-        public void RealtimeUpdateLastScanTime(bool isGeneralCategory)
+        public void RealtimeUpdateLastScanTime()
         {
             var criteria = new UpdateLastScanTimeBySportCriteria();
             repository.Execute(criteria);
