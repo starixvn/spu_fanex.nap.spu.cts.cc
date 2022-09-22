@@ -46,8 +46,7 @@
             SabaDangerLevel_LastCategoryID = 103,
             SabaDangerLevel_LastCustID = 104,
             DailyNormalClassificationBySportLastCategoryID = 114,        
-            DailyNormalClassificationBySportLastCustID = 115,
-            DailyNormalClassificationBySportLastSportID = 116
+            DailyNormalClassificationBySportLastCustID = 115           
         };
 
         public enum Category

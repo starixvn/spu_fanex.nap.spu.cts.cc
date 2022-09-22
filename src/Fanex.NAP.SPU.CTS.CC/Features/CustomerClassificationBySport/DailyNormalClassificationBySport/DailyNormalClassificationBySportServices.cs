@@ -58,8 +58,7 @@
         {
             if (this.scanningCustomers != null)
             {                
-                systemParameterService.UpdateTimingExecution(scanningCustomers.LastCategoryID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCategoryID);
-                systemParameterService.UpdateTimingExecution(scanningCustomers.LastSportID.ToString(), SystemParameters.DailyNormalClassificationBySportLastSportID);
+                systemParameterService.UpdateTimingExecution(scanningCustomers.LastCategoryID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCategoryID);               
                 systemParameterService.UpdateTimingExecution(scanningCustomers.LastCustID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCustID);
 
                 return (this.scanningCustomers.NormalAccounts != null && this.scanningCustomers.NormalAccounts.Any());

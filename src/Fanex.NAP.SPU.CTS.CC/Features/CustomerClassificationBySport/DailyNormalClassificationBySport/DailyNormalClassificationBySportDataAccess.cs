@@ -31,8 +31,7 @@
             {
                 NormalAccounts = data ?? Enumerable.Empty<NormalAccountBySportEntity>(),
                 LastCategoryID = criteria.LastCategoryID,
-                LastCustID = criteria.LastCustID,
-                LastSportID = criteria.LastSportID
+                LastCustID = criteria.LastCustID               
             };
         }
 
