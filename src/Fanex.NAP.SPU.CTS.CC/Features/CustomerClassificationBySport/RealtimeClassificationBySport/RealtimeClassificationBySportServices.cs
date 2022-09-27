@@ -71,6 +71,7 @@
                     if (scanList.Any())
                     {
                         realtimeClassificationDataAccess.ClassifyCustomerBySportRealtime(scanList);
+                        scanList.Clear();
                     }
                 }
             }
