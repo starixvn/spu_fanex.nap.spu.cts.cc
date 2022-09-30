@@ -96,10 +96,10 @@
         public INewCustomerClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters)
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
-            {
-                var custIds = newCustomerClassification.NormalClassification.Select(c => c.CustID).Distinct();
+            {                
+                var custInfos = newCustomerClassification.NormalClassification.Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CurrentCategoryID });
 
-                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custIds, parameters);
+                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custInfos, parameters);
             }
 
             return this;

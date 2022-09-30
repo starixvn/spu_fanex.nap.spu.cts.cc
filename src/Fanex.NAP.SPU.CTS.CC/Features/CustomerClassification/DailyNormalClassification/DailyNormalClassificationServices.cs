@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using System.Collections.Generic;
     using System.Linq;
@@ -13,7 +14,7 @@
 
         IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId, bool isCheckLast14Days);
 
-        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days);
+        void ScanningDailyNormalClassification(IEnumerable<RescanCategoryDailyModel> customers, FunctionId funcId, bool isCheckLast14Days);
 
         bool UpdateLastScan();
     }
@@ -58,7 +59,7 @@
             return this;
         }
 
-        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days)
+        public void ScanningDailyNormalClassification(IEnumerable<RescanCategoryDailyModel> customers, FunctionId funcId, bool isCheckLast14Days)
         {
             if (customers != null && customers.Any())
             {
