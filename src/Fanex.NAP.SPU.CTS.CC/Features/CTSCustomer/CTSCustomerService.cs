@@ -337,7 +337,9 @@
                                 CustStatusID = c.CustStatusID,
                                 Danger1 = c.Danger1,
                                 Danger2 = c.Danger2,
-                                Danger3 = c.Danger3
+                                Danger3 = c.Danger3,
+                                Danger4 = c.Danger4,
+                                Danger5 = c.Danger5
                             }).ToList();
 
                         assCustForRollbacks = customerInfo.Select(x => new UpdateAssociationCustomerForRollbackModel

@@ -44,6 +44,10 @@
 
         public int Danger3 { get; set; }
 
+        public int Danger4 { get; set; }
+
+        public int Danger5 { get; set; }
+
         public bool IsLicensee { get; set; }
         
         public bool IsLicenseeVIP { get; set; }
