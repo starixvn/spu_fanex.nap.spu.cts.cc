@@ -29,6 +29,10 @@
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
 
     public static class InitService
     {
@@ -69,6 +73,12 @@
             RegisterDataLogTracking(services);
 
             RegisterSabaDangerLevel(services);
+
+            RegisterNormalAccountBySport(services);
+
+            RegisterDailyNormalClassificationBySport(services);
+
+            RegisterProbationClassificationBySport(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -124,6 +134,10 @@
             services.AddSingleton<IRealtimeClassificationDataAccess, RealtimeClassificationDataAccess>();
             services.AddSingleton<IRealtimeClassificationServices, RealtimeClassificationServices>();
             services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();
+
+            services.AddSingleton<IRealtimeClassificationBySportDataAccess, RealtimeClassificationBySportDataAccess>();
+            services.AddSingleton<IRealtimeClassificationBySportServices, RealtimeClassificationBySportServices>();
+            services.AddSingleton<IRealtimeClassificationBySportJobService, RealtimeClassificationBySportJobService>();
         }
 
         private static void RegisterProbationClassification(this IServiceCollection services)
@@ -207,6 +221,27 @@
             services.AddSingleton<ISabaDangerLevelDataAccess, SabaDangerLevelDataAccess>();
             services.AddSingleton<ISabaDangerLevelServices, SabaDangerLevelServices>();
             services.AddSingleton<ISabaDangerLevelJobService, SabaDangerLevelJobService>();
+        }
+
+        private static void RegisterNormalAccountBySport(this IServiceCollection services)
+        {
+            services.AddSingleton<INormalAccountBySportDataAccess, NormalAccountBySportDataAccess>();
+            services.AddSingleton<INormalAccountBySportService, NormalAccountBySportService>();
+            services.AddSingleton<INormalAccountBySportJobService, NormalAccountBySportJobService>();
+        }
+
+        private static void RegisterDailyNormalClassificationBySport(this IServiceCollection services)
+        {
+            services.AddSingleton<IDailyNormalClassificationBySportDataAccess, DailyNormalClassificationBySportDataAccess>();
+            services.AddSingleton<IDailyNormalClassificationBySportServices, DailyNormalClassificationBySportServices>();
+            services.AddSingleton<IDailyNormalClassificationBySportJobService, DailyNormalClassificationBySportJobService>();
+        }
+
+        private static void RegisterProbationClassificationBySport(this IServiceCollection services)
+        {
+            services.AddSingleton<IProbationClassificationBySportDataAccess, ProbationClassificationBySportDataAccess>();
+            services.AddSingleton<IProbationClassificationBySportService, ProbationClassificationBySportService>();
+            services.AddSingleton<IProbationClassificationBySportJobService, ProbationClassificationBySportJobService>();
         }
     }
 }

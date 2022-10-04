@@ -44,7 +44,9 @@
             TVS_LastScanDateTime = 2,
             SabaDangerLevel_LastHistoryID = 102,
             SabaDangerLevel_LastCategoryID = 103,
-            SabaDangerLevel_LastCustID = 104
+            SabaDangerLevel_LastCustID = 104,
+            DailyNormalClassificationBySportLastCategoryID = 114,        
+            DailyNormalClassificationBySportLastCustID = 115           
         };
 
         public enum Category

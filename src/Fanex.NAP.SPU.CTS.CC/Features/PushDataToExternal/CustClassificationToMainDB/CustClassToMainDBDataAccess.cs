@@ -2,6 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using Newtonsoft.Json;
@@ -14,7 +15,11 @@
 
         DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification);
 
-        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);
+        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
+
+        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
+
+        DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification);
     }
 
     public class CustClassToMainDBDataAccess : ICustClassToMainDBDataAccess
@@ -68,6 +73,32 @@
             }
 
             return new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
+        }
+      
+        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
+        {
+            var criteria = new GetCustomerClassificationBySportCriteria
+            {
+                CustInfos = JsonConvert.SerializeObject(custInfos)
+            };
+
+            return repository.Fetch<GetCustomerClassificationBySportEntity>(criteria) ?? Enumerable.Empty<GetCustomerClassificationBySportEntity>();
+        }
+
+        public DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification)
+        {
+            var criteria = new CustomerClassificationUpdateBySportCriteria
+            {
+                custList = custClassification.ToXmlString()
+            };
+
+            repository.Execute(criteria);
+
+            return new DBResult
+            {
+                ErrorCode = criteria.ErrorCode,
+                ErrorMsg = criteria.ErrorMessage
+            };
         }
     }
 }

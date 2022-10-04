@@ -306,7 +306,7 @@
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             TVSRequestID = group.pa.TVSRequestID,
                                                             IsFromTW = group.pa.IsFromTW,
-                                                            IsDataChanged = false,
+                                                            IsDataChanged = group.pa.IsDataChanged,
                                                             ReasonID = group.pa.ReasonID,
 
                                                             BetCount = temp?.BetCount,

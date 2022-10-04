@@ -49,6 +49,8 @@
         string InsertBAURL { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
+
+        bool NormalAccountBySportIsWriteLog { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -141,6 +143,8 @@
         public bool InsertReactivatedCustomersIsWriteLog => GetValue<bool>("InsertReactivatedCustomers:IsWriteLog");
 
         public int InsertReactivatedCustomersBatchSize => GetValue<int>("InsertReactivatedCustomers:BatchSize");
+
+        public bool NormalAccountBySportIsWriteLog => GetValue<bool>("NormalAccountBySportIsWriteLog:IsWriteLog");
 
         #endregion Variables
 
