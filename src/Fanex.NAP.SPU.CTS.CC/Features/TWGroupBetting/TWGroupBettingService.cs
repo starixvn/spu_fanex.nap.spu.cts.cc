@@ -77,17 +77,17 @@
             {
                 throw ex;
             }
-            finally 
-            {
-                twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
-            }
+            //finally 
+            //{
+            //    twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
+            //}
             
         }
 
         public void CountTotalTicket() 
         {
             twGroupBettingDataAccess.CountTotalTicket();
-            twGroupBettingDataAccess.CountTotalTicketDB062();
+            //twGroupBettingDataAccess.CountTotalTicketDB062();
         }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()
