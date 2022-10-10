@@ -33,10 +33,7 @@
         [Fact]
         public void ClassifyCustomerCategoryByCustIds_WhenSuccess_ReturnNotException()
         {
-            var custIds = new List<RescanCategoryDailyModel> { 
-                new RescanCategoryDailyModel { CustID = 1, CurrentCategoryID = 201} ,
-                new RescanCategoryDailyModel { CustID = 2, CurrentCategoryID = 202} 
-            };
+            var custIds = new List<long> { 1, 2 };
 
             dailyClassificationDataAccess.ScanningDailyNormalClassification(string.Join(",", custIds), FunctionId.NormalDailyJob, true);
 

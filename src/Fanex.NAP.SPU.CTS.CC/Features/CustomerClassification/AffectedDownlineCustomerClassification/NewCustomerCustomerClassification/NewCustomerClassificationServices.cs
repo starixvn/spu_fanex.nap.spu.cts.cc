@@ -97,9 +97,9 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {                
-                var custInfos = newCustomerClassification.NormalClassification.Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CurrentCategoryID });
+                var cusIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
 
-                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custInfos, parameters);
+                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(cusIDs, parameters);
             }
 
             return this;

@@ -159,10 +159,10 @@
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    var custInfos = result.CustomerInfo.Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CurrentCategoryID });
+                    var custIDs = result.CustomerInfo.Select(x => x.CustID);
 
                     parameters.IsRescanPA = false;
-                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custInfos, parameters);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
                 }
             }
 
@@ -194,10 +194,10 @@
             {
                 var result = RemoveVVIPCategory(custInfo);
 
-                var custInfos = result.Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CurrentCategoryID });
+                var custIDs = result.Select(x => x.CustID);
 
                 parameters.IsRescanPA = true;
-                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custInfos, parameters);
+                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 
             return isSuccess;

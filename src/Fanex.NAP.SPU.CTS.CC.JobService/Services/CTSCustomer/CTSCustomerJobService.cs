@@ -303,8 +303,10 @@
                     var inactivateCusts = ctscustomerService.GetInactivateNewCustomers();
 
                     if (inactivateCusts.CustInfos != null && inactivateCusts.CustInfos.Any())
-                    {                        
-                        dailyClassificationService.ScanningDailyNormalClassification(inactivateCusts.CustInfos, FunctionId.InactivateNewCustomer, false);
+                    {
+                        var custIDs = inactivateCusts.CustInfos.Select(x => x.CustID).Distinct();
+
+                        dailyClassificationService.ScanningDailyNormalClassification(custIDs, FunctionId.InactivateNewCustomer, false);
 
                         isContinue = true;
                     }

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
+    using Fanex.Data;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -15,7 +16,7 @@
     {
         IRescanCustClassificationService Start();
 
-        bool RescanCustomerClassification(IEnumerable<RescanCategoryDailyModel> custInfos, RescanParametersEntity paras);
+        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
 
         IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
 
@@ -31,12 +32,12 @@
 
         IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity paras);
 
-        IRescanCustClassificationService RescanNormalAccount(IEnumerable<RescanCategoryDailyModel> custInfos, RescanParametersEntity paras);
+        IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras);
 
         IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
-
+       
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
@@ -93,14 +94,12 @@
             return this;
         }
 
-        public bool RescanCustomerClassification(IEnumerable<RescanCategoryDailyModel> custInfos, RescanParametersEntity parameters)
+        public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
-            if (custInfos != null && custInfos.Any())
+            if (custIds != null && custIds.Any())
             {
                 Start();
-
-                var custIds = custInfos.Select(x => x.CustID);
-
+              
                 if (parameters.IsRescanPA)
                 {
                     GetExistedProblemAccounts(custIds)
@@ -112,7 +111,7 @@
                 }
 
                 GetAgentCusts(custIds)
-               .RescanNormalAccount(custInfos, parameters)
+               .RescanNormalAccount(custIds, parameters)
                .RemovePAForSMA(parameters.PushDataExternal);
             }
 
@@ -270,20 +269,14 @@
             return this;
         }
 
-        public IRescanCustClassificationService RescanNormalAccount(IEnumerable<RescanCategoryDailyModel> custInfos, RescanParametersEntity paras)
+        public IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            if (isSuccess && custInfos != null && custInfos.Any())
+            if (isSuccess && custIds != null && custIds.Any())
             {
-                var custToRescanNormal = custInfos.ToList();
-                //custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
-                //custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
-
-                var custToRescanPAs = custToRescanNormal.Where(x => custIdsToRescanPA.Distinct().Contains(x.CustID));                
-                custToRescanNormal.RemoveAll(x => x == custToRescanPAs);                
-
-                var smaCusts = custToRescanNormal.Where(x => smaCustIds.Distinct().Contains(x.CustID));
-                custToRescanNormal.RemoveAll(x => x == smaCusts);
-
+                var custToRescanNormal = custIds.ToList();
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+                custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
+              
                 if (custToRescanNormal.Any())
                 {
                     var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
@@ -318,7 +311,7 @@
             dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
 
             return this;
-        }
+        }        
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
