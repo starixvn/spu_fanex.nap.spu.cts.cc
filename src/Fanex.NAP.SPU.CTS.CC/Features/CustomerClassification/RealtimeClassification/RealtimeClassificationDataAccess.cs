@@ -13,7 +13,7 @@
 
         void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> customers);
 
-        void RealtimeUpdateLastScanTime(bool isGeneralCategory);
+        void RealtimeUpdateLastScanTime();
 
         void UpdateAssociationCustomerLastTicket(string custIdList);
     }
@@ -54,12 +54,9 @@
             repository.Execute(criteria);
         }
 
-        public void RealtimeUpdateLastScanTime(bool isGeneralCategory)
+        public void RealtimeUpdateLastScanTime()
         {
-            var criteria = new RealtimeLastScanTimeUpdateCriteria
-            {
-                IsGeneralCategory = isGeneralCategory
-            };
+            var criteria = new RealtimeLastScanTimeUpdateCriteria();
 
             repository.Execute(criteria);
         }

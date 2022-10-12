@@ -14,9 +14,9 @@
 
         IDailyNormalClassificationServices GetCustClassificationForDailyScanning();
 
-        IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId, bool isCheckLast14Days);
+        IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId);
 
-        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days);
+        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId);
         
         bool UpdateLastScan();
 
@@ -52,21 +52,21 @@
             return this;
         }
 
-        public IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId, bool isCheckLast14Days)
+        public IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId)
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
                 var custIds = string.Join(",", scanningCustomers.CustID);
 
-                var custInfos = GetCustomerClassification(custIds, false).Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CategoryID });
+                var custInfos = GetCustomerClassification(custIds, false).Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CategoryID }).Distinct();
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId, isCheckLast14Days);
+                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId);
             }
 
             return this;
         }
 
-        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days)
+        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId)
         {
             if (customers != null && customers.Any())
             {
@@ -74,7 +74,7 @@
 
                 var custInfos = GetCustomerClassification(custIdToString, false).Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CategoryID }).Distinct();
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId, isCheckLast14Days);
+                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId);
             }
         }
 

@@ -49,7 +49,7 @@
         {
             var isContinue = dailyClassificationServices.Start()
                                                         .GetCustClassificationForDailyScanning()
-                                                        .ScanningDailyNormalClassification(FunctionId.NormalDailyJob, true)
+                                                        .ScanningDailyNormalClassification(FunctionId.NormalDailyJob)
                                                         .UpdateLastScan();
 
             if (isContinue)

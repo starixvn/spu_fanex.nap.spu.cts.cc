@@ -121,9 +121,9 @@
         [Fact]
         public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
         {
-            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime(true);
+            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime();
 
-            Action action = () => realtimeClassificationServices.RealtimeUpdateLastScanTime(true);
+            Action action = () => realtimeClassificationServices.RealtimeUpdateLastScanTime();
 
             action.Should().NotThrow<Exception>();
         }

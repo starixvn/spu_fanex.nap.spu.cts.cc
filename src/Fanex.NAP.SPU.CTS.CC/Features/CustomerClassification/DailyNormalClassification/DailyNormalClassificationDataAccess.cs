@@ -9,7 +9,7 @@
     {
         NormalClassificationDailyEntity GetCustomerForDailyNormalScanning();
 
-        void ScanningDailyNormalClassification(string customers, FunctionId funcId, bool isCheckLast14Days = true);
+        void ScanningDailyNormalClassification(string customers, FunctionId funcId);
     }
 
     public class DailyNormalClassificationDataAccess : IDailyNormalClassificationDataAccess
@@ -35,14 +35,13 @@
             };
         }
 
-        public void ScanningDailyNormalClassification(string customers, FunctionId funcId, bool isCheckLast14Days = true)
+        public void ScanningDailyNormalClassification(string customers, FunctionId funcId)
         {
             if (!string.IsNullOrEmpty(customers))
             {
                 var criteria = new NormalAccountsClassificationGeneralCategorizeDailyCriteria
                 {
-                    ListCustIds = customers,
-                    IsCheckLast14Days = isCheckLast14Days,
+                    CustomersXML = customers,               
                     FunctionId = (int)funcId
                 };
 

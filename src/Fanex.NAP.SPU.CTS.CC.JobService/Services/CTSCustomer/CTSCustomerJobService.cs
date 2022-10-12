@@ -306,7 +306,7 @@
                     {
                         var custIDs = inactivateCusts.CustInfos.Select(x => x.CustID).Distinct();
 
-                        dailyClassificationService.ScanningDailyNormalClassification(custIDs, FunctionId.InactivateNewCustomer, false);
+                        dailyClassificationService.ScanningDailyNormalClassification(custIDs, FunctionId.InactivateNewCustomer);
 
                         isContinue = true;
                     }

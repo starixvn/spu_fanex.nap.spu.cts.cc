@@ -25,7 +25,7 @@
         [Fact]
         public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnNotException()
         {
-            Action action = () => dailyClassificationServices.Start().ScanningDailyNormalClassification(FunctionId.NormalDailyJob, true);
+            Action action = () => dailyClassificationServices.Start().ScanningDailyNormalClassification(FunctionId.NormalDailyJob);
 
             action.Should().NotThrow<Exception>();
         }
@@ -35,9 +35,9 @@
         {
             var custIds = new List<long> { 1, 2 };
 
-            dailyClassificationDataAccess.ScanningDailyNormalClassification(string.Join(",", custIds), FunctionId.NormalDailyJob, true);
+            dailyClassificationDataAccess.ScanningDailyNormalClassification(string.Join(",", custIds), FunctionId.NormalDailyJob);
 
-            Action action = () => dailyClassificationServices.ScanningDailyNormalClassification(custIds, FunctionId.NormalDailyJob, true);
+            Action action = () => dailyClassificationServices.ScanningDailyNormalClassification(custIds, FunctionId.NormalDailyJob);
             action.Should().NotThrow<Exception>();
         }
     }

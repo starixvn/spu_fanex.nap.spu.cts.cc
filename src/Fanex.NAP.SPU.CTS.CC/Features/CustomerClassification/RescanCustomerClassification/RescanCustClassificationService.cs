@@ -283,7 +283,7 @@
 
                     foreach (var batchCustIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId, false);
+                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId);
                     }
                 }
             }
