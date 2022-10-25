@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
 
-    [XName("CustomerClassificationModel")]
+    [XName("r")]
     public class CustClassificationRealtimeEntity
     {
         [XName("CustId")]
@@ -12,6 +12,6 @@
         public int SportGroupId { get; set; }
 
         [XName("CategoryId")]
-        public int CategoryId { get; set; }
+        public int CurrentCategoryID { get; set; }
     }
 }

@@ -117,10 +117,10 @@
                                                         {
                                                             CustId = group.custsHaschanges.CustId,
                                                             SportGroupId = group.custsHaschanges.SportGroupId,
-                                                            CategoryId = (temp != null) ? temp.CategoryId : 0
+                                                            CurrentCategoryID = (temp != null) ? temp.CurrentCategoryID : 0
                                                         });
 
-                var finalCustToClassify = custsClassify.Where(c => c.CategoryId != -1);
+                var finalCustToClassify = custsClassify.Where(c => c.CurrentCategoryID != -1);
 
                 if (finalCustToClassify.Any())
                 {
