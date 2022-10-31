@@ -9,7 +9,7 @@
 
         DateTime? GetLastScannedDateTime(SystemParameters paraID);
 
-        bool UpdateTimingExecution(string paraValue, SystemParameters paramId);
+        bool UpdateTimingExecution(string paraValue, SystemParameters paramId);     
     }
 
     public class SystemParameterServices : ISystemParameterServices
