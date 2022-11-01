@@ -11,8 +11,10 @@
         DBResult AddAssociatedAccount(AddAssociatedAccountModel model);
 
         IEnumerable<CustomerInfoMainDBEntity> GetCustomerInfoMainDB(string custIdList, int sourceType);
+        
+        DBResult UpdateABIToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueABI);
 
-        DBResult UpdateDangerLevelToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueABI, int valueOri);
+        DBResult UpdateOriToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueOri);
     }
 
     public class AssociatedGroupMonitorService : IAssociatedGroupMonitorService
@@ -39,7 +41,26 @@
             return dataAccess.GetCustomerInfoMainDB(custIdList, sourceType);
         }
 
-        public DBResult UpdateDangerLevelToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueABI, int valueOri)
+        public DBResult UpdateABIToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueABI)
+        {          
+            if (valueABI > 0)
+            {
+                var custToUpdateABI = customerInfoMainDBs.Where(x => x.Danger2 == 0).Select(x => new DangerLevelModel
+                {
+                    CustId = x.CustID,
+                    DangerLevel = valueABI
+                });
+
+                if (custToUpdateABI.Any())
+                {
+                    dataAccess.UpdateDangerLevelToMainDB(custToUpdateABI, 2);
+                }
+            }           
+
+            return new DBResult { ErrorCode = 0 };
+        }
+
+        public DBResult UpdateOriToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueOri)
         {
             if (valueOri > 0)
             {
@@ -52,20 +73,6 @@
                 if (custToUpdateOri.Any())
                 {
                     dataAccess.UpdateDangerLevelToMainDB(custToUpdateOri, 1);
-                }
-            }
-
-            if (valueABI > 0)
-            {
-                var custToUpdateABI = customerInfoMainDBs.Where(x => x.Danger2 == 0).Select(x => new DangerLevelModel
-                {
-                    CustId = x.CustID,
-                    DangerLevel = valueABI
-                });
-
-                if (custToUpdateABI.Any())
-                {
-                    dataAccess.UpdateDangerLevelToMainDB(custToUpdateABI, 2);
                 }
             }           
 

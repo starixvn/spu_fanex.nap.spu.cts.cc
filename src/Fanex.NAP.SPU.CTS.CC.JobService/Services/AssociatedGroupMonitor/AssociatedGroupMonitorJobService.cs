@@ -20,7 +20,7 @@
     {
         private readonly ISentryClient sentryClient;
         private const string serviceName = "ArchiveAssociationCustomer";
-        private const int DangerLevelABI = 2;
+        private const int DangerLevelABIOri = 2;
         private readonly IAssociatedGroupMonitorService associatedGroupService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
@@ -70,11 +70,17 @@
                     
                     var ctsCustIDs = string.Join(",", custInfo.ScanAssociatedAccountList.Select(x => x.CTSCustID).Distinct());
 
-                    var custSyncABIs = custInfo.ScanAssociatedAccountList.Where(x => !x.IsSyncPA).Select(x => x.CustID);
+                    var custSyncABIs = custInfo.ScanAssociatedAccountList.Where(x => !x.IsSyncPA).Select(x => x.CustID).Distinct();
 
-                    var custInfoMainDBs = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncABIs), DangerLevelABI);
+                    var custUpdateABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncABIs), DangerLevelABIOri);
 
-                    dbResult = this.associatedGroupService.UpdateDangerLevelToMainDB(custInfoMainDBs, custInfo.ABI, custInfo.Ori);
+                    dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateABI, custInfo.ABI);
+
+                    var custSyncOri = custInfo.ScanAssociatedAccountList.Select(x => x.CustID).Distinct();
+
+                    var custUpdateOri = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncOri), DangerLevelABIOri);
+
+                    dbResult = this.associatedGroupService.UpdateOriToMainDB(custUpdateOri, custInfo.ABI);
 
                     if (dbResult.ErrorCode == 0)
                     {
