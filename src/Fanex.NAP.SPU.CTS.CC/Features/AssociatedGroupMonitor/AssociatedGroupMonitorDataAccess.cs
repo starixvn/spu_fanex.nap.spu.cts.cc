@@ -39,6 +39,7 @@
             return new ScanAssociatedAccountModel
             {
                 GroupID = criteria.GroupID,
+                GroupName = criteria.GroupName,
                 ABI = criteria.ABI,
                 LastCTSCustID = criteria.LastCTSCustID,
                 ScanAssociatedAccountList = data

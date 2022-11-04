@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "op_GroupID")]
         public long GroupID { get; set; }
 
+        [SpParam(SqlParamName = "op_GroupName")]
+        public string GroupName { get; set; }
+
         [SpParam(SqlParamName = "op_ABI")]
         public int ABI { get; set; }
 

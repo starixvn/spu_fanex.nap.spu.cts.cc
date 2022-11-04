@@ -59,7 +59,8 @@
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,
-                        CreatedBy = Constants.StarixITId
+                        CreatedBy = Constants.StarixITId,
+                        Remark = $"Associated Group - {custInfo.GroupName}"
                     });
 
                     var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs

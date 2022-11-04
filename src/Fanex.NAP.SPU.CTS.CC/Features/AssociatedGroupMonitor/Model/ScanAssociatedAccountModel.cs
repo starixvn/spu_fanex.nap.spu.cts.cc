@@ -14,6 +14,8 @@
 
         public long GroupID { get; set; }
 
+        public string GroupName { get; set; }
+
         public int ABI { get; set; }
 
         public int Ori { get; set; }
