@@ -132,11 +132,9 @@
             //UpdateCategory = 42,
             InsertPAM = 43,
             TWProblemAccountInsert = 44,
-            DownlineCustomerClassification = 45,
-            TVSProblemAccountInsert = 46,
-            ClassifyGBMatchMonitor = 47,
-            ScanAssociatedAccount = 51
-        };
+            DownlineCustomerClassification = 51,
+            TVSProblemAccountInsert = 52,
+            ClassifyGBMatchMonitor = 53        };
 
         public enum HttpStatus
         {
