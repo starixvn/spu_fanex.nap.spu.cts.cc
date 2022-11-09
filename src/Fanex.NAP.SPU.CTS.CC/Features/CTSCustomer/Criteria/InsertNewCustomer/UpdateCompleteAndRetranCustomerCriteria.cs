@@ -21,7 +21,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustomerInfo) && LastInsertCustID is not null;
+            return true;
         }
     }
 }
