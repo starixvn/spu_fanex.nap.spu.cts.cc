@@ -7,7 +7,5 @@
         public long CTSCustID { get; set; }
 
         public bool IsRemovedPA { get; set; }
-
-        public int CurrentCategoryID { get; set; }
     }
 }

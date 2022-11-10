@@ -104,7 +104,8 @@
                 {
                     GetExistedProblemAccounts(custIds)
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
-                   .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
+                   .GetTWRobotUsers(custIds)
+                   .LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();

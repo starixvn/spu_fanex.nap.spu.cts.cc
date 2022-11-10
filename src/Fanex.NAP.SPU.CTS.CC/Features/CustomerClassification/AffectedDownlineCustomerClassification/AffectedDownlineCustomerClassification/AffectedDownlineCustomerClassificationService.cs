@@ -93,7 +93,7 @@
                         }
                     case (int)DownlineClassification_ActionType.RemovePA:
                         {
-                            IsSuccess = RemovePAFroDownlinePackage(parameters, custClassificationFromQueue);
+                            IsSuccess = RemovePAForDownlinePackage(parameters, custClassificationFromQueue);
                             break;
                         }
                 }
@@ -135,7 +135,7 @@
             return true;
         }
 
-        public bool RemovePAFroDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        public bool RemovePAForDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
             var isSuccess = true;
 
