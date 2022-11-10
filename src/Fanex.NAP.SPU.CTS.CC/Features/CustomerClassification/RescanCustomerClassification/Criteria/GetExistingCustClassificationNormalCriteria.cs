@@ -3,17 +3,14 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetCTSCustomerClassificationCriteria : CriteriaBase
-    {
-        [SpParam(SqlParamName = "ip_ListID")]
-        public string IDList { get; set; }
-
-        [SpParam(SqlParamName = "ip_IsCTSCustID")]
-        public bool IsCTSCustID { get; set; }
+    public class GetExistingCustClassificationNormalCriteria : CriteriaBase
+    {    
+        [SpParam(SqlParamName = "ip_CustIDList")]
+        public string CustIDList { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Get";
+            return "CTS_DC_CustClassification_Normal_GetExisting";
         }
 
         public override bool IsValid()

@@ -114,14 +114,15 @@
 		<Setting Key="CTS_DC_CustClassification_Queue_Complete" SpName="CTS_DC_CustClassification_Queue_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_VVIP_Insert" SpName="CTS_DC_CustClassification_VVIP_Insert_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_VVIP_Remove" SpName="CTS_DC_CustClassification_VVIP_Remove_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_VVIP_Remove" SpName="CTS_DC_CustClassification_VVIP_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 
-		<Setting Key="CTS_DC_CustClassification_PA_Remove" SpName="CTS_DC_CustClassification_PA_Remove_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_PA_Remove" SpName="CTS_DC_CustClassification_PA_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_Insert" SpName="CTS_DC_CustClassification_PA_Insert_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ClearOld" SpName="CTS_DC_CustClassification_PA_ClearOld_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Get" SpName="CTS_DC_CustClassification_Get_xtest" DbName="MySQL.CTS_DataCenter.Reporter" />
+		<Setting Key="CTS_DC_CustClassification_Normal_GetExisting" SpName="CTS_DC_CustClassification_Normal_GetExisting_xtest" DbName="MySQL.CTS_DataCenter.Reporter" />
 	</Function>
 
 	<Function name="TWProblemAccountInsert">

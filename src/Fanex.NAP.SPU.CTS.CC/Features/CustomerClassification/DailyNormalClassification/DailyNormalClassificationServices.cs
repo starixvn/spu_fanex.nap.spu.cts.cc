@@ -1,7 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
-{
-    using Fanex.Data;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+{  
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
@@ -19,9 +17,7 @@
         void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId);
         
         bool UpdateLastScan();
-
-        IEnumerable<CustomerClassificationModel> GetCustomerClassification(string IDList, bool isCTSCustID);
-
+    
     }
 
     public class DailyNormalClassificationServices : IDailyNormalClassificationServices
@@ -58,9 +54,12 @@
             {
                 var custIds = string.Join(",", scanningCustomers.CustID);
 
-                var custInfos = GetCustomerClassification(custIds, false).Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CategoryID }).Distinct();
+                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIds);
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId);
+                if (custNormalInfos.Any())
+                {
+                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
+                }
             }
 
             return this;
@@ -72,9 +71,12 @@
             {
                 var custIdToString = string.Join(",", customers);
 
-                var custInfos = GetCustomerClassification(custIdToString, false).Select(x => new RescanCategoryDailyModel { CustID = x.CustID, CurrentCategoryID = x.CategoryID }).Distinct();
+                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIdToString);
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custInfos.ToXmlString(), funcId);
+                if (custNormalInfos.Any())
+                {
+                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
+                }                
             }
         }
 
@@ -89,26 +91,6 @@
             }
 
             return false;
-        }
-
-        public IEnumerable<CustomerClassificationModel> GetCustomerClassification(string IDList, bool isCTSCustID)
-        {
-            var criteria = new GetCTSCustomerClassificationCriteria
-            {
-                IDList = IDList,
-                IsCTSCustID = isCTSCustID
-            };
-
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                using (var result = db.QueryMultiple(criteria))
-                {
-                    result.Read<bool>(); // Pin Categories
-                    result.Read<bool>(); // Excluded Tag Ass PA
-
-                    return result.Read<CustomerClassificationModel>();
-                }
-            }
-        }
+        }       
     }
 }

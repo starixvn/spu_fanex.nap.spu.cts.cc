@@ -1,7 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -10,6 +12,8 @@
         NormalClassificationDailyEntity GetCustomerForDailyNormalScanning();
 
         void ScanningDailyNormalClassification(string customers, FunctionId funcId);
+
+        IEnumerable<RescanCategoryNormalEntity> GetExistingCustClassificationNormal(string custIDList);
     }
 
     public class DailyNormalClassificationDataAccess : IDailyNormalClassificationDataAccess
@@ -47,6 +51,16 @@
 
                 repository.Execute(criteria);
             }
+        }
+
+        public IEnumerable<RescanCategoryNormalEntity> GetExistingCustClassificationNormal(string custIDList)
+        {
+            var criteria = new GetExistingCustClassificationNormalCriteria
+            {
+                CustIDList = custIDList
+            };
+
+            return repository.Fetch<RescanCategoryNormalEntity>(criteria);
         }
     }
 }
