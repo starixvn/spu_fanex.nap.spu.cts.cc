@@ -20,6 +20,7 @@
     {
         private readonly ISentryClient sentryClient;
         private const string serviceName = "ArchiveAssociationCustomer";
+        private const string MarkPA_AssociatedGroup = "Associated Group";
         private const int DangerLevelABIOri = 2;
         private readonly IAssociatedGroupMonitorService associatedGroupService;
         private readonly IProblemAccountServices problemAccountServices;
@@ -60,22 +61,34 @@
                         IsFromTVS = false,
                         IsFromTW = false,
                         CreatedBy = Constants.StarixITId,
-                        Remark = $"Associated Group - {custInfo.GroupName}"
+                        Remark = MarkPA_AssociatedGroup + " - " + custInfo.GroupName                       
                     });
 
-                    var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs
-                        , Shares.Constants.FunctionId.ScanAssociatedAccount
-                        , Shares.Constants.InsertPA_ByType.Category
-                        , false
-                        , serviceName);
+                    if (custSyncPAs.Any())
+                    {
+                        var custGroupABIPAs = custSyncPAs.Select(x => x.CustID).Distinct();
+
+                        var custUpdateGroupABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custGroupABIPAs), DangerLevelABIOri);
+
+                        dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateGroupABI, custInfo.ABI);
+
+                        problemAccountServices.InsertProblemAccountPackage(custSyncPAs
+                           , Shares.Constants.FunctionId.ScanAssociatedAccount
+                           , Shares.Constants.InsertPA_ByType.Category
+                           , false
+                           , serviceName);
+                    }                   
                     
                     var ctsCustIDs = string.Join(",", custInfo.ScanAssociatedAccountList.Select(x => x.CTSCustID).Distinct());
 
-                    var custSyncABIs = custInfo.ScanAssociatedAccountList.Where(x => !x.IsSyncPA).Select(x => x.CustID).Distinct();
+                    var custSyncGroupABI = custInfo.ScanAssociatedAccountList.Where(x => !x.IsSyncPA).Select(x => x.CustID).Distinct();
 
-                    var custUpdateABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncABIs), DangerLevelABIOri);
+                    if (custSyncGroupABI.Any())
+                    {
+                        var custUpdateABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncGroupABI), DangerLevelABIOri);
 
-                    dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateABI, custInfo.ABI);
+                        dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateABI, custInfo.ABI);
+                    }                   
 
                     var custSyncOri = custInfo.ScanAssociatedAccountList.Select(x => x.CustID).Distinct();
 
