@@ -41,6 +41,7 @@
                 GroupID = criteria.GroupID,
                 GroupName = criteria.GroupName,
                 ABI = criteria.ABI,
+                Ori = criteria.Ori,
                 LastCTSCustID = criteria.LastCTSCustID,
                 ScanAssociatedAccountList = data
             };

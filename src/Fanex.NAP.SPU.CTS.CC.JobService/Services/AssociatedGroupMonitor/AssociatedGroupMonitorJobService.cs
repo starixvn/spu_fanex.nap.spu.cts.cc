@@ -94,7 +94,7 @@
 
                     var custUpdateOri = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncOri), DangerLevelABIOri);
 
-                    dbResult = this.associatedGroupService.UpdateOriToMainDB(custUpdateOri, custInfo.ABI);
+                    dbResult = this.associatedGroupService.UpdateOriToMainDB(custUpdateOri, custInfo.Ori);
 
                     if (dbResult.ErrorCode == 0)
                     {

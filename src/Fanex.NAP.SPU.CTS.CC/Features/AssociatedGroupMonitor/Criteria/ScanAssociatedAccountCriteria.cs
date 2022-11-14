@@ -14,6 +14,9 @@
         [SpParam(SqlParamName = "op_ABI")]
         public int ABI { get; set; }
 
+        [SpParam(SqlParamName = "op_Ori")]
+        public int Ori { get; set; }
+
         [SpParam(SqlParamName = "op_PACategoryID")]
         public int PACategoryID { get; set; }
 
