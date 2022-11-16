@@ -61,6 +61,8 @@
         {
             if (dangerLevel != null && dangerLevel.Any())
             {
+                LogService.Info($"UpdateDangerLevelToMainDB info: {JsonConvert.SerializeObject(dangerLevel)} dangerTypeId: {dangerTypeId}");
+
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),

@@ -6,6 +6,7 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -105,6 +106,8 @@
         {
             if (dangerLevel != null && dangerLevel.Any())
             {
+                LogService.Info($"UpdateDangerLevelToMainDB info: {JsonConvert.SerializeObject(dangerLevel)} dangerType: {dangerType}");
+
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),

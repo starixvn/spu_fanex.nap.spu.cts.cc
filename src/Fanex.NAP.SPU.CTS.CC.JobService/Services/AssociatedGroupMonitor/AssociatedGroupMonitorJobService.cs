@@ -73,16 +73,14 @@
                     });
 
                     if (custSyncPAs.Any())
-                    {
-                        var custGroupABIPAs = custSyncPAs.Select(x => x.CustID).Distinct();
-
-                        problemAccountServices.InsertProblemAccountPackage(custSyncPAs
+                    {                        
+                        var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs
                            , Shares.Constants.FunctionId.ScanAssociatedAccount
                            , Shares.Constants.InsertPA_ByType.Category
                            , false
                            , serviceName);
 
-                        custClassToMainDBService.PushExternalProblemAcountPackage(custGroupABIPAs, new PushDataToExternalEntity
+                        custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchSize,
                             FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -90,7 +88,12 @@
                             IsUpdateDangerToMainDB = true,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
-                        });                        
+                        });
+
+                        var custGroupABIPAs = custSyncPAs.Select(x => x.CustID).Distinct().ToList();
+
+                        if (custIdsResult != null && custIdsResult.Any())
+                            custGroupABIPAs.RemoveAll(x => custIdsResult.Contains(x));
 
                         var custUpdateGroupABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custGroupABIPAs), DangerLevelABIOri);
 
