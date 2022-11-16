@@ -40,6 +40,7 @@
             {
                 GroupID = criteria.GroupID,
                 GroupName = criteria.GroupName,
+                PACategoryID = criteria.PACategoryID,
                 ABI = criteria.ABI,
                 Ori = criteria.Ori,
                 LastCTSCustID = criteria.LastCTSCustID,
