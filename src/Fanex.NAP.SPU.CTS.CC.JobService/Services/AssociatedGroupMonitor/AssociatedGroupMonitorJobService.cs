@@ -96,7 +96,6 @@
                             custGroupABIPAs.RemoveAll(x => custIdsResult.Contains(x));
 
                         var custUpdateGroupABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custGroupABIPAs), DangerLevelABIOri);
-
                         dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateGroupABI, custInfo.ABI);
                     }                   
                     
@@ -107,14 +106,12 @@
                     if (custSyncGroupABI.Any())
                     {
                         var custUpdateABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncGroupABI), DangerLevelABIOri);
-
                         dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateABI, custInfo.ABI);
                     }                   
 
                     var custSyncOri = custInfo.ScanAssociatedAccountList.Select(x => x.CustID).Distinct();
 
                     var custUpdateOri = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custSyncOri), DangerLevelABIOri);
-
                     dbResult = this.associatedGroupService.UpdateOriToMainDB(custUpdateOri, custInfo.Ori);
 
                     if (dbResult.ErrorCode == 0)
@@ -123,7 +120,8 @@
                         {
                             CTSCustIDs = ctsCustIDs,
                             IsAuto = true,
-                            GroupID = custInfo.GroupID
+                            GroupID = custInfo.GroupID,
+                            CreatedBy = Constants.StarixITId
                         });
                     }
                 }

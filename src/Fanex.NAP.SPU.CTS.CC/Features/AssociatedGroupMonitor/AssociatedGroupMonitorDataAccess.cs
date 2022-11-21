@@ -105,9 +105,7 @@
         public DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelModel> dangerLevel, int dangerType)
         {
             if (dangerLevel != null && dangerLevel.Any())
-            {
-                LogService.Info($"UpdateDangerLevelToMainDB info: {JsonConvert.SerializeObject(dangerLevel)} dangerType: {dangerType}");
-
+            {                
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),
