@@ -5,17 +5,17 @@
 
     public class UpdateLastScanTimeBySportCriteriaTest
     {
-        private readonly UpdateLastScanTimeBySportCriteria criteria;
+        private readonly UpdateLastScanBySportCriteria criteria;
 
         public UpdateLastScanTimeBySportCriteriaTest()
         {
-            criteria = new UpdateLastScanTimeBySportCriteria();
+            criteria = new UpdateLastScanBySportCriteria();
         }
 
         [Fact]
         public void GetSettingKey_Any_ReturnRightSPName()
         {
-            var expected = "CTS_NormalAccountsClassification_BySport_Realtime_UpdateLastScanTime";
+            var expected = "CTS_NormalAccountsClassification_Realtime_UpdateLastScan";
 
             var spName = criteria.GetSettingKey();
 

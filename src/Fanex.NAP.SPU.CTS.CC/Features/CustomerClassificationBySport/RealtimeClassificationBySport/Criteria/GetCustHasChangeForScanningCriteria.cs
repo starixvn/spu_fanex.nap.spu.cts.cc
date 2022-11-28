@@ -6,7 +6,7 @@
     {
         public override string GetSettingKey()
         {
-            return "CTS_NormalAccountsClassification_BySport_RealTime_CheckChanges";
+            return "CTS_NormalAccountsClassification_BySport_RealTime_GetChanges";
         }
 
         public override bool IsValid()

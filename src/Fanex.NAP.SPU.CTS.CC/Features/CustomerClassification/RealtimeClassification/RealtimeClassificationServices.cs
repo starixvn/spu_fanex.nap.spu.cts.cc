@@ -19,7 +19,7 @@
 
         void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification);
 
-        IRealtimeClassificationServices RealtimeUpdateLastScanTime();
+        IRealtimeClassificationServices UpdateGeneralRealtimeLastScan();
 
         IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize);
 
@@ -129,9 +129,9 @@
             }
         }
 
-        public IRealtimeClassificationServices RealtimeUpdateLastScanTime()
+        public IRealtimeClassificationServices UpdateGeneralRealtimeLastScan()
         {
-            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime();
+            realtimeClassificationDataAccess.UpdateGeneralRealtimeLastScan(true);
 
             return this;
         }

@@ -55,9 +55,9 @@
         {
             realtimeClassificationServices
                 .Start()
-                .GetCustomerGeneralCategoryHasChange()
+                .GetCustomerBySportHasChange()
                 .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
-                .RealtimeUpdateLastScanTime();
+                .UpdateLastScanRealtimeBySport();
         }
     }
 

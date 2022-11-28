@@ -11,13 +11,13 @@
     {
         IRealtimeClassificationBySportServices Start();
 
-        IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChange();
+        IRealtimeClassificationBySportServices GetCustomerBySportHasChange();
 
         IRealtimeClassificationBySportServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize);
 
         IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customerHasChanges);
 
-        IRealtimeClassificationBySportServices RealtimeUpdateLastScanTime();
+        IRealtimeClassificationBySportServices UpdateLastScanRealtimeBySport();
 
         IEnumerable<CustClassificationRealtimeBySportEntity> CustomerClassification { get; }
     }
@@ -43,9 +43,9 @@
             return this;
         }
 
-        public IRealtimeClassificationBySportServices GetCustomerGeneralCategoryHasChange()
+        public IRealtimeClassificationBySportServices GetCustomerBySportHasChange()
         {
-            this.customerClassification = realtimeClassificationDataAccess.GetCustomerGeneralCategoryHasChangeForRunRealtime();
+            this.customerClassification = realtimeClassificationDataAccess.GetCustomerBySportHasChangeForRunRealtime();
 
             return this;
         }
@@ -91,9 +91,9 @@
             return Enumerable.Empty<CustClassificationRealtimeBySportEntity>();
         }
 
-        public IRealtimeClassificationBySportServices RealtimeUpdateLastScanTime()
+        public IRealtimeClassificationBySportServices UpdateLastScanRealtimeBySport()
         {
-            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime();
+            realtimeClassificationDataAccess.UpdateLastScanRealtimeBySport(false);
 
             return this;
         }

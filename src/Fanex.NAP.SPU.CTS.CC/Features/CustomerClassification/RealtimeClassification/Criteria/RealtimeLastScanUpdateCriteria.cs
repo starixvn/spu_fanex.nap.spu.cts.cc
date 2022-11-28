@@ -2,11 +2,13 @@
 {
     using Fanex.Data.Repository;
 
-    public class RealtimeLastScanTimeUpdateCriteria : NonQueryCommand
-    {       
+    public class RealtimeLastScanUpdateCriteria : NonQueryCommand
+    {
+        public bool IsGeneralFlow { get; set; }
+
         public override string GetSettingKey()
         {
-            return "CTS_NormalAccountsClassification_UpdateLastScanTime";
+            return "CTS_NormalAccountsClassification_Realtime_UpdateLastScan";
         }
 
         public override bool IsValid()
