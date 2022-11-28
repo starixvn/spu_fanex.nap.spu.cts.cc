@@ -7,6 +7,8 @@
 
     public interface IRealtimeClassificationDataAccess
     {
+        void CheckNewChangesForRealtime();
+
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(string custSportJson);
@@ -25,6 +27,13 @@
         public RealtimeClassificationDataAccess()
         {
             repository = new DynamicRepository();
+        }
+
+        public void CheckNewChangesForRealtime()
+        {
+            var criteria = new RealtimeNewChangesCheckCriteria();
+
+            repository.Execute(criteria);
         }
 
         public IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime()

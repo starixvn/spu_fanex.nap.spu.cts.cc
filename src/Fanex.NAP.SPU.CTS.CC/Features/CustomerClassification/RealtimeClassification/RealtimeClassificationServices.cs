@@ -9,6 +9,8 @@
 
     public interface IRealtimeClassificationServices
     {
+        void CheckNewChangesForRealtime();
+
         IRealtimeClassificationServices Start();
 
         IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
@@ -44,6 +46,10 @@
             customerClassification = new List<CustClassificationRealtimeEntity>();
 
             return this;
+        }
+        public void CheckNewChangesForRealtime()
+        {
+            realtimeClassificationDataAccess.CheckNewChangesForRealtime();
         }
 
         public IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()

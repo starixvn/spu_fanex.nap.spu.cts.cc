@@ -8,7 +8,9 @@
 
     public interface IRealtimeClassificationJobService
     {
-        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
+        Task<bool> ProcessClassification(int batchExternalSize, int batchInternalSize);
+
+        Task<bool> CheckChanges();
     }
 
     public class RealtimeClassificationJobService : IRealtimeClassificationJobService
@@ -26,7 +28,7 @@
             this.serviceName = "RealtimeClassification";
         }
 
-        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ProcessClassification(int batchExternalSize, int batchInternalSize)
         {
             try
             {
@@ -38,6 +40,22 @@
                 {
                     Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
                 }
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> CheckChanges()
+        {
+            try
+            {
+                realtimeClassificationServices.CheckNewChangesForRealtime();
             }
             catch (Exception ex)
             {
