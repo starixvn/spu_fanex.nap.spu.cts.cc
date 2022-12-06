@@ -15,5 +15,9 @@
         public int Danger4 { get; set; }
 
         public int Danger5 { get; set; }
+
+        public int Danger6 { get; set; }
+
+        public int Danger7 { get; set; }
     }
 }
