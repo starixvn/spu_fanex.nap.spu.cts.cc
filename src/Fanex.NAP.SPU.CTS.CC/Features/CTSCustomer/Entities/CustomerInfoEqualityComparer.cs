@@ -13,8 +13,8 @@
                 && x.Danger3 == y.Danger3
                 && x.Danger4 == y.Danger4
                 && x.Danger5 == y.Danger5
-                && x.Danger6 == y.Danger6
-                && x.Danger7 == y.Danger7)
+                && x.DangerSabaSc == y.DangerSabaSc
+                && x.DangerSabaBkb == y.DangerSabaBkb)
                 return true;
 
             return false;

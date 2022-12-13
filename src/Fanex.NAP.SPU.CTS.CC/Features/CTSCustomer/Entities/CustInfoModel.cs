@@ -16,8 +16,8 @@
 
         public int Danger5 { get; set; }
 
-        public int Danger6 { get; set; }
+        public int DangerSabaSc { get; set; }
 
-        public int Danger7 { get; set; }
+        public int DangerSabaBkb { get; set; }
     }
 }
