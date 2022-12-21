@@ -176,4 +176,9 @@
     <Setting Key="CTS_NormalAccountsClassification_BySport_RealTime"  SpName="CTS_NormalAccountsClassification_BySport_RealTime" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
     <Setting Key="CTS_NormalAccountsClassification_BySport_Realtime_UpdateLastScanTime" SpName="CTS_NormalAccountsClassification_BySport_Realtime_UpdateLastScanTime" DbName="SQL.bodbVR2Model.bodbSPUNet" />
   </Function>
+	
+	<Function name="AssociatedGroupMonitor">
+		<Setting Key="CTS_DC_AssociatedGroup_Account_Add" SpName="CTS_DC_AssociatedGroup_Account_Add" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_AssociatedGroup_Scan" SpName="CTS_DC_AssociatedGroup_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />		
+	</Function>
 </Functions>

@@ -60,7 +60,7 @@
         public DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId)
         {
             if (dangerLevel != null && dangerLevel.Any())
-            {
+            {               
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),

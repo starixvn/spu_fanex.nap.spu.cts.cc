@@ -26,6 +26,7 @@
 
         public enum SystemParameters
         {
+            TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
             InsertNewCustomerMonitoring = 67,
@@ -40,8 +41,9 @@
             DailyProblemClassificationLastCategoryID = 88,
             DailyProblemClassificationLastCustID = 89,
             NewCTSCustomerClassificationLastCustID = 92,
-            RobotDetectionLastModifiedDate = 94,
-            TVS_LastScanDateTime = 2,
+            RobotDetectionLastModifiedDate = 94,            
+            AssociatedGroupLastGroupID = 98,
+            AssociatedGroupLastCTSCustID = 99,
             SabaDangerLevel_LastHistoryID = 102,
             SabaDangerLevel_LastCategoryID = 103,
             SabaDangerLevel_LastCustID = 104,
@@ -132,7 +134,8 @@
             TWProblemAccountInsert = 44,
             DownlineCustomerClassification = 45,
             TVSProblemAccountInsert = 46,
-            ClassifyGBMatchMonitor = 47
+            ClassifyGBMatchMonitor = 47,
+            ScanAssociatedAccount = 51
         };
 
         public enum HttpStatus
