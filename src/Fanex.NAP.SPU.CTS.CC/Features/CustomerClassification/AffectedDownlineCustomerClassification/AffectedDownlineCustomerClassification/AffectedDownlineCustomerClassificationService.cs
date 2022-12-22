@@ -93,7 +93,7 @@
                         }
                     case (int)DownlineClassification_ActionType.RemovePA:
                         {
-                            IsSuccess = RemovePAFroDownlinePackage(parameters, custClassificationFromQueue);
+                            IsSuccess = RemovePAForDownlinePackage(parameters, custClassificationFromQueue);
                             break;
                         }
                 }
@@ -135,7 +135,7 @@
             return true;
         }
 
-        public bool RemovePAFroDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        public bool RemovePAForDownlinePackage(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
         {
             var isSuccess = true;
 
@@ -159,10 +159,10 @@
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    var custIds = result.CustomerInfo.Select(c => c.CustID).Distinct();
+                    var custIDs = result.CustomerInfo.Select(x => x.CustID);
 
                     parameters.IsRescanPA = false;
-                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIds, parameters);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
                 }
             }
 
@@ -194,10 +194,10 @@
             {
                 var result = RemoveVVIPCategory(custInfo);
 
-                var custIds = result.Select(c => c.CustID).Distinct();
+                var custIDs = result.Select(x => x.CustID);
 
                 parameters.IsRescanPA = true;
-                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIds, parameters);
+                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 
             return isSuccess;

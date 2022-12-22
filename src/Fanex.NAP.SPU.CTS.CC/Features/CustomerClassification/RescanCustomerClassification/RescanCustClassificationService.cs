@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
+    using Fanex.Data;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -36,7 +37,7 @@
         IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
-
+       
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
@@ -98,12 +99,13 @@
             if (custIds != null && custIds.Any())
             {
                 Start();
-
+              
                 if (parameters.IsRescanPA)
                 {
                     GetExistedProblemAccounts(custIds)
                    .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
-                   .GetTWRobotUsers(custIds).LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
+                   .GetTWRobotUsers(custIds)
+                   .LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
                    .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
@@ -275,14 +277,14 @@
                 var custToRescanNormal = custIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
-
+              
                 if (custToRescanNormal.Any())
                 {
                     var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
 
                     foreach (var batchCustIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId, false);
+                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId);
                     }
                 }
             }
@@ -310,7 +312,7 @@
             dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
 
             return this;
-        }
+        }        
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 

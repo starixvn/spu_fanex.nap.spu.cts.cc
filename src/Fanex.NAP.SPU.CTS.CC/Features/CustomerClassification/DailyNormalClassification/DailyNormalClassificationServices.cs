@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
-{
+{  
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -11,11 +12,12 @@
 
         IDailyNormalClassificationServices GetCustClassificationForDailyScanning();
 
-        IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId, bool isCheckLast14Days);
+        IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId);
 
-        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days);
-
+        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId);
+        
         bool UpdateLastScan();
+    
     }
 
     public class DailyNormalClassificationServices : IDailyNormalClassificationServices
@@ -46,25 +48,35 @@
             return this;
         }
 
-        public IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId, bool isCheckLast14Days)
+        public IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId)
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
                 var custIds = string.Join(",", scanningCustomers.CustID);
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custIds, funcId, isCheckLast14Days);
+                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIds);
+
+                if (custNormalInfos.Any())
+                {
+                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
+                }
             }
 
             return this;
         }
 
-        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId, bool isCheckLast14Days)
+        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId)
         {
             if (customers != null && customers.Any())
             {
                 var custIdToString = string.Join(",", customers);
 
-                dailyClassificationDataAccess.ScanningDailyNormalClassification(custIdToString, funcId, isCheckLast14Days);
+                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIdToString);
+
+                if (custNormalInfos.Any())
+                {
+                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
+                }                
             }
         }
 
@@ -79,6 +91,6 @@
             }
 
             return false;
-        }
+        }       
     }
 }

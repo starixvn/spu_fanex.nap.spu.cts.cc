@@ -28,13 +28,13 @@
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 1,
-                    CategoryId = 1,
+                    CurrentCategoryID = 1,
                     SportGroupId =1
                 },
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 2,
-                    CategoryId = 2,
+                    CurrentCategoryID = 2,
                     SportGroupId =2
                 },
             };
@@ -55,13 +55,13 @@
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 1,
-                    CategoryId = 1,
+                    CurrentCategoryID = 1,
                     SportGroupId =1
                 },
                 new CustClassificationRealtimeEntity
                 {
                     CustId = 2,
-                    CategoryId = 2,
+                    CurrentCategoryID = 2,
                     SportGroupId =2
                 },
             };
@@ -84,13 +84,13 @@
                                         new CustClassificationRealtimeEntity
                                         {
                                             CustId = 1,
-                                            CategoryId = 0,
+                                            CurrentCategoryID = 0,
                                             SportGroupId =1
                                         },
                                         new CustClassificationRealtimeEntity
                                         {
                                             CustId = 2,
-                                            CategoryId = 0,
+                                            CurrentCategoryID = 0,
                                             SportGroupId =2
                                         },
                                     },
@@ -99,13 +99,13 @@
                                         new CustClassificationRealtimeEntity
                                         {
                                             CustId = 1,
-                                            CategoryId = 1,
+                                            CurrentCategoryID = 1,
                                             SportGroupId =1
                                         },
                                         new CustClassificationRealtimeEntity
                                         {
                                             CustId = 2,
-                                            CategoryId = 0,
+                                            CurrentCategoryID = 0,
                                             SportGroupId =2
                                         },
                                     }
@@ -121,9 +121,9 @@
         [Fact]
         public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
         {
-            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime(true);
+            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime();
 
-            Action action = () => realtimeClassificationServices.RealtimeUpdateLastScanTime(true);
+            Action action = () => realtimeClassificationServices.RealtimeUpdateLastScanTime();
 
             action.Should().NotThrow<Exception>();
         }

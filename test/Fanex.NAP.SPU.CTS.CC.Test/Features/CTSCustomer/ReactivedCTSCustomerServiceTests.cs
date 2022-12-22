@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -64,7 +65,11 @@
         {
             var dataFromDB = new InactivateNewCustomer
             {
-                CustIDs = new List<long> { 1, 2, 4 },
+                CustInfos = new List<RescanCategoryDailyModel>
+                {
+                    new RescanCategoryDailyModel { CustID = 1, CurrentCategoryID = 201} ,
+                    new RescanCategoryDailyModel { CustID = 2, CurrentCategoryID = 202}
+                },
                 LastCustID = 1,
                 LastCategoryID = 1
             };
