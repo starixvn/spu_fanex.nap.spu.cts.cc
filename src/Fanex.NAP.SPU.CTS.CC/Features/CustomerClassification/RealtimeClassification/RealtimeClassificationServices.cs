@@ -78,8 +78,6 @@
                     foreach (var custCategory in custInternalChunks)
                     {
                         custToClassification.CustCategories.AddRange(GetCustomerGeneralCategoryForRunRealtime(custCategory));
-
-                        Thread.Sleep(Constants.Realtime_SleepTimes);
                     }
 
                     custToClassification.CustClassification.AddRange(custHasChange);

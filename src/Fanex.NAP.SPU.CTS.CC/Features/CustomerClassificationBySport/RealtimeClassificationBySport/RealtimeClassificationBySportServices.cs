@@ -64,8 +64,6 @@
                     foreach (var custCategory in custInternalChunks)
                     {
                         scanList.AddRange(GetCustomerBySportForRunRealtime(custCategory));
-
-                        Thread.Sleep(Constants.Realtime_SleepTimes);
                     }
 
                     if (scanList.Any())
