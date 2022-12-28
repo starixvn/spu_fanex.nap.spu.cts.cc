@@ -7,13 +7,13 @@
 
     public interface IRealtimeClassificationBySportDataAccess
     {
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime();
+        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportHasChangeForRunRealtime();
 
         IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(string custSportJson);
 
         void ClassifyCustomerBySportRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
-        void RealtimeUpdateLastScanTime();
+        void UpdateLastScanRealtimeBySport(bool isGeneralFlow);
     }
 
     public class RealtimeClassificationBySportDataAccess : IRealtimeClassificationBySportDataAccess
@@ -25,7 +25,7 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime()
+        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportHasChangeForRunRealtime()
         {
             var criteria = new GetCustHasChangeForScanningCriteria();
 
@@ -52,9 +52,13 @@
             repository.Execute(criteria);
         }
 
-        public void RealtimeUpdateLastScanTime()
+        public void UpdateLastScanRealtimeBySport(bool isGeneralFlow)
         {
-            var criteria = new UpdateLastScanTimeBySportCriteria();
+            var criteria = new UpdateLastScanBySportCriteria 
+            { 
+                IsGeneralFlow = isGeneralFlow
+            };
+
             repository.Execute(criteria);
         }
     }

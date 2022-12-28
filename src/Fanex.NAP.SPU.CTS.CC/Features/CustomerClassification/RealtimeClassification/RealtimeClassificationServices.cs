@@ -9,6 +9,8 @@
 
     public interface IRealtimeClassificationServices
     {
+        void CheckNewChangesForRealtime();
+
         IRealtimeClassificationServices Start();
 
         IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
@@ -19,7 +21,7 @@
 
         void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification);
 
-        IRealtimeClassificationServices RealtimeUpdateLastScanTime();
+        IRealtimeClassificationServices UpdateGeneralRealtimeLastScan();
 
         IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize);
 
@@ -44,6 +46,10 @@
             customerClassification = new List<CustClassificationRealtimeEntity>();
 
             return this;
+        }
+        public void CheckNewChangesForRealtime()
+        {
+            realtimeClassificationDataAccess.CheckNewChangesForRealtime();
         }
 
         public IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
@@ -72,8 +78,6 @@
                     foreach (var custCategory in custInternalChunks)
                     {
                         custToClassification.CustCategories.AddRange(GetCustomerGeneralCategoryForRunRealtime(custCategory));
-
-                        Thread.Sleep(Constants.Realtime_SleepTimes);
                     }
 
                     custToClassification.CustClassification.AddRange(custHasChange);
@@ -129,9 +133,9 @@
             }
         }
 
-        public IRealtimeClassificationServices RealtimeUpdateLastScanTime()
+        public IRealtimeClassificationServices UpdateGeneralRealtimeLastScan()
         {
-            realtimeClassificationDataAccess.RealtimeUpdateLastScanTime();
+            realtimeClassificationDataAccess.UpdateGeneralRealtimeLastScan(true);
 
             return this;
         }

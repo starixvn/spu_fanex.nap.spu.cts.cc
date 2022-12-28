@@ -15,7 +15,7 @@
         [Fact]
         public void GetSettingKey_Any_ReturnRightSPName()
         {
-            var expected = "CTS_NormalAccountsClassification_BySport_RealTime_CheckChanges";
+            var expected = "CTS_NormalAccountsClassification_BySport_RealTime_GetChanges";
 
             var spName = criteria.GetSettingKey();
 
