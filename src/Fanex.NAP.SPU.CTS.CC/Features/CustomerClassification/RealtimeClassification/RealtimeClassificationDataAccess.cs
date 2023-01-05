@@ -7,7 +7,7 @@
 
     public interface IRealtimeClassificationDataAccess
     {
-        void CheckNewChangesForRealtime();
+        void CheckNewChangesForRealtime(int minuteTimeRange);
 
         IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime();
 
@@ -29,9 +29,12 @@
             repository = new DynamicRepository();
         }
 
-        public void CheckNewChangesForRealtime()
+        public void CheckNewChangesForRealtime(int minuteTimeRange)
         {
-            var criteria = new RealtimeNewChangesCheckCriteria();
+            var criteria = new RealtimeNewChangesCheckCriteria
+            { 
+                MinuteTimeRange = minuteTimeRange
+            };
 
             repository.Execute(criteria);
         }

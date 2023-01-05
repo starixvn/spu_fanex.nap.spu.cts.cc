@@ -9,7 +9,7 @@
 
     public interface IRealtimeClassificationServices
     {
-        void CheckNewChangesForRealtime();
+        void CheckNewChangesForRealtime(int minuteTimeRange);
 
         IRealtimeClassificationServices Start();
 
@@ -47,9 +47,10 @@
 
             return this;
         }
-        public void CheckNewChangesForRealtime()
+
+        public void CheckNewChangesForRealtime(int minuteTimeRange)
         {
-            realtimeClassificationDataAccess.CheckNewChangesForRealtime();
+            realtimeClassificationDataAccess.CheckNewChangesForRealtime(minuteTimeRange);
         }
 
         public IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
