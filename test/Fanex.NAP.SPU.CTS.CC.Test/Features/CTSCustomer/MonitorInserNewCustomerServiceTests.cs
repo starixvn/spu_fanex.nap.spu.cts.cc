@@ -47,13 +47,6 @@
         //}
 
         [Fact]
-        public void GetLastScannTime_WhenSuccess_RunSuccessfully()
-        {
-            var result = ctsCustomerService.GetLastScanTimeForCustomerMonitor(Shares.Constants.SystemParameters.InsertNewCustomerMonitoring);
-            result.Should().NotBe(DateTime.MinValue);
-        }
-
-        [Fact]
         public void GetCustInfoFromMainDB_WhenSuccess_RunSuccessfully()
         {
             var fromDate = new DateTime(2021, 1, 1);

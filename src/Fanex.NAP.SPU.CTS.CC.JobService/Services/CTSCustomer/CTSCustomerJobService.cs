@@ -7,6 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.Notification.Services;
     using Sentry;
     using System;
@@ -24,7 +25,7 @@
 
         Task<bool> UpdateUsername2(int batchSize);
 
-        Task<bool> MonitorInsertNewCustomer();
+        Task<bool> MonitorMissingCustomer(int batchSize);
 
         Task<bool> InsertReactivatedCustomers();
 
@@ -160,57 +161,47 @@
             }
         }
 
-        public Task<bool> MonitorInsertNewCustomer()
+        #region MonitorMissingCustomer
+
+        public Task<bool> MonitorMissingCustomer(int batchSize)
         {
             try
             {
                 var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
                 var isSuccess = true;
-                var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
-                var toDate = fromDate.AddHours(2);
-                if (toDate <= DateTime.Now.AddHours(-0.5))
+                var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.InsertNewCustomerMonitoring);
+                var toDate = fromDate?.AddHours(2);
+
+                if (fromDate != null && toDate <= DateTime.Now.AddHours(-0.5))
                 {
-                    var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
-                    custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
-                    var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(custList);
-                    if (missingCusts.Any())
+                    var customers = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate.Value, toDate.Value).ToList();
+                    customers.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate.Value, toDate.Value));
+
+                    if (customers != null && customers.Any())
                     {
-                        var mess = $"Scan from {fromDate:dd/MM/yyyy HH:mm:ss} to {toDate:dd/MM/yyyy HH:mm:ss} \n" +
-                        $"{missingCusts.Count()} missing customers";
+                        var customerChunks = customers.Chunk(batchSize);
 
-                        NotifyTelegramMessage(mess);
-                        if (isAutoInsertMissing)
+                        foreach (var customerBatch in customerChunks)
                         {
-                            var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID)
-                                                                    && missingCusts.Select(a => a.CustSubID).Contains(c.CustSubID));
-                            var data = new InsertCustomerViewModel
-                            {
-                                CustomerInfos = missingCustData.ToList(),
-                                LastInsertCustID = 0
-                            };
+                            var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(customerBatch);
 
-                            isSuccess = ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
+                            isSuccess = InsertMissingCustomer(new InsertMissingCustomerModel
                             {
-                                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                IsInsertMissingCust = true,
-                                InsertVIPURL = appSettings.InsertVIPURL,
-                                InsertBAURL = appSettings.InsertBAURL,
-                                serviceName = "MonitorInsertNewCustomer"
+                                CustomerInfo = customerBatch,
+                                MissingCustomers = missingCusts,
+                                IsAutoInsertMissing = isAutoInsertMissing,
+                                ScannedTimeFrom = fromDate.Value,
+                                ScannedTimeTo = toDate.Value
                             });
-                        }
-                        else
-                        {
-                            ctscustomerService.InsertMissingCust(missingCusts, toDate);
+
+                            if (!isSuccess)
+                            {
+                                return Task.FromResult(isSuccess);
+                            }
                         }
                     }
 
-                    if (isSuccess)
-                    {
-                        ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
-                    }
+                    systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.InsertNewCustomerMonitoring);
                 }
 
                 return Task.FromResult(isSuccess);
@@ -223,9 +214,50 @@
                       .ToString();
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+
                 return Task.FromResult(false);
             }
         }
+
+        private bool InsertMissingCustomer(InsertMissingCustomerModel parameters)
+        {
+            if (parameters.MissingCustomers.Any())
+            {
+                var message = $"Scan from {parameters.ScannedTimeFrom:dd/MM/yyyy HH:mm:ss} to {parameters.ScannedTimeTo:dd/MM/yyyy HH:mm:ss} \n" +
+                $"{parameters.MissingCustomers.Count()} missing customers";
+
+                NotifyTelegramMessage(message);
+
+                if (parameters.IsAutoInsertMissing)
+                {
+                    var data = new InsertCustomerViewModel
+                    {
+                        CustomerInfos = parameters.CustomerInfo.Where(c => parameters.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
+                                                               && parameters.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID))?.ToList()
+                    };
+
+                    return ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
+                    {
+                        InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                        ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsInsertMissingCust = true,
+                        InsertVIPURL = appSettings.InsertVIPURL,
+                        InsertBAURL = appSettings.InsertBAURL,
+                        serviceName = "MonitorInsertNewCustomer"
+                    });
+                }
+                else
+                {
+                    ctscustomerService.InsertMonitorMissingCust(parameters.MissingCustomers, parameters.ScannedTimeTo);
+                }
+            }
+
+            return true;
+        }
+
+        #endregion MonitorMissingCustomer
 
         public Task<bool> InsertReactivatedCustomers()
         {
@@ -258,7 +290,7 @@
                     custInfo.CustomerInfos.AddRange(subCusts);
 
                     if (custInfo != null && custInfo.CustomerInfos.Any())
-                    {                        
+                    {
                         isSuccess = ctscustomerService.InsertNewCustomer(custInfo, new InsertNewCustRescanEntity
                         {
                             InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
@@ -291,7 +323,7 @@
                 return Task.FromResult(false);
             }
         }
-       
+
         public Task<bool> InactivateNewCustomers()
         {
             try
@@ -319,7 +351,6 @@
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
 
                     Thread.Sleep(10000);
-
                 } while (isContinue);
 
                 return Task.FromResult(true);
@@ -339,7 +370,7 @@
         #region Private Methods
 
         private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
-        {           
+        {
             return custClassToMainDBService.PushDataToExternal(custIDs.Distinct(), new PushDataToExternalEntity
             {
                 ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,

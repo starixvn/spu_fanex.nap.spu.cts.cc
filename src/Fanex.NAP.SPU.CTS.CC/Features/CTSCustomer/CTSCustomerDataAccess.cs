@@ -2,8 +2,8 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -63,7 +63,7 @@
 
         IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson);
 
-        void InsertMissingCust(string custDataJson, DateTime scannedDate);
+        void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
 
@@ -235,9 +235,9 @@
             return repository.Fetch<CustomerMainDBModel>(criteria);
         }
 
-        public void InsertMissingCust(string custDataJson, DateTime scannedDate)
+        public void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate)
         {
-            var criteria = new InsertMissingCustCriteria
+            var criteria = new InsertMonitorMissingCustCriteria
             {
                 CustomerListJson = custDataJson,
                 ScannedDate = scannedDate

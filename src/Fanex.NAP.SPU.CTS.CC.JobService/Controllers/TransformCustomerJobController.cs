@@ -38,10 +38,10 @@
             return await ctsCustomerJobService.UpdateUsername2(batchSize);
         }
 
-        [HttpPost("MonitorInsertNewCustomer")]
-        public async Task<bool> MonitorInsertNewCustomer()
+        [HttpPost("MonitorMissingCustomer")]
+        public async Task<bool> MonitorMissingCustomer([FromForm] int batchSize)
         {
-            return await ctsCustomerJobService.MonitorInsertNewCustomer();
+            return await ctsCustomerJobService.MonitorMissingCustomer(batchSize);
         }
 
         [HttpPost("InsertReactivatedCustomer")]
@@ -54,6 +54,6 @@
         public async Task<bool> InactivateNewCustomers()
         {
             return await ctsCustomerJobService.InactivateNewCustomers();
-        } 
+        }
     }
 }

@@ -4,7 +4,7 @@
     using Fanex.Data.Repository;
     using System;
 
-    public class InsertMissingCustCriteria : NonQueryCommand
+    public class InsertMonitorMissingCustCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }
