@@ -10,7 +10,7 @@
     {
         Task<bool> ProcessClassification(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> CheckChanges(int minuteTimeRange);
+        Task<bool> CheckChanges();
     }
 
     public class RealtimeClassificationJobService : IRealtimeClassificationJobService
@@ -51,18 +51,11 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> CheckChanges(int minuteTimeRange)
+        public Task<bool> CheckChanges()
         {
             try
             {
-                if (minuteTimeRange > 0)
-                {
-                    realtimeClassificationServices.CheckNewChangesForRealtime(minuteTimeRange);
-                }
-                else
-                {
-                    Utilities.LogSentryError(serviceName, "InValid Minute Time Range", (minuteTimeRange), new NullReferenceException(), sentryClient);
-                }
+                realtimeClassificationServices.CheckNewChangesForRealtime();
             }
             catch (Exception ex)
             {

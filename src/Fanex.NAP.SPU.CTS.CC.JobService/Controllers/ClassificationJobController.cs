@@ -79,9 +79,9 @@
         }
 
         [HttpPost("checkChangeRealtimeClassification")]
-        public async Task<bool> RealtimeCheckChanges([FromForm] int minuteTimeRange)
+        public async Task<bool> RealtimeCheckChanges()
         {
-            return await this.realtimeClassificationJobService.CheckChanges(minuteTimeRange);
+            return await this.realtimeClassificationJobService.CheckChanges();
         }
 
         [HttpPost("probationClassification")]
