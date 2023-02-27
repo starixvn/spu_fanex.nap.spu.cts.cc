@@ -1,5 +1,6 @@
 ﻿using Fanex.Logging.Extensions;
 using Fanex.Logging.Extensions.Database;
+using Fanex.NAP.SPU.Notification.Services;
 using Newtonsoft.Json;
 using Sentry;
 using System;
@@ -113,6 +114,16 @@ namespace Fanex.NAP.SPU.CTS.Shares
             {
                 return sr.ReadToEnd();
             }
+        }
+
+        public static void NotifyTelegramMessage(string message, string systemName, string environment, string token, string groupId)
+        {
+            var telegramService = new NotificationService();
+            string proxy = environment == "PROD" ? "10.2.252.100:8801" : null;
+            telegramService
+               .Config(token, groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
+               .Message(new MessageModel(systemName, DateTime.Now, environment, message))
+               .SendWithoutDelay();
         }
     }
 }

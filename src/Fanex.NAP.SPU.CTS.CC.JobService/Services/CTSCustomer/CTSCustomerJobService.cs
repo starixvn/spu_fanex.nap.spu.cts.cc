@@ -384,12 +384,7 @@
 
         private void NotifyTelegramMessage(string message)
         {
-            var telegramService = new NotificationService();
-            string proxy = appSettings.EvironmentName == "PROD" ? "10.2.252.100:8801" : null;
-            telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
-               .SendWithoutDelay();
+            Utilities.NotifyTelegramMessage(message, "Monitoring - Insert New Customer", appSettings.EvironmentName, "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000");
         }
 
         #endregion Private Methods

@@ -39,14 +39,15 @@
             DailyProblemClassificationLastCategoryID = 88,
             DailyProblemClassificationLastCustID = 89,
             NewCTSCustomerClassificationLastCustID = 92,
-            RobotDetectionLastModifiedDate = 94,            
+            RobotDetectionLastModifiedDate = 94,
             AssociatedGroupLastGroupID = 98,
             AssociatedGroupLastCTSCustID = 99,
             SabaDangerLevel_LastHistoryID = 102,
             SabaDangerLevel_LastCategoryID = 103,
             SabaDangerLevel_LastCustID = 104,
-            DailyNormalClassificationBySportLastCategoryID = 114,        
-            DailyNormalClassificationBySportLastCustID = 115           
+            DailyNormalClassificationBySportLastCategoryID = 114,
+            DailyNormalClassificationBySportLastCustID = 115,
+            JobMonitor_RealtimeLastScannedTime = 115
         };
 
         public enum Category
@@ -59,7 +60,9 @@
             Probation = 206,
             VVIP = 213,
             TWRobot = 61,
-            AIRobot = 63
+            AIRobot = 63,
+            NormalInactive = 1001,
+            SmartInactive = 1002
         };
 
         public enum Reason
