@@ -1,20 +1,19 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
-    public class InsertMonitorMissingCustCriteria : NonQueryCommand
+    public class MonitorIncorrectCustCategoryInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }
 
-        [SpParam(SqlParamName = "ip_ScannedDate")]
-        public DateTime ScannedDate { get; set; }
+        [SpParam(SqlParamName = "ip_InvalidType")]
+        public int InvalidType { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_Monitoring_InsertMissingCust";
+            return "CTS_DC_CustClassification_Monitoring_InsertIncorrectCategory";
         }
 
         public override bool IsValid()

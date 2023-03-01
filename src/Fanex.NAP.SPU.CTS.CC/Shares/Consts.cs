@@ -16,6 +16,10 @@
 
         public const int StarixITId = 10278938;
 
+        public const string TelegramGroupId_Local = "-869606030";
+
+        public const string TelegramGroupId_Pro = "-869606030";
+
         public enum MatchMonitorQueryTypes
         {
             Service = 1,
@@ -27,7 +31,7 @@
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
-            InsertNewCustomerMonitoring = 67,
+            JobMonitor_InsertNewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastTransSec = 77,
             TWGroupBetting_SkipTransCount = 78,
@@ -185,6 +189,13 @@
         {
             Category = 1,
             Reason = 2,
+        };
+
+        public enum JobMonitorType
+        {
+            NewCustomerNULLCategory = 1,
+            UnavailableNewCustomer = 2,
+            NotReactiveCategory = 3,
         };
     }
 }

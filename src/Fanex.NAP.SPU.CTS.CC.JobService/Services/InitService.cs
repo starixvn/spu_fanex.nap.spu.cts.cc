@@ -36,6 +36,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
+    using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
 
     public static class InitService
     {
@@ -85,7 +86,9 @@
 
             RegisterAssociatedGroupMonitor(services);
 
-            RegisterJobMonitor(services);
+            RegisterClassificationJobMonitor(services);
+
+            RegisterCustomerJobMonitor(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -258,11 +261,18 @@
             services.AddSingleton<IAssociatedGroupMonitorJobService, AssociatedGroupMonitorJobService>();
         }
 
-        private static void RegisterJobMonitor(this IServiceCollection services)
+        private static void RegisterClassificationJobMonitor(this IServiceCollection services)
         {
-            services.AddSingleton<IClassificationJobMonitorService, ClassificationJobMonitorService>();
+            services.AddSingleton<IClassificationJobMonitorJobService, ClassificationJobMonitorJobService>();
             services.AddSingleton<IClassificationJobMonitorDataAccess, ClassificationJobMonitorDataAccess>();
-            services.AddSingleton<IClassificationJobMonitorServices, ClassificationJobMonitorServices>();
+            services.AddSingleton<IClassificationJobMonitorService, ClassificationJobMonitorService>();
+        }
+
+        private static void RegisterCustomerJobMonitor(this IServiceCollection services)
+        {
+            services.AddSingleton<ICustomerJobMonitorJobService, CustomerJobMonitorJobService>();
+            services.AddSingleton<ICustomerJobMonitorService, CustomerJobMonitorService>();
+            services.AddSingleton<ICustomerJobMonitorDataAccess, CustomerJobMonitorDataAccess>();
         }
     }
 }

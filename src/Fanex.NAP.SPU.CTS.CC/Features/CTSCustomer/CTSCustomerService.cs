@@ -55,14 +55,6 @@
 
         IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
 
-        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList);
-
-        void InsertMonitorMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
-
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
         IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs);
@@ -177,16 +169,6 @@
             }
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
         private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBModel> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
         {
             if (customer != null && customer.Any())
@@ -235,24 +217,6 @@
         }
 
         #endregion Insert New Customers
-
-        #region Monitor Insert New Customer
-
-         public void InsertMonitorMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-
-            dataAccess.InsertMonitorMissingCust(customerJson, scannedDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-
-            return dataAccess.CompareCustomerDataForMonitor(customerJson);
-        }
-
-        #endregion Monitor Insert New Customer
 
         #region Update Customers Info
 

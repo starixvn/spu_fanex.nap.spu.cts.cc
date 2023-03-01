@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using System;
@@ -6,7 +6,7 @@
 
     public class InsertMissingCustomerModel
     {
-        public IEnumerable<CustomerMainDBModel> MissingCustomers { get; set; }
+        public IEnumerable<MissingCustomerCompareEntity> MissingCustomers { get; set; }
 
         public IEnumerable<CustomerMainDBModel> CustomerInfo { get; set; }
 

@@ -7,8 +7,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.Shares;
-    using Fanex.NAP.SPU.Notification.Services;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -24,8 +22,6 @@
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
         Task<bool> UpdateUsername2(int batchSize);
-
-        Task<bool> MonitorMissingCustomer(int batchSize);
 
         Task<bool> InsertReactivatedCustomers();
 
@@ -163,99 +159,7 @@
 
         #region MonitorMissingCustomer
 
-        public Task<bool> MonitorMissingCustomer(int batchSize)
-        {
-            try
-            {
-                var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
-                var isSuccess = true;
-                var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.InsertNewCustomerMonitoring);
-                var toDate = fromDate?.AddHours(2);
-
-                if (fromDate != null && toDate <= DateTime.Now.AddHours(-0.5))
-                {
-                    var customers = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate.Value, toDate.Value).ToList();
-                    customers.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate.Value, toDate.Value));
-
-                    if (customers != null && customers.Any())
-                    {
-                        var customerChunks = customers.Chunk(batchSize);
-
-                        foreach (var customerBatch in customerChunks)
-                        {
-                            var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(customerBatch);
-
-                            isSuccess = InsertMissingCustomer(new InsertMissingCustomerModel
-                            {
-                                CustomerInfo = customerBatch,
-                                MissingCustomers = missingCusts,
-                                IsAutoInsertMissing = isAutoInsertMissing,
-                                ScannedTimeFrom = fromDate.Value,
-                                ScannedTimeTo = toDate.Value
-                            });
-
-                            if (!isSuccess)
-                            {
-                                return Task.FromResult(isSuccess);
-                            }
-                        }
-                    }
-
-                    systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.InsertNewCustomerMonitoring);
-                }
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-
-                return Task.FromResult(false);
-            }
-        }
-
-        private bool InsertMissingCustomer(InsertMissingCustomerModel parameters)
-        {
-            if (parameters.MissingCustomers.Any())
-            {
-                var message = $"Scan from {parameters.ScannedTimeFrom:dd/MM/yyyy HH:mm:ss} to {parameters.ScannedTimeTo:dd/MM/yyyy HH:mm:ss} \n" +
-                $"{parameters.MissingCustomers.Count()} missing customers";
-
-                NotifyTelegramMessage(message);
-
-                if (parameters.IsAutoInsertMissing)
-                {
-                    var data = new InsertCustomerViewModel
-                    {
-                        CustomerInfos = parameters.CustomerInfo.Where(c => parameters.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
-                                                               && parameters.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID))?.ToList()
-                    };
-
-                    return ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
-                    {
-                        InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                        ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                        IsInsertMissingCust = true,
-                        InsertVIPURL = appSettings.InsertVIPURL,
-                        InsertBAURL = appSettings.InsertBAURL,
-                        serviceName = "MonitorInsertNewCustomer"
-                    });
-                }
-                else
-                {
-                    ctscustomerService.InsertMonitorMissingCust(parameters.MissingCustomers, parameters.ScannedTimeTo);
-                }
-            }
-
-            return true;
-        }
+     
 
         #endregion MonitorMissingCustomer
 
@@ -380,11 +284,6 @@
                 IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,
                 ServiceName = serviceName
             });
-        }
-
-        private void NotifyTelegramMessage(string message)
-        {
-            Utilities.NotifyTelegramMessage(message, "Monitoring - Insert New Customer", appSettings.EvironmentName, "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000");
         }
 
         #endregion Private Methods
