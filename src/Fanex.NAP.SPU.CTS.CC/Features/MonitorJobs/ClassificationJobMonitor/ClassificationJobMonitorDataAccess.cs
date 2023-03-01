@@ -7,7 +7,9 @@
 
     public interface IClassificationJobMonitorDataAccess
     {
-        IEnumerable<long> GetRealtimeCustomerNewPlaceBet(DateTime fromScannedTime, DateTime toScannedTime);
+        IEnumerable<long> GetRealtimeCustomerPlaceNewBet(DateTime fromScannedTime, DateTime toScannedTime);
+
+        void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime);
 
         IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds);
 
@@ -23,7 +25,7 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<long> GetRealtimeCustomerNewPlaceBet(DateTime fromScannedTime, DateTime toScannedTime)
+        public IEnumerable<long> GetRealtimeCustomerPlaceNewBet(DateTime fromScannedTime, DateTime toScannedTime)
         {
             var criteria = new RealtimeCustomerNewPlaceBetGetCriteria
             {
@@ -32,6 +34,17 @@
             };
 
             return repository.Fetch<long>(criteria);
+        }
+
+        public void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime)
+        {
+            var criteria = new RealtimeCustomerNewPlaceBetClearCriteria
+            {
+                FromScannedTime = fromScannedTime,
+                ToScannedTime = toScannedTime
+            };
+
+            repository.Execute(criteria);
         }
 
         public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds)

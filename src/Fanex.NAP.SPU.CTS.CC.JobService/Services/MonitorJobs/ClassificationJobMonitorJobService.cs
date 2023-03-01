@@ -45,7 +45,7 @@
 
                 if (fromScannedTime != null && toScannedTime <= DateTime.Now.AddMinutes(-60))
                 {
-                    var custIds = classificationJobMonitorService.GetCustomerGeneralCategoryHasChangeForRunRealtime(fromScannedTime.Value, toScannedTime.Value);
+                    var custIds = classificationJobMonitorService.GetRealtimeCustomerPlaceNewBet(fromScannedTime.Value, toScannedTime.Value);
 
                     if (custIds != null && custIds.Any())
                     {
@@ -54,6 +54,8 @@
                         classificationJobMonitorService.CheckRealtimeInactiveCategory(custCategory)
                                                        .InsertMonitorInvalidCustomerCategory()
                                                        .NotifyTelegram(appSettings.EvironmentName, fromScannedTime.Value, toScannedTime.Value);
+
+                        classificationJobMonitorService.ClearRealtimeCustomerPlaceNewBets(fromScannedTime.Value, toScannedTime.Value);
                     }
 
                     systemParameterServices.UpdateTimingExecution(toScannedTime.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_RealtimeLastScannedTime);

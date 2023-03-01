@@ -13,7 +13,9 @@
     {
         IClassificationJobMonitorService Start();
 
-        IEnumerable<long> GetCustomerGeneralCategoryHasChangeForRunRealtime(DateTime fromScannedTime, DateTime toScannedTime);
+        IEnumerable<long> GetRealtimeCustomerPlaceNewBet(DateTime fromScannedTime, DateTime toScannedTime);
+
+        void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime);
 
         IClassificationJobMonitorService CheckRealtimeInactiveCategory(IEnumerable<CustomerCategoriesMonitorEntity> custCategory);
 
@@ -48,9 +50,14 @@
             return this;
         }
 
-        public IEnumerable<long> GetCustomerGeneralCategoryHasChangeForRunRealtime(DateTime fromScannedTime, DateTime toScannedTime)
+        public IEnumerable<long> GetRealtimeCustomerPlaceNewBet(DateTime fromScannedTime, DateTime toScannedTime)
         {
-            return classificationJobMonitorDataAccess.GetRealtimeCustomerNewPlaceBet(fromScannedTime, toScannedTime);
+            return classificationJobMonitorDataAccess.GetRealtimeCustomerPlaceNewBet(fromScannedTime, toScannedTime);
+        }
+
+        public void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime)
+        {
+            classificationJobMonitorDataAccess.ClearRealtimeCustomerPlaceNewBets(fromScannedTime, toScannedTime);
         }
 
         public IClassificationJobMonitorService CheckRealtimeInactiveCategory(IEnumerable<CustomerCategoriesMonitorEntity> custCategory)

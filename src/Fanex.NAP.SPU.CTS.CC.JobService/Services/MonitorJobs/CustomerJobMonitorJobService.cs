@@ -159,7 +159,7 @@
         {
             if (newCustomers.MissingCustomers.Any())
             {
-                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
+                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1 && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
                                                                                   && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
                 if (custToCheckCategory.Any())
                 {
