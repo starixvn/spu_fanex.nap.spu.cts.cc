@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_Monitoring_CompareData";
+            return "CTS_DC_Monitoring_CheckMissingCustomer";
         }
 
         public override bool IsValid()

@@ -87,13 +87,6 @@
 		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" DbName="MySQL.MASTER.CTS_Archive.ctsServiceAdmin" />
 	</Function>
 
-	<Function Name="MonitorInsertNewCTSCustomer">
-		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600"/>
-		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600"/>
-		<Setting Key="CTS_DC_CustInfo_Monitoring_CompareData" SpName="CTS_DC_CustInfo_Monitoring_CompareData" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustInfo_Monitoring_InsertMissingCust" SpName="CTS_DC_CustInfo_Monitoring_InsertMissingCust" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	</Function>
-
 	<Function Name="InsertReactivatedCustomer">
 		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
 		<Setting Key="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" SpName="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -183,8 +176,15 @@
 		<Setting Key="CTS_DC_AssociatedGroup_Account_Add" SpName="CTS_DC_AssociatedGroup_Account_Add" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_AssociatedGroup_Scan" SpName="CTS_DC_AssociatedGroup_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
-	
-	<Function name="MonitorJob">
-		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+
+	<Function Name="MonitorJob">
+		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600"/>
+		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
+		<Setting Key="CTS_DC_Monitoring_CheckMissingCustomer" SpName="CTS_DC_Monitoring_CheckMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600"/>
+		<Setting Key="CTS_DC_Monitoring_InsertMissingCustomer" SpName="CTS_DC_Monitoring_InsertMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_Monitoring_GetCategoryByCustIDs" SpName="CTS_DC_Monitoring_GetCategoryByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_InsertIncorrectCategory" SpName="CTS_DC_Monitoring_InsertIncorrectCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
+
+		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600"/>
 	</Function>
 </Functions>

@@ -14,7 +14,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_Monitoring_InsertMissingCust";
+            return "CTS_DC_Monitoring_InsertMissingCustomer";
         }
 
         public override bool IsValid()

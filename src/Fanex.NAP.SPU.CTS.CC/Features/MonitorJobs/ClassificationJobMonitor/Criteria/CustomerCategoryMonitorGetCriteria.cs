@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Monitor_GetCategoryIDs";
+            return "CTS_DC_Monitoring_GetCategoryByCustIDs";
         }
 
         public override bool IsValid()

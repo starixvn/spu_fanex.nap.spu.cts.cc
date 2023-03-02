@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_Monitoring_InsertIncorrectCategory";
+            return "CTS_DC_Monitoring_InsertIncorrectCategory";
         }
 
         public override bool IsValid()
