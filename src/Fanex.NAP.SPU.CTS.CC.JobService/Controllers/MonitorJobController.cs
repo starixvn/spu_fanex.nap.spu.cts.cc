@@ -29,9 +29,9 @@
         }
 
         [HttpPost("MonitorRealtimeInactiveCategory")]
-        public async Task<bool> MonitorRealtimeInactiveCategory()
+        public async Task<bool> MonitorRealtimeInactiveCategory([FromForm] int batchSize)
         {
-            return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory();
+            return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory(batchSize);
         }
     }
 }

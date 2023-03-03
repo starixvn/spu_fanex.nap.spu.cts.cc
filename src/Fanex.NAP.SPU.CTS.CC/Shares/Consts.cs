@@ -16,9 +16,9 @@
 
         public const int StarixITId = 10278938;
 
-        public const string TelegramGroupId_Local = "-869606030";
+        public const string Telegram_GroupId_Local = "-869606030";
 
-        public const string TelegramGroupId_Pro = "-869606030";
+        public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
 
         public enum MatchMonitorQueryTypes
         {
@@ -193,9 +193,10 @@
 
         public enum JobMonitorType
         {
-            NewCustomerNULLCategory = 1,
-            UnavailableNewCustomer = 2,
-            NotReactiveCategory = 3,
+            NewCustomer_NullCategory = 1,
+            Realtime_NewPlaceBetInactiveCategory = 2,
+            Realtime_NewPlaceBetNullCategory = 3,
+            NewCustomer_Missing = 4,
         };
     }
 }

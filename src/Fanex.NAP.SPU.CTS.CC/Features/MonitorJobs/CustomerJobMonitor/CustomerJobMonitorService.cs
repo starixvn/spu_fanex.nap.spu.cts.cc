@@ -1,10 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorService
     {
@@ -12,9 +15,13 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
-        IEnumerable<MissingCustomerCompareEntity> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList);
+        IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<CustomerMainDBModel> customerList);
 
-        void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate);
+        void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize);
+
+        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize);
+
+        void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, JobMonitorType type, int batchSize);
     }
 
     public class CustomerJobMonitorService : ICustomerJobMonitorService
@@ -24,7 +31,7 @@
         public CustomerJobMonitorService(
                 ICustomerJobMonitorDataAccess customerJobMonitorDataAccess)
         {
-            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;            
+            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
@@ -37,18 +44,60 @@
             return customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
-        public void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate)
+        public void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize)
         {
-            var customerJson = JsonConvert.SerializeObject(customerList);
+            if (customerList.Any())
+            {
+                var customerChunks = customerList.ToList().Chunk(batchSize);
 
-            customerJobMonitorDataAccess.InsertMonitorMissingCust(customerJson, scannedDate);
+                foreach (var custBatch in customerChunks)
+                {
+                    var customerJson = JsonConvert.SerializeObject(custBatch);
+
+                    customerJobMonitorDataAccess.InsertMonitorMissingCust(customerJson, scannedDate);
+                }
+            }
         }
 
-        public IEnumerable<MissingCustomerCompareEntity> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
+        public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<CustomerMainDBModel> customerList)
         {
             var customerJson = JsonConvert.SerializeObject(customerList);
 
-            return customerJobMonitorDataAccess.CompareCustomerDataForMonitor(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
+            return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
+        }
+
+        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize)
+        {
+            var custCategory = new List<CustomerCategoriesMonitorEntity>();
+
+            if (custIds.Any())
+            {
+                var custChunks = custIds.Distinct().Chunk(batchSize);
+
+                foreach (var custBatch in custChunks)
+                {
+                    var custToString = string.Join(',', custBatch);
+
+                    custCategory.AddRange(customerJobMonitorDataAccess.GetCustomerCategoriesToMonitor(custToString));
+                }
+            }
+
+            return custCategory;
+        }
+
+        public void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, JobMonitorType type, int batchSize)
+        {
+            if (customerList.Any())
+            {
+                var custChunks = customerList.Distinct().Chunk(batchSize);
+
+                foreach (var custBatch in custChunks)
+                {
+                    var customerJson = JsonConvert.SerializeObject(custBatch);
+
+                    customerJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, type);
+                }
+            }
         }
     }
 }

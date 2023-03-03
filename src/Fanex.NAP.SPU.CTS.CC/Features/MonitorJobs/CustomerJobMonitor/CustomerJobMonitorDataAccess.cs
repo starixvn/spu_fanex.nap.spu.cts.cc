@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using System;
     using System.Collections.Generic;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorDataAccess
     {
@@ -11,9 +13,13 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
 
-        IEnumerable<MissingCustomerCompareEntity> CompareCustomerDataForMonitor(string custDataJson);
+        IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson);
 
         void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate);
+
+        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds);
+
+        void InsertMonitorIncorrectCustCategory(string custDataJson, JobMonitorType type);
     }
 
     public class CustomerJobMonitorDataAccess : ICustomerJobMonitorDataAccess
@@ -47,9 +53,9 @@
             return repository.Fetch<CustomerMainDBModel>(criteria);
         }
 
-        public IEnumerable<MissingCustomerCompareEntity> CompareCustomerDataForMonitor(string custDataJson)
+        public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson)
         {
-            var criteria = new CompareCustomerDataForMonitorCriteria
+            var criteria = new MissingCustomerCheckCriteria
             {
                 CustomerListJson = custDataJson
             };
@@ -63,6 +69,27 @@
             {
                 CustomerListJson = custDataJson,
                 ScannedDate = scannedDate
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds)
+        {
+            var criteria = new CustomerCategoryMonitorGetCriteria()
+            {
+                CustIDs = custIds
+            };
+
+            return repository.Fetch<CustomerCategoriesMonitorEntity>(criteria);
+        }
+
+        public void InsertMonitorIncorrectCustCategory(string custDataJson, JobMonitorType type)
+        {
+            var criteria = new MonitorIncorrectCustCategoryInsertCriteria
+            {
+                CustomerListJson = custDataJson,
+                InvalidType = (int)type
             };
 
             repository.Execute(criteria);

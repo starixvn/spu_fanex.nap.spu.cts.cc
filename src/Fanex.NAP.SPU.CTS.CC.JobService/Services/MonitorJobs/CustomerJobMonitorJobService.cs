@@ -25,7 +25,6 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly ICustomerJobMonitorService customerJobMonitorService;
-        private readonly IClassificationJobMonitorService classificationJobMonitorService;
         private readonly ICTSCustomerService customerService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IAppSettings appSettings;
@@ -33,14 +32,12 @@
         public CustomerJobMonitorJobService(
             ISentryClient sentryClient,
             ICustomerJobMonitorService customerJobMonitorService,
-            IClassificationJobMonitorService classificationJobMonitorService,
             ICTSCustomerService customerService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.customerJobMonitorService = customerJobMonitorService;
-            this.classificationJobMonitorService = classificationJobMonitorService;
             this.customerService = customerService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
@@ -69,7 +66,7 @@
 
                         foreach (var customerBatch in customerChunks)
                         {
-                            missingCustomers.AddRange(customerJobMonitorService.CompareCustomerDataForMonitor(customerBatch));
+                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(customerBatch));
                         }
 
                         isSuccess = MissingCustomerProcess(new InsertMissingCustomerModel
@@ -79,7 +76,7 @@
                             IsAutoInsertMissing = isAutoInsertMissingCustomer,
                             ScannedTimeFrom = fromDate.Value,
                             ScannedTimeTo = toDate.Value
-                        });
+                        }, batchSize);
                     }
 
                     if (isSuccess)
@@ -103,24 +100,27 @@
             }
         }
 
-        public bool MissingCustomerProcess(InsertMissingCustomerModel newCustomers)
+        public bool MissingCustomerProcess(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             bool isSuccess = true;
 
             if (newCustomers.MissingCustomers.Any())
             {
-                isSuccess = InsertMissingCustomer(newCustomers);
+                isSuccess = InsertMissingCustomer(newCustomers, batchSize);
+            }
 
-                if (isSuccess)
-                {
-                    InsertNullCategoryCustomer(newCustomers);
-                }
+            if (isSuccess)
+            {
+                InsertNullCategoryCustomer(newCustomers, batchSize);
             }
 
             return isSuccess;
         }
 
-        private bool InsertMissingCustomer(InsertMissingCustomerModel newCustomers)
+
+        #region Private Methods
+
+        private bool InsertMissingCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
             {
@@ -129,7 +129,7 @@
                     var data = new InsertCustomerViewModel
                     {
                         CustomerInfos = newCustomers.CustomerInfo.Where(c => newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
-                                                                        && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID))?.ToList()
+                                                                            && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID))?.ToList()
                     };
 
                     return customerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
@@ -146,16 +146,16 @@
                 }
                 else
                 {
-                    customerJobMonitorService.InsertMonitorMissingCust(newCustomers.MissingCustomers, newCustomers.ScannedTimeTo);
+                    customerJobMonitorService.InsertMonitorMissingCust(newCustomers.MissingCustomers, newCustomers.ScannedTimeTo, batchSize);
                 }
 
-                NotifyTelegramMessage(newCustomers.MissingCustomers.Select(c => c.CustID), JobMonitorType.UnavailableNewCustomer, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
+                NotifyTelegramMessage(newCustomers.MissingCustomers.Select(c => c.CustID), JobMonitorType.NewCustomer_Missing, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
             }
 
             return true;
         }
 
-        private void InsertNullCategoryCustomer(InsertMissingCustomerModel newCustomers)
+        private void InsertNullCategoryCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
             {
@@ -163,22 +163,22 @@
                                                                                   && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
                 if (custToCheckCategory.Any())
                 {
-                    var nullCategoryCustomers = GetNullCategoryCustomers(custToCheckCategory.Select(c => (long)c.CustID).Distinct());
+                    var nullCategory = GetNullCategoryCustomers(custToCheckCategory.Select(c => (long)c.CustID).Distinct(), batchSize);
 
-                    classificationJobMonitorService.InsertMonitorInvalidCustomerCategory(
-                                nullCategoryCustomers.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustId = c, CategoryID = null })
-                              , JobMonitorType.NewCustomerNULLCategory);
+                    customerJobMonitorService.InsertMonitorInvalidCustomerCategory(
+                            nullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustId = c, CategoryID = null }),
+                            JobMonitorType.NewCustomer_NullCategory, batchSize);
 
-                    NotifyTelegramMessage(nullCategoryCustomers, JobMonitorType.NewCustomerNULLCategory, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
+                    NotifyTelegramMessage(nullCategory, JobMonitorType.NewCustomer_NullCategory, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
                 }
             }
         }
 
-        private IEnumerable<long> GetNullCategoryCustomers(IEnumerable<long> custIds)
+        private IEnumerable<long> GetNullCategoryCustomers(IEnumerable<long> custIds, int batchSize)
         {
             if (custIds != null & custIds.Any())
             {
-                var custCategories = classificationJobMonitorService.GetCustomerCategoriesToMonitor(custIds);
+                var custCategories = customerJobMonitorService.GetCustomerCategoriesToMonitor(custIds, batchSize);
 
                 var nullCategories = custCategories.Where(c => c.CurrentCategoryID == null);
 
@@ -196,13 +196,13 @@
 
                 switch (type)
                 {
-                    case JobMonitorType.NewCustomerNULLCategory:
+                    case JobMonitorType.NewCustomer_NullCategory:
                         {
                             message = $"Please kindly check the following custid with category NULL - {{Total custid: {custIds.Distinct().Count()}}} - {string.Join(',', custIds.Distinct().Take(50))} - " +
                                       $"Scan from  \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to  \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
                             break;
                         }
-                    case JobMonitorType.UnavailableNewCustomer:
+                    case JobMonitorType.NewCustomer_Missing:
                         {
                             message = $"Please kindly check the following custid with not available on CTS - {{Total custid: {custIds.Distinct().Count()}}} - {string.Join(',', custIds.Distinct().Take(50))} - " +
                                       $"Scan from \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
@@ -210,8 +210,10 @@
                         }
                 }
 
-                Utilities.NotifyTelegramMessage(message, "Monitoring New Customer", appSettings.EvironmentName, "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", appSettings.EvironmentName == "LOCAL" ? TelegramGroupId_Local : TelegramGroupId_Pro);
+                Utilities.NotifyTelegramMessage(message, "Monitoring New Customer", appSettings.EvironmentName, appSettings.EvironmentName == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
             }
         }
+
+        #endregion
     }
 }

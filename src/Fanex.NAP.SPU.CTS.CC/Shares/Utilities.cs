@@ -116,12 +116,12 @@ namespace Fanex.NAP.SPU.CTS.Shares
             }
         }
 
-        public static void NotifyTelegramMessage(string message, string systemName, string environment, string token, string groupId)
+        public static void NotifyTelegramMessage(string message, string systemName, string environment, string groupId)
         {
             var telegramService = new NotificationService();
             string proxy = environment == "PROD" ? "10.2.252.100:8801" : null;
             telegramService
-               .Config(token, groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(systemName, DateTime.Now, environment, message))
                .SendWithoutDelay();
         }

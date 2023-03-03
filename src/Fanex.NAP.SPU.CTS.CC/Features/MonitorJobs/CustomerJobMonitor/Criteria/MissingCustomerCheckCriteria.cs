@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class CompareCustomerDataForMonitorCriteria : CriteriaBase
+    public class MissingCustomerCheckCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }

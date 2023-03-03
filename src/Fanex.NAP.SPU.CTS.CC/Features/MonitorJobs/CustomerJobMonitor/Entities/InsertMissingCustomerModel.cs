@@ -10,7 +10,7 @@
 
         public IEnumerable<CustomerMainDBModel> CustomerInfo { get; set; }
 
-        public bool IsAutoInsertMissing { get; set; } 
+        public bool IsAutoInsertMissing { get; set; }
 
         public DateTime ScannedTimeFrom { get; set; }
 

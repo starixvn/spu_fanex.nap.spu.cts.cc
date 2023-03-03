@@ -73,8 +73,8 @@
             var expectedResult = new List<MissingCustomerCompareEntity> { CreateSampleCustomerCompareModel() };
 
             var customerJson = JsonConvert.SerializeObject(inputData);
-            dataAccess.CompareCustomerDataForMonitor(customerJson).Returns(expectedResult);
-            var result = ctsCustomerService.CompareCustomerDataForMonitor(inputData);
+            dataAccess.CheckMissingCustomer(customerJson).Returns(expectedResult);
+            var result = ctsCustomerService.CheckMissingCustomer(inputData);
 
             result.Should().BeEquivalentTo(expectedResult);
         }

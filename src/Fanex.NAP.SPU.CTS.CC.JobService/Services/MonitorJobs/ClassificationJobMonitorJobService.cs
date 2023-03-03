@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -12,7 +11,7 @@
 
     public interface IClassificationJobMonitorJobService
     {
-        Task<bool> MonitorRealtimeInactiveCategory();
+        Task<bool> MonitorRealtimeInactiveCategory(int batchSize);
     }
 
     public class ClassificationJobMonitorJobService : IClassificationJobMonitorJobService
@@ -36,7 +35,7 @@
             this.serviceName = "ClassificationJobMonitor";
         }
 
-        public Task<bool> MonitorRealtimeInactiveCategory()
+        public Task<bool> MonitorRealtimeInactiveCategory(int batchSize)
         {
             try
             {
@@ -49,10 +48,10 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var custCategory = classificationJobMonitorService.GetCustomerCategoriesToMonitor(custIds);
+                        var custCategory = classificationJobMonitorService.GetCustomerCategoriesToMonitor(custIds, batchSize);
 
-                        classificationJobMonitorService.CheckRealtimeInactiveCategory(custCategory)
-                                                       .InsertMonitorInvalidCustomerCategory()
+                        classificationJobMonitorService.CheckRealtimeCustomerCategory(custCategory)
+                                                       .InsertMonitorInvalidCustomerCategory(batchSize)
                                                        .NotifyTelegram(appSettings.EvironmentName, fromScannedTime.Value, toScannedTime.Value);
 
                         classificationJobMonitorService.ClearRealtimeCustomerPlaceNewBets(fromScannedTime.Value, toScannedTime.Value);
