@@ -91,14 +91,14 @@
         {
             if (realtimeInactiveCategory.Any())
             {
-                var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustId = c.CustId, CategoryID = c.CurrentCategoryID });
+                var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
 
                 InsertMonitorInvalidCustomerCategory(inactiveCategory, JobMonitorType.Realtime_NewPlaceBetInactiveCategory, batchSize);
             }
 
             if (realtimeNullCategory.Any())
             {
-                var nullCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustId = c.CustId, CategoryID = c.CurrentCategoryID });
+                var nullCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
 
                 InsertMonitorInvalidCustomerCategory(nullCategory, JobMonitorType.Realtime_NewPlaceBetNullCategory, batchSize);
             }

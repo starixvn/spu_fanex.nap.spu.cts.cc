@@ -25,7 +25,7 @@
         [HttpPost("MonitorNewCustomer")]
         public async Task<bool> MonitorNewCustomer([FromForm] int batchSize)
         {
-            return await customerJobMonitorService.MonitorNewCustomerJob(batchSize);
+            return await customerJobMonitorService.Process(batchSize);
         }
 
         [HttpPost("MonitorRealtimeInactiveCategory")]

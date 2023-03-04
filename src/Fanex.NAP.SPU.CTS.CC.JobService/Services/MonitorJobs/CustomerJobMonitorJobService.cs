@@ -17,7 +17,7 @@
 
     public interface ICustomerJobMonitorJobService
     {
-        Task<bool> MonitorNewCustomerJob(int batchSize);
+        Task<bool> Process(int batchSize);
     }
 
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
@@ -44,7 +44,7 @@
             this.serviceName = "CustomerJobMonitor";
         }
 
-        public Task<bool> MonitorNewCustomerJob(int batchSize)
+        public Task<bool> Process(int batchSize)
         {
             try
             {
@@ -69,7 +69,7 @@
                             missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(customerBatch));
                         }
 
-                        isSuccess = MissingCustomerProcess(new InsertMissingCustomerModel
+                        isSuccess = MonitoringNewCustomers(new InsertMissingCustomerModel
                         {
                             CustomerInfo = customers,
                             MissingCustomers = missingCustomers,
@@ -100,7 +100,7 @@
             }
         }
 
-        public bool MissingCustomerProcess(InsertMissingCustomerModel newCustomers, int batchSize)
+        public bool MonitoringNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             bool isSuccess = true;
 
@@ -157,7 +157,7 @@
 
         private void InsertNullCategoryCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
         {
-            if (newCustomers.MissingCustomers.Any())
+            if (newCustomers.CustomerInfo.Any())
             {
                 var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1 && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
                                                                                   && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
@@ -166,8 +166,8 @@
                     var nullCategory = GetNullCategoryCustomers(custToCheckCategory.Select(c => (long)c.CustID).Distinct(), batchSize);
 
                     customerJobMonitorService.InsertMonitorInvalidCustomerCategory(
-                            nullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustId = c, CategoryID = null }),
-                            JobMonitorType.NewCustomer_NullCategory, batchSize);
+                            nullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c, CategoryID = null }),
+                            newCustomers.ScannedTimeTo, JobMonitorType.NewCustomer_NullCategory, batchSize);
 
                     NotifyTelegramMessage(nullCategory, JobMonitorType.NewCustomer_NullCategory, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
                 }

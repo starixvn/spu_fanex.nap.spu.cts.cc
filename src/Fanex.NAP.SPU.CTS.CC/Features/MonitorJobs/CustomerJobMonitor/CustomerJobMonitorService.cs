@@ -21,7 +21,7 @@
 
         IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize);
 
-        void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, JobMonitorType type, int batchSize);
+        void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedDate, JobMonitorType type, int batchSize);
     }
 
     public class CustomerJobMonitorService : ICustomerJobMonitorService
@@ -31,7 +31,7 @@
         public CustomerJobMonitorService(
                 ICustomerJobMonitorDataAccess customerJobMonitorDataAccess)
         {
-            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;
+            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;            
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
@@ -66,6 +66,7 @@
             return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
         }
 
+
         public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize)
         {
             var custCategory = new List<CustomerCategoriesMonitorEntity>();
@@ -85,7 +86,7 @@
             return custCategory;
         }
 
-        public void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, JobMonitorType type, int batchSize)
+        public void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedDate, JobMonitorType type, int batchSize)
         {
             if (customerList.Any())
             {
@@ -95,7 +96,7 @@
                 {
                     var customerJson = JsonConvert.SerializeObject(custBatch);
 
-                    customerJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, type);
+                    customerJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedDate, type);
                 }
             }
         }

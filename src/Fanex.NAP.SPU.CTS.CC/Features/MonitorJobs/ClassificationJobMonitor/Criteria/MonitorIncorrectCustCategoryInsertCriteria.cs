@@ -2,6 +2,7 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class MonitorIncorrectCustCategoryInsertCriteria : NonQueryCommand
     {
@@ -9,7 +10,10 @@
         public string CustomerListJson { get; set; }
 
         [SpParam(SqlParamName = "ip_InvalidType")]
-        public int InvalidType { get; set; }
+        public int InvalidType { get; set; }        
+        
+        [SpParam(SqlParamName = "ip_ScannedTime")]
+        public DateTime ScannedTime { get; set; }
 
         public override string GetSettingKey()
         {
