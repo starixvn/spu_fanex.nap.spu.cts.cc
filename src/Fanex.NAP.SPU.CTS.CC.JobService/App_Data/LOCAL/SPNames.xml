@@ -182,7 +182,7 @@
 		<Setting Key="CTS_DC_Monitoring_CheckMissingCustomer" SpName="CTS_DC_Monitoring_CheckMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Monitoring_InsertMissingCustomer" SpName="CTS_DC_Monitoring_InsertMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_Monitoring_GetCategoryByCustIDs" SpName="CTS_DC_Monitoring_GetCategoryByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_Monitoring_InsertIncorrectCategory" SpName="CTS_DC_Monitoring_InsertIncorrectCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_InsertIncorrectCategory" SpName="CTS_DC_Monitoring_InsertIncorrectCategory" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 
 		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_ClearChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_ClearChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
