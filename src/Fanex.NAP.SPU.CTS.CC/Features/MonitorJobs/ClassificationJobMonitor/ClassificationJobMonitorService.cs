@@ -18,7 +18,7 @@
 
         IClassificationJobMonitorService CheckRealtimeCustomerCategory(IEnumerable<CustomerCategoriesMonitorEntity> custCategory);
 
-        IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize);
+        IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize , DateTime scannedTime);
 
         IClassificationJobMonitorService NotifyTelegram(string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo);
 
@@ -87,20 +87,20 @@
             return this;
         }
 
-        public IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize)
+        public IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize, DateTime scannedTime)
         {
             if (realtimeInactiveCategory.Any())
             {
                 var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
 
-                InsertMonitorInvalidCustomerCategory(inactiveCategory, JobMonitorType.Realtime_NewPlaceBetInactiveCategory, batchSize);
+                InsertMonitorInvalidCustomerCategory(inactiveCategory, scannedTime, JobMonitorType.Realtime_NewPlaceBetInactiveCategory, batchSize);
             }
 
             if (realtimeNullCategory.Any())
             {
-                var nullCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
+                var nullCategory = realtimeNullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
 
-                InsertMonitorInvalidCustomerCategory(nullCategory, JobMonitorType.Realtime_NewPlaceBetNullCategory, batchSize);
+                InsertMonitorInvalidCustomerCategory(nullCategory, scannedTime, JobMonitorType.Realtime_NewPlaceBetNullCategory, batchSize);
             }
 
             return this;
@@ -125,7 +125,7 @@
             return custCategory;
         }
 
-        private void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, JobMonitorType type, int batchSize)
+        private void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedTime, JobMonitorType type, int batchSize)
         {
             if (customerList.Any())
             {
@@ -135,7 +135,7 @@
                 {
                     var customerJson = JsonConvert.SerializeObject(custBatch);
 
-                    classificationJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, type);
+                    classificationJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedTime, type);
                 }
             }
         }

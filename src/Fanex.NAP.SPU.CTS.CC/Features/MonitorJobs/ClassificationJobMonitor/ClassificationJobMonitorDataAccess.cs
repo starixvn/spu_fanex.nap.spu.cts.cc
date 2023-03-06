@@ -13,7 +13,7 @@
 
         IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds);
 
-        void InsertMonitorIncorrectCustCategory(string custDataJson, JobMonitorType type);
+        void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type);
     }
 
     public class ClassificationJobMonitorDataAccess : IClassificationJobMonitorDataAccess
@@ -57,11 +57,12 @@
             return repository.Fetch<CustomerCategoriesMonitorEntity>(criteria);
         }
 
-        public void InsertMonitorIncorrectCustCategory(string custDataJson, JobMonitorType type)
+        public void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type)
         {
             var criteria = new MonitorIncorrectCustCategoryInsertCriteria
             {
                 CustomerListJson = custDataJson,
+                ScannedTime =  scannedTime,
                 InvalidType = (int)type
             };
 
