@@ -36,12 +36,12 @@
 
         public MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
         {
-            return customerJobMonitorDataAccess.GetCustInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustID);
+            return (lastScannedCustID != 0) ? customerJobMonitorDataAccess.GetCustInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustID) : new MonitoringNewCustomerViewModel();
         }
 
         public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID)
         {
-            return customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustSubID);
+            return (lastScannedCustSubID != 0) ? customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustSubID) : new MonitoringNewCustomerViewModel();
         }
 
         public void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize)

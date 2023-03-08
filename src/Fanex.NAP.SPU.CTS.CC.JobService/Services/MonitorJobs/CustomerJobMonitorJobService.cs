@@ -2,11 +2,9 @@
 {
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -25,20 +23,17 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly ICustomerJobMonitorService customerJobMonitorService;
-        private readonly ICTSCustomerService customerService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IAppSettings appSettings;
 
         public CustomerJobMonitorJobService(
             ISentryClient sentryClient,
             ICustomerJobMonitorService customerJobMonitorService,
-            ICTSCustomerService customerService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.customerJobMonitorService = customerJobMonitorService;
-            this.customerService = customerService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
             this.serviceName = "CustomerJobMonitor";
@@ -66,6 +61,9 @@
 
                         if (customers != null && customers.NewCustomers.Any())
                         {
+                            lastScannedCustID = customers.MaxScannedCustomerID ?? 0;
+                            lastScannedCustSubID = custSubs.MaxScannedCustomerID ?? 0;
+
                             var missingCustomers = new List<MissingCustomerCompareEntity>();
 
                             var customerChunks = customers.NewCustomers.Chunk(batchSize);
