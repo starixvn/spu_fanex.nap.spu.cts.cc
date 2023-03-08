@@ -51,45 +51,33 @@
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
-                    bool isContinue = true; 
+                    var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
+                    var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
+                    var customers = mainCusts.NewCustomers?.ToList().Concat(custSubs.NewCustomers);
 
-                    while(isContinue && isSuccess)
+                    if (customers != null && customers.Any())
                     {
-                        var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
-                        var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
-                        var customers = mainCusts.NewCustomers?.ToList().Concat(custSubs.NewCustomers);
+                        var missingCustomers = new List<MissingCustomerCompareEntity>();
 
-                        if (customers != null && customers.Any())
+                        var customerChunks = customers.Chunk(batchSize);
+
+                        foreach (var custBatch in customerChunks)
                         {
-                            lastScannedCustID = mainCusts.MaxScannedCustomerID ?? 0;
-                            lastScannedCustSubID = custSubs.MaxScannedCustomerID ?? 0;
-
-                            var missingCustomers = new List<MissingCustomerCompareEntity>();
-
-                            var customerChunks = customers.Chunk(batchSize);
-
-                            foreach (var custBatch in customerChunks)
-                            {
-                                missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(custBatch));
-                            }
-
-                            isSuccess = MonitoringNewCustomers(new InsertMissingCustomerModel
-                            {
-                                CustomerInfo = customers,
-                                MissingCustomers = missingCustomers,
-                                ScannedTimeFrom = fromDate.Value,
-                                ScannedTimeTo = toDate.Value
-                            }, batchSize);
-
-                            UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
+                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(custBatch));
                         }
-                        else
+
+                        MonitoringNewCustomers(new InsertMissingCustomerModel
                         {
-                            isContinue = false;
-                        }
+                            CustomerInfo = customers,
+                            MissingCustomers = missingCustomers,
+                            ScannedTimeFrom = fromDate.Value,
+                            ScannedTimeTo = toDate.Value
+                        }, batchSize);
+
+                        UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
                     }    
 
-                    if (isSuccess)
+                    if (customers != null && !customers.Any())
                     {
                         systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                     }
@@ -110,27 +98,20 @@
             }
         }
 
-        public bool MonitoringNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
+        public void MonitoringNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
         {
-            bool isSuccess = true;
-
             if (newCustomers.MissingCustomers.Any())
             {
-                isSuccess = InsertMissingCustomer(newCustomers, batchSize);
+                InsertMissingCustomer(newCustomers, batchSize);
             }
 
-            if (isSuccess)
-            {
-                InsertNullCategoryCustomer(newCustomers, batchSize);
-            }
-
-            return isSuccess;
+            InsertNullCategoryCustomer(newCustomers, batchSize);
         }
 
 
         #region Private Methods
 
-        private bool InsertMissingCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
+        private void InsertMissingCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
             {
@@ -138,8 +119,6 @@
 
                 NotifyTelegramMessage(newCustomers.MissingCustomers.Select(c => c.CustID), JobMonitorType.NewCustomer_Missing, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
             }
-
-            return true;
         }
 
         private void InsertNullCategoryCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
