@@ -11,11 +11,11 @@
 
     public interface ICustomerJobMonitorService
     {
-        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+        MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+        MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID);
 
-        IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<CustomerMainDBModel> customerList);
+        IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList);
 
         void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize);
 
@@ -34,14 +34,14 @@
             this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;            
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
         {
-            return customerJobMonitorDataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return customerJobMonitorDataAccess.GetCustInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustID);
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID)
         {
-            return customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustSubID);
         }
 
         public void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize)
@@ -59,7 +59,7 @@
             }
         }
 
-        public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<CustomerMainDBModel> customerList)
+        public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList)
         {
             var customerJson = JsonConvert.SerializeObject(customerList);
 

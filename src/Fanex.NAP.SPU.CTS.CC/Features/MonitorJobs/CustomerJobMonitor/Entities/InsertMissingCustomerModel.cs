@@ -8,9 +8,7 @@
     {
         public IEnumerable<MissingCustomerCompareEntity> MissingCustomers { get; set; }
 
-        public IEnumerable<CustomerMainDBModel> CustomerInfo { get; set; }
-
-        public bool IsAutoInsertMissing { get; set; }
+        public IEnumerable<MonitoringNewCustomerEntity> CustomerInfo { get; set; }
 
         public DateTime ScannedTimeFrom { get; set; }
 

@@ -1,17 +1,18 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorDataAccess
     {
-        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+        MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
+        MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID);
 
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson);
 
@@ -31,26 +32,46 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
         {
             var criteria = new GetCustomerInfoFromMainDBForMonitorCriteria
             {
-                FromDate = fromDate,
-                ToDate = toDate
+                RowSize = batchSize,
+                MaxScannedDate = toDate,
+                LastCustId = lastScannedCustID
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria);
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var maxScannedCustID = result?.Read<long?>();
+            var newCustomers = result?.Read<MonitoringNewCustomerEntity>();
+
+            return new MonitoringNewCustomerViewModel()
+            {
+                NewCustomers = newCustomers ?? Enumerable.Empty<MonitoringNewCustomerEntity>(),
+                MaxScannedCustomerID = maxScannedCustID?.FirstOrDefault()
+            };
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
+        public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
         {
             var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
             {
-                FromDate = fromDate,
-                ToDate = toDate
+                RowSize = batchSize,
+                MaxScannedDate = toDate,
+                LastCustSubId = lastScannedCustID
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria);
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var maxScannedCustID = result?.Read<long?>();
+            var newCustomers = result?.Read<MonitoringNewCustomerEntity>();
+
+            return new MonitoringNewCustomerViewModel()
+            {
+                NewCustomers = newCustomers ?? Enumerable.Empty<MonitoringNewCustomerEntity>(),
+                MaxScannedCustomerID = maxScannedCustID?.FirstOrDefault()
+            };
         }
 
         public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson)

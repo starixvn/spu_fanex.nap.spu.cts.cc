@@ -17,7 +17,7 @@
 
     public interface ICustomerJobMonitorJobService
     {
-        Task<bool> Process(int batchSize);
+        Task<bool> Process(int batchSize, int externalSize);
     }
 
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
@@ -44,44 +44,56 @@
             this.serviceName = "CustomerJobMonitor";
         }
 
-        public Task<bool> Process(int batchSize)
+        public Task<bool> Process(int batchSize, int externalSize)
         {
             try
             {
-                var isAutoInsertMissingCustomer = appSettings.IsAutoInsertMissingCustomer;
-                var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.JobMonitor_InsertNewCustomerLastScannedTime);
+                var lastScannedCustID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                var lastScannedCustSubID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                 var toDate = fromDate?.AddMinutes(60);
                 bool isSuccess = true;
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
-                    var customers = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(fromDate.Value, toDate.Value);
-                    customers?.ToList().AddRange(customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(fromDate.Value, toDate.Value));
+                    bool isContinue = true; 
 
-                    if (customers != null && customers.Any())
+                    while(isContinue && isSuccess)
                     {
-                        var missingCustomers = new List<MissingCustomerCompareEntity>();
+                        var customers = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
+                        var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
+                        customers.NewCustomers?.ToList().AddRange(custSubs.NewCustomers);
 
-                        var customerChunks = customers.Chunk(batchSize);
-
-                        foreach (var customerBatch in customerChunks)
+                        if (customers != null && customers.NewCustomers.Any())
                         {
-                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(customerBatch));
+                            var missingCustomers = new List<MissingCustomerCompareEntity>();
+
+                            var customerChunks = customers.NewCustomers.Chunk(batchSize);
+
+                            foreach (var customerBatch in customerChunks)
+                            {
+                                missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(customerBatch));
+                            }
+
+                            isSuccess = MonitoringNewCustomers(new InsertMissingCustomerModel
+                            {
+                                CustomerInfo = customers.NewCustomers,
+                                MissingCustomers = missingCustomers,
+                                ScannedTimeFrom = fromDate.Value,
+                                ScannedTimeTo = toDate.Value
+                            }, batchSize);
+
+                            UpdateLastScanCustomer(customers.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
                         }
-
-                        isSuccess = MonitoringNewCustomers(new InsertMissingCustomerModel
+                        else
                         {
-                            CustomerInfo = customers,
-                            MissingCustomers = missingCustomers,
-                            IsAutoInsertMissing = isAutoInsertMissingCustomer,
-                            ScannedTimeFrom = fromDate.Value,
-                            ScannedTimeTo = toDate.Value
-                        }, batchSize);
-                    }
+                            isContinue = false;
+                        }
+                    }    
 
                     if (isSuccess)
                     {
-                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_InsertNewCustomerLastScannedTime);
+                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                     }
                 }
 
@@ -124,30 +136,7 @@
         {
             if (newCustomers.MissingCustomers.Any())
             {
-                if (newCustomers.IsAutoInsertMissing)
-                {
-                    var data = new InsertCustomerViewModel
-                    {
-                        CustomerInfos = newCustomers.CustomerInfo.Where(c => newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
-                                                                            && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID))?.ToList()
-                    };
-
-                    return customerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
-                    {
-                        InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                        ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                        IsInsertMissingCust = true,
-                        InsertVIPURL = appSettings.InsertVIPURL,
-                        InsertBAURL = appSettings.InsertBAURL,
-                        serviceName = serviceName
-                    });
-                }
-                else
-                {
-                    customerJobMonitorService.InsertMonitorMissingCust(newCustomers.MissingCustomers, newCustomers.ScannedTimeTo, batchSize);
-                }
+                customerJobMonitorService.InsertMonitorMissingCust(newCustomers.MissingCustomers, newCustomers.ScannedTimeTo, batchSize);
 
                 NotifyTelegramMessage(newCustomers.MissingCustomers.Select(c => c.CustID), JobMonitorType.NewCustomer_Missing, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
             }
@@ -186,6 +175,19 @@
             }
 
             return Enumerable.Empty<long>();
+        }
+
+        private void UpdateLastScanCustomer(long? maxScannedCustId, long? maxScannedCustSubId)
+        {
+            if (maxScannedCustId != null)
+            {
+                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+            }
+
+            if (maxScannedCustSubId != null)
+            {
+                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+            }
         }
 
         private void NotifyTelegramMessage(IEnumerable<long> custIds, JobMonitorType type, DateTime scannedTimeFrom, DateTime scannedTimeTo)

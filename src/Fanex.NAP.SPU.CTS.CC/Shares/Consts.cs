@@ -31,7 +31,7 @@
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
-            JobMonitor_InsertNewCustomerLastScannedTime = 67,
+            JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastTransSec = 77,
             TWGroupBetting_SkipTransCount = 78,
@@ -51,7 +51,9 @@
             SabaDangerLevel_LastCustID = 104,
             DailyNormalClassificationBySportLastCategoryID = 114,
             DailyNormalClassificationBySportLastCustID = 115,
-            JobMonitor_RealtimeLastScannedTime = 130
+            JobMonitor_RealtimeLastScannedTime = 130,
+            JobMonitor_NewCustomerLastScannedCustID = 131,
+            JobMonitor_NewCustomerLastScannedCustSubID = 132
         };
 
         public enum Category

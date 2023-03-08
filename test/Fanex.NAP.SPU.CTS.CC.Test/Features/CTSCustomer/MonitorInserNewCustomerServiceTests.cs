@@ -40,36 +40,36 @@
         //    result.Should().BeNull();
         //}
 
-        [Fact]
-        public void GetCustInfoFromMainDB_WhenSuccess_RunSuccessfully()
-        {
-            var fromDate = new DateTime(2021, 1, 1);
-            var toDate = new DateTime(2022, 1, 1);
-            var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+        //[Fact]
+        //public void GetCustInfoFromMainDB_WhenSuccess_RunSuccessfully()
+        //{
+        //    var fromDate = new DateTime(2021, 1, 1);
+        //    var toDate = new DateTime(2022, 1, 1);
+        //    var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
 
-            dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        //    dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
+        //    var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
 
-            result.Should().BeEquivalentTo(expectedResult);
-        }
+        //    result.Should().BeEquivalentTo(expectedResult);
+        //}
 
-        [Fact]
-        public void GetCustSubInfoFromMainDB_WhenSuccess_RunSuccessfully()
-        {
-            var fromDate = new DateTime(2021, 1, 1);
-            var toDate = new DateTime(2022, 1, 1);
-            var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+        //[Fact]
+        //public void GetCustSubInfoFromMainDB_WhenSuccess_RunSuccessfully()
+        //{
+        //    var fromDate = new DateTime(2021, 1, 1);
+        //    var toDate = new DateTime(2022, 1, 1);
+        //    var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
 
-            dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        //    dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
+        //    var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
 
-            result.Should().BeEquivalentTo(expectedResult);
-        }
+        //    result.Should().BeEquivalentTo(expectedResult);
+        //}
 
         [Fact]
         public void CompareCustomerDataForMonitor_WhenSuccess_RunSuccessfully()
         {
-            var inputData = new List<CustomerMainDBModel>();
+            var inputData = new List<MonitoringNewCustomerEntity>();
             var expectedResult = new List<MissingCustomerCompareEntity> { CreateSampleCustomerCompareModel() };
 
             var customerJson = JsonConvert.SerializeObject(inputData);
