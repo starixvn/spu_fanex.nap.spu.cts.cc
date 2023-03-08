@@ -55,33 +55,33 @@
 
                     while(isContinue && isSuccess)
                     {
-                        var customers = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
+                        var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
                         var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
-                        customers.NewCustomers?.ToList().AddRange(custSubs.NewCustomers);
+                        var customers = mainCusts.NewCustomers?.ToList().Concat(custSubs.NewCustomers);
 
-                        if (customers != null && customers.NewCustomers.Any())
+                        if (customers != null && customers.Any())
                         {
-                            lastScannedCustID = customers.MaxScannedCustomerID ?? 0;
+                            lastScannedCustID = mainCusts.MaxScannedCustomerID ?? 0;
                             lastScannedCustSubID = custSubs.MaxScannedCustomerID ?? 0;
 
                             var missingCustomers = new List<MissingCustomerCompareEntity>();
 
-                            var customerChunks = customers.NewCustomers.Chunk(batchSize);
+                            var customerChunks = customers.Chunk(batchSize);
 
-                            foreach (var customerBatch in customerChunks)
+                            foreach (var custBatch in customerChunks)
                             {
-                                missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(customerBatch));
+                                missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(custBatch));
                             }
 
                             isSuccess = MonitoringNewCustomers(new InsertMissingCustomerModel
                             {
-                                CustomerInfo = customers.NewCustomers,
+                                CustomerInfo = customers,
                                 MissingCustomers = missingCustomers,
                                 ScannedTimeFrom = fromDate.Value,
                                 ScannedTimeTo = toDate.Value
                             }, batchSize);
 
-                            UpdateLastScanCustomer(customers.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
+                            UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
                         }
                         else
                         {
