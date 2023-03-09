@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System;
@@ -31,7 +30,7 @@
         public CustomerJobMonitorService(
                 ICustomerJobMonitorDataAccess customerJobMonitorDataAccess)
         {
-            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;            
+            this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;
         }
 
         public MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
@@ -65,7 +64,6 @@
 
             return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
         }
-
 
         public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize)
         {

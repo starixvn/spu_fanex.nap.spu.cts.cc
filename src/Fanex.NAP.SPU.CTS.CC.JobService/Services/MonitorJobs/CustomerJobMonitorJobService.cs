@@ -76,9 +76,9 @@
                         }, batchSize);
 
                         UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
-                    }    
+                    }
 
-                    if (customers != null && !customers.Any())
+                    if (customers != null && !customers.Any() && lastScannedCustID != 0 && lastScannedCustSubID != 0)
                     {
                         systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                     }
@@ -108,7 +108,6 @@
 
             InsertNullCategoryCustomer(newCustomers, batchSize);
         }
-
 
         #region Private Methods
 
@@ -194,6 +193,6 @@
             }
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }
