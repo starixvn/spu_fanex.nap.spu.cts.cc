@@ -43,14 +43,15 @@
         {
             try
             {
-                var lastScannedCustID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
-                var lastScannedCustSubID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
                 var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                 var toDate = fromDate?.AddMinutes(60);
                 bool isSuccess = true;
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
+                    var lastScannedCustID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+
                     var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
                     var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
                     var customers = mainCusts.NewCustomers?.ToList().Concat(custSubs.NewCustomers);
