@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "ip_CustIDs")]
         public string CustIDs { get; set; }
 
+        [SpParam(SqlParamName = "ip_IsCheckInternal")]
+        public bool IsCheckInternalAccount { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_Monitoring_GetCategoryByCustIDs";

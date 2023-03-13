@@ -77,7 +77,7 @@
                 {
                     var custToString = string.Join(',', custBatch);
 
-                    custCategory.AddRange(customerJobMonitorDataAccess.GetCustomerCategoriesToMonitor(custToString));
+                    custCategory.AddRange(customerJobMonitorDataAccess.GetCustomerCategoriesToMonitor(custToString, true));
                 }
             }
 

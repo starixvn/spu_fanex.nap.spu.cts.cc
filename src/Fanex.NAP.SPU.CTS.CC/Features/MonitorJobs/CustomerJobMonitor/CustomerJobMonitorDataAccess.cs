@@ -18,7 +18,7 @@
 
         void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate);
 
-        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds);
+        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds, bool IsCheckInternalAccount);
 
         void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedDate, JobMonitorType type);
     }
@@ -95,11 +95,12 @@
             repository.Execute(criteria);
         }
 
-        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds)
+        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds, bool IsCheckInternalAccount)
         {
             var criteria = new CustomerCategoryMonitorGetCriteria()
             {
-                CustIDs = custIds
+                CustIDs = custIds,
+                IsCheckInternalAccount = IsCheckInternalAccount
             };
 
             return repository.Fetch<CustomerCategoriesMonitorEntity>(criteria);
