@@ -48,12 +48,9 @@
             SabaDangerLevel_LastHistoryID = 102,
             SabaDangerLevel_LastCategoryID = 103,
             SabaDangerLevel_LastCustID = 104,
-            DailyNormalClassificationBySportLastCategoryID = 114,
-            DailyNormalClassificationBySportLastCustID = 115,
-            JobMonitor_RealtimeLastScannedTime = 130,
+			JobMonitor_RealtimeLastScannedTime = 130,
             JobMonitor_NewCustomerLastScannedCustID = 131,
-            JobMonitor_NewCustomerLastScannedCustSubID = 132
-        };
+            JobMonitor_NewCustomerLastScannedCustSubID = 132			TWRobotImperva_LastLogID = 133        };
 
         public enum Category
         {
