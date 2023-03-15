@@ -7,12 +7,12 @@
 
     [ApiController]
     [Route("api/TransformCustomer")]
-    public class TransformCustomerJobController : ControllerBase
+    public class CustomerJobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
         private readonly ICTSCustomerJobService ctsCustomerJobService;
 
-        public TransformCustomerJobController(
+        public CustomerJobController(
             ISentryClient sentryClient,
             ICTSCustomerJobService ctsCustomerJobService)
         {
@@ -38,12 +38,6 @@
             return await ctsCustomerJobService.UpdateUsername2(batchSize);
         }
 
-        [HttpPost("MonitorInsertNewCustomer")]
-        public async Task<bool> MonitorInsertNewCustomer()
-        {
-            return await ctsCustomerJobService.MonitorInsertNewCustomer();
-        }
-
         [HttpPost("InsertReactivatedCustomer")]
         public async Task<bool> InsertReactivatedCustomer()
         {
@@ -54,6 +48,6 @@
         public async Task<bool> InactivateNewCustomers()
         {
             return await ctsCustomerJobService.InactivateNewCustomers();
-        } 
+        }
     }
 }

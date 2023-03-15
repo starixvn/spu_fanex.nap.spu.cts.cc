@@ -36,7 +36,7 @@
 
         int TransformCTSCustomerBatchSize { get; }
 
-        bool MonitorInsertNewCustIsAutoInsertMissingCust { get; }
+        bool IsAutoInsertMissingCustomer { get; }
 
         bool InsertReactivatedCustomersIsWriteLog { get; }
 
@@ -138,7 +138,7 @@
 
         public int TransformCTSCustomerBatchSize => GetValue<int>("TransformCTSCustomer:BatchSize");
 
-        public bool MonitorInsertNewCustIsAutoInsertMissingCust => GetValue<bool>("MonitorInsertNewCustomer:IsAutoInsertMissingCust");
+        public bool IsAutoInsertMissingCustomer => GetValue<bool>("MonitorInsertNewCustomer:IsAutoInsertMissingCust");
 
         public bool InsertReactivatedCustomersIsWriteLog => GetValue<bool>("InsertReactivatedCustomers:IsWriteLog");
 

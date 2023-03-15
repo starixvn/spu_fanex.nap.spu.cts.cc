@@ -1,20 +1,16 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
-    public class InsertMissingCustCriteria : NonQueryCommand
+    public class MissingCustomerCheckCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }
 
-        [SpParam(SqlParamName = "ip_ScannedDate")]
-        public DateTime ScannedDate { get; set; }
-
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_Monitoring_InsertMissingCust";
+            return "CTS_DC_Monitoring_CheckMissingCustomer";
         }
 
         public override bool IsValid()

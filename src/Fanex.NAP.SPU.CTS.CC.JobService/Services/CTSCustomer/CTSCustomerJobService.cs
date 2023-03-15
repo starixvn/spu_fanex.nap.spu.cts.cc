@@ -7,7 +7,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.Notification.Services;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -23,8 +22,6 @@
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
         Task<bool> UpdateUsername2(int batchSize);
-
-        Task<bool> MonitorInsertNewCustomer();
 
         Task<bool> InsertReactivatedCustomers();
 
@@ -160,72 +157,11 @@
             }
         }
 
-        public Task<bool> MonitorInsertNewCustomer()
-        {
-            try
-            {
-                var isAutoInsertMissing = appSettings.MonitorInsertNewCustIsAutoInsertMissingCust;
-                var isSuccess = true;
-                var fromDate = ctscustomerService.GetLastScanTimeForCustomerMonitor(SystemParameters.InsertNewCustomerMonitoring);
-                var toDate = fromDate.AddHours(2);
-                if (toDate <= DateTime.Now.AddHours(-0.5))
-                {
-                    var custList = ctscustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate).ToList();
-                    custList.AddRange(ctscustomerService.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate));
-                    var missingCusts = ctscustomerService.CompareCustomerDataForMonitor(custList);
-                    if (missingCusts.Any())
-                    {
-                        var mess = $"Scan from {fromDate:dd/MM/yyyy HH:mm:ss} to {toDate:dd/MM/yyyy HH:mm:ss} \n" +
-                        $"{missingCusts.Count()} missing customers";
+        #region MonitorMissingCustomer
 
-                        NotifyTelegramMessage(mess);
-                        if (isAutoInsertMissing)
-                        {
-                            var missingCustData = custList.Where(c => missingCusts.Select(a => a.CustID).Contains(c.CustID)
-                                                                    && missingCusts.Select(a => a.CustSubID).Contains(c.CustSubID));
-                            var data = new InsertCustomerViewModel
-                            {
-                                CustomerInfos = missingCustData.ToList(),
-                                LastInsertCustID = 0
-                            };
+     
 
-                            isSuccess = ctscustomerService.InsertNewCustomer(data, new InsertNewCustRescanEntity
-                            {
-                                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                IsInsertMissingCust = true,
-                                InsertVIPURL = appSettings.InsertVIPURL,
-                                InsertBAURL = appSettings.InsertBAURL,
-                                serviceName = "MonitorInsertNewCustomer"
-                            });
-                        }
-                        else
-                        {
-                            ctscustomerService.InsertMissingCust(missingCusts, toDate);
-                        }
-                    }
-
-                    if (isSuccess)
-                    {
-                        ctscustomerService.UpdateLastScanTimeForCustomerMonitor(toDate, SystemParameters.InsertNewCustomerMonitoring);
-                    }
-                }
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
+        #endregion MonitorMissingCustomer
 
         public Task<bool> InsertReactivatedCustomers()
         {
@@ -258,7 +194,7 @@
                     custInfo.CustomerInfos.AddRange(subCusts);
 
                     if (custInfo != null && custInfo.CustomerInfos.Any())
-                    {                        
+                    {
                         isSuccess = ctscustomerService.InsertNewCustomer(custInfo, new InsertNewCustRescanEntity
                         {
                             InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
@@ -291,7 +227,7 @@
                 return Task.FromResult(false);
             }
         }
-       
+
         public Task<bool> InactivateNewCustomers()
         {
             try
@@ -319,7 +255,6 @@
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
 
                     Thread.Sleep(10000);
-
                 } while (isContinue);
 
                 return Task.FromResult(true);
@@ -339,7 +274,7 @@
         #region Private Methods
 
         private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
-        {           
+        {
             return custClassToMainDBService.PushDataToExternal(custIDs.Distinct(), new PushDataToExternalEntity
             {
                 ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
@@ -349,16 +284,6 @@
                 IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,
                 ServiceName = serviceName
             });
-        }
-
-        private void NotifyTelegramMessage(string message)
-        {
-            var telegramService = new NotificationService();
-            string proxy = appSettings.EvironmentName == "PROD" ? "10.2.252.100:8801" : null;
-            telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-636418000", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel("Monitoring - Insert New Customer", DateTime.Now, appSettings.EvironmentName, message))
-               .SendWithoutDelay();
         }
 
         #endregion Private Methods

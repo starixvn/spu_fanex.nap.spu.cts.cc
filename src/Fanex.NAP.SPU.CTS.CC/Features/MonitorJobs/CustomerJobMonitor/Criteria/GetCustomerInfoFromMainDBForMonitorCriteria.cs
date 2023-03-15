@@ -1,13 +1,15 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.Data.Repository;
     using System;
 
     public class GetCustomerInfoFromMainDBForMonitorCriteria : CriteriaBase
     {
-        public DateTime FromDate { get; set; }
+        public int RowSize { get; set; }
 
-        public DateTime ToDate { get; set; }
+        public long LastCustId { get; set; }
+
+        public DateTime MaxScannedDate { get; set; }
 
         public override string GetSettingKey()
         {
@@ -16,7 +18,7 @@
 
         public override bool IsValid()
         {
-            return FromDate != DateTime.MinValue && ToDate != DateTime.MinValue;
+            return true;
         }
     }
 }

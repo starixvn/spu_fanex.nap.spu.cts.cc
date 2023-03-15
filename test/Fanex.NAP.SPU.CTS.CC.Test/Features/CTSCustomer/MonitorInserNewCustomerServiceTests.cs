@@ -1,13 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
     using Newtonsoft.Json;
@@ -19,19 +15,17 @@
 
     public class InserNewCTSCustomerServiceTests
     {
-        private readonly ICTSCustomerService ctsCustomerService;
-        private readonly ICTSCustomerDataAccess dataAccess;
+        private readonly ICustomerJobMonitorService ctsCustomerService;
+        private readonly ICustomerJobMonitorDataAccess dataAccess;
         private readonly IRescanCustClassificationService rescanClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
         public InserNewCTSCustomerServiceTests()
         {
-            dataAccess = Substitute.For<ICTSCustomerDataAccess>();
-            sentryClient = Substitute.For<ISentryClient>();
+            dataAccess = Substitute.For<ICustomerJobMonitorDataAccess>();
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, custClassToMainDBService, systemParameterDataAccess);
+            ctsCustomerService = new CustomerJobMonitorService(dataAccess);
         }
 
         //[Fact] /TODO
@@ -46,48 +40,41 @@
         //    result.Should().BeNull();
         //}
 
-        [Fact]
-        public void GetLastScannTime_WhenSuccess_RunSuccessfully()
-        {
-            var result = ctsCustomerService.GetLastScanTimeForCustomerMonitor(Shares.Constants.SystemParameters.InsertNewCustomerMonitoring);
-            result.Should().NotBe(DateTime.MinValue);
-        }
+        //[Fact]
+        //public void GetCustInfoFromMainDB_WhenSuccess_RunSuccessfully()
+        //{
+        //    var fromDate = new DateTime(2021, 1, 1);
+        //    var toDate = new DateTime(2022, 1, 1);
+        //    var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
 
-        [Fact]
-        public void GetCustInfoFromMainDB_WhenSuccess_RunSuccessfully()
-        {
-            var fromDate = new DateTime(2021, 1, 1);
-            var toDate = new DateTime(2022, 1, 1);
-            var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+        //    dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
+        //    var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
 
-            dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
+        //    result.Should().BeEquivalentTo(expectedResult);
+        //}
 
-            result.Should().BeEquivalentTo(expectedResult);
-        }
+        //[Fact]
+        //public void GetCustSubInfoFromMainDB_WhenSuccess_RunSuccessfully()
+        //{
+        //    var fromDate = new DateTime(2021, 1, 1);
+        //    var toDate = new DateTime(2022, 1, 1);
+        //    var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
 
-        [Fact]
-        public void GetCustSubInfoFromMainDB_WhenSuccess_RunSuccessfully()
-        {
-            var fromDate = new DateTime(2021, 1, 1);
-            var toDate = new DateTime(2022, 1, 1);
-            var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+        //    dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
+        //    var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
 
-            dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
-
-            result.Should().BeEquivalentTo(expectedResult);
-        }
+        //    result.Should().BeEquivalentTo(expectedResult);
+        //}
 
         [Fact]
         public void CompareCustomerDataForMonitor_WhenSuccess_RunSuccessfully()
         {
-            var inputData = new List<CustomerMainDBModel>();
-            var expectedResult = new List<CustomerMainDBModel> { CreateSampleCustomerMainDBModel() };
+            var inputData = new List<MonitoringNewCustomerEntity>();
+            var expectedResult = new List<MissingCustomerCompareEntity> { CreateSampleCustomerCompareModel() };
 
             var customerJson = JsonConvert.SerializeObject(inputData);
-            dataAccess.CompareCustomerDataForMonitor(customerJson).Returns(expectedResult);
-            var result = ctsCustomerService.CompareCustomerDataForMonitor(inputData);
+            dataAccess.CheckMissingCustomer(customerJson).Returns(expectedResult);
+            var result = ctsCustomerService.CheckMissingCustomer(inputData);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -114,6 +101,20 @@
                 SRecommend = 444,
                 UserName = "harbet789",
                 UserName2 = "superrich"
+            };
+
+            return data;
+        }
+
+        private MissingCustomerCompareEntity CreateSampleCustomerCompareModel()
+        {
+            var rd = new Random();
+            var data = new MissingCustomerCompareEntity
+            {
+                CustID = rd.Next(int.MinValue, int.MaxValue),
+                CustSubID = rd.Next(int.MinValue, int.MaxValue),             
+                UserName = "harbet789",
+
             };
 
             return data;

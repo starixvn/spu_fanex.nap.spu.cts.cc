@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -55,18 +54,6 @@
         int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
 
         IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
-
-        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList);
-
-        DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID);
-
-        void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID);
-
-        void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
@@ -156,12 +143,6 @@
             return Enumerable.Empty<InsertNewCustomerResultModel>();
         }
 
-        public void InsertMissingCust(IEnumerable<CustomerMainDBModel> customerList, DateTime scannedDate)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-            dataAccess.InsertMissingCust(customerJson, scannedDate);
-        }
-
         private void UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
         {
             if (custIdList != null && custIdList.Any())
@@ -186,34 +167,6 @@
 
                 dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
             }
-        }
-
-        public DateTime GetLastScanTimeForCustomerMonitor(SystemParameters paraID)
-        {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            var minDateInMainDB = new DateTime(2003, 1, 1);
-            return lastScannedDate != null ? DateTime.Parse(lastScannedDate?.ParameterValue) : minDateInMainDB;
-        }
-
-        public void UpdateLastScanTimeForCustomerMonitor(DateTime lastScannedDate, SystemParameters paraID)
-        {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedDate.ToString("yyyy-MM-dd HH:mm:ss"), paraID);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            return dataAccess.GetCustInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            return dataAccess.GetCustSubInfoFromMainDBForMonitor(fromDate, toDate);
-        }
-
-        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(IEnumerable<CustomerMainDBModel> customerList)
-        {
-            var customerJson = JsonConvert.SerializeObject(customerList);
-            return dataAccess.CompareCustomerDataForMonitor(customerJson);
         }
 
         private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBModel> customer, string insertVIPUrl, string insertBAUrl, string serviceName)

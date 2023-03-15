@@ -2,8 +2,8 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -56,14 +56,6 @@
         int UpdateUsername2(string customerJson);
 
         void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust);
-
-        IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate);
-
-        IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson);
-
-        void InsertMissingCust(string custDataJson, DateTime scannedDate);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
 
@@ -198,49 +190,6 @@
                 CustomerInfo = jsonData,
                 LastInsertCustID = lastCustID,
                 IsInsertMissingCust = isInsertMissingCust
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetCustomerInfoFromMainDBForMonitorCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return repository.Fetch<CustomerMainDBModel>(criteria);
-        }
-
-        public IEnumerable<CustomerMainDBModel> GetCustSubInfoFromMainDBForMonitor(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return repository.Fetch<CustomerMainDBModel>(criteria);
-        }
-
-        public IEnumerable<CustomerMainDBModel> CompareCustomerDataForMonitor(string custDataJson)
-        {
-            var criteria = new CompareCustomerDataForMonitorCriteria
-            {
-                CustomerListJson = custDataJson
-            };
-
-            return repository.Fetch<CustomerMainDBModel>(criteria);
-        }
-
-        public void InsertMissingCust(string custDataJson, DateTime scannedDate)
-        {
-            var criteria = new InsertMissingCustCriteria
-            {
-                CustomerListJson = custDataJson,
-                ScannedDate = scannedDate
             };
 
             repository.Execute(criteria);
