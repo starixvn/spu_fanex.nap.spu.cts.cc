@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;

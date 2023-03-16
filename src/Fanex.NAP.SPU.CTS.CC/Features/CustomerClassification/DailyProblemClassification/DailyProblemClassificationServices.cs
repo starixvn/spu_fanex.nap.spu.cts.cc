@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Newtonsoft.Json;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -15,7 +16,7 @@
 
         IDailyProblemClassificationServices Reset();
 
-        IDailyProblemClassificationServices GetCustomerForProblemDailyScanning();
+        IDailyProblemClassificationServices GetPADailyScanFromQueue();
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId);
 
@@ -23,7 +24,7 @@
 
         bool PushCCToExternal(PushDataToExternalEntity paras);
 
-        bool UpdateLastScan();
+        bool UpdateComplete();
 
         IDailyProblemClassificationServices InsertPALogic();
     }
@@ -34,7 +35,7 @@
         private readonly ISystemParameterServices systemParameterService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private ProblemClassificationDailyEntity scanningCustomers;
+        private IEnumerable<long> scanningCustIDs;
         private IEnumerable<InsertPAProbationResult> problemAccounts;
         private readonly string serviceName = "ProblemAccountProbationService";
 
@@ -52,7 +53,8 @@
 
         public IDailyProblemClassificationServices Start()
         {
-            scanningCustomers = new ProblemClassificationDailyEntity();
+            scanningCustIDs = Enumerable.Empty<long>();
+
             return this;
         }
 
@@ -63,18 +65,18 @@
             return this;
         }
 
-        public IDailyProblemClassificationServices GetCustomerForProblemDailyScanning()
+        public IDailyProblemClassificationServices GetPADailyScanFromQueue()
         {
-            scanningCustomers = dailyClassificationDataAccess.GetCustomerForProblemDailyScanning();
+            scanningCustIDs = dailyClassificationDataAccess.GetPADailyScanFromQueue();
 
             return this;
         }
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId)
         {
-            if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
+            if (scanningCustIDs != null && scanningCustIDs.Any())
             {
-                return problemAccountServices.GetProblemAccountLosingClassification(scanningCustomers.CustID, funcId);
+                return problemAccountServices.GetProblemAccountLosingClassification(scanningCustIDs, funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
@@ -118,17 +120,18 @@
             return true;
         }
 
-        public bool UpdateLastScan()
+        public bool UpdateComplete()
         {
-            if (scanningCustomers != null)
-            {
-                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCustID.ToString(), SystemParameters.DailyProblemClassificationLastCustID);
-                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCategoryID.ToString(), SystemParameters.DailyProblemClassificationLastCategoryID);
+            string custIdToString = string.Empty;
 
-                return (scanningCustomers.CustID != null && scanningCustomers.CustID.Any());
+            if (scanningCustIDs != null && scanningCustIDs.Any())
+            {
+                custIdToString = string.Join(",", scanningCustIDs.Distinct());
             }
 
-            return false;
+            dailyClassificationDataAccess.CompletePADailyScan(custIdToString);
+
+            return (scanningCustIDs != null && scanningCustIDs.Any());
         }
     }
 }
