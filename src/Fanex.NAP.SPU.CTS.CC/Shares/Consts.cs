@@ -50,8 +50,10 @@
             SabaDangerLevel_LastCustID = 104,
 			JobMonitor_RealtimeLastScannedTime = 130,
             JobMonitor_NewCustomerLastScannedCustID = 131,
-            JobMonitor_NewCustomerLastScannedCustSubID = 132			TWRobotImperva_LastLogID = 133        };
-
+            JobMonitor_NewCustomerLastScannedCustSubID = 132,
+            TWRobotImperva_LastLogID = 133,
+			TWRobotImperva_LastTime = 134
+        };
         public enum Category
         {
             Newmember = 201,

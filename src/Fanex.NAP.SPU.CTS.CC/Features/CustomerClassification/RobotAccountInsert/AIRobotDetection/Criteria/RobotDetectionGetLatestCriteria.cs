@@ -9,6 +9,9 @@
         [SpParam(SqlParamName = "ip_LatestScannedTime")]
         public DateTime LatestScannedTime { get; set; }
 
+        [SpParam(SqlParamName = "ip_ImpervaLatestScannedTime")]
+        public DateTime ImpervaLatestScannedTime { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_RobotDetection_GetLatest";

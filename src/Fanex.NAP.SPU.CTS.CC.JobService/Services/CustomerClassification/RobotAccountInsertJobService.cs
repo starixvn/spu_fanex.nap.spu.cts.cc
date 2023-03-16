@@ -128,14 +128,13 @@
         public bool InsertAIRobot(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                                                 .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
+                                                 .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime)
                                                  .InsertRobotAIPackage(new InsertRobotParaEntity
                                                  {
                                                      BatchInternalSize = batchInternalSize,
                                                      IsFromTW = false,
                                                      IsFromCTS = false,
-                                                     IsDirect = true,
-                                                     IsFromAI = true,
+                                                     IsDirect = true,                                                     
                                                      IsFromTVS = false,
                                                      PushDataExternal = new PushDataToExternalEntity
                                                      {
@@ -153,7 +152,7 @@
 
             if (isSuccess)
             {
-                robotDetectionService.UpdateLastScannedId(SystemParameters.RobotDetectionLastModifiedDate);
+                robotDetectionService.UpdateLastScannedId(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
             }
 
             return isSuccess;

@@ -334,11 +334,12 @@
                                                         {
                                                             CustID = group.pa.CustID,
                                                             RobotCounter = group.pa.RobotCounter,
-                                                            Remark = group.pa.Remark,
+                                                            Remark = group.pa.IsFromImperva ? "Imperva" : group.pa.Remark,
                                                             CreatedBy = group.pa.CreatedBy,
 
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromAI = group.pa.IsFromAI,
+                                                            IsFromImperva = group.pa.IsFromImperva,
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             IsFromTW = group.pa.IsFromTW,
                                                             TVSRequestID = group.pa.TVSRequestID,
@@ -349,7 +350,7 @@
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
                                                             WinlossStatus = temp?.WinlossStatus,
-                                                        }); ;
+                                                        });
             }
 
             return Enumerable.Empty<InsertRobotEntity>();

@@ -8,7 +8,7 @@
 
     public interface IRobotAIDetectionDataAccess
     {
-        IEnumerable<RobotDetectionEntity> GetRobotDetections(DateTime latestScannedTime);
+        (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestScannedTime, DateTime lastRobotImpervaTime);
     }
 
     public class RobotAIDetectionDataAccess : IRobotAIDetectionDataAccess
@@ -20,14 +20,17 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<RobotDetectionEntity> GetRobotDetections(DateTime latestScannedTime)
+        public (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestScannedTime, DateTime impervaLatestScannedTime)
         {
             var criteria = new RobotDetectionGetLatestCriteria
             {
-                LatestScannedTime = latestScannedTime
+                LatestScannedTime = latestScannedTime,
+                ImpervaLatestScannedTime = impervaLatestScannedTime
             };
+          
+            var (robotAI, robotImperva) = repository.FetchMultiple<RobotAIEntity, RobotImpervaEntity>(criteria);
 
-            return repository.Fetch<RobotDetectionEntity>(criteria);
+            return (robotAI, robotImperva);
         }
     }
 }

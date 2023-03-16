@@ -7,5 +7,11 @@
         public long CustID { get; set; }
 
         public DateTime LastModifiedDate { get; set; }
+
+        public DateTime LastCreateTime { get; set; }
+
+        public bool IsFromAI { get; set; }
+
+        public bool IsFromImperva { get; set; }
     }
 }

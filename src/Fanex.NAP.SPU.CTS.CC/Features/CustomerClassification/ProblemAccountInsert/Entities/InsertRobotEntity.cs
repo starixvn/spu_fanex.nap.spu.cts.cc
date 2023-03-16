@@ -9,6 +9,7 @@
             IsFromTW = false;
             IsFromCTS = false;
             IsFromAI = false;
+            IsFromImperva = false;
             IsFromTVS = false;
         }
 
@@ -24,6 +25,8 @@
         public bool IsFromAI { get; set; }
 
         public bool IsFromTVS { get; set; }
+
+        public bool IsFromImperva { get; set; }
 
         public int? TVSRequestID { get; set; }
 

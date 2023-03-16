@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -15,7 +16,7 @@
     {
         IRobotAIDetectionService Start();
 
-        IRobotAIDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate);
+        IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
 
         bool InsertRobotAIPackage(InsertRobotParaEntity paras);
 
@@ -23,7 +24,7 @@
 
         IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
-        IRobotAIDetectionService UpdateLastScannedId(SystemParameters index);
+        IRobotAIDetectionService UpdateLastScannedId(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
     }
 
     public class RobotAIDetectionService : IRobotAIDetectionService
@@ -54,13 +55,17 @@
             return this;
         }
 
-        public IRobotAIDetectionService GetRobotDetections(SystemParameters robotDetectionLastModifiedDate)
+        public IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime)
         {
-            var lastScannedTime = systemParameterServices.GetLastScannedDateTime(robotDetectionLastModifiedDate);
+            var lastTimeAI = systemParameterServices.GetLastScannedDateTime(robotAILastTime);
 
-            if (lastScannedTime != null)
+            var lastTimeImperva = systemParameterServices.GetLastScannedDateTime(robotImpervaLastTime);
+
+            if (lastTimeAI != null || lastTimeImperva != null)
             {
-                this.robotDetections = this.dataAccess.GetRobotDetections(lastScannedTime.Value);
+                var (robotAI, robotImperva) = this.dataAccess.GetRobotDetections(lastTimeAI.Value, lastTimeImperva.Value);
+
+                this.robotDetections = CombineRobotAIImperva(robotAI, robotImperva);
             }
 
             return this;
@@ -93,13 +98,21 @@
             return true;
         }
 
-        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters index)
+        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
-            {
-                var latestScannedTime = this.robotDetections.Max(x => x.LastModifiedDate).ToString(CONVERT_TO_SQL_DATETIME);
+            {               
+                var latestAITime = this.robotDetections.Max(x => x.LastModifiedDate);
+                if (latestAITime != DateTime.MinValue)
+                {
+                    systemParameterServices.UpdateTimingExecution(latestAITime.ToString(CONVERT_TO_SQL_DATETIME), robotAILastTime);
+                }
 
-                systemParameterServices.UpdateTimingExecution(latestScannedTime, index);
+                var latestImpervaTime = this.robotDetections.Max(x => x.LastCreateTime);
+                if (latestImpervaTime != DateTime.MinValue)
+                {
+                    systemParameterServices.UpdateTimingExecution(latestImpervaTime.ToString(CONVERT_TO_SQL_DATETIME), robotImpervaLastTime);
+                }
             }
 
             return this;
@@ -131,10 +144,11 @@
                 custCategory = robotDetections.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
+                    IsFromAI = c.IsFromAI,
+                    IsFromImperva = c.IsFromImperva,
                     IsFromTW = paras.IsFromTW,
                     IsFromCTS = paras.IsFromCTS,
                     IsDirect = paras.IsDirect,
-                    IsFromAI = paras.IsFromAI,
                     IsFromTVS = paras.IsFromTVS,
                     RobotCounter = null,
                     CreatedBy = StarixITId
@@ -142,6 +156,27 @@
             }
 
             return custCategory;
+        }
+
+        private IEnumerable<RobotDetectionEntity> CombineRobotAIImperva(IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva)
+        {
+            var result = robotAI.Select(x => new RobotDetectionEntity
+            {
+                CustID = x.CustID,
+                LastModifiedDate = x.LastModifiedDate,
+                LastCreateTime = DateTime.MinValue,
+                IsFromAI = true,
+                IsFromImperva = false
+            }).Union(robotImperva.Select(x => new RobotDetectionEntity
+            {
+                CustID = x.CustID,
+                LastModifiedDate = DateTime.MinValue,
+                LastCreateTime = x.LastCreateTime,
+                IsFromAI = false,
+                IsFromImperva = true
+            }));
+
+            return result;
         }
     }
 }
