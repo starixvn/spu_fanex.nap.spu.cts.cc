@@ -1,23 +1,27 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Criteria;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IRealtimeClassificationDataAccess
     {
         void CheckNewChangesForRealtime();
 
-        IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime();
+        IEnumerable<RealtimeNewPlaceBetCustomerEntity> GetNewPlaceBetCustomers();
 
-        IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(string custSportJson);
+        CustomerCategoryRealtimeViewEntity GetCustomerCategory(string custIDs);
 
-        void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> customers);
+        void ClassifyRealtimePerformance(IEnumerable<CustomerCategoryRealtimeEntity> customers);
 
         void UpdateGeneralRealtimeLastScan(bool isGeneralFlow);
 
         void UpdateAssociationCustomerLastTicket(string custIdList);
+
+        void InsertPADailyScanQueue(string custIdList);
     }
 
     public class RealtimeClassificationDataAccess : IRealtimeClassificationDataAccess
@@ -31,29 +35,37 @@
 
         public void CheckNewChangesForRealtime()
         {
-            var criteria = new RealtimeNewChangesCheckCriteria();
+            var criteria = new NewChangesRealtimeCheckCriteria();
 
             repository.Execute(criteria);
         }
 
-        public IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryHasChangeForRunRealtime()
+        public IEnumerable<RealtimeNewPlaceBetCustomerEntity> GetNewPlaceBetCustomers()
         {
-            var criteria = new CustClassificationHasChangesForRealtimeScanningGetCriteria();
+            var criteria = new CustomerNewPlaceBetRealtimeGetCriteria();
 
-            return repository.Fetch<CustClassificationRealtimeEntity>(criteria);
+            return repository.Fetch<RealtimeNewPlaceBetCustomerEntity>(criteria);
         }
 
-        public IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(string custSportJson)
+        public CustomerCategoryRealtimeViewEntity GetCustomerCategory(string custIDs)
         {
-            var criteria = new CustClassificationByCategoryForRealtimeScanningGetCriteria
+            var criteria = new CustomerCategoryRealtimeGetCriteria
             {
-                CustSportsJson = custSportJson
+                CustIDs = custIDs
             };
 
-            return repository.Fetch<CustClassificationRealtimeEntity>(criteria);
+            var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+
+            var result = db.QueryMultiple(criteria);
+
+            return new CustomerCategoryRealtimeViewEntity()
+            {
+                CustCategoryRealtime = result?.Read<CustomerCategoryRealtimeEntity>() ?? Enumerable.Empty<CustomerCategoryRealtimeEntity>(),
+                CustPADailyScan = result?.Read<long>() ?? Enumerable.Empty<long>()
+            };
         }
 
-        public void ClassifyCustomerGeneralCategoryRealtime(IEnumerable<CustClassificationRealtimeEntity> customers)
+        public void ClassifyRealtimePerformance(IEnumerable<CustomerCategoryRealtimeEntity> customers)
         {
             var criteria = new NormalAccountsClassificationGeneralCategorizeRealtimeCriteria
             {
@@ -65,7 +77,7 @@
 
         public void UpdateGeneralRealtimeLastScan(bool isGeneralFlow)
         {
-            var criteria = new RealtimeLastScanUpdateCriteria
+            var criteria = new LastScanRealtimeUpdateCriteria
             {
                 IsGeneralFlow = isGeneralFlow
             };
@@ -78,6 +90,16 @@
             var criteria = new UpdateAssociationCustomerLastTicketCriteria
             {
                 CustIdList = custIdList
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void InsertPADailyScanQueue(string custIdList)
+        {
+            var criteria = new QueuePADailyInsertCriteria
+            {
+                CustIDs = custIdList
             };
 
             repository.Execute(criteria);
