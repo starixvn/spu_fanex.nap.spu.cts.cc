@@ -64,10 +64,10 @@
             return await this.dailyNormalClassificationJobService.Execute();
         }
 
-        [HttpPost("scanningDailyProblemProbationClassification")]
-        public async Task<bool> DailyScanningProblemProbationClassification([FromForm] int batchSize)
+        [HttpPost("scanningDailyProblemClassification")]
+        public async Task<bool> DailyScanningProblemClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Problem Probation Service is running at {DateTime.Now}");
+            sentryClient.CaptureMessage($"Daily Problem Service is running at {DateTime.Now}");
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
