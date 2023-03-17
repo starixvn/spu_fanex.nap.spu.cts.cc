@@ -40,15 +40,12 @@
 
         public void InsertTWRobotImperva(string robotInfos)
         {
-            if (robotInfos.Any())
+            var criteria = new TWRobotImpervaInsertCriteria
             {
-                var criteria = new TWRobotImpervaInsertCriteria
-                {
-                    RobotInfo = JsonConvert.SerializeObject(robotInfos)
-                };
+                RobotInfo = robotInfos
+            };
 
-                repository.Execute(criteria);
-            }
+            repository.Execute(criteria);
         }
 
     }

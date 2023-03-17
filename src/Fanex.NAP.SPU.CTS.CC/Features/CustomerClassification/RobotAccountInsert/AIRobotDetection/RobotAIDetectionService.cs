@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Fanex.NAP.SPU.CTS.Shares;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IRobotAIDetectionService
@@ -18,7 +19,7 @@
 
         IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
 
-        bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras);
+        bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras);       
 
         IEnumerable<long> InsertRobotAIImperva(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
@@ -43,14 +44,17 @@
             this.dataAccess = dataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.problemAccountServices = problemAccountServices;
+            this.problemAccountServices = problemAccountServices;            
         }
+
+        private string robotImpervaLogIDs;
 
         public IEnumerable<RobotDetectionEntity> RobotDetections => robotDetections;
 
         public IRobotAIDetectionService Start()
         {
             this.robotDetections = new List<RobotDetectionEntity>();
+            this.robotImpervaLogIDs = string.Empty;
 
             return this;
         }
@@ -64,8 +68,12 @@
             if (lastTimeAI != null || lastTimeImperva != null)
             {
                 var (robotAI, robotImperva) = this.dataAccess.GetRobotDetections(lastTimeAI.Value, lastTimeImperva.Value);
+                
+                this.robotImpervaLogIDs = string.Join(",", robotImperva.Select(x => x.LogID));
 
-                this.robotDetections = CombineRobotAIImperva(robotAI, robotImperva);
+                var robotImpervaDistinct = robotImperva.Distinct(x => x.CustID);
+
+                this.robotDetections = CombineRobotAIImperva(robotAI, robotImpervaDistinct);
             }
 
             return this;
@@ -93,6 +101,8 @@
                         Thread.Sleep(RobotUsers_SleepTimes);
                     }
                 }
+
+                this.UpdateTransformRobotAIImperva();
             }
 
             return true;
@@ -133,7 +143,7 @@
             }
 
             return Enumerable.Empty<long>();
-        }
+        }       
 
         public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
         {
@@ -177,6 +187,14 @@
             }));
 
             return result;
+        }
+
+        private void UpdateTransformRobotAIImperva()
+        {
+            if (!string.IsNullOrEmpty(this.robotImpervaLogIDs))
+            {
+                dataAccess.UpdateTransformRobotAIImperva(this.robotImpervaLogIDs);
+            }
         }
     }
 }

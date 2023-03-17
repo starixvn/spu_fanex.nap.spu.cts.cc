@@ -101,9 +101,7 @@
 
         [HttpPost("robotAIImpervaDetection")]
         public async Task<bool> RobotAIImpervaDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            Logging.LogService.Info("robotAIImpervaDetection calling");
-
+        {           
             return await this.robotAccountInsertJobService.ScanningAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
         }
 
@@ -115,9 +113,7 @@
 
         [HttpPost("robotImpervaGet")]
         public async Task<bool> RobotImpervaGet([FromForm] int batchSize)
-        {
-            Logging.LogService.Info("RobotImpervaGet calling");
-
+        {           
             return await this.robotImpervaJobService.Execute(batchSize);
         }
 

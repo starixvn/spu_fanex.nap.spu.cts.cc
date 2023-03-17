@@ -4,6 +4,8 @@
 
     public class RobotImpervaEntity
     {
+        public long LogID { get; set; }
+
         public long CustID { get; set; }
 
         public DateTime LastCreateTime { get; set; }
