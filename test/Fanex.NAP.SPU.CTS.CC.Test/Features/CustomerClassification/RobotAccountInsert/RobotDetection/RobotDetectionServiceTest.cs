@@ -51,7 +51,7 @@
             var expectedResult = new List<long>();
 
             // Act
-            var result = robotDetectionService.InsertRobotAI(robotDetections, paras);
+            var result = robotDetectionService.InsertRobotAIImperva(robotDetections, paras);
 
             // Assert
             result.Should().NotBeNull();
@@ -90,7 +90,7 @@
             robotDetectionDataAccess.GetRobotDetections(expectedRobotAILastTime, expectedRobotImpervaLastTime).Returns((expectedRobotAI, expectedRobotImperva));
             robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
             
-            var result = robotDetectionService.InsertRobotAIPackage(paras);
+            var result = robotDetectionService.InsertRobotAIImpervaPackage(paras);
 
             // Assert
             result.Should().BeTrue();

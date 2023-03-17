@@ -49,7 +49,7 @@
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel_xtest" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
-		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -124,7 +124,7 @@
 	<Function name="TWProblemAccountInsert">
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Remove" SpName="CTS_DC_TWProblemDetectionMonitor_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Insert" SpName="CTS_DC_TWProblemDetectionMonitor_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 

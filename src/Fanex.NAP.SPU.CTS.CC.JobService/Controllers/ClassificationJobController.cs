@@ -23,6 +23,7 @@
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
+        private readonly ITWRobotImpervaJobService robotImpervaJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             INormalAccountJobService normalAccountInsertJobService,
@@ -35,7 +36,8 @@
             ITVSProblemAccountJobService tvsProblemAccountJobService,
             INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
-            IMatchMonitorClassificationJobService mmClassificationJobService)
+            IMatchMonitorClassificationJobService mmClassificationJobService,
+            ITWRobotImpervaJobService robotImpervaJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
@@ -49,6 +51,7 @@
             this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
             this.mmClassificationJobService = mmClassificationJobService;
+            this.robotImpervaJobService = robotImpervaJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -96,16 +99,26 @@
             return await this.robotAccountInsertJobService.ScanningTWRobotAccount(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("robotAIDetection")]
-        public async Task<bool> RobotAIDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("robotAIImpervaDetection")]
+        public async Task<bool> RobotAIImpervaDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.robotAccountInsertJobService.ScanningAIRobotDetection(batchExternalSize, batchInternalSize);
+            Logging.LogService.Info("robotAIImpervaDetection calling");
+
+            return await this.robotAccountInsertJobService.ScanningAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("scan-tw-problem-account-customer")]
         public async Task<bool> ScanTWSystemFormulaBetCustomer()
         {
             return await twProblemAccountJobService.Execute();
+        }
+
+        [HttpPost("robotImpervaGet")]
+        public async Task<bool> RobotImpervaGet([FromForm] int batchSize)
+        {
+            Logging.LogService.Info("RobotImpervaGet calling");
+
+            return await this.robotImpervaJobService.Execute(batchSize);
         }
 
         [HttpPost("tvsProblemAccountInsert")]

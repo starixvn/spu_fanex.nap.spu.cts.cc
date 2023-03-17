@@ -20,17 +20,13 @@
             repository = new DynamicRepository();
         }
 
-        public (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestScannedTime, DateTime impervaLatestScannedTime)
-        {
-            var criteria = new RobotDetectionGetLatestCriteria
+        public (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestTimeAI, DateTime latestTimeImperva)
+        {              
+            return repository.FetchMultiple<RobotAIEntity, RobotImpervaEntity>(new RobotDetectionGetLatestCriteria
             {
-                LatestScannedTime = latestScannedTime,
-                ImpervaLatestScannedTime = impervaLatestScannedTime
-            };
-          
-            var (robotAI, robotImperva) = repository.FetchMultiple<RobotAIEntity, RobotImpervaEntity>(criteria);
-
-            return (robotAI, robotImperva);
+                LatestTimeAI = latestTimeAI,
+                LatestTimeImperva = latestTimeImperva
+            });
         }
     }
 }

@@ -18,9 +18,9 @@
 
         IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
 
-        bool InsertRobotAIPackage(InsertRobotParaEntity paras);
+        bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras);
 
-        IEnumerable<long> InsertRobotAI(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
+        IEnumerable<long> InsertRobotAIImperva(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
         IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
@@ -71,7 +71,7 @@
             return this;
         }
 
-        public bool InsertRobotAIPackage(InsertRobotParaEntity paras)
+        public bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
@@ -79,7 +79,7 @@
 
                 foreach (var robot in robotDetectionChunks)
                 {
-                    var custIds = InsertRobotAI(robot, paras);
+                    var custIds = InsertRobotAIImperva(robot, paras);
 
                     if (custIds != null && custIds.Any())
                     {
@@ -118,7 +118,7 @@
             return this;
         }
 
-        public IEnumerable<long> InsertRobotAI(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
+        public IEnumerable<long> InsertRobotAIImperva(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
         {
             if (robotDetections != null && robotDetections.Any())
             {

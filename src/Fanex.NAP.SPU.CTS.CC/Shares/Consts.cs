@@ -54,7 +54,7 @@
             JobMonitor_NewCustomerLastScannedCustID = 131,
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
-			TWRobotImperva_LastTime = 134
+			TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
         };
         public enum Category
         {

@@ -37,6 +37,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
 
     public static class InitService
     {
@@ -89,6 +90,8 @@
             RegisterClassificationJobMonitor(services);
 
             RegisterCustomerJobMonitor(services);
+
+            RegisterRobotImperva(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -274,5 +277,13 @@
             services.AddSingleton<ICustomerJobMonitorService, CustomerJobMonitorService>();
             services.AddSingleton<ICustomerJobMonitorDataAccess, CustomerJobMonitorDataAccess>();
         }
+
+        private static void RegisterRobotImperva(this IServiceCollection services)
+        {
+            services.AddSingleton<ITWRobotImpervaJobService, TWRobotImpervaJobService>();
+            services.AddSingleton<ITWRobotImpervaService, TWRobotImpervaService>();
+            services.AddSingleton<ITWRobotImpervaDataAccess, TWRobotImpervaDataAccess>();
+        }
+
     }
 }
