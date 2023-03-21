@@ -1,11 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     public interface IRealtimeClassificationServices
     {
@@ -13,27 +11,26 @@
 
         IRealtimeClassificationServices Start();
 
-        IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime();
+        IRealtimeClassificationServices GetNewPlaceBetCustomers();
 
-        IRealtimeClassificationServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize);
+        IRealtimeClassificationServices GetCustomerCategory(int batchSize);
 
-        IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(IEnumerable<CustClassificationRealtimeEntity> customerHasChanges);
-
-        void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification);
+        IRealtimeClassificationServices ClassifyRealtimePerformance(int batchSize);
 
         IRealtimeClassificationServices UpdateGeneralRealtimeLastScan();
 
         IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize);
 
-        IEnumerable<CustClassificationRealtimeEntity> CustomerClassification { get; }
+        IRealtimeClassificationServices InsertPADailyQueue(int batchSize);
     }
 
     public class RealtimeClassificationServices : IRealtimeClassificationServices
     {
         private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
-        private IEnumerable<CustClassificationRealtimeEntity> customerClassification;
+        private IEnumerable<RealtimeNewPlaceBetCustomerEntity> customers;
+        private List<CustomerCategoryRealtimeEntity> custCategoryRealtime;
+        private List<long> custPADailyScan;
         private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Realtime Classification Service";
 
         public RealtimeClassificationServices(IRealtimeClassificationDataAccess realtimeClassificationDataAccess, ISentryClient sentryClient)
         {
@@ -43,8 +40,9 @@
 
         public IRealtimeClassificationServices Start()
         {
-            customerClassification = new List<CustClassificationRealtimeEntity>();
-
+            customers = new List<RealtimeNewPlaceBetCustomerEntity>();
+            custCategoryRealtime = new List<CustomerCategoryRealtimeEntity>();
+            custPADailyScan = new List<long>();
             return this;
         }
 
@@ -53,85 +51,49 @@
             realtimeClassificationDataAccess.CheckNewChangesForRealtime();
         }
 
-        public IRealtimeClassificationServices GetCustomerGeneralCategoryHasChangeForRunRealtime()
+        public IRealtimeClassificationServices GetNewPlaceBetCustomers()
         {
-            this.customerClassification = realtimeClassificationDataAccess.GetCustomerGeneralCategoryHasChangeForRunRealtime();
+            this.customers = realtimeClassificationDataAccess.GetNewPlaceBetCustomers();
 
             return this;
         }
 
-        public IRealtimeClassificationServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize)
+        public IRealtimeClassificationServices GetCustomerCategory(int batchSize)
         {
-            if (customerClassification != null && customerClassification.Any())
+            if (customers != null && customers.Any())
             {
-                var custExternalChunks = customerClassification.Chunk(externalBatchSize).ToList();
+                var customerChunks = customers.Distinct().Chunk(batchSize);
 
-                var custToClassification = new CustClassificationRealtimeViewEntity
+                foreach (var custBatch in customerChunks)
                 {
-                    CustClassification = new List<CustClassificationRealtimeEntity>(),
-                    CustCategories = new List<CustClassificationRealtimeEntity>()
-                };
+                    var custIDs = string.Join(",", custBatch.Select(c => c.CustId));
 
-                foreach (var custHasChange in custExternalChunks)
-                {
-                    var custInternalChunks = custHasChange.Chunk(internalBatchSize).ToList();
+                    var customerCategory = realtimeClassificationDataAccess.GetCustomerCategory(custIDs);
 
-                    foreach (var custCategory in custInternalChunks)
-                    {
-                        custToClassification.CustCategories.AddRange(GetCustomerGeneralCategoryForRunRealtime(custCategory));
-                    }
+                    custCategoryRealtime.AddRange(customerCategory.CustCategoryRealtime);
 
-                    custToClassification.CustClassification.AddRange(custHasChange);
-
-                    ClassifyCustomerGeneralCategoryRealtime(custToClassification);
-
-                    custToClassification = new CustClassificationRealtimeViewEntity
-                    {
-                        CustClassification = new List<CustClassificationRealtimeEntity>(),
-                        CustCategories = new List<CustClassificationRealtimeEntity>()
-                    };
+                    custPADailyScan.AddRange(customerCategory.CustPADailyScan);
                 }
             }
 
             return this;
         }
 
-        public IEnumerable<CustClassificationRealtimeEntity> GetCustomerGeneralCategoryForRunRealtime(IEnumerable<CustClassificationRealtimeEntity> customerHasChanges)
+        public IRealtimeClassificationServices ClassifyRealtimePerformance(int batchSize)
         {
-            if (customerHasChanges != null && customerHasChanges.Any())
+            if (custCategoryRealtime.Any())
             {
-                var custSportJson = JsonConvert.SerializeObject(customerHasChanges);
+                var custChunks = custCategoryRealtime.Chunk(batchSize);
 
-                return realtimeClassificationDataAccess.GetCustomerGeneralCategoryForRunRealtime(custSportJson) ?? new List<CustClassificationRealtimeEntity>();
-            }
-
-            return new List<CustClassificationRealtimeEntity>();
-        }
-
-        public void ClassifyCustomerGeneralCategoryRealtime(CustClassificationRealtimeViewEntity classification)
-        {
-            if (classification.CustClassification != null && classification.CustClassification.Any())
-            {
-                var custsClassify = classification.CustClassification.GroupJoin(classification.CustCategories,
-                                                    custsHaschanges => custsHaschanges.CustId,
-                                                    custsCategories => custsCategories.CustId,
-                                                    (custsHaschanges, custsCategories) => new { custsHaschanges, custsCategories })
-                                                    .SelectMany(
-                                                        group => group.custsCategories.DefaultIfEmpty(),
-                                                        (group, temp) => new CustClassificationRealtimeEntity
-                                                        {
-                                                            CustId = group.custsHaschanges.CustId,
-                                                            SportGroupId = group.custsHaschanges.SportGroupId,
-                                                            CurrentCategoryID = (temp != null) ? temp.CurrentCategoryID : 0
-                                                        });
-
-                var finalCustToClassify = custsClassify.Where(c => c.CurrentCategoryID != -1);
-
-                if (finalCustToClassify.Any())
+                foreach (var custBatch in custChunks)
                 {
-                    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(finalCustToClassify);
+                    var custCategoryForRealtime = custBatch.Where(c => c.CategoryId != -1);
+
+                    realtimeClassificationDataAccess.ClassifyRealtimePerformance(custCategoryForRealtime);
                 }
             }
+
+            return this;
         }
 
         public IRealtimeClassificationServices UpdateGeneralRealtimeLastScan()
@@ -141,13 +103,13 @@
             return this;
         }
 
-        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int internalBatchSize)
+        public IRealtimeClassificationServices UpdateLastTicketAssociationCustomer(int batchSize)
         {
-            if (this.customerClassification != null && this.customerClassification.Any())
+            if (this.customers != null && this.customers.Any())
             {
-                var custIds = this.customerClassification.Select(x => new { CustID = x.CustId });
+                var custIds = this.customers.Select(x => new { CustID = x.CustId });
 
-                var custIdChunks = custIds.Chunk(internalBatchSize).ToList();
+                var custIdChunks = custIds.Distinct().Chunk(batchSize);
 
                 foreach (var custIdItems in custIdChunks)
                 {
@@ -160,6 +122,19 @@
             return this;
         }
 
-        IEnumerable<CustClassificationRealtimeEntity> IRealtimeClassificationServices.CustomerClassification => customerClassification;
+        public IRealtimeClassificationServices InsertPADailyQueue(int batchSize)
+        {
+            if (custPADailyScan.Any())
+            {
+                var custChunks = custPADailyScan.Distinct().Chunk(batchSize);
+
+                foreach (var custBatch in custChunks)
+                {
+                    realtimeClassificationDataAccess.InsertPADailyScanQueue(string.Join(",", custBatch));
+                }
+            }
+
+            return this;
+        }
     }
 }

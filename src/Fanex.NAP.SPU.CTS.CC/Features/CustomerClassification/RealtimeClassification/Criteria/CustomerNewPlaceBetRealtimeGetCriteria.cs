@@ -2,13 +2,11 @@
 {
     using Fanex.Data.Repository;
 
-    public class RealtimeLastScanUpdateCriteria : NonQueryCommand
+    public class CustomerNewPlaceBetRealtimeGetCriteria : CriteriaBase
     {
-        public bool IsGeneralFlow { get; set; }
-
         public override string GetSettingKey()
         {
-            return "CTS_NormalAccountsClassification_Realtime_UpdateLastScan";
+            return "CTS_NormalAccountsClassification_GeneralCategorize_RealTime_GetChanges";
         }
 
         public override bool IsValid()

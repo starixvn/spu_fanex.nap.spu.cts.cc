@@ -59,9 +59,10 @@
 
         private void JobRun(int batchSize)
         {
-            var problemClassification = dailyProblemClassificationServices.Start()
-                                        .GetCustomerForProblemDailyScanning()
-                                        .GetProblemAccountLosingClassification(FunctionId.ProblemDailyJob);
+            var problemClassification = dailyProblemClassificationServices
+                                            .Start()
+                                            .GetPADailyScanFromQueue()
+                                            .GetProblemAccountLosingClassification(FunctionId.ProblemDailyJob);
 
             if (problemClassification != null && problemClassification.Any())
             {
@@ -90,7 +91,7 @@
                 }
             }
 
-            var isContinue = dailyProblemClassificationServices.UpdateLastScan();
+            var isContinue = dailyProblemClassificationServices.UpdateComplete();
 
             if (isContinue)
             {

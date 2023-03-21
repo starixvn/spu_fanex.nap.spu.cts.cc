@@ -1,15 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyProblemClassificationDataAccess
     {
-        ProblemClassificationDailyEntity GetCustomerForProblemDailyScanning();
+        IEnumerable<long> GetPADailyScanFromQueue();
+
+        void CompletePADailyScan(string custIDs);
 
         IEnumerable<InsertPAProbationResult> InsertProblemProbationClassification(string problemAccountJson);
     }
@@ -23,18 +21,11 @@
             repository = new DynamicRepository();
         }
 
-        public ProblemClassificationDailyEntity GetCustomerForProblemDailyScanning()
+        public IEnumerable<long> GetPADailyScanFromQueue()
         {
-            var criteria = new ProblemClassificationForDailyScanningGetCriteria();
+            var criteria = new PADailyScanFromQueueGetCriteria();
 
-            var result = repository.Fetch<Int64>(criteria);
-
-            return new ProblemClassificationDailyEntity
-            {
-                CustID = result ?? Enumerable.Empty<Int64>(),
-                op_LastCategoryID = criteria.LastCategoryID,
-                op_LastCustID = criteria.LastCustID
-            };
+            return repository.Fetch<long>(criteria);
         }
 
         public IEnumerable<InsertPAProbationResult> InsertProblemProbationClassification(string problemAccountJson)
@@ -45,6 +36,16 @@
             };
 
             return repository.Fetch<InsertPAProbationResult>(criteria);
+        }
+
+        public void CompletePADailyScan(string custIDs)
+        {
+            var criteria = new PADailyScanCompleteCriteria
+            {
+                CustIDs = custIDs
+            };
+
+            repository.Execute(criteria);
         }
     }
 }

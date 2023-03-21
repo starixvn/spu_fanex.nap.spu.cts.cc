@@ -73,9 +73,11 @@
         {
             realtimeClassificationServices
                 .Start()
-                .GetCustomerGeneralCategoryHasChangeForRunRealtime()
-                .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
+                .GetNewPlaceBetCustomers()
+                .GetCustomerCategory(batchInternalSize)
+                .ClassifyRealtimePerformance(batchExternalSize)
                 .UpdateLastTicketAssociationCustomer(batchInternalSize)
+                .InsertPADailyQueue(batchInternalSize)
                 .UpdateGeneralRealtimeLastScan();
         }
     }

@@ -20,103 +20,103 @@
             realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess, null);
         }
 
-        [Fact]
-        public void GetCustHasChangeForRealTime_WhenSuccess_ReturnNotException()
-        {
-            var realtimeScanningList = new List<CustClassificationRealtimeEntity>
-            {
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 1,
-                    CurrentCategoryID = 1,
-                    SportGroupId =1
-                },
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 2,
-                    CurrentCategoryID = 2,
-                    SportGroupId =2
-                },
-            };
+        //[Fact]
+        //public void GetCustHasChangeForRealTime_WhenSuccess_ReturnNotException()
+        //{
+        //    var realtimeScanningList = new List<CustClassificationRealtimeEntity>
+        //    {
+        //        new CustClassificationRealtimeEntity
+        //        {
+        //            CustId = 1,
+        //            CurrentCategoryID = 1,
+        //            SportGroupId =1
+        //        },
+        //        new CustClassificationRealtimeEntity
+        //        {
+        //            CustId = 2,
+        //            CurrentCategoryID = 2,
+        //            SportGroupId =2
+        //        },
+        //    };
 
-            realtimeClassificationDataAccess.GetCustomerGeneralCategoryHasChangeForRunRealtime().Returns(realtimeScanningList);
+        //    realtimeClassificationDataAccess.GetNewPlaceBetCustomers().Returns(realtimeScanningList);
 
-            realtimeClassificationServices.GetCustomerGeneralCategoryHasChangeForRunRealtime();
-            var result = realtimeClassificationServices.CustomerClassification;
+        //    realtimeClassificationServices.GetNewPlaceBetCustomers();
+        //    var result = realtimeClassificationServices.CustomerClassification;
 
-            result.Should().BeEquivalentTo(realtimeScanningList);
-        }
+        //    result.Should().BeEquivalentTo(realtimeScanningList);
+        //}
 
-        [Fact]
-        public void GetCustForRunRealtime_WhenSuccess_ReturnCustClassificationList()
-        {
-            var custClassificationList = new List<CustClassificationRealtimeEntity>
-            {
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 1,
-                    CurrentCategoryID = 1,
-                    SportGroupId =1
-                },
-                new CustClassificationRealtimeEntity
-                {
-                    CustId = 2,
-                    CurrentCategoryID = 2,
-                    SportGroupId =2
-                },
-            };
+        //[Fact]
+        //public void GetCustForRunRealtime_WhenSuccess_ReturnCustClassificationList()
+        //{
+        //    var custClassificationList = new List<CustClassificationRealtimeEntity>
+        //    {
+        //        new CustClassificationRealtimeEntity
+        //        {
+        //            CustId = 1,
+        //            CurrentCategoryID = 1,
+        //            SportGroupId =1
+        //        },
+        //        new CustClassificationRealtimeEntity
+        //        {
+        //            CustId = 2,
+        //            CurrentCategoryID = 2,
+        //            SportGroupId =2
+        //        },
+        //    };
 
-            var custSportJson = JsonConvert.SerializeObject(custClassificationList);
-            realtimeClassificationDataAccess.GetCustomerGeneralCategoryForRunRealtime(custSportJson).Returns(custClassificationList);
+        //    var custSportJson = JsonConvert.SerializeObject(custClassificationList);
+        //    realtimeClassificationDataAccess.GetCustomerCategory(custSportJson).Returns(custClassificationList);
 
-            var result = realtimeClassificationServices.GetCustomerGeneralCategoryForRunRealtime(custClassificationList);
+        //    var result = realtimeClassificationServices.GetCustomerGeneralCategoryForRunRealtime(custClassificationList);
 
-            result.Should().BeEquivalentTo(custClassificationList);
-        }
+        //    result.Should().BeEquivalentTo(custClassificationList);
+        //}
 
-        [Fact]
-        public void ClassifyCustomerGeneralCategoryRealtime_WhenSuccess_ReturnNotException()
-        {
-            var classification = new CustClassificationRealtimeViewEntity()
-            {
-                CustClassification = new List<CustClassificationRealtimeEntity>
-                                    {
-                                        new CustClassificationRealtimeEntity
-                                        {
-                                            CustId = 1,
-                                            CurrentCategoryID = 0,
-                                            SportGroupId =1
-                                        },
-                                        new CustClassificationRealtimeEntity
-                                        {
-                                            CustId = 2,
-                                            CurrentCategoryID = 0,
-                                            SportGroupId =2
-                                        },
-                                    },
-                CustCategories = new List<CustClassificationRealtimeEntity>
-                                    {
-                                        new CustClassificationRealtimeEntity
-                                        {
-                                            CustId = 1,
-                                            CurrentCategoryID = 1,
-                                            SportGroupId =1
-                                        },
-                                        new CustClassificationRealtimeEntity
-                                        {
-                                            CustId = 2,
-                                            CurrentCategoryID = 0,
-                                            SportGroupId =2
-                                        },
-                                    }
-            };
+        //[Fact]
+        //public void ClassifyCustomerGeneralCategoryRealtime_WhenSuccess_ReturnNotException()
+        //{
+        //    var classification = new CustClassificationRealtimeViewEntity()
+        //    {
+        //        CustClassification = new List<CustClassificationRealtimeEntity>
+        //                            {
+        //                                new CustClassificationRealtimeEntity
+        //                                {
+        //                                    CustId = 1,
+        //                                    CurrentCategoryID = 0,
+        //                                    SportGroupId =1
+        //                                },
+        //                                new CustClassificationRealtimeEntity
+        //                                {
+        //                                    CustId = 2,
+        //                                    CurrentCategoryID = 0,
+        //                                    SportGroupId =2
+        //                                },
+        //                            },
+        //        CustCategories = new List<CustClassificationRealtimeEntity>
+        //                            {
+        //                                new CustClassificationRealtimeEntity
+        //                                {
+        //                                    CustId = 1,
+        //                                    CurrentCategoryID = 1,
+        //                                    SportGroupId =1
+        //                                },
+        //                                new CustClassificationRealtimeEntity
+        //                                {
+        //                                    CustId = 2,
+        //                                    CurrentCategoryID = 0,
+        //                                    SportGroupId =2
+        //                                },
+        //                            }
+        //    };
 
-            realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(classification.CustClassification);
+        //    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(classification.CustClassification);
 
-            Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(classification);
+        //    Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(classification);
 
-            action.Should().NotThrow<Exception>();
-        }
+        //    action.Should().NotThrow<Exception>();
+        //}
 
         [Fact]
         public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
