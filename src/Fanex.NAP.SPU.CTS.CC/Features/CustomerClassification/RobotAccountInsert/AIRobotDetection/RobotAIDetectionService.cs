@@ -184,7 +184,7 @@
                 LastCreateTime = x.LastCreateTime,
                 IsFromAI = false,
                 IsFromImperva = true
-            }));
+            }).OrderBy(x => x.LastTimeOrderBy));
 
             return result;
         }

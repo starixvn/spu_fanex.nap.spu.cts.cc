@@ -32,6 +32,8 @@
 
         public bool IsFromAI { get; set; }
 
+        public bool IsFromImperva { get; set; }        
+
         public DateTime LastModifiedDate { get; set; }
 
         public string Remark { get; set; }

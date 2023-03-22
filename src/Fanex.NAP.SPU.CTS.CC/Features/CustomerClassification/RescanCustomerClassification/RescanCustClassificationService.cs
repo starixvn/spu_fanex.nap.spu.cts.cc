@@ -154,6 +154,7 @@
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,
                         IsFromAI = c.IsFromAI,
+                        IsFromImperva = c.IsFromImperva,
                         IsFromTVS = c.IsFromTVS,
                         TVSRequestID = c.TVSRequestID,
                         CreatedBy = StarixITId,
