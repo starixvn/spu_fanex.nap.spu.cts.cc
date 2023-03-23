@@ -210,7 +210,7 @@
         private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
         {
             if (robotAccounts != null && robotAccounts.Any())
-            {
+            {               
                 return problemAccountDataAccess.InsertRobotAccount(JsonConvert.SerializeObject(robotAccounts), isRescan);
             }
 

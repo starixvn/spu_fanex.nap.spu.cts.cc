@@ -12,6 +12,7 @@
     using System.Threading;
     using Fanex.NAP.SPU.CTS.Shares;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Newtonsoft.Json;
 
     public interface IRobotAIDetectionService
     {
@@ -73,7 +74,7 @@
 
                 var robotImpervaDistinct = robotImperva.Distinct(x => x.CustID);
 
-                this.robotDetections = CombineRobotAIImperva(robotAI, robotImpervaDistinct);
+                this.robotDetections = CombineRobotAIImperva(robotAI, robotImpervaDistinct);               
             }
 
             return this;
@@ -184,7 +185,7 @@
                 LastCreateTime = x.LastCreateTime,
                 IsFromAI = false,
                 IsFromImperva = true
-            }).OrderBy(x => x.LastTimeOrderBy));
+            })).OrderBy(x => x.LastTimeOrderBy);
 
             return result;
         }

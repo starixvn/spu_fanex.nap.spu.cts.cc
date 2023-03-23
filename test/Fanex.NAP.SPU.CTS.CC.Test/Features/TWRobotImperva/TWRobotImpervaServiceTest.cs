@@ -6,7 +6,9 @@
     using FluentAssertions;
     using NSubstitute;
     using System;
+    using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class TWRobotImpervaServiceTest
     {
@@ -47,5 +49,49 @@
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(robot);
         }
+
+        [Fact]
+        public void InsertTWRobotImperva_WhenSuccess_ReturnNotException()
+        {
+            // Arrange
+            var robots = new List<TWRobotImpervaGetEntity>()
+            {
+                new TWRobotImpervaGetEntity
+                {
+                    logid = 1,
+                    CustId = 1,
+                    CreateTime  = new DateTime(2023, 3, 24),
+                    Platform = 1
+                },
+                new TWRobotImpervaGetEntity
+                {
+                    logid = 2,
+                    CustId = 2,
+                    CreateTime  = new DateTime(2023, 3, 24),
+                    Platform = 2
+                }
+            };
+
+            // Act
+            Action action = () => robotImpervaService.InsertTWRobotImperva(robots);
+
+            // Assert
+            action.Should().NotThrow<Exception>();
+        }
+
+        [Theory]
+        [InlineData(SystemParameters.TWRobotImperva_LastLogID, 17)]
+        public void UpdateLastScannedID_WhenSuccess(SystemParameters para, long maxLogID)
+        {
+            // Arrange
+            sysDataAccess.UpdateTimingExecution(maxLogID.ToString(), para);
+           
+            // Act
+            Action action = () => robotImpervaService.UpdateLastScannedID(para, maxLogID);
+
+            // Assert
+            action.Should().NotThrow<Exception>();
+        }
+
     }
 }
