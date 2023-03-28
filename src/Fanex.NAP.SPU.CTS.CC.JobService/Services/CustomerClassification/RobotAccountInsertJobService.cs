@@ -12,7 +12,7 @@
     {
         Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize);
     }
 
     public class RobotAccountInsertJobService : IRobotAccountInsertJobService
@@ -63,7 +63,7 @@
             return Task.FromResult(response);
         }
 
-        public Task<bool> ScanningAIRobotDetection(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -71,7 +71,7 @@
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    response = InsertAIRobot(batchExternalSize, batchInternalSize);
+                    response = InsertAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -125,17 +125,16 @@
             return isSuccess;
         }
 
-        public bool InsertAIRobot(int batchExternalSize, int batchInternalSize)
+        public bool InsertAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                                                 .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate)
-                                                 .InsertRobotAIPackage(new InsertRobotParaEntity
+                                                 .GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime)
+                                                 .InsertRobotAIImpervaPackage(new InsertRobotParaEntity
                                                  {
                                                      BatchInternalSize = batchInternalSize,
                                                      IsFromTW = false,
                                                      IsFromCTS = false,
-                                                     IsDirect = true,
-                                                     IsFromAI = true,
+                                                     IsDirect = true,                                                     
                                                      IsFromTVS = false,
                                                      PushDataExternal = new PushDataToExternalEntity
                                                      {
@@ -153,7 +152,7 @@
 
             if (isSuccess)
             {
-                robotDetectionService.UpdateLastScannedId(SystemParameters.RobotDetectionLastModifiedDate);
+                robotDetectionService.UpdateLastScannedId(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
             }
 
             return isSuccess;

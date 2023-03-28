@@ -6,8 +6,11 @@
 
     public class RobotDetectionGetLatestCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_LatestScannedTime")]
-        public DateTime LatestScannedTime { get; set; }
+        [SpParam(SqlParamName = "ip_LatestTimeAI")]
+        public DateTime LatestTimeAI { get; set; }
+
+        [SpParam(SqlParamName = "ip_LatestTimeImperva")]
+        public DateTime LatestTimeImperva { get; set; }
 
         public override string GetSettingKey()
         {

@@ -49,7 +49,7 @@
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel_xtest" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
-		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -125,7 +125,7 @@
 	<Function name="TWProblemAccountInsert">
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Remove" SpName="CTS_DC_TWProblemDetectionMonitor_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Insert" SpName="CTS_DC_TWProblemDetectionMonitor_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_xest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 
@@ -178,7 +178,6 @@
 		<Setting Key="CTS_DC_AssociatedGroup_Account_Add" SpName="CTS_DC_AssociatedGroup_Account_Add" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_AssociatedGroup_Scan" SpName="CTS_DC_AssociatedGroup_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />		
 	</Function>
-
 	<Function Name="MonitorJob">
 		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo_xtest" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo_xtest" DbName="SQL.bodb02.bodbSPUNet" />
@@ -189,5 +188,10 @@
 		
 		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />	
 		<Setting Key="CTS_NormalAccountsClassification_Monitor_RealTime_ClearChanges" SpName="CTS_NormalAccountsClassification_Monitor_RealTime_ClearChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />	
+	</Function>
+	<Function name="RobotImperva">
+		<Setting Key="CTS_RobotImperva_Get" SpName="CTS_RobotImperva_Get_xtest" DbName="SQL.LogCDB.bodbSPUNet" />
+		<Setting Key="CTS_DC_RobotImperva_Insert" SpName="CTS_DC_RobotImperva_Insert_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_RobotImperva_Transform_Update" SpName="CTS_DC_RobotImperva_Transform_Update_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 </Functions>

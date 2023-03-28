@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.AIRobotDetection.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using System;
@@ -8,7 +9,9 @@
 
     public interface IRobotAIDetectionDataAccess
     {
-        IEnumerable<RobotDetectionEntity> GetRobotDetections(DateTime latestScannedTime);
+        (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestScannedTime, DateTime lastRobotImpervaTime);
+
+        void UpdateTransformRobotAIImperva(string logIDs);
     }
 
     public class RobotAIDetectionDataAccess : IRobotAIDetectionDataAccess
@@ -20,14 +23,20 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<RobotDetectionEntity> GetRobotDetections(DateTime latestScannedTime)
-        {
-            var criteria = new RobotDetectionGetLatestCriteria
+        public (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(DateTime latestTimeAI, DateTime latestTimeImperva)
+        {              
+            return repository.FetchMultiple<RobotAIEntity, RobotImpervaEntity>(new RobotDetectionGetLatestCriteria
             {
-                LatestScannedTime = latestScannedTime
-            };
+                LatestTimeAI = latestTimeAI,
+                LatestTimeImperva = latestTimeImperva
+            });
+        }
 
-            return repository.Fetch<RobotDetectionEntity>(criteria);
+        public void UpdateTransformRobotAIImperva(string logIDs)
+        {
+            var criteria = new RobotImpervaUpdateTransformCriteria { LogIDs = logIDs };
+
+            repository.Execute(criteria);
         }
     }
 }

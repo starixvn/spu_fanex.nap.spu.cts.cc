@@ -36,7 +36,7 @@
         [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
-            var result = robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate);
+            var result = robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
 
             // Assert
             Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
@@ -51,7 +51,7 @@
             var expectedResult = new List<long>();
 
             // Act
-            var result = robotDetectionService.InsertRobotAI(robotDetections, paras);
+            var result = robotDetectionService.InsertRobotAIImperva(robotDetections, paras);
 
             // Assert
             result.Should().NotBeNull();
@@ -79,15 +79,18 @@
                     IsSyncAFCData = false,
                 }
             };
-            var expectedRobotDetectionLastModifiedDate = DateTime.Now;
+            var expectedRobotAILastTime = DateTime.Now;
+            var expectedRobotImpervaLastTime = DateTime.Now;
+            var expectedRobotAI = new List<RobotAIEntity>();
+            var expectedRobotImperva = new List<RobotImpervaEntity>();
             var expectedRobotDetections = new List<RobotDetectionEntity>();
 
             // Act
-            systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotDetectionLastModifiedDate).Returns(expectedRobotDetectionLastModifiedDate);
-            robotDetectionDataAccess.GetRobotDetections(expectedRobotDetectionLastModifiedDate).Returns(expectedRobotDetections);
-            robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate);
+            systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotDetectionLastModifiedDate).Returns(expectedRobotAILastTime);
+            robotDetectionDataAccess.GetRobotDetections(expectedRobotAILastTime, expectedRobotImpervaLastTime).Returns((expectedRobotAI, expectedRobotImperva));
+            robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
             
-            var result = robotDetectionService.InsertRobotAIPackage(paras);
+            var result = robotDetectionService.InsertRobotAIImpervaPackage(paras);
 
             // Assert
             result.Should().BeTrue();

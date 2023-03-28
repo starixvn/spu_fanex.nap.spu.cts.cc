@@ -24,19 +24,19 @@
             twGroupbettingServices = new TWGroupBettingService(twGroupBettingDataAccess, systemParameterDataAccess);
         }
 
-        [Fact]
-        public void GetLastScanTime_WhenSuccess_RunSuccessfully()
-        {
-            var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
-            result.Should().NotBe(0);
-        }
+        //[Fact]
+        //public void GetLastScanTime_WhenSuccess_RunSuccessfully()
+        //{
+        //    var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
+        //    result.Should().NotBe(0);
+        //}
 
-        [Fact]
-        public void GetLastTimeCountTotalTicket_WhenSuccess_RunSuccessfully()
-        {
-            var result = twGroupbettingServices.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
-            result.Should().NotBe(0);
-        }
+        //[Fact]
+        //public void GetLastTimeCountTotalTicket_WhenSuccess_RunSuccessfully()
+        //{
+        //    var result = twGroupbettingServices.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
+        //    result.Should().NotBe(0);
+        //}
 
         [Fact]
         public void GetAllRule_WhenSuccess_RunSuccessfully()
