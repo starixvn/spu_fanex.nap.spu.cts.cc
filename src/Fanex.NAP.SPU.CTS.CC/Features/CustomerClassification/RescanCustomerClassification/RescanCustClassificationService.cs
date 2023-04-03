@@ -141,6 +141,9 @@
                         IsFromCTS = c.IsFromCTS,
                         IsFromTVS = c.IsFromTVS,
                         TVSRequestID = c.TVSRequestID,
+                        IsParlay = c.IsParlay,
+                        SportType = c.SportType,
+                        IssueTypeID = c.IssueTypeID,
                         IsFromTW = c.IsFromTW,
                         IsDataChanged = false,
                         LastModifiedDate = c.LastModifiedDate,
@@ -157,6 +160,9 @@
                         IsFromImperva = c.IsFromImperva,
                         IsFromTVS = c.IsFromTVS,
                         TVSRequestID = c.TVSRequestID,
+                        IsParlay = c.IsParlay,
+                        SportType = c.SportType,
+                        IssueTypeID = c.IssueTypeID,
                         CreatedBy = StarixITId,
                         Remark = c.Remark
                     });

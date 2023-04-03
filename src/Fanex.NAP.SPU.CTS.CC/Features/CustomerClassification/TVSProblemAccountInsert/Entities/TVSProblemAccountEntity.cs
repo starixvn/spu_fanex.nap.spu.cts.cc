@@ -9,5 +9,11 @@
         public long? CreatedBy { get; set; }
 
         public int? RequestID { get; set; }
+
+        public bool? IsParlay { get; set; }
+
+        public int? Sporttype { get; set; }
+
+        public int IssueTypeId { get; set; }
     }
 }

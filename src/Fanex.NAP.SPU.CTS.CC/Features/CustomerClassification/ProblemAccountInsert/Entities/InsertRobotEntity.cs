@@ -13,6 +13,18 @@
             IsFromTVS = false;
         }
 
+        public InsertRobotEntity(TVSProblemAccountEntity tvsPACust)
+        {
+            this.CustID = tvsPACust.CustID;
+            this.CreatedBy = tvsPACust.CreatedBy;
+            this.TVSRequestID = tvsPACust.RequestID;
+            this.IsParlay = tvsPACust.IsParlay;
+            this.SportType = tvsPACust.Sporttype;
+            this.IssueTypeID = tvsPACust.IssueTypeId;
+            this.IsFromTVS = true;
+            this.IsDirect = true;
+        }
+
         public Int64 CustID { get; set; }
 
         public int? RobotCounter { get; set; }
@@ -29,6 +41,12 @@
         public bool IsFromImperva { get; set; }
 
         public int? TVSRequestID { get; set; }
+
+        public bool? IsParlay { get; set; }
+
+        public int? SportType { get; set; }
+
+        public int IssueTypeID { get; set; }
 
         public bool IsDirect { get; set; }
 

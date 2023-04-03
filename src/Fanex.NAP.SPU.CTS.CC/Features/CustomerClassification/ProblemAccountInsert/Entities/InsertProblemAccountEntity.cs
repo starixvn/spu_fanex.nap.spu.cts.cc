@@ -33,6 +33,19 @@
             this.IsDataChanged = false;            
         }
 
+        public InsertProblemAccountEntity(TVSProblemAccountEntity tvsPACust)
+        {
+            this.CustID = tvsPACust.CustID;
+            this.ReasonID = tvsPACust.ReasonID;
+            this.CreatedBy = tvsPACust.CreatedBy;
+            this.TVSRequestID = tvsPACust.RequestID;
+            this.IsParlay = tvsPACust.IsParlay;
+            this.SportType = tvsPACust.Sporttype;
+            this.IssueTypeID = tvsPACust.IssueTypeId;
+            this.IsFromTVS = true;
+            this.IsDirectPA = true;
+        }
+
         public Int64 CustID { get; set; }
 
         public Int64 CTSCustID { get; set; }
@@ -72,6 +85,12 @@
         public bool IsFromTVS { get; set; }
 
         public int? TVSRequestID { get; set; }
+
+        public bool? IsParlay { get; set; }
+
+        public int? SportType { get; set; }
+
+        public int IssueTypeID { get; set; }
 
         public bool IsFromTW { get; set; }
 

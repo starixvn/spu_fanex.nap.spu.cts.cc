@@ -26,6 +26,12 @@
 
         public int? TVSRequestID { get; set; }
 
+        public bool? IsParlay { get; set; }
+
+        public int? SportType { get; set; }
+
+        public int IssueTypeID { get; set; }
+
         public bool IsFromTW { get; set; }
 
         public bool IsFromCTS { get; set; }
