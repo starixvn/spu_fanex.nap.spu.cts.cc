@@ -8,7 +8,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_NormalAccountsClassification_Probation";
+            return "CTS_NormalAccountsClassification_GeneralCategorize_Probation";
         }
 
         public override bool IsValid()
