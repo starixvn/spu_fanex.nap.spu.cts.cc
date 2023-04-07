@@ -6,8 +6,6 @@
     {
         public string ListCustIds { get; set; }
 
-        public bool IsGeneralCategory { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_NormalAccountsClassification_UpdateAppliedStatus";

@@ -101,7 +101,7 @@
             {
                 var custIds = custClassifications.Select(x => x.CustId).Distinct();
 
-                normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds), true);
+                normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds));
             }
 
             return true;

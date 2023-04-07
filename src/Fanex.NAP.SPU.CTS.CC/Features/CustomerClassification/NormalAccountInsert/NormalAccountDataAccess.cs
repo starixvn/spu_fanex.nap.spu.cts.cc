@@ -11,7 +11,7 @@
 
         InsertCategoryResultEntity InsertMainCustomerClassification(string newClassification);
 
-        void UpdateAppliedStatusClassification(string custIdList, bool isGeneralCategory);
+        void UpdateAppliedStatusClassification(string custIdList);
 
         IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds);
     }
@@ -64,12 +64,11 @@
             return new InsertCategoryResultEntity { ErrorMessage = criteria.ErrorMessage, CustIds = custIds };
         }
 
-        public void UpdateAppliedStatusClassification(string custIdList, bool isGeneralCategory)
+        public void UpdateAppliedStatusClassification(string custIdList)
         {
             var criteria = new CustClassificationAppliedStatusUpdateCriteria
             {
                 ListCustIds = custIdList,
-                IsGeneralCategory = isGeneralCategory
             };
 
             repository.Execute(criteria);
