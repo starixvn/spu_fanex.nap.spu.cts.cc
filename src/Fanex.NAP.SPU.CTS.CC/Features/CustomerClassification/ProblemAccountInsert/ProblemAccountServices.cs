@@ -308,12 +308,15 @@
                                                             IsFromTW = group.pa.IsFromTW,
                                                             IsDataChanged = group.pa.IsDataChanged,
                                                             ReasonID = group.pa.ReasonID,
+                                                            SportType = group.pa.SportType,
+                                                            IsParlay = group.pa.IsParlay,
+                                                            IssueTypeID = group.pa.IssueTypeID,
 
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
-                                                            WinlossStatus = temp?.WinlossStatus                                                                                                            
+                                                            WinlossStatus = temp?.WinlossStatus                                                            
                                                         });
             }
 
@@ -344,6 +347,9 @@
                                                             IsFromTW = group.pa.IsFromTW,
                                                             TVSRequestID = group.pa.TVSRequestID,
                                                             IsDirect = group.pa.IsDirect,
+                                                            SportType = group.pa.SportType,
+                                                            IsParlay = group.pa.IsParlay,
+                                                            IssueTypeID = group.pa.IssueTypeID,
 
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
