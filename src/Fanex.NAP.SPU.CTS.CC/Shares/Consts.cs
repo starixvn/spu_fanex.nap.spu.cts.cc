@@ -75,7 +75,8 @@
         {
             Abnormal = 27,
             AbnormalM = 101,
-            RobotBetting = 36,
+            TVSRobot36 = 36,
+            TVSRobot105 = 105,
             ABBet = 32
         };
 

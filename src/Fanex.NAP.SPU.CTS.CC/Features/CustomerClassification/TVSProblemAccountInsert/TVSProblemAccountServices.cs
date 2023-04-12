@@ -51,7 +51,8 @@
                 var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.Abnormal
                                                        && c.ReasonID != (int)Reason.AbnormalM
                                                        && c.ReasonID != (int)Reason.ABBet
-                                                       && c.ReasonID != (int)Reason.RobotBetting).Select(c => new InsertProblemAccountEntity(c));
+                                                       && c.ReasonID != (int)Reason.TVSRobot36
+                                                       && c.ReasonID != (int)Reason.TVSRobot105).Select(c => new InsertProblemAccountEntity(c));
 
                 var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, true, parameters.ServiceName);
 
@@ -67,7 +68,7 @@
 
             if (robots != null && robots.Any())
             {
-                var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.RobotBetting).Select(c => new InsertRobotEntity(c));
+                var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.TVSRobot36 && c.ReasonID == (int)Reason.TVSRobot105).Select(c => new InsertRobotEntity(c));
 
                 var result = problemAccountServices.InsertRobotAccountPackage(insertRobot, false);
 
