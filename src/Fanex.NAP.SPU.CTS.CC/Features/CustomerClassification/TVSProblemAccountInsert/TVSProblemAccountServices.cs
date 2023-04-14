@@ -48,9 +48,8 @@
 
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.Abnormal
-                                                       && c.ReasonID != (int)Reason.AbnormalM
-                                                       && c.ReasonID != (int)Reason.ABBet
+                var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.ABBet32
+                                                       && c.ReasonID != (int)Reason.ABBet104
                                                        && c.ReasonID != (int)Reason.TVSRobot36
                                                        && c.ReasonID != (int)Reason.TVSRobot105).Select(c => new InsertProblemAccountEntity(c));
 

@@ -72,12 +72,11 @@
         };
 
         public enum Reason
-        {
-            Abnormal = 27,
-            AbnormalM = 101,
+        {          
             TVSRobot36 = 36,
             TVSRobot105 = 105,
-            ABBet = 32
+            ABBet32 = 32,
+            ABBet104 = 104
         };
 
         public enum CustomerRole
