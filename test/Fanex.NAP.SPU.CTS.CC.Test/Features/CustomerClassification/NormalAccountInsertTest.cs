@@ -177,7 +177,7 @@
                 };
 
             var custIds = listClassification.Select(x => x.CustId).Distinct();
-            normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds), false);
+            normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds));
 
             var result = normalAccountServices.UpdateAppliedStatusClassification(listClassification, true);
 
@@ -250,7 +250,7 @@
             normalAccountDataAccess.InsertMainCustomerClassification(jsonClassification).Returns(ouput);
 
             var custIds = listClassification.Select(x => x.CustId).Distinct();
-            normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds), false);
+            normalAccountDataAccess.UpdateAppliedStatusClassification(string.Join(",", custIds));
 
             var result = normalAccountServices.InsertMainCustomerClassification(custClassificationAfterCheckPA, "NormalAccountInsert", false);
 
