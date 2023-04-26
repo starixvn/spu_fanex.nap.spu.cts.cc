@@ -34,6 +34,13 @@
 		<Setting Key=" CTS_NormalAccountsClassification_Realtime_UpdateLastScan" SpName=" CTS_NormalAccountsClassification_Realtime_UpdateLastScan" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key=" CTS_NormalAccountsClassification_RealTime_CheckChanges" SpName=" CTS_NormalAccountsClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="2700"/>
 	</Function>
+
+	<Function Name="RealtimeCheckChangeClassification">
+		<Setting Key="CTS_NormalClassification_RealTime_CheckChanges" SpName="CTS_NormalClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_NormalClassification_RealTime_UpdateNextScannedTime" SpName="CTS_NormalClassification_RealTime_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_Arc_CustomerAssociation_LastTransDate_Update" SpName="CTS_Arc_CustomerAssociation_LastTransDate_Update" DbName="MySQL.CTS_Archive.ctsServiceAdmin" TimeOut="300" />
+	</Function>
+	
 	<Function Name="ProbationClassification">
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Notification_InsertProbationNotification" SpName="CTS_DC_Notification_InsertProbationNotification" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />

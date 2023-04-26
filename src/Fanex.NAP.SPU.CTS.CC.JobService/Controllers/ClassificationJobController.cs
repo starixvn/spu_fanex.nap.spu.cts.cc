@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -15,7 +16,11 @@
         private readonly INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
-        private readonly IRealtimeClassificationJobService realtimeClassificationJobService;
+        private readonly Services.IRealtimeClassificationJobService realtimeClassificationJobService;
+
+        private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService;
+        private readonly Services.CustomerClassification.Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
+
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
@@ -29,7 +34,9 @@
             INormalAccountJobService normalAccountInsertJobService,
             IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
-            IRealtimeClassificationJobService realtimeClassificationJobService,
+            Services.IRealtimeClassificationJobService realtimeClassificationJobService,
+            IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
+            Services.CustomerClassification.Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
@@ -44,6 +51,8 @@
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
+            this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
+            this.realtimeRenovateJobService = realtimeRenovateJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -92,6 +101,21 @@
             sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
             return await this.probationClassificationJobService.Execute(batchSize);
         }
+
+        #region Renovate
+        [HttpPost("realtimeCheckChangesRenovate")]
+        public async Task<bool> RealtimeCheckChangesRenovate()
+        {
+            return await this.realtimeCheckChangeRenovateJobService.Execute();
+        }
+
+        [HttpPost("scanningRealtimeClassificationRenovate")]
+        public async Task<bool> RealtimeScanningClassificationRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await this.realtimeRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
+        #endregion Renovate
 
         [HttpPost("robotTWClassification")]
         public async Task<bool> RobotTWClassication([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
