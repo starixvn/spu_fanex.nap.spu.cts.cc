@@ -7,6 +7,7 @@
     using Sentry;
     using System;
     using System.Threading.Tasks;
+    using Renovate = Services.CustomerClassification.Renovate;
 
     [ApiController]
     [Route("api/classificationJobs")]
@@ -19,7 +20,8 @@
         private readonly Services.IRealtimeClassificationJobService realtimeClassificationJobService;
 
         private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService;
-        private readonly Services.CustomerClassification.Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
+        private readonly Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
+        private readonly Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService;
 
         private readonly IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -36,7 +38,8 @@
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             Services.IRealtimeClassificationJobService realtimeClassificationJobService,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
-            Services.CustomerClassification.Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
+            Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
+            Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
             IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
@@ -53,6 +56,7 @@
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
             this.realtimeRenovateJobService = realtimeRenovateJobService;
+            this.normalAccountClassificationRenovateJobService = normalAccountClassificationRenovateJobService;
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -93,7 +97,7 @@
         public async Task<bool> RealtimeCheckChanges()
         {
             return await this.realtimeClassificationJobService.CheckChanges();
-        }
+        }        
 
         [HttpPost("probationClassification")]
         public async Task<bool> ProbationScanningClassification([FromForm] int batchSize)
@@ -113,6 +117,12 @@
         public async Task<bool> RealtimeScanningClassificationRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.realtimeRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+        }
+
+        [HttpPost("normalAccountClassificationRenovate")]
+        public async Task<bool> NormalAccountClassificationRenovate([FromForm] int batchInternalSize)
+        {
+            return await this.normalAccountClassificationRenovateJobService.Execute(batchInternalSize);
         }
 
         #endregion Renovate

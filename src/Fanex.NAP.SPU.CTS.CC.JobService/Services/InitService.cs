@@ -38,6 +38,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
+    using Renovate = Features.CustomerClassification.Renovate;
 
     public static class InitService
     {
@@ -59,9 +60,9 @@
 
             RegisterProbationClassification(services);
 
-            RegisteRobotAccountInsert(services);
+            RegisterRobotAccountInsert(services);
 
-            RegisteCustomer(services);
+            RegisterCustomer(services);
 
             RegisterTWGroupBetting(services);
 
@@ -92,6 +93,13 @@
             RegisterCustomerJobMonitor(services);
 
             RegisterRobotImperva(services);
+
+            RegisterRealtimeClassificationRenovate(services);
+
+            RegisterRealtimeCheckChangeClassificationRenovate(services);
+
+            RegisterNormalAccountClassification(services);
+
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -160,7 +168,7 @@
             services.AddSingleton<IProbationClassificationJobService, ProbationClassificationJobService>();
         }
 
-        private static void RegisteRobotAccountInsert(this IServiceCollection services)
+        private static void RegisterRobotAccountInsert(this IServiceCollection services)
         {
             services.AddSingleton<IRobotTWInsertDataAccess, RobotTWInsertDataAccess>();
             services.AddSingleton<IRobotTWInsertServices, RobotTWInsertServices>();
@@ -171,7 +179,7 @@
             services.AddSingleton<IRobotAIDetectionService, RobotAIDetectionService>();
         }
 
-        private static void RegisteCustomer(this IServiceCollection services)
+        private static void RegisterCustomer(this IServiceCollection services)
         {
             services.AddSingleton<ICTSCustomerDataAccess, CTSCustomerDataAccess>();
             services.AddSingleton<ICTSCustomerService, CTSCustomerService>();
@@ -215,8 +223,8 @@
             services.AddSingleton<ITVSProblemAccountServices, TVSProblemAccountServices>();
             services.AddSingleton<ITVSProblemAccountJobService, TVSProblemAccountJobService>();
         }
-        
-        public static void RegisterClassifyGBMatchMonitor(this IServiceCollection services)
+
+        private static void RegisterClassifyGBMatchMonitor(this IServiceCollection services)
         {
             services.AddSingleton<IMatchMonitorClassificationDataAccess, MatchMonitorClassificationDataAccess>();
             services.AddSingleton<IMatchMonitorClassificationService, MatchMonitorClassificationService>();
@@ -285,5 +293,34 @@
             services.AddSingleton<ITWRobotImpervaDataAccess, TWRobotImpervaDataAccess>();
         }
 
+        private static void RegisterRealtimeClassificationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomerClassification.Renovate.IRealtimeClassificationJobService, 
+                CustomerClassification.Renovate.RealtimeClassificationJobService>();
+            services.AddSingleton<Renovate.RealtimeClassification.IRealtimeClassificationService, 
+                Renovate.RealtimeClassification.RealtimeClassificationService>();
+            services.AddSingleton<Renovate.RealtimeClassification.IRealtimeClassificationDataAccess, 
+                Renovate.RealtimeClassification.RealtimeClassificationDataAccess>();
+        }
+
+        private static void RegisterRealtimeCheckChangeClassificationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomerClassification.Renovate.IRealtimeCheckChangeClassificationJobService, 
+                CustomerClassification.Renovate.RealtimeCheckChangeClassificationJobService>();
+            services.AddSingleton<Renovate.RealtimeCheckChangeClassification.IRealtimeCheckChangeClassificationService,
+                Renovate.RealtimeCheckChangeClassification.RealtimeCheckChangeClassificationService>();
+            services.AddSingleton<Renovate.RealtimeCheckChangeClassification.IRealtimeCheckChangeClassificationDataAccess,
+                Renovate.RealtimeCheckChangeClassification.RealtimeCheckChangeClassificationDataAccess>();
+        }
+
+        private static void RegisterNormalAccountClassification(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomerClassification.Renovate.INormalAccountClassificationJobService,
+                CustomerClassification.Renovate.NormalAccountClassificationJobService>();
+            services.AddSingleton<Renovate.NormalAccountClassification.INormalAccountClassificationDataAccess,
+                Renovate.NormalAccountClassification.NormalAccountClassificationDataAccess>();
+            services.AddSingleton<Renovate.NormalAccountClassification.INormalAccountClassificationService,
+                Renovate.NormalAccountClassification.NormalAccountClassificationService>();
+        }
     }
 }

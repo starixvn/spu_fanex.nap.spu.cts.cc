@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_Arc_CustomerAssociation_LastTransDate_Update";
+            return "CTS_Arc_CustomerAssociation_LastTicketDate_Update";
         }
 
         public override bool IsValid()
