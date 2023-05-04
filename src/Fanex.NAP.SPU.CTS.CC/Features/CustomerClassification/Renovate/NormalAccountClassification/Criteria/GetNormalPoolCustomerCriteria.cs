@@ -5,7 +5,7 @@
 
     public class GetNormalPoolCustomerCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "op_ScannedMaxId")]
+        [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
         public override string GetSettingKey()

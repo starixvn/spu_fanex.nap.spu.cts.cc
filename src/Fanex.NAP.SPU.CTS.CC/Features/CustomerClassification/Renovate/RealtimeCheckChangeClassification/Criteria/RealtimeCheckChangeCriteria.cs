@@ -6,7 +6,7 @@
 
     public class RealtimeCheckChangeCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "op_NextScannedDateTime")]
+        [SpParam(SqlParamName = "NextScannedDateTime")]
         public DateTime NextScannedDateTime { get; set; }
 
         public override string GetSettingKey()

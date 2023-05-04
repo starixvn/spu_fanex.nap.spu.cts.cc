@@ -98,7 +98,9 @@
 
             RegisterRealtimeCheckChangeClassificationRenovate(services);
 
-            RegisterNormalAccountClassification(services);
+            RegisterNormalAccountClassificationRenovate(services);
+
+            RegisterNormalAccountRenovate(services);
 
         }
 
@@ -313,7 +315,7 @@
                 Renovate.RealtimeCheckChangeClassification.RealtimeCheckChangeClassificationDataAccess>();
         }
 
-        private static void RegisterNormalAccountClassification(this IServiceCollection services)
+        private static void RegisterNormalAccountClassificationRenovate(this IServiceCollection services)
         {
             services.AddSingleton<CustomerClassification.Renovate.INormalAccountClassificationJobService,
                 CustomerClassification.Renovate.NormalAccountClassificationJobService>();
@@ -321,6 +323,16 @@
                 Renovate.NormalAccountClassification.NormalAccountClassificationDataAccess>();
             services.AddSingleton<Renovate.NormalAccountClassification.INormalAccountClassificationService,
                 Renovate.NormalAccountClassification.NormalAccountClassificationService>();
+        }
+
+        private static void RegisterNormalAccountRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomerClassification.Renovate.INormalAccountJobService,
+                CustomerClassification.Renovate.NormalAccountJobService>();
+            services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountDataAccess,
+                Renovate.NormalAccountInsert.NormalAccountDataAccess>();
+            services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountService,
+                Renovate.NormalAccountInsert.NormalAccountService>();
         }
     }
 }
