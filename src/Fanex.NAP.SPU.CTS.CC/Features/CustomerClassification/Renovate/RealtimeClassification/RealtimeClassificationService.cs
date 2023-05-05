@@ -44,7 +44,7 @@
 
         public IRealtimeClassificationService GetNewPlaceBetCustomers()
         {
-            this.dataAccess.GetNewPlaceBetCustomers();
+            this.customers = this.dataAccess.GetNewPlaceBetCustomers();
 
             return this;
         }
@@ -77,13 +77,9 @@
 
                 foreach (var custBatch in customerChunks)
                 {
-                    var custs = custBatch.Select(x => new GetCustomerCategoryRealtimeEntity
-                    {
-                        CustId = x.CustId,
-                        CategoryId = x.CategoryId
-                    });
+                    var custIdList = string.Join(",", custBatch.Select(x =>x.CustId));
 
-                    dataAccess.PreprocessCustomerClassRealtime(custs);
+                    dataAccess.PreprocessCustomerClassRealtime(custIdList);
                 }
             }
 

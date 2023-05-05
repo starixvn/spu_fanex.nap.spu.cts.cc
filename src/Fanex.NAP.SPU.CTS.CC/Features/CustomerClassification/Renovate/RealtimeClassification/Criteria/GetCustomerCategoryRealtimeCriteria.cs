@@ -6,7 +6,7 @@
     public class GetCustomerCategoryRealtimeCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDs { get; set; }
+        public string CustIdList { get; set; }
 
         public override string GetSettingKey()
         {
@@ -15,7 +15,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustIDs);
+            return !string.IsNullOrEmpty(CustIdList);
         }
     }
 }

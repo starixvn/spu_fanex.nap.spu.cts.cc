@@ -12,7 +12,7 @@
 
         void UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> CustInfos);
 
-        void UpdateNextScanCheckChange(DateTime nextScanned);
+        void UpdateNextScanCheckChange(DateTime? nextScanned);
 
     }
 
@@ -37,9 +37,12 @@
             this.dataAccess.UpdateLastTransDate(JsonConvert.SerializeObject(CustInfos));
         }
 
-        public void UpdateNextScanCheckChange(DateTime nextScanned)
+        public void UpdateNextScanCheckChange(DateTime? nextScanned)
         {
-            this.dataAccess.UpdateNextScanCheckChange(nextScanned);
+            if (nextScanned.HasValue && nextScanned.Value != DateTime.MinValue)
+            {
+                this.dataAccess.UpdateNextScanCheckChange(nextScanned);
+            }            
         }
 
     }

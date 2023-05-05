@@ -5,7 +5,7 @@
 
     public class RealtimeCheckChangeUpdateNextScanCriteria : NonQueryCommand
     {
-        public DateTime NextScannedDateTime { get; set; }
+        public DateTime? NextScannedDateTime { get; set; }
 
         public override string GetSettingKey()
         {

@@ -4,8 +4,8 @@
 
     public class RealtimeCheckChangeEntities
     {
-        public int CustID { get; set; }
+        public int CustId { get; set; }
 
-        public DateTime LastTicketDate { get; set; }
+        public DateTime? LastTicketDate { get; set; }
     }
 }

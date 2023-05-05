@@ -9,7 +9,7 @@
 
         void UpdateLastTransDate(string custInfos);
 
-        void UpdateNextScanCheckChange(DateTime nextScanned);
+        void UpdateNextScanCheckChange(DateTime? nextScanned);
         
     }
 
@@ -45,7 +45,7 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateNextScanCheckChange(DateTime nextScanned)
+        public void UpdateNextScanCheckChange(DateTime? nextScanned)
         {
             var criteria = new RealtimeCheckChangeUpdateNextScanCriteria
             {

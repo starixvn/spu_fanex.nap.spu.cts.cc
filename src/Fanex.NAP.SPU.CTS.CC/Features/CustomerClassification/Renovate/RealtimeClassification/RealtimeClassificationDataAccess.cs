@@ -11,9 +11,9 @@
     {
         GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
 
-        GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIDs);
+        GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIdList);
 
-        void PreprocessCustomerClassRealtime(IEnumerable<GetCustomerCategoryRealtimeEntity> custs);
+        void PreprocessCustomerClassRealtime(string custIdList);
 
         void InsertPADailyScanQueue(string custIDList);
 
@@ -43,11 +43,11 @@
             };
         }
 
-        public GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIDs)
+        public GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIdList)
         {
             var criteria = new GetCustomerCategoryRealtimeCriteria
             {
-                CustIDs = custIDs
+                CustIdList = custIdList
             };
 
             var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
@@ -61,11 +61,11 @@
             };
         }
 
-        public void PreprocessCustomerClassRealtime(IEnumerable<GetCustomerCategoryRealtimeEntity> custs)
+        public void PreprocessCustomerClassRealtime(string custIdList)
         {
             var criteria = new PreprocessCustomerRealtimeCriteria
             {
-                CustomersXML = custs.ToXmlString()
+                ListCustId = custIdList
             };
 
             repository.Execute(criteria);
