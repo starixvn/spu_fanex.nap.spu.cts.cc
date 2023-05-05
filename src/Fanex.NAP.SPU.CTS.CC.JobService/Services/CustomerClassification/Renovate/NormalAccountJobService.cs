@@ -75,7 +75,7 @@
 
                 foreach (var custBatch in custChunks)
                 {
-                    actions.Add(() => InsertNormalAccount(custBatch, batchExternalSize));
+                    actions.Add(() => InsertNormalAccount(custBatch, normalAccountModel.ScannedMaxId, batchExternalSize));
                 }
 
                 Parallel.Invoke(actions.ToArray());
@@ -84,7 +84,7 @@
             return normalAccountModel.IsContinute;
         }
 
-        private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, int batchExternalSize)
+        private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, long scannedMaxId, int batchExternalSize)
         {
             var twTaggedCusts = normalAccountService.GetGroupBettingAndRejectCustomer(custs);
 
@@ -114,7 +114,7 @@
 
                     var custIdInsertResult = string.Join(",", finalNormalAcc.Select(x => x.CustId).Distinct());
 
-                    normalAccountService.UpdateCompleteNormalAccountInsert(custIdInsertResult, isPushCCSuccess);
+                    normalAccountService.UpdateCompleteNormalAccountInsert(custIdInsertResult, scannedMaxId, isPushCCSuccess);
                 },
                 () =>
                 {

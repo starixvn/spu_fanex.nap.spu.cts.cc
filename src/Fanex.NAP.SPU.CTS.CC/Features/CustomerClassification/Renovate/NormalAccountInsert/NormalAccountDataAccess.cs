@@ -2,10 +2,11 @@
 {
     using Fanex.Data.Repository;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface INormalAccountDataAccess
     {
-        IEnumerable<GetNormalAccountEntity> GetNormalAccount();
+        GetNormalAccountModel GetNormalAccount();
 
         IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList);
 
@@ -13,7 +14,7 @@
 
         InsertNormalAccountResultEntity InsertNormalAccount(string custInfoList);
 
-        void UpdateCompleteNormalAccountInsert(string custIdList);
+        void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId);
 
     }
 
@@ -26,11 +27,18 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<GetNormalAccountEntity> GetNormalAccount()
+        public GetNormalAccountModel GetNormalAccount()
         {
             var criteria = new GetNormalAccountCriteria();
 
-            return repository.Fetch<GetNormalAccountEntity>(criteria);
+            var data = repository.Fetch<GetNormalAccountEntity>(criteria);
+
+            return new GetNormalAccountModel
+            {
+                NormalAccount = data,
+                ScannedMaxId = criteria.ScannedMaxId,
+                IsContinute = data != null && data.Any()
+            };
         }
 
         public IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList)
@@ -66,11 +74,12 @@
             return new InsertNormalAccountResultEntity { CustIds = custIds, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void UpdateCompleteNormalAccountInsert(string custIdList)
+        public void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId)
         {
             var criteria = new InsertCompleteNormalAccountCrieria
             {
-                ListCustIds = custIdList
+                ScannedMaxId = scannedMaxId,
+                ListCustId = custIdList
             };
 
             repository.Execute(criteria);

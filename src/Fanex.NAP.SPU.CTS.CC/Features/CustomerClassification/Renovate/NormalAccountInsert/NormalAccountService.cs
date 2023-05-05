@@ -17,7 +17,7 @@
 
         InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
-        bool UpdateCompleteNormalAccountInsert(string custIdList, bool isSuccess);
+        bool UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId, bool isSuccess);
 
         IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggedCust);
 
@@ -38,15 +38,7 @@
 
         public GetNormalAccountModel GetNormalAccounts(string serviceName, bool IsWriteLog)
         {            
-            var data = dataAccess.GetNormalAccount();
-
-            Utilities.LogSentryInfo(serviceName, "Get Normal Accounts", data, IsWriteLog, sentryClient);
-
-            return new GetNormalAccountModel
-            {
-                NormalAccount = data,
-                IsContinute = data != null && data.Any()
-            };
+            return dataAccess.GetNormalAccount();            
         }
 
         public IEnumerable<CTSTaggedCustEntity> GetCustomerAssociationProblemAccount(string custIdList)
@@ -87,11 +79,11 @@
             return result;
         }
 
-        public bool UpdateCompleteNormalAccountInsert(string custIdList, bool isSuccess)
+        public bool UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId, bool isSuccess)
         {
             if (isSuccess)
             {
-                dataAccess.UpdateCompleteNormalAccountInsert(custIdList);
+                dataAccess.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
             }            
 
             return true;

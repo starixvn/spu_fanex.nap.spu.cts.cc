@@ -12,6 +12,8 @@
 
         public IEnumerable<GetNormalAccountEntity> NormalAccount { get; set; }
 
+        public long ScannedMaxId { get; set; }
+
         public bool IsContinute { get; set; }
     }
 }

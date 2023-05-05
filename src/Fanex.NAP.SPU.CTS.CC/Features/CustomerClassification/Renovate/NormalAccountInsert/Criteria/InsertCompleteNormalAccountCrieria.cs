@@ -1,10 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
 
     public class InsertCompleteNormalAccountCrieria : NonQueryCommand
     {
-        public string ListCustIds { get; set; }
+        [SpParam(SqlParamName = "ScannedMaxId")]
+        public long ScannedMaxId { get; set; }
+
+        [SpParam(SqlParamName = "ListCustId")]
+        public string ListCustId { get; set; }
 
         public override string GetSettingKey()
         {
