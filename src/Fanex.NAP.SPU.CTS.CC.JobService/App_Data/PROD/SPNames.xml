@@ -38,7 +38,7 @@
 	<Function Name="RealtimeCheckChangeClassificationRenovate">
 		<Setting Key="CTS_NormalClassification_RealTime_CheckChanges" SpName="CTS_NormalClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_NormalClassification_RealTime_UpdateNextScannedTime" SpName="CTS_NormalClassification_RealTime_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
-		<Setting Key="CTS_Arc_CustomerAssociation_LastTicketDate_Update" SpName="CTS_Arc_CustomerAssociation_LastTicketDate_Update" DbName="MySQL.CTS_Archive.ctsServiceAdmin" TimeOut="300" />
+		<!--<Setting Key="CTS_Arc_CustomerAssociation_LastTicketDate_Update" SpName="CTS_Arc_CustomerAssociation_LastTicketDate_Update" DbName="MySQL.CTS_Archive.ctsServiceAdmin" TimeOut="300" />-->
 	</Function>
 
 	<Function Name="RealtimeClassificationRenovate">

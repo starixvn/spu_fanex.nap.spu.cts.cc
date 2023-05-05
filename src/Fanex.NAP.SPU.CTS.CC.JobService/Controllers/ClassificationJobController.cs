@@ -113,25 +113,25 @@
         [HttpPost("realtimeCheckChangesRenovate")]
         public async Task<bool> RealtimeCheckChangesRenovate()
         {
-            return await this.realtimeCheckChangeRenovateJobService.Execute();
+            return await this.realtimeCheckChangeRenovateJobService.Execute();           
         }
 
         [HttpPost("scanningRealtimeClassificationRenovate")]
         public async Task<bool> RealtimeScanningClassificationRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.realtimeRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.realtimeRenovateJobService.Execute(batchExternalSize, batchInternalSize);            
         }
 
         [HttpPost("normalAccountClassificationRenovate")]
         public async Task<bool> NormalAccountClassificationRenovate([FromForm] int batchInternalSize)
         {
-            return await this.normalAccountClassificationRenovateJobService.Execute(batchInternalSize);
+            return await this.normalAccountClassificationRenovateJobService.Execute(batchInternalSize);            
         }
 
         [HttpPost("normalAccountInsertRenovate")]
         public async Task<bool> NormalAccountInsertRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.normalAccountRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.normalAccountRenovateJobService.Execute(batchExternalSize, batchInternalSize);            
         }
 
         #endregion Renovate
