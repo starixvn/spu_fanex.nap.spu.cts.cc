@@ -65,7 +65,7 @@
 
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
-            var normalAccountModel = normalAccountService.GetNormalAccounts(serviceName, appSettings.NormalAccountIsWriteLog);
+            var normalAccountModel = normalAccountService.GetNormalAccounts();
             
             if (normalAccountModel.IsContinute)
             {

@@ -51,7 +51,7 @@
 
         public IRealtimeClassificationService GetCustomerCategory(int batchSize)
         {
-            if (this.customers.CustomerNewPlaceBets != null && this.customers.CustomerNewPlaceBets.Any())
+            if (this.customers != null && this.customers.CustomerNewPlaceBets != null && this.customers.CustomerNewPlaceBets.Any())
             {
                 var customerChunks = customers.CustomerNewPlaceBets.Chunk(batchSize);
 

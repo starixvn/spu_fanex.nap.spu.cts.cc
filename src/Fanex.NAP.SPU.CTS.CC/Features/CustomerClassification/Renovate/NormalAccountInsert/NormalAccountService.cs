@@ -9,7 +9,7 @@
 
     public interface INormalAccountService
     {
-        GetNormalAccountModel GetNormalAccounts(string serviceName, bool IsWriteLog);
+        GetNormalAccountModel GetNormalAccounts();
 
         IEnumerable<TWTaggedCustEntity> GetGroupBettingAndRejectCustomer(IEnumerable<GetNormalAccountEntity> custs);
 
@@ -36,7 +36,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public GetNormalAccountModel GetNormalAccounts(string serviceName, bool IsWriteLog)
+        public GetNormalAccountModel GetNormalAccounts()
         {            
             return dataAccess.GetNormalAccount();            
         }

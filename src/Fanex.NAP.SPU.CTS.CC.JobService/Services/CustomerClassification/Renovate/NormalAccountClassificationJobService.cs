@@ -91,7 +91,7 @@
                                                       IsCheckBetCount = custMain.IsCheckBetCount
                                                   });
 
-            normalAccountService.ClassifyNormalPoolCustomers(JsonConvert.SerializeObject(customerInfos))
+            normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
                 .ClearNormalPoolCustomers(custIDList, scannedMaxID);
         }
 
