@@ -45,7 +45,7 @@
         public IRealtimeClassificationService GetNewPlaceBetCustomers()
         {
             this.customers = this.dataAccess.GetNewPlaceBetCustomers();
-
+           
             return this;
         }
 
@@ -62,7 +62,7 @@
                     var custCategory = dataAccess.GetCustomerCategory(custIDs);
 
                     this.customerCategories.CustomerCategory.AddRange(custCategory.CustomerCategory);
-                    this.customerCategories.CustomerPADailyScan.AddRange(custCategory.CustomerPADailyScan);
+                    this.customerCategories.CustomerPADailyScan.AddRange(custCategory.CustomerPADailyScan);                 
                 }
             } 
 
@@ -77,7 +77,7 @@
 
                 foreach (var custBatch in customerChunks)
                 {
-                    var custIdList = string.Join(",", custBatch.Select(x =>x.CustId));
+                    var custIdList = string.Join(",", custBatch.Select(x =>x.CustId));                   
 
                     dataAccess.PreprocessCustomerClassRealtime(custIdList);
                 }
