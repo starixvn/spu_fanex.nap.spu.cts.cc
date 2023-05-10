@@ -71,9 +71,11 @@
 
         public IRealtimeClassificationService PreprocessCustomerClassRealtime(int batchSize)
         {
-            if (this.customerCategories.CustomerCategory.Any())
+            var normalCustCategores = this.customerCategories.CustomerCategory.Where(x => x.CategoryId != -1);
+
+            if (normalCustCategores.Any())
             {
-                var customerChunks = this.customerCategories.CustomerCategory.Chunk(batchSize);
+                var customerChunks = normalCustCategores.Chunk(batchSize);
 
                 foreach (var custBatch in customerChunks)
                 {

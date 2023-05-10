@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification
 {
+    using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System.Collections.Generic;
 
@@ -37,6 +38,8 @@
 
         public INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML)
         {
+            Utilities.LogSentryInfo("NormalAccountClassificationService", "ClassifyNormalAccount ClassifyNormalPoolCustomers ", customerXML, true, sentryClient);
+
             dataAccess.ClassifyNormalPoolCustomers(customerXML);
             
             return this;

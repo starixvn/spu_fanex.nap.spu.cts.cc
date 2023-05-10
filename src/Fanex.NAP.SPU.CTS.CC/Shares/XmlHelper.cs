@@ -11,29 +11,32 @@
 
     public static class XmlHelper
     {
-        private static IDictionary<Type, IEnumerable<Func<object, object>>> typeLookup = new Dictionary<Type, IEnumerable<Func<object, object>>>();
+        public static XElement ToXmlObj<T>(this T o, Dictionary<Type, IEnumerable<Func<object, object>>> typeLookup) => ToXObject(o, typeof(T), typeLookup);
 
-        public static XElement ToXmlObj<T>(this T o) => ToXObject(o, typeof(T));
+        public static string ToXmlString<T>(this T o)
+        {
+            var typeLookup = new Dictionary<Type, IEnumerable<Func<object, object>>>();
 
-        public static string ToXmlString<T>(this T o) => o.ToXmlObj().ToString();
+            return o.ToXmlObj(typeLookup).ToString();
+        }
 
-        private static XElement ToXObject(object o, Type t)
+        private static XElement ToXObject(object o, Type t, Dictionary<Type, IEnumerable<Func<object, object>>> typeLookup)
         {
             if (typeof(IEnumerable).IsAssignableFrom(t))
             {
                 var generic_param = t.IsArray ? t.GetElementType() : t.GetGenericArguments()[0];
 
-                RegisterType(generic_param);
+                RegisterType(generic_param, typeLookup);
 
                 var list = o as IEnumerable;
 
-                var xml_parts = list.Cast<object>().Select(a => ToXObject(a, generic_param));
+                var xml_parts = list.Cast<object>().Select(a => ToXObject(a, generic_param, typeLookup));
 
                 return new XElement("Root", xml_parts);
             }
             else
             {
-                RegisterType(t);
+                RegisterType(t, typeLookup);
 
                 var children =
                     typeLookup[t]
@@ -45,9 +48,9 @@
             }
         }
 
-        public static void RegisterType<T>() => RegisterType(typeof(T));
+        public static void RegisterType<T>(Dictionary<Type, IEnumerable<Func<object, object>>> typeLookup) => RegisterType(typeof(T), typeLookup);
 
-        private static void RegisterType(Type t)
+        private static void RegisterType(Type t, Dictionary<Type, IEnumerable<Func<object, object>>> typeLookup)
         {
             if (typeLookup.ContainsKey(t))
             {
@@ -71,8 +74,8 @@
                 }
                 else
                 {
-                    RegisterType(prop.PropertyType);
-                    f = CreateCompositePropReader(prop);
+                    RegisterType(prop.PropertyType, typeLookup);
+                    f = CreateCompositePropReader(prop, typeLookup);
                 }
 
                 q.Enqueue(f);
@@ -101,7 +104,7 @@
             return lambda_expr.Compile();
         }
 
-        private static Func<object, object> CreateCompositePropReader(PropertyInfo prop)
+        private static Func<object, object> CreateCompositePropReader(PropertyInfo prop, Dictionary<Type, IEnumerable<Func<object, object>>> typeLookup)
         {
             var arg_expr = Expression.Parameter(typeof(object));
 
@@ -111,7 +114,7 @@
 
             var f = Expression.Lambda<Func<object, object>>(prop_expr, arg_expr).Compile();
 
-            return obj => ToXObject(f(obj), prop.PropertyType);
+            return obj => ToXObject(f(obj), prop.PropertyType, typeLookup);
         }
     }
 }

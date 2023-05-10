@@ -86,6 +86,8 @@
 
         private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, long scannedMaxId, int batchExternalSize)
         {
+            Utilities.LogSentryInfo(serviceName, "InsertNormalAccount custs ", custs, true, sentryClient);
+
             var twTaggedCusts = normalAccountService.GetGroupBettingAndRejectCustomer(custs);
 
             var custAfterCheckTWTagged = normalAccountService.MergeWithTWTaggedCust(custs, twTaggedCusts);

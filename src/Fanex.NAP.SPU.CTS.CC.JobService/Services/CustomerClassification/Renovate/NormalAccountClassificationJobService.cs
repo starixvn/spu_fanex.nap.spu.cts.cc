@@ -77,6 +77,8 @@
 
         private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID)
         {
+            Utilities.LogSentryInfo(serviceName, "ClassifyNormalAccount normalPoolCustomers ", normalPoolCustomers, true, sentryClient);
+
             var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
 
             var customerCategories = normalAccountService.GetCurrentCustomerCategory(custIDList);
