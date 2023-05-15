@@ -56,20 +56,10 @@
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
-                var logCustIDs = new List<long>() { 1296, 1331, 1335, 1447036, 1446906, 1447622 };
-
-                var logCusts = scanningCustomers.CustID.Where(x => logCustIDs.Contains(x));
-
-                Utilities.LogSentryInfo("DailyNormalClassification", "ScanningDailyNormalClassification scanningCustomers", logCusts, true, sentryClient);
-
                 var custIds = string.Join(",", scanningCustomers.CustID);
                 
                 var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIds);
-
-                var logCustNormalInfos = custNormalInfos.Where(x => logCustIDs.Contains(x.CustID));
-
-                Utilities.LogSentryInfo("DailyNormalClassification", "GetExistingCustClassificationNormal custNormalInfos", custNormalInfos, true, sentryClient);
-
+                
                 if (custNormalInfos.Any())
                 {
                     dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);

@@ -37,9 +37,7 @@
         }
 
         public INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML)
-        {
-            Utilities.LogSentryInfo("NormalAccountClassificationService", "ClassifyNormalAccount ClassifyNormalPoolCustomers ", customerXML, true, sentryClient);
-
+        {            
             dataAccess.ClassifyNormalPoolCustomers(customerXML);
             
             return this;
