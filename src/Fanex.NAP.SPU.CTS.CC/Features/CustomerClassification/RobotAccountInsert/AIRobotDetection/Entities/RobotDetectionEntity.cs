@@ -6,6 +6,8 @@
     {
         public long CustID { get; set; }
 
+        public int CategoryID { get; set; }
+
         public DateTime LastModifiedDate { get; set; }
 
         public DateTime LastCreateTime { get; set; }

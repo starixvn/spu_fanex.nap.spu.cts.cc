@@ -10,9 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using Fanex.NAP.SPU.CTS.Shares;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-    using Newtonsoft.Json;
 
     public interface IRobotAIDetectionService
     {
@@ -155,6 +153,7 @@
                 custCategory = robotDetections.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
+                    CategoryID = c.CategoryID,
                     IsFromAI = c.IsFromAI,
                     IsFromImperva = c.IsFromImperva,
                     IsFromTW = paras.IsFromTW,
@@ -174,13 +173,14 @@
             var result = robotAI.Select(x => new RobotDetectionEntity
             {
                 CustID = x.CustID,
+                CategoryID = x.CategoryID,
                 LastModifiedDate = x.LastModifiedDate,
                 LastCreateTime = DateTime.MinValue,
                 IsFromAI = true,
                 IsFromImperva = false
             }).Union(robotImperva.Select(x => new RobotDetectionEntity
             {
-                CustID = x.CustID,
+                CustID = x.CustID,                
                 LastModifiedDate = DateTime.MinValue,
                 LastCreateTime = x.LastCreateTime,
                 IsFromAI = false,

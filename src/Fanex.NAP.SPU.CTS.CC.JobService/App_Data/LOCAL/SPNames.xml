@@ -23,7 +23,7 @@
 	<Function Name="DailyProblemClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
-		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_DailyScanPA_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
@@ -76,7 +76,7 @@
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
-		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_RobotDetection_GetLatest" SpName="CTS_DC_RobotDetection_GetLatest_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -141,8 +141,8 @@
 
 		<Setting Key="CTS_DC_CustClassification_PA_Remove" SpName="CTS_DC_CustClassification_PA_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_Insert" SpName="CTS_DC_CustClassification_PA_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ClearOld" SpName="CTS_DC_CustClassification_PA_ClearOld" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Get" SpName="CTS_DC_CustClassification_Get" DbName="MySQL.CTS_DataCenter.Reporter" />
 		<Setting Key="CTS_DC_CustClassification_Normal_GetExisting" SpName="CTS_DC_CustClassification_Normal_GetExisting" DbName="MySQL.CTS_DataCenter.Reporter" />
@@ -156,7 +156,7 @@
 		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 
 		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function name="TVSProblemAccountInsert">
