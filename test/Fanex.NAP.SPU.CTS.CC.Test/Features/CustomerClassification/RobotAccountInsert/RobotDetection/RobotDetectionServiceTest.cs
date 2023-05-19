@@ -36,7 +36,7 @@
         [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
-            var result = robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
+            var result = robotDetectionService.GetRobotDetections(SystemParameters.RobotDetection_LastID, SystemParameters.TWRobotImperva_LastID);
 
             // Assert
             Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
@@ -79,16 +79,15 @@
                     IsSyncAFCData = false,
                 }
             };
-            var expectedRobotAILastTime = DateTime.Now;
-            var expectedRobotImpervaLastTime = DateTime.Now;
+            var expectedRobotAIID = 1;
+            var expectedRobotImpervaID = 2;
             var expectedRobotAI = new List<RobotAIEntity>();
             var expectedRobotImperva = new List<RobotImpervaEntity>();
-            var expectedRobotDetections = new List<RobotDetectionEntity>();
 
             // Act
-            systemParameterServices.GetLastScannedDateTime(SystemParameters.RobotDetectionLastModifiedDate).Returns(expectedRobotAILastTime);
-            robotDetectionDataAccess.GetRobotDetections(expectedRobotAILastTime, expectedRobotImpervaLastTime).Returns((expectedRobotAI, expectedRobotImperva));
-            robotDetectionService.GetRobotDetections(SystemParameters.RobotDetectionLastModifiedDate, SystemParameters.TWRobotImperva_LastTime);
+            systemParameterServices.GetLastScannedId(SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
+            robotDetectionDataAccess.GetRobotDetections(expectedRobotAIID, expectedRobotImpervaID).Returns((expectedRobotAI, expectedRobotImperva));
+            robotDetectionService.GetRobotDetections(SystemParameters.RobotDetection_LastID, SystemParameters.TWRobotImperva_LastID);
             
             var result = robotDetectionService.InsertRobotAIImpervaPackage(paras);
 

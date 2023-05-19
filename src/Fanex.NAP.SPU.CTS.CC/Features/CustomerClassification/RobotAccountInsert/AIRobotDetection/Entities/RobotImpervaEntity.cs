@@ -4,7 +4,7 @@
 
     public class RobotImpervaEntity
     {
-        public long LogID { get; set; }
+        public long RobotImpervaLogID { get; set; }
 
         public long CustID { get; set; }
 

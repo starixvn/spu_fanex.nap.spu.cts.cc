@@ -42,7 +42,8 @@
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastScannedTime = 88,
             NewCTSCustomerClassificationLastCustID = 92,
-            RobotDetectionLastModifiedDate = 94,
+            //RobotDetectionLastModifiedDate = 94,
+            RobotDetection_LastID = 94,
             AssociatedGroupLastGroupID = 98,
             AssociatedGroupLastCTSCustID = 99,
             SabaDangerLevel_LastHistoryID = 102,
@@ -54,7 +55,8 @@
             JobMonitor_NewCustomerLastScannedCustID = 131,
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
-			TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
+			//TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
+            TWRobotImperva_LastID = 134
         };
 
         public enum Reason
