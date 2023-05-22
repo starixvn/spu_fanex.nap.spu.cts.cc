@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public interface IRealtimeCheckChangeClassificationJobService
@@ -40,6 +41,8 @@
                     foreach (var transDateList in batchChunks)
                     {
                         realtimeCheckChangeServices.UpdateLastTransDate(transDateList);
+
+                        Thread.Sleep(100);
                     }
                 }
 
