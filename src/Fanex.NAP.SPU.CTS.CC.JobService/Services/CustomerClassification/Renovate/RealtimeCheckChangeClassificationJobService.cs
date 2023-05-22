@@ -10,7 +10,7 @@
 
     public interface IRealtimeCheckChangeClassificationJobService
     {
-        Task<bool> Execute();
+        Task<bool> Execute(int batchSize);
     }
 
     public class RealtimeCheckChangeClassificationJobService : IRealtimeCheckChangeClassificationJobService
@@ -27,7 +27,7 @@
             this.serviceName = "RealtimeCheckChangeClassification";
         }
 
-        public Task<bool> Execute()
+        public Task<bool> Execute(int batchSize)
         {
             try
             {
@@ -35,7 +35,12 @@
 
                 if (checkChangeModel.CustInfos != null && checkChangeModel.CustInfos.Any())
                 {
-                    realtimeCheckChangeServices.UpdateLastTransDate(checkChangeModel.CustInfos);                    
+                    var batchChunks = checkChangeModel.CustInfos.Chunk(batchSize);
+
+                    foreach (var transDateList in batchChunks)
+                    {
+                        realtimeCheckChangeServices.UpdateLastTransDate(transDateList);
+                    }
                 }
 
                 realtimeCheckChangeServices.UpdateNextScanCheckChange(checkChangeModel.NextScannedDateTime);

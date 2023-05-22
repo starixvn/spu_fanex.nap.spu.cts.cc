@@ -111,9 +111,9 @@
 
         #region Renovate
         [HttpPost("realtimeCheckChangesRenovate")]
-        public async Task<bool> RealtimeCheckChangesRenovate()
+        public async Task<bool> RealtimeCheckChangesRenovate([FromForm] int batchSize)
         {
-            return await this.realtimeCheckChangeRenovateJobService.Execute();           
+            return await this.realtimeCheckChangeRenovateJobService.Execute(batchSize);           
         }
 
         [HttpPost("scanningRealtimeClassificationRenovate")]

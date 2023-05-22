@@ -44,6 +44,5 @@
                 this.dataAccess.UpdateNextScanCheckChange(nextScanned);
             }            
         }
-
     }
 }
