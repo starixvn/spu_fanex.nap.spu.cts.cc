@@ -19,7 +19,7 @@
         public DailyClassificationTest()
         {
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService, null);
         }
 
         [Fact]

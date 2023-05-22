@@ -43,7 +43,7 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
 
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, null);
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, null, null);
 
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
