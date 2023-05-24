@@ -18,7 +18,7 @@
 
         void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize);
 
-        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize);
+        IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
 
         void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedDate, JobMonitorType type, int batchSize);
     }
@@ -26,11 +26,14 @@
     public class CustomerJobMonitorService : ICustomerJobMonitorService
     {
         private readonly ICustomerJobMonitorDataAccess customerJobMonitorDataAccess;
+        private readonly IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess;
 
         public CustomerJobMonitorService(
-                ICustomerJobMonitorDataAccess customerJobMonitorDataAccess)
+                ICustomerJobMonitorDataAccess customerJobMonitorDataAccess,
+                IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess)
         {
             this.customerJobMonitorDataAccess = customerJobMonitorDataAccess;
+            this.classificationJobMonitorDataAccess = classificationJobMonitorDataAccess;
         }
 
         public MonitoringNewCustomerViewModel GetCustInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
@@ -65,9 +68,9 @@
             return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
         }
 
-        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize)
+        public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize)
         {
-            var custCategory = new List<CustomerCategoriesMonitorEntity>();
+            var custCategory = new List<CustomerCategoryMonitorEntity>();
 
             if (custIds.Any())
             {
@@ -77,7 +80,7 @@
                 {
                     var custToString = string.Join(',', custBatch);
 
-                    custCategory.AddRange(customerJobMonitorDataAccess.GetCustomerCategoriesToMonitor(custToString, true));
+                    custCategory.AddRange(classificationJobMonitorDataAccess.GetCustomerCategoryToMonitor(custToString, true));
                 }
             }
 
@@ -94,7 +97,7 @@
                 {
                     var customerJson = JsonConvert.SerializeObject(custBatch);
 
-                    customerJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedDate, type);
+                    classificationJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedDate, type);
                 }
             }
         }

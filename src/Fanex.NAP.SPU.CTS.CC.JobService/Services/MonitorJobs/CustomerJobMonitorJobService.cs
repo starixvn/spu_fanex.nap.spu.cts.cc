@@ -144,11 +144,11 @@
         {
             if (custIds != null & custIds.Any())
             {
-                var custCategories = customerJobMonitorService.GetCustomerCategoriesToMonitor(custIds, batchSize);
+                var custCategories = customerJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
 
                 var nullCategories = custCategories.Where(c => c.CurrentCategoryID == null);
 
-                return nullCategories.Any() ? nullCategories.Select(c => c.CustId) : Enumerable.Empty<long>();
+                return nullCategories.Any() ? nullCategories.Select(c => c.CustID) : Enumerable.Empty<long>();
             }
 
             return Enumerable.Empty<long>();

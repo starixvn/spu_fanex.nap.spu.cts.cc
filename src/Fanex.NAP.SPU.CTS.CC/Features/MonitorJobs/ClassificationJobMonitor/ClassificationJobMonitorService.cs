@@ -16,20 +16,20 @@
 
         void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime);
 
-        IClassificationJobMonitorService CheckRealtimeCustomerCategory(IEnumerable<CustomerCategoriesMonitorEntity> custCategory);
+        IClassificationJobMonitorService FilterInvalidCustomerCategory(IEnumerable<CustomerCategoryMonitorEntity> custCategory);
 
         IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize , DateTime scannedTime);
 
         IClassificationJobMonitorService NotifyTelegram(string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo);
 
-        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize);
+        IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
     }
 
     public class ClassificationJobMonitorService : IClassificationJobMonitorService
     {
         private readonly IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess;
-        private IEnumerable<CustomerCategoriesMonitorEntity> realtimeNullCategory;
-        private IEnumerable<CustomerCategoriesMonitorEntity> realtimeInactiveCategory;
+        private IEnumerable<CustomerCategoryMonitorEntity> realtimeNullCategory;
+        private IEnumerable<CustomerCategoryMonitorEntity> realtimeInactiveCategory;
         private readonly ISentryClient sentryClient;
         private const string ServiceName = "Classification Job Monitor";
 
@@ -43,8 +43,8 @@
 
         public IClassificationJobMonitorService Start()
         {
-            realtimeNullCategory = new List<CustomerCategoriesMonitorEntity>();
-            realtimeInactiveCategory = new List<CustomerCategoriesMonitorEntity>();
+            realtimeNullCategory = new List<CustomerCategoryMonitorEntity>();
+            realtimeInactiveCategory = new List<CustomerCategoryMonitorEntity>();
 
             return this;
         }
@@ -59,14 +59,13 @@
             classificationJobMonitorDataAccess.ClearRealtimeCustomerPlaceNewBets(fromScannedTime, toScannedTime);
         }
 
-        public IClassificationJobMonitorService CheckRealtimeCustomerCategory(IEnumerable<CustomerCategoriesMonitorEntity> custCategory)
+        public IClassificationJobMonitorService FilterInvalidCustomerCategory(IEnumerable<CustomerCategoryMonitorEntity> custCategory)
         {
             if (custCategory != null && custCategory.Any())
             {
-                realtimeInactiveCategory = custCategory.Where(c => c.CurrentCategoryID == (int)Category.NormalInactive
-                                                                    || c.CurrentCategoryID == (int)Category.SmartInactive);
+                realtimeInactiveCategory = custCategory.Where(c => c.TypeID == (int)InvalidCategory.Invalid_Inactive);
 
-                realtimeNullCategory = custCategory.Where(c => c.CurrentCategoryID == null);
+                realtimeNullCategory = custCategory.Where(c => c.TypeID == (int)InvalidCategory.Invalid_Null);
             }
 
             return this;
@@ -76,12 +75,12 @@
         {
             if (realtimeInactiveCategory.Any())
             {
-                NotifyTelegram(realtimeInactiveCategory.Select(c => c.CustId).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NewPlaceBetInactiveCategory);
+                NotifyTelegram(realtimeInactiveCategory.Select(c => c.CustID).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NewPlaceBetInactiveCategory);
             }
 
             if (realtimeNullCategory.Any())
             {
-                NotifyTelegram(realtimeNullCategory.Select(c => c.CustId).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NewPlaceBetNullCategory);
+                NotifyTelegram(realtimeNullCategory.Select(c => c.CustID).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NullCategory);
             }
 
             return this;
@@ -91,24 +90,24 @@
         {
             if (realtimeInactiveCategory.Any())
             {
-                var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
+                var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustID, CategoryID = c.CurrentCategoryID });
 
                 InsertMonitorInvalidCustomerCategory(inactiveCategory, scannedTime, JobMonitorType.Realtime_NewPlaceBetInactiveCategory, batchSize);
             }
 
             if (realtimeNullCategory.Any())
             {
-                var nullCategory = realtimeNullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustId, CategoryID = c.CurrentCategoryID });
+                var nullCategory = realtimeNullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustID, CategoryID = c.CurrentCategoryID });
 
-                InsertMonitorInvalidCustomerCategory(nullCategory, scannedTime, JobMonitorType.Realtime_NewPlaceBetNullCategory, batchSize);
+                InsertMonitorInvalidCustomerCategory(nullCategory, scannedTime, JobMonitorType.Realtime_NullCategory, batchSize);
             }
 
             return this;
         }
 
-        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(IEnumerable<long> custIds, int batchSize)
+        public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize)
         {
-            var custCategory = new List<CustomerCategoriesMonitorEntity>();
+            var custCategory = new List<CustomerCategoryMonitorEntity>();
 
             if (custIds.Any())
             {
@@ -118,7 +117,7 @@
                 {
                     var custToString = string.Join(',', custBatch);
 
-                    custCategory.AddRange(classificationJobMonitorDataAccess.GetCustomerCategoriesToMonitor(custToString));
+                    custCategory.AddRange(classificationJobMonitorDataAccess.GetCustomerCategoryToMonitor(custToString, false));
                 }
             }
 
@@ -150,7 +149,7 @@
 
                 switch (type)
                 {
-                    case JobMonitorType.Realtime_NewPlaceBetNullCategory:
+                    case JobMonitorType.Realtime_NullCategory:
                         {
                             message = $"Please kindly check the following custid with category NULL - {{Total custid: {custIds.Count()}}} - {string.Join(',', custIds.Take(50))} - " +
                                       $"Scan from  \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to  \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";

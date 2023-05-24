@@ -1,11 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor
 {
-    public class CustomerCategoriesMonitorEntity
+    public class CustomerCategoryMonitorEntity
     {
-        public long CustId { get; set; }
-
-        public int? SportGroupID { get; set; }
+        public long CustID { get; set; }
 
         public int? CurrentCategoryID { get; set; }
+
+        public int TypeID { get; set; }
     }
 }

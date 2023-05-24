@@ -48,9 +48,9 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var custCategory = classificationJobMonitorService.GetCustomerCategoriesToMonitor(custIds, batchSize);
+                        var custCategory = classificationJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
 
-                        classificationJobMonitorService.CheckRealtimeCustomerCategory(custCategory)
+                        classificationJobMonitorService.FilterInvalidCustomerCategory(custCategory)
                                                        .InsertMonitorInvalidCustomerCategory(batchSize, toScannedTime.Value)
                                                        .NotifyTelegram(appSettings.EvironmentName, fromScannedTime.Value, toScannedTime.Value);
 
