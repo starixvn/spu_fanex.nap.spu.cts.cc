@@ -189,8 +189,8 @@
 
         public enum InvalidCategory
         {
-            Invalid_Null = 1,
-            Invalid_Inactive = 2
+            Invalid_Inactive = 2,
+            Invalid_Null = 3            
         };
     }
 }
