@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -8,7 +9,6 @@
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -16,16 +16,14 @@
     public class InserNewCTSCustomerServiceTests
     {
         private readonly ICustomerJobMonitorService ctsCustomerService;
-        private readonly ICustomerJobMonitorDataAccess dataAccess;
-        private readonly IRescanCustClassificationService rescanClassificationService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
+        private readonly ICustomerJobMonitorDataAccess customerAccess;
+        private readonly IClassificationJobMonitorDataAccess classificationAccess;
 
         public InserNewCTSCustomerServiceTests()
         {
-            dataAccess = Substitute.For<ICustomerJobMonitorDataAccess>();
-            systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
-            ctsCustomerService = new CustomerJobMonitorService(dataAccess);
+            customerAccess = Substitute.For<ICustomerJobMonitorDataAccess>();
+            classificationAccess = Substitute.For<IClassificationJobMonitorDataAccess>();
+            ctsCustomerService = new CustomerJobMonitorService(customerAccess, classificationAccess);
         }
 
         //[Fact] /TODO
@@ -73,7 +71,7 @@
             var expectedResult = new List<MissingCustomerCompareEntity> { CreateSampleCustomerCompareModel() };
 
             var customerJson = JsonConvert.SerializeObject(inputData);
-            dataAccess.CheckMissingCustomer(customerJson).Returns(expectedResult);
+            customerAccess.CheckMissingCustomer(customerJson).Returns(expectedResult);
             var result = ctsCustomerService.CheckMissingCustomer(inputData);
 
             result.Should().BeEquivalentTo(expectedResult);

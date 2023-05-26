@@ -56,20 +56,6 @@
             TWRobotImperva_LastLogID = 133,
 			TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
         };
-        public enum Category
-        {
-            Newmember = 201,
-            NormalMember = 202,
-            SmartPunter = 203,
-            HighRishPunter = 204,
-            VIP = 205,
-            Probation = 206,
-            VVIP = 213,
-            TWRobot = 61,
-            AIRobot = 63,
-            NormalInactive = 1001,
-            SmartInactive = 1002
-        };
 
         public enum Reason
         {          
@@ -197,8 +183,14 @@
         {
             NewCustomer_NullCategory = 1,
             Realtime_NewPlaceBetInactiveCategory = 2,
-            Realtime_NewPlaceBetNullCategory = 3,
+            Realtime_NullCategory = 3,
             NewCustomer_Missing = 4,
+        };
+
+        public enum InvalidCategory
+        {
+            Invalid_Inactive = 2,
+            Invalid_Null = 3            
         };
     }
 }

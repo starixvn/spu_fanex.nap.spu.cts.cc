@@ -11,7 +11,7 @@
 
         void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime);
 
-        IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds, bool isCheckInternalAccount = false);
+        IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount);
 
         void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type);
     }
@@ -47,7 +47,7 @@
             repository.Execute(criteria);
         }
 
-        public IEnumerable<CustomerCategoriesMonitorEntity> GetCustomerCategoriesToMonitor(string custIds, bool isCheckInternalAccount)
+        public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount)
         {
             var criteria = new CustomerCategoryMonitorGetCriteria()
             {
@@ -55,7 +55,7 @@
                 IsCheckInternalAccount = isCheckInternalAccount
             };
 
-            return repository.Fetch<CustomerCategoriesMonitorEntity>(criteria);
+            return repository.Fetch<CustomerCategoryMonitorEntity>(criteria);
         }
 
         public void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type)
