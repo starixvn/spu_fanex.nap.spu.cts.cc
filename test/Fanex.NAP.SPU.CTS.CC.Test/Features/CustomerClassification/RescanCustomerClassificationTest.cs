@@ -7,6 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System;
@@ -31,6 +32,8 @@
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
 
+        private readonly ISystemParameterServices systemParameterServices;
+
         public RescanCustomerClassificationTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
@@ -43,7 +46,8 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
 
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, null, null);
+            systemParameterServices = Substitute.For<ISystemParameterServices>();
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterServices, null);
 
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(

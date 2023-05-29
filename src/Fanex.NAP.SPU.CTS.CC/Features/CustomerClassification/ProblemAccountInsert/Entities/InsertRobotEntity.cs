@@ -27,6 +27,8 @@
 
         public Int64 CustID { get; set; }
 
+        public int CategoryID { get; set; }
+
         public int? RobotCounter { get; set; }
 
         //True: Robot from TW, False: Robot Classification

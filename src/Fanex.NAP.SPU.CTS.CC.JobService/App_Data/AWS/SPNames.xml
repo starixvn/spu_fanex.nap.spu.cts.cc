@@ -189,7 +189,6 @@
 	</Function>
 	<Function name="RobotImperva">
 		<Setting Key="CTS_RobotImperva_Get" SpName="CTS_RobotImperva_Get" DbName="SQL.LogCDB.bodbSPUNet" />
-		<Setting Key="CTS_DC_RobotImperva_Insert" SpName="CTS_DC_RobotImperva_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_RobotImperva_Transform_Update" SpName="CTS_DC_RobotImperva_Transform_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_RobotImperva_Insert" SpName="CTS_DC_RobotImperva_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />		
 	</Function>
 </Functions>

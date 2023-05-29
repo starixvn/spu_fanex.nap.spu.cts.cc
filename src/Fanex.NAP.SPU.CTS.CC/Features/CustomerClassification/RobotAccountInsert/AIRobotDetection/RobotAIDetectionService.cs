@@ -10,9 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using Fanex.NAP.SPU.CTS.Shares;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-    using Newtonsoft.Json;
 
     public interface IRobotAIDetectionService
     {
@@ -47,34 +45,27 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.problemAccountServices = problemAccountServices;            
         }
-
-        private string robotImpervaLogIDs;
-
+        
         public IEnumerable<RobotDetectionEntity> RobotDetections => robotDetections;
 
         public IRobotAIDetectionService Start()
         {
             this.robotDetections = new List<RobotDetectionEntity>();
-            this.robotImpervaLogIDs = string.Empty;
-
+            
             return this;
         }
 
-        public IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime)
+        public IRobotAIDetectionService GetRobotDetections(SystemParameters lastRobotAIIDPara, SystemParameters lastRobotImpervaIDPara)
         {
-            var lastTimeAI = systemParameterServices.GetLastScannedDateTime(robotAILastTime);
+            var lastRobotAIID = systemParameterServices.GetLastScannedId(lastRobotAIIDPara);
 
-            var lastTimeImperva = systemParameterServices.GetLastScannedDateTime(robotImpervaLastTime);
+            var lastRobotImpervaID = systemParameterServices.GetLastScannedId(lastRobotImpervaIDPara);
 
-            if (lastTimeAI != null || lastTimeImperva != null)
+            if (lastRobotAIID > 0 || lastRobotImpervaID > 0)
             {
-                var (robotAI, robotImperva) = this.dataAccess.GetRobotDetections(lastTimeAI.Value, lastTimeImperva.Value);
-                
-                this.robotImpervaLogIDs = string.Join(",", robotImperva.Select(x => x.LogID));
-
-                var robotImpervaDistinct = robotImperva.Distinct(x => x.CustID);
-
-                this.robotDetections = CombineRobotAIImperva(robotAI, robotImpervaDistinct);               
+                var (robotAI, robotImperva) = this.dataAccess.GetRobotDetections(lastRobotAIID, lastRobotImpervaID);
+                                               
+                this.robotDetections = CombineRobotAIImperva(robotAI, robotImperva.Distinct(x => x.CustID));               
             }
 
             return this;
@@ -93,36 +84,36 @@
                     if (custIds != null && custIds.Any())
                     {
                         var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, paras.PushDataExternal);
-
-                        if (!isSuccess)
+                        
+                        if (isSuccess)
                         {
-                            return false;
-                        }
-
-                        Thread.Sleep(RobotUsers_SleepTimes);
+                            Thread.Sleep(RobotUsers_SleepTimes);
+                        }                            
+                        else
+                        {
+                            return isSuccess;
+                        }                            
                     }
                 }
-
-                this.UpdateTransformRobotAIImperva();
             }
 
             return true;
         }
 
-        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime)
+        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters lastRobotAIIDPara, SystemParameters lastRobotImpervaIDPara)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {               
-                var latestAITime = this.robotDetections.Max(x => x.LastModifiedDate);
-                if (latestAITime != DateTime.MinValue)
+                var lastRobotAIID = this.robotDetections.Max(x => x.RobotDetectionID);
+                if (lastRobotAIID > 0)
                 {
-                    systemParameterServices.UpdateTimingExecution(latestAITime.ToString(CONVERT_TO_SQL_DATETIME), robotAILastTime);
+                    systemParameterServices.UpdateTimingExecution(lastRobotAIID.ToString(), lastRobotAIIDPara);
                 }
 
-                var latestImpervaTime = this.robotDetections.Max(x => x.LastCreateTime);
-                if (latestImpervaTime != DateTime.MinValue)
+                var lastRobotImpervaLogID = this.robotDetections.Max(x => x.RobotImpervaLogID);
+                if (lastRobotImpervaLogID > 0)
                 {
-                    systemParameterServices.UpdateTimingExecution(latestImpervaTime.ToString(CONVERT_TO_SQL_DATETIME), robotImpervaLastTime);
+                    systemParameterServices.UpdateTimingExecution(lastRobotImpervaLogID.ToString(), lastRobotImpervaIDPara);
                 }
             }
 
@@ -155,6 +146,7 @@
                 custCategory = robotDetections.Select(c => new InsertRobotEntity
                 {
                     CustID = c.CustID,
+                    CategoryID = c.CategoryID,
                     IsFromAI = c.IsFromAI,
                     IsFromImperva = c.IsFromImperva,
                     IsFromTW = paras.IsFromTW,
@@ -173,14 +165,17 @@
         {
             var result = robotAI.Select(x => new RobotDetectionEntity
             {
+                RobotDetectionID = x.RobotDetectionID,
                 CustID = x.CustID,
+                CategoryID = x.CategoryID,
                 LastModifiedDate = x.LastModifiedDate,
                 LastCreateTime = DateTime.MinValue,
                 IsFromAI = true,
                 IsFromImperva = false
             }).Union(robotImperva.Select(x => new RobotDetectionEntity
             {
-                CustID = x.CustID,
+                RobotImpervaLogID = x.RobotImpervaLogID,
+                CustID = x.CustID,                
                 LastModifiedDate = DateTime.MinValue,
                 LastCreateTime = x.LastCreateTime,
                 IsFromAI = false,
@@ -189,13 +184,6 @@
 
             return result;
         }
-
-        private void UpdateTransformRobotAIImperva()
-        {
-            if (!string.IsNullOrEmpty(this.robotImpervaLogIDs))
-            {
-                dataAccess.UpdateTransformRobotAIImperva(this.robotImpervaLogIDs);
-            }
-        }
+        
     }
 }

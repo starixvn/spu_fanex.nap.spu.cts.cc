@@ -153,6 +153,7 @@
                     robotClassification = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
                     {
                         CustID = c.CustID,
+                        CategoryID = c.CategoryID,
                         IsDirect = c.IsDirect,
                         IsFromCTS = c.IsFromCTS,
                         IsFromTW = c.IsFromTW,

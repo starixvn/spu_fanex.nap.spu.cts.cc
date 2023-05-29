@@ -336,6 +336,7 @@
                                                         (group, temp) => new InsertRobotEntity
                                                         {
                                                             CustID = group.pa.CustID,
+                                                            CategoryID = group.pa.CategoryID,
                                                             RobotCounter = group.pa.RobotCounter,
                                                             Remark = group.pa.IsFromImperva ? "Imperva" : group.pa.Remark,
                                                             CreatedBy = group.pa.CreatedBy,

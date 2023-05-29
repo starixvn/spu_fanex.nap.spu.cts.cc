@@ -4,7 +4,13 @@
 
     public class RobotDetectionEntity
     {
+        public long RobotDetectionID { get; set; }
+
+        public long RobotImpervaLogID { get; set; }
+
         public long CustID { get; set; }
+
+        public int CategoryID { get; set; }
 
         public DateTime LastModifiedDate { get; set; }
 

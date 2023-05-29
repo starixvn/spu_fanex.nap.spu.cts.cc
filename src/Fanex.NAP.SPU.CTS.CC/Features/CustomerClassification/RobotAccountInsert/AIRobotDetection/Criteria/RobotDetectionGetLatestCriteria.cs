@@ -2,15 +2,14 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class RobotDetectionGetLatestCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_LatestTimeAI")]
-        public DateTime LatestTimeAI { get; set; }
+        [SpParam(SqlParamName = "ip_RobotDetectionLastID")]
+        public long LastRobotAIID { get; set; }
 
-        [SpParam(SqlParamName = "ip_LatestTimeImperva")]
-        public DateTime LatestTimeImperva { get; set; }
+        [SpParam(SqlParamName = "ip_RobotImpervaLastLogID")]
+        public long LastRobotImpervaID { get; set; }
 
         public override string GetSettingKey()
         {
@@ -21,5 +20,6 @@
         {
             return true;
         }
+
     }
 }
