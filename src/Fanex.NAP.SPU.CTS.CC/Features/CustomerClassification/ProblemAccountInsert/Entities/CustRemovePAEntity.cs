@@ -6,6 +6,6 @@
 
         public long CTSCustID { get; set; }
 
-        public bool IsRemovedPA { get; set; }
+        public bool IsCleanPA { get; set; }
     }
 }
