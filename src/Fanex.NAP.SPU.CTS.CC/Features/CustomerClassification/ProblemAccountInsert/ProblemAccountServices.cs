@@ -196,6 +196,10 @@
             {
                 var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);
 
+                // hard code for test
+                Utilities.LogSentryInfo(serviceName, "RemoveProblemAccount", result.CustomerInfo, true, sentryClient);
+                // hard code for test end
+
                 if (result.ErrorCode != 0)
                 {
                     Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
