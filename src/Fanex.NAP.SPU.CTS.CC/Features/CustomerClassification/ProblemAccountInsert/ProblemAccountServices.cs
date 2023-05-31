@@ -123,7 +123,7 @@
         {
             if (customerInfo != null && customerInfo.Any())
             {
-                var custIds = customerInfo.Where(c => c.IsRemovedPA == true).Select(x => x.CustID).Distinct();
+                var custIds = customerInfo.Where(c => c.IsCleanPA).Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfUnflaggedCustomer(custIds, serviceName);
             }
@@ -194,7 +194,7 @@
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);
+                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);               
 
                 if (result.ErrorCode != 0)
                 {

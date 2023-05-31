@@ -61,7 +61,7 @@
         private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
-        private IEnumerable<long> custIdsToRemoveOldPA;
+        private List<long> custIdsToRemoveOldPA;
         private List<long> smaCustIds;
         private bool isSuccess;
 
@@ -87,7 +87,7 @@
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
-            this.custIdsToRemoveOldPA = Enumerable.Empty<long>();
+            this.custIdsToRemoveOldPA = new List<long>();
             this.smaCustIds = new List<long>();
             this.isSuccess = true;
 
@@ -97,7 +97,7 @@
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
             if (custIds != null && custIds.Any())
-            {
+            {                
                 Start();
               
                 if (parameters.IsRescanPA)
@@ -181,7 +181,7 @@
 
                 if (custIds != null && custIds.Any())
                 {
-                    custIdsToRemoveOldPA = custIds.Distinct();
+                    custIdsToRemoveOldPA.AddRange(custIds.Distinct());
 
                     custIdsToRescanPA.AddRange(custIds.Distinct());
                 }
@@ -244,6 +244,8 @@
             if (isSuccess && customerInfo.Any())
             {
                 var custIds = customerInfo.Select(c => c.CustID).Distinct();
+
+                custIdsToRemoveOldPA.AddRange(custIds);
 
                 custIdsToRescanPA.AddRange(custIds);
             }
