@@ -97,18 +97,7 @@
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
             if (custIds != null && custIds.Any())
-            {
-                // Write log for test
-                if (parameters.IsRescanPA)
-                {
-                    Utilities.LogSentryInfo("Affected Downline", "Is Rescan PA", custIds, true, sentryClient);
-                }
-                else
-                {
-                    Utilities.LogSentryInfo("Affected Downline", "Not Rescan PA", custIds, true, sentryClient);
-                }
-                // End write log for test
-
+            {                
                 Start();
               
                 if (parameters.IsRescanPA)

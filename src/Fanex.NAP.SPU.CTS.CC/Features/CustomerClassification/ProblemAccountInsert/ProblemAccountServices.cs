@@ -194,11 +194,7 @@
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
-                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);
-
-                // hard code for test
-                Utilities.LogSentryInfo(serviceName, "RemoveProblemAccount", result.CustomerInfo, true, sentryClient);
-                // hard code for test end
+                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);               
 
                 if (result.ErrorCode != 0)
                 {
