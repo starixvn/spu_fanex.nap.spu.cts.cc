@@ -102,6 +102,8 @@
 
             RegisterNormalAccountRenovate(services);
 
+            RegisterProbationRenovate(services);
+
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -333,6 +335,16 @@
                 Renovate.NormalAccountInsert.NormalAccountDataAccess>();
             services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountService,
                 Renovate.NormalAccountInsert.NormalAccountService>();
+        }
+
+        private static void RegisterProbationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<Renovate.ProbationClassification.IProbationClassificationDataAccess,
+                Renovate.ProbationClassification.ProbationClassificationDataAccess>();
+            services.AddSingleton<Renovate.ProbationClassification.IProbationClassificationServices,
+                Renovate.ProbationClassification.ProbationClassificationServices>();
+            services.AddSingleton<CustomerClassification.Renovate.IProbationClassificationJobService,
+                CustomerClassification.Renovate.ProbationClassificationJobService>();
         }
     }
 }

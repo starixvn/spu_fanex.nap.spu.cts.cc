@@ -23,8 +23,9 @@
         private readonly Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
         private readonly Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService;
         private readonly Renovate.INormalAccountJobService normalAccountRenovateJobService;
+        private readonly Renovate.IProbationClassificationJobService probationClassificationRenovateJobService;
 
-        private readonly IProbationClassificationJobService probationClassificationJobService;
+        private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
@@ -42,7 +43,9 @@
             Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
             Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
             Renovate.INormalAccountJobService normalAccountRenovateJobService,
-            IProbationClassificationJobService probationClassificationJobService,
+            Renovate.IProbationClassificationJobService probationClassificationRenovateJobService,
+           
+            Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
@@ -132,6 +135,13 @@
         public async Task<bool> NormalAccountInsertRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.normalAccountRenovateJobService.Execute(batchExternalSize, batchInternalSize);            
+        }
+
+        [HttpPost("probationClassificationRenovate")]
+        public async Task<bool> ProbationScanningClassificationRenovate([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
+            return await this.probationClassificationRenovateJobService.Execute(batchSize);
         }
 
         #endregion Renovate
