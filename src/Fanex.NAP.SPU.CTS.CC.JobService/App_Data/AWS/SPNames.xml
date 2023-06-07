@@ -91,7 +91,7 @@
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_LogInputData" SpName="CTS_DC_CustClassification_LogInputData" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_GeneralNormalClassification_RealTime_Preprocess" SpName="CTS_GeneralNormalClassification_RealTime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_GeneralNormalClassification_RescanNormal_Preprocess" SpName="CTS_GeneralNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_Customer_RobotCheckExist" SpName="CTS_Customer_RobotCheckExist" DbName="SQL.ON_USER.bodbSPUNet" TimeOut="900" />
 	</Function>
 	<Function Name="CustomerEvidenceInsert">

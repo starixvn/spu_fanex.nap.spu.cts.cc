@@ -292,7 +292,7 @@
                     {
                         var custIdToString = string.Join(",", batchCustIds);
 
-                        rescanCustClassificationDataAccess.RescanNormalClassification(custIdToString, paras.FunctionId, paras.RescanNormalType);
+                        rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
                     }
                 }
             }

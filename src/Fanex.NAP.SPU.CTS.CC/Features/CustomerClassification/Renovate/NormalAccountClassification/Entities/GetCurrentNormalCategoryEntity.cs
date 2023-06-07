@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification
 {
-    public class GetCurrentCustomerCategoryEntity
+    public class GetCurrentNormalCategoryEntity
     {
         public long CustID { get; set; }
 

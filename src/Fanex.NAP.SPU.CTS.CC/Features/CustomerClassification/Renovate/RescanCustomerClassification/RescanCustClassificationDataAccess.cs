@@ -11,7 +11,7 @@
 
         IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds);
 
-        void RescanNormalClassification(string custList, FunctionId functionId, RescanNormalType type);
+        void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type);
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -43,7 +43,7 @@
             return repository.Fetch<TWRobotUserEntity>(criteria);
         }
 
-        public void RescanNormalClassification(string custList, FunctionId functionId, RescanNormalType type)
+        public void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type)
         {
             var criteria = new NormalClassificationRescanCriteria
             {

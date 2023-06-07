@@ -16,7 +16,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_GeneralNormalClassification_RealTime_Preprocess";
+            return "CTS_GeneralNormalClassification_RescanNormal_Preprocess";
         }
 
         public override bool IsValid()

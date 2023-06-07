@@ -8,7 +8,7 @@
     {
         GetNormalPoolCustomerModel GetNormalPoolCustomers();
 
-        IEnumerable<GetCurrentCustomerCategoryEntity> GetCurrentCustomerCategory(string custIDList);
+        IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList);
 
         INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML);
 
@@ -31,7 +31,7 @@
             return dataAccess.GetNormalPoolCustomers();
         }
 
-        public IEnumerable<GetCurrentCustomerCategoryEntity> GetCurrentCustomerCategory(string custIDList)
+        public IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList)
         {
             return dataAccess.GetCurrentCustomerCategory(custIDList);
         }
