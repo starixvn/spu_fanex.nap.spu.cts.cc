@@ -16,6 +16,9 @@
 
         [XName("IsCheckBetCount")]
         public bool IsCheckBetCount { get; set; }
+
+        [XName("IsProbationLastDay")]
+        public bool IsProbationLastDay { get; set; }
     }
 
 }

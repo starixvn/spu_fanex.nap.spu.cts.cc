@@ -7,5 +7,7 @@
         public int CategoryID { get; set; }
 
         public bool IsNewCreated { get; set; }
+
+        public bool IsProbationLastDay { get; set; }
     }
 }

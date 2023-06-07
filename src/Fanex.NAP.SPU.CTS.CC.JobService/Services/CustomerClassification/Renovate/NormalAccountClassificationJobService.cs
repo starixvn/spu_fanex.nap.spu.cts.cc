@@ -88,11 +88,12 @@
                                                       CustId = custMain.CustId,
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
+                                                      IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsCheckBetCount = custMain.IsCheckBetCount
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
-                .ClearNormalPoolCustomers(custIDList, scannedMaxID);
+                                .ClearNormalPoolCustomers(custIDList, scannedMaxID);
         }
 
     }
