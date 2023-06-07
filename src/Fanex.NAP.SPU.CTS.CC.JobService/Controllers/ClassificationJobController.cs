@@ -15,7 +15,7 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly Services.INormalAccountJobService normalAccountInsertJobService;
-        private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
+        private readonly Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
         private readonly Services.IRealtimeClassificationJobService realtimeClassificationJobService;
 
@@ -24,6 +24,7 @@
         private readonly Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService;
         private readonly Renovate.INormalAccountJobService normalAccountRenovateJobService;
         private readonly Renovate.IProbationClassificationJobService probationClassificationRenovateJobService;
+        private readonly Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService;
 
         private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -36,7 +37,7 @@
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
-            IDailyNormalClassificationJobService dailyNormalClassificationJobService,
+            Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             Services.IRealtimeClassificationJobService realtimeClassificationJobService,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
@@ -44,6 +45,7 @@
             Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
             Renovate.INormalAccountJobService normalAccountRenovateJobService,
             Renovate.IProbationClassificationJobService probationClassificationRenovateJobService,
+            Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService,
            
             Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
@@ -59,10 +61,14 @@
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
+
             this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
             this.realtimeRenovateJobService = realtimeRenovateJobService;
             this.normalAccountClassificationRenovateJobService = normalAccountClassificationRenovateJobService;
             this.normalAccountRenovateJobService = normalAccountRenovateJobService;
+            this.probationClassificationRenovateJobService = probationClassificationRenovateJobService;
+            this.dailyNormalClassificationRenovateJobService = dailyNormalClassificationRenovateJobService;
+
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -142,6 +148,13 @@
         {
             sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
             return await this.probationClassificationRenovateJobService.Execute(batchSize);
+        }
+
+        [HttpPost("scanningDailyProblemClassificationRenovate")]
+        public async Task<bool> DailyScanningProblemClassificationRenovate([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Daily Problem Service is running at {DateTime.Now}");
+            return await this.dailyNormalClassificationRenovateJobService.Execute();
         }
 
         #endregion Renovate

@@ -104,6 +104,7 @@
 
             RegisterProbationRenovate(services);
 
+            RegisterDailyNormalRenovate(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -345,6 +346,16 @@
                 Renovate.ProbationClassification.ProbationClassificationServices>();
             services.AddSingleton<CustomerClassification.Renovate.IProbationClassificationJobService,
                 CustomerClassification.Renovate.ProbationClassificationJobService>();
+        }
+
+        private static void RegisterDailyNormalRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<Renovate.DailyNormalClassification.IDailyNormalClassificationDataAccess,
+                Renovate.DailyNormalClassification.DailyNormalClassificationDataAccess>();
+            services.AddSingleton<Renovate.DailyNormalClassification.IDailyNormalClassificationServices,
+                Renovate.DailyNormalClassification.DailyNormalClassificationServices>();
+            services.AddSingleton<CustomerClassification.Renovate.IDailyNormalClassificationJobService,
+                CustomerClassification.Renovate.DailyNormalClassificationJobService>();
         }
     }
 }

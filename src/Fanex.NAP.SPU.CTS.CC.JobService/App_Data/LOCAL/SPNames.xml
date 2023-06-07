@@ -66,6 +66,11 @@
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_Probation_Preprocess" SpName="CTS_GeneralNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
+
+	<Function Name="DailyNormalClassificationRenovate">
+		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
+		<Setting Key="CTS_GeneralNormalClassification_Daily_Preprocess" SpName="CTS_GeneralNormalClassification_Daily_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+	</Function>
 	
 	<Function Name="ProbationClassification">
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
