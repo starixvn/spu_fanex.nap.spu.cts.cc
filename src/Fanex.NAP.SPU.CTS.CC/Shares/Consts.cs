@@ -133,6 +133,13 @@
             ClassifyGBMatchMonitor = 54       
         };
 
+        public enum RescanNormalType
+        {
+            Manual = 1,
+            Auto_Customer = 2,
+            Auto_AfftectedDownline = 3
+        }
+
         public enum HttpStatus
         {
             Unauthorized = 401,

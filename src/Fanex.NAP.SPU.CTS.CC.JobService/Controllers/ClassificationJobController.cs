@@ -25,13 +25,15 @@
         private readonly Renovate.INormalAccountJobService normalAccountRenovateJobService;
         private readonly Renovate.IProbationClassificationJobService probationClassificationRenovateJobService;
         private readonly Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService;
+        private readonly Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService;
+        private readonly Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService;
 
         private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
-        private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
+        private readonly Services.INewCustomerClassificationJobService newCustomerClassificationJobService;
+        private readonly Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
 
@@ -46,13 +48,15 @@
             Renovate.INormalAccountJobService normalAccountRenovateJobService,
             Renovate.IProbationClassificationJobService probationClassificationRenovateJobService,
             Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService,
-           
+            Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService,
+            Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService,
+
             Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
-            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
+            Services.INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
+            Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,
             ITWRobotImpervaJobService robotImpervaJobService)
         {
@@ -68,6 +72,8 @@
             this.normalAccountRenovateJobService = normalAccountRenovateJobService;
             this.probationClassificationRenovateJobService = probationClassificationRenovateJobService;
             this.dailyNormalClassificationRenovateJobService = dailyNormalClassificationRenovateJobService;
+            this.newCustomerClassificationRenovateJobService = newCustomerClassificationRenovateJobService;
+            this.affectedDownlineClassificationRenovateJobService = affectedDownlineClassificationRenovateJobService;
 
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
@@ -155,6 +161,18 @@
         {
             sentryClient.CaptureMessage($"Daily Problem Service is running at {DateTime.Now}");
             return await this.dailyNormalClassificationRenovateJobService.Execute();
+        }
+
+        [HttpPost("newcustomerclassificationRenovate")]
+        public async Task<bool> NewCustomerClassificationRenovate([FromForm] int batchSize)
+        {
+            return await newCustomerClassificationRenovateJobService.Execute(batchSize);
+        }
+
+        [HttpPost("affectedDownlineClassificationFromQueueRenovate")]
+        public async Task<bool> AffectedDownlineClassificationFromQueueRenovate([FromForm] int batchSize)
+        {
+            return await this.affectedDownlineClassificationRenovateJobService.Execute(batchSize);
         }
 
         #endregion Renovate
