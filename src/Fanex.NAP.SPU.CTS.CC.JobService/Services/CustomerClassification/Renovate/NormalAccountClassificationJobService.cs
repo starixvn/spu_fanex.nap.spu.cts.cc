@@ -31,16 +31,10 @@
         {
             try
             {
-                var isContinue = true;
-
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
 
-                do
-                {
-                    isContinue = JobRun(batchInternalSize);
-
-                } while (isContinue);
+                JobRun(batchInternalSize);
             }
             catch (Exception ex)
             {
