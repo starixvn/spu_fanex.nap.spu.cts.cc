@@ -22,7 +22,7 @@
 	</Function>
 	<Function Name="DailyProblemClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
 		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_DailyScanPA_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -42,7 +42,7 @@
 	</Function>
 
 	<Function Name="RealtimeClassificationRenovate">
-		<Setting Key="CTS_GeneralNormalClassification_RealTime_GetChanges" SpName="CTS_GeneralNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_RealTime_GetChanges" SpName="CTS_GeneralNormalClassification_RealTime_GetChanges_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<!--<Setting Key="CTS_DC_CustClassification_Realtime_GetCategory" SpName="CTS_DC_CustClassification_Realtime_GetCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />-->
 		<Setting Key="CTS_GeneralNormalClassification_Realtime_Preprocess" SpName="CTS_GeneralNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
@@ -51,8 +51,8 @@
 
 	<Function Name="NormalAccountClassificationRenovate">
 		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Get" SpName="CTS_GeneralNormalClassification_NormalPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
-		<Setting Key="CTS_DC_CustClassification_Normal_GetCurrentCategory" SpName="CTS_DC_CustClassification_Normal_GetCurrentCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
-		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_Normal_GetCurrentCategory" SpName="CTS_DC_CustClassification_Normal_GetCurrentCategory_xtest" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Clear" SpName="CTS_GeneralNormalClassification_NormalPool_Clear" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
@@ -62,7 +62,7 @@
 	</Function>
 
 	<Function Name="ProbationClassificationRenovate">
-		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_Probation_Preprocess" SpName="CTS_GeneralNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
@@ -73,7 +73,7 @@
 	</Function>
 	
 	<Function Name="ProbationClassification">
-		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Notification_InsertProbationNotification" SpName="CTS_DC_Notification_InsertProbationNotification" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_Probation" SpName="CTS_NormalAccountsClassification_GeneralCategorize_Probation" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="900" />
@@ -164,7 +164,7 @@
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Insert" SpName="CTS_DC_TWProblemDetectionMonitor_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 
 		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
