@@ -102,9 +102,15 @@
 
             RegisterNormalAccountRenovate(services);
 
-            RegisterProbationRenovate(services);
+            RegisterRescanClassificationRenovate(services);
 
             RegisterDailyNormalRenovate(services);
+
+            RegisterProbationRenovate(services);
+
+            RegisterAffectedDownlineRenovate(services);
+
+            RegisterNewCustomerClassificationRenovate(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -338,6 +344,14 @@
                 Renovate.NormalAccountInsert.NormalAccountService>();
         }
 
+        private static void RegisterRescanClassificationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<Renovate.RescanCustomerClassification.IRescanCustClassificationDataAccess,
+                Renovate.RescanCustomerClassification.RescanCustClassificationDataAccess>();
+            services.AddSingleton<Renovate.RescanCustomerClassification.IRescanCustClassificationService,
+                Renovate.RescanCustomerClassification.RescanCustClassificationService>();
+        }
+
         private static void RegisterProbationRenovate(this IServiceCollection services)
         {
             services.AddSingleton<Renovate.ProbationClassification.IProbationClassificationDataAccess,
@@ -356,6 +370,26 @@
                 Renovate.DailyNormalClassification.DailyNormalClassificationServices>();
             services.AddSingleton<CustomerClassification.Renovate.IDailyNormalClassificationJobService,
                 CustomerClassification.Renovate.DailyNormalClassificationJobService>();
+        }
+
+        private static void RegisterAffectedDownlineRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<Renovate.AffectedDownline.IAffectedDownlineCustomerClassificationDataAccess,
+                Renovate.AffectedDownline.AffectedDownlineCustomerClassificationDataAccess>();
+            services.AddSingleton<Renovate.AffectedDownline.IAffectedDownlineCustomerClassificationService,
+                Renovate.AffectedDownline.AffectedDownlineCustomerClassificationService>();
+            services.AddSingleton<CustomerClassification.Renovate.IAffectedDownlineCustomerClassificationJobService,
+                CustomerClassification.Renovate.AffectedDownlineCustomerClassificationJobService>();
+        }  
+        
+        private static void RegisterNewCustomerClassificationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<Renovate.NewCustomer.INewCustomerClassificationDataAccess,
+                Renovate.NewCustomer.NewCustomerClassificationDataAccess>();
+            services.AddSingleton<Renovate.NewCustomer.INewCustomerClassificationServices,
+                Renovate.NewCustomer.NewCustomerClassificationServices>();
+            services.AddSingleton<CustomerClassification.Renovate.INewCustomerClassificationJobService,
+                CustomerClassification.Renovate.NewCustomerClassificationJobService>();
         }
     }
 }
