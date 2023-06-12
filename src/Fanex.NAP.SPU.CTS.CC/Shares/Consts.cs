@@ -135,9 +135,9 @@
 
         public enum RescanNormalType
         {
-            Manual = 1,
-            Auto_Customer = 2,
-            Auto_AfftectedDownline = 3
+            Manual = 4,
+            Auto_Customer = 5,
+            Auto_AfftectedDownline = 6
         }
 
         public enum HttpStatus
