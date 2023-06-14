@@ -13,6 +13,8 @@
         IProbationClassificationServices ClassifyProbation();
 
         bool UpdateLastScanDate();
+
+        public IEnumerable<ProbationEntity> Customers { get; }
     }
 
     public class ProbationClassificationServices : IProbationClassificationServices
@@ -67,5 +69,7 @@
 
             return false;
         }
+
+        public IEnumerable<ProbationEntity> Customers => custProbation;
     }
 }
