@@ -45,9 +45,9 @@
         }
 
         [HttpPost("InactivateNewCustomers")]
-        public async Task<bool> InactivateNewCustomers()
+        public async Task<bool> InactivateNewCustomers([FromForm] int batchSize)
         {
-            return await ctsCustomerJobService.InactivateNewCustomers();
+            return await ctsCustomerJobService.InactivateNewCustomers(batchSize);
         }
     }
 }

@@ -1,13 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System;
@@ -26,13 +24,8 @@
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private readonly IDailyNormalClassificationDataAccess dailyClassificationDataAccess;
-        private readonly IDailyNormalClassificationServices dailyClassificationServices;
-
         private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
         private readonly IFeedSoon88Services feedSoon88Services;
-
-        private readonly ISystemParameterServices systemParameterServices;
 
         public RescanCustomerClassificationTest()
         {
@@ -45,16 +38,11 @@
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
 
-            dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
-            systemParameterServices = Substitute.For<ISystemParameterServices>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterServices, null);
-
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
                 rescanCustClassificationDataAccess, null,
                 problemAccountServices,
                 custClassToMainDBService,
-                dailyClassificationServices,
                 null);
         }
 

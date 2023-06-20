@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.ProbationClassification;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -29,17 +29,11 @@
                new ProbationEntity
                {
                     CustId=1,
-                    CategoryId=1,
-                    IsPassed=true,
-                    IsProbationLastDay=1,
                     SportGroupId=1
                },
                new ProbationEntity
                {
                     CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
                     SportGroupId=2
                },
             };
@@ -47,7 +41,8 @@
             probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(probationList);
 
             probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
-            var result = probationClassificationServices.CustomerClassification;
+
+            var result = probationClassificationServices.Customers;
 
             result.Should().BeEquivalentTo(probationList);
         }
@@ -60,123 +55,41 @@
             probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
 
             probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
-            var result = probationClassificationServices.CustomerClassification;
+
+            var result = probationClassificationServices.Customers;
 
             result.Should().BeEquivalentTo(new List<ProbationEntity>());
         }
 
-        [Fact]
-        public void ClassifyCategoryForProbationCust_WhenSuccess_ReturnProbationList()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void ClassifyCategoryForProbationCust_WhenSuccess_ReturnNotException(int batchSize)
         {
             var probationList = new List<ProbationEntity>
             {
                new ProbationEntity
                {
                     CustId=1,
-                    CategoryId=1,
-                    IsPassed=true,
-                    IsProbationLastDay=1,
                     SportGroupId=1
                },
                new ProbationEntity
                {
                     CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
                     SportGroupId=2
                },
             };
 
-            probationClassificationDataAccess.ClassifyCategoryForProbationCust(probationList).Returns(probationList);
+            var custToString = "1,2";
 
-            var result = probationClassificationServices.ClassifyCategoryForProbationCust(probationList);
+            probationClassificationDataAccess.ClassifyProbation(custToString);
 
-            result.Should().BeEquivalentTo(probationList);
-        }
+            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
 
-        [Fact]
-        public void InsertProbationNotification_WhenSuccess_ReturnNotException()
-        {
-            var probationList = new List<ProbationEntity>
-            {
-               new ProbationEntity
-               {
-                    CustId=1,
-                    CategoryId=1,
-                    IsPassed=true,
-                    IsProbationLastDay=1,
-                    SportGroupId=1
-               },
-               new ProbationEntity
-               {
-                    CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
-                    SportGroupId=2
-               },
-            };
+            probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
 
-            var failProbationList = new List<ProbationEntity>
-            {
-               new ProbationEntity
-               {
-                    CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
-                    SportGroupId=2
-               },
-            };
+            Action action = () => probationClassificationServices.ClassifyProbation();
 
-            probationClassificationDataAccess.InsertProbationNotification(probationList, failProbationList);
-
-            Action action = () => probationClassificationServices.InsertProbationNotification(probationList, failProbationList);
-            action.Should().NotThrow<Exception>();
-        }
-
-        [Fact]
-        public void ScanningProbationClassification_WhenSuccess_ReturnNotException()
-        {
-            var probationList = new List<ProbationEntity>
-            {
-               new ProbationEntity
-               {
-                    CustId=1,
-                    CategoryId=1,
-                    IsPassed=true,
-                    IsProbationLastDay=1,
-                    SportGroupId=1
-               },
-               new ProbationEntity
-               {
-                    CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
-                    SportGroupId=2
-               },
-            };
-
-            var failProbationList = new List<ProbationEntity>
-            {
-               new ProbationEntity
-               {
-                    CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
-                    SportGroupId=2
-               },
-            };
-
-            probationClassificationDataAccess.GetProbationCustForScanning(1).Returns(probationList);
-            probationClassificationDataAccess.ClassifyCategoryForProbationCust(probationList).Returns(probationList);
-            probationClassificationDataAccess.InsertProbationNotification(probationList, failProbationList);
-
-            probationClassificationServices.GetProbationCustForScanning(1);
-            Action action = () => probationClassificationServices.ScanningProbationClassification();
             action.Should().NotThrow<Exception>();
         }
 
@@ -188,17 +101,11 @@
                new ProbationEntity
                {
                     CustId=1,
-                    CategoryId=1,
-                    IsPassed=true,
-                    IsProbationLastDay=1,
                     SportGroupId=1
                },
                new ProbationEntity
                {
                     CustId=2,
-                    CategoryId=2,
-                    IsPassed=false,
-                    IsProbationLastDay=2,
                     SportGroupId=2
                },
             };
@@ -206,10 +113,10 @@
             var dataJson = JsonConvert.SerializeObject(probationList);
 
             probationClassificationDataAccess.GetProbationCustForScanning(1).Returns(probationList);
-            probationClassificationDataAccess.UpdateLastScanDateForProbationCust(dataJson);
+            probationClassificationDataAccess.UpdateLastScanDate(dataJson);
 
             probationClassificationServices.GetProbationCustForScanning(1);
-            Action action = () => probationClassificationServices.UpdateLastScanDateForProbationCust();
+            Action action = () => probationClassificationServices.UpdateLastScanDate();
 
             action.Should().NotThrow<Exception>();
         }

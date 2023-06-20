@@ -3,7 +3,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
@@ -25,29 +25,29 @@
 
         Task<bool> InsertReactivatedCustomers();
 
-        Task<bool> InactivateNewCustomers();
+        Task<bool> InactivateNewCustomers(int batchSize);
     }
 
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
         private readonly ICTSCustomerService ctscustomerService;
-        private readonly IDailyNormalClassificationServices dailyClassificationService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IRescanCustClassificationService rescanCustClassificationService;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
         public CTSCustomerJobService(ISentryClient sentryClient,
             ICTSCustomerService ctscustomerService,
-            IDailyNormalClassificationServices dailyClassificationService,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
+            IRescanCustClassificationService rescanCustClassificationService,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.ctscustomerService = ctscustomerService;
-            this.dailyClassificationService = dailyClassificationService;
             this.custClassToMainDBService = custClassToMainDBService;
+            this.rescanCustClassificationService = rescanCustClassificationService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
         }
@@ -228,7 +228,7 @@
             }
         }
 
-        public Task<bool> InactivateNewCustomers()
+        public Task<bool> InactivateNewCustomers(int batchSize)
         {
             try
             {
@@ -242,7 +242,28 @@
                     {
                         var custIDs = inactivateCusts.CustInfos.Select(x => x.CustID).Distinct();
 
-                        dailyClassificationService.ScanningDailyNormalClassification(custIDs, FunctionId.InactivateNewCustomer);
+                        var rescanConfig = new RescanParametersEntity()
+                        {
+                            IsRescanPA = false,
+                            IsToQueue = false,
+                            FunctionId = FunctionId.InactivateNewCustomer,
+                            RescanNormalType = RescanNormalType.Auto_Customer,
+                            InternalBatchSize = batchSize,
+                            ServiceName = "InactiveNewCustomer",
+                            PushDataExternal = new PushDataToExternalEntity
+                            {
+                                IsPushCCToSoon88 = true,
+                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                                IsUpdateDangerToMainDB = true,
+                                ExternalBatchSize = batchSize,
+                                ServiceName = "InactiveNewCustomer",
+                                IsSyncAFCData = appSettings.IsSyncAFCData,
+                                AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                            }
+                        };
+
+                        rescanCustClassificationService.RescanCustomerClassification(custIDs, rescanConfig);
 
                         isContinue = true;
                     }

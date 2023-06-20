@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;    
 
-    public class GetCurrentCustomerCategoryCriteria : CriteriaBase
+    public class GetCurrentNormalCategoryCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustIDList")]
         public string CustIDs { get; set; }

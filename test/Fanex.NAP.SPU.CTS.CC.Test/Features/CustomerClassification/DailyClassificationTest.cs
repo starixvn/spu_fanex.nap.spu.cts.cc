@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
@@ -26,7 +25,7 @@
         [Fact]
         public void GetCustClassificationForDailyScanning_WhenSuccess_ReturnNotException()
         {
-            Action action = () => dailyClassificationServices.Start().ScanningDailyNormalClassification(FunctionId.NormalDailyJob);
+            Action action = () => dailyClassificationServices.Start().GetCustomerForDailyNormalScanning();
 
             action.Should().NotThrow<Exception>();
         }
@@ -36,9 +35,9 @@
         {
             var custIds = new List<long> { 1, 2 };
 
-            dailyClassificationDataAccess.ScanningDailyNormalClassification(string.Join(",", custIds), FunctionId.NormalDailyJob);
+            dailyClassificationDataAccess.ClassifyDailyNormal(string.Join(",", custIds));
 
-            Action action = () => dailyClassificationServices.ScanningDailyNormalClassification(custIds, FunctionId.NormalDailyJob);
+            Action action = () => dailyClassificationServices.ClassifyDailyNormal();
             action.Should().NotThrow<Exception>();
         }
     }

@@ -31,16 +31,10 @@
         {
             try
             {
-                var isContinue = true;
-
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
 
-                do
-                {
-                    isContinue = JobRun(batchInternalSize);
-
-                } while (isContinue);
+                JobRun(batchInternalSize);
             }
             catch (Exception ex)
             {
@@ -88,11 +82,12 @@
                                                       CustId = custMain.CustId,
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
+                                                      IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsCheckBetCount = custMain.IsCheckBetCount
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
-                .ClearNormalPoolCustomers(custIDList, scannedMaxID);
+                                .ClearNormalPoolCustomers(custIDList, scannedMaxID);
         }
 
     }

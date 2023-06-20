@@ -15,7 +15,7 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly Services.INormalAccountJobService normalAccountInsertJobService;
-        private readonly IDailyNormalClassificationJobService dailyNormalClassificationJobService;
+        private readonly Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
         private readonly Services.IRealtimeClassificationJobService realtimeClassificationJobService;
 
@@ -23,31 +23,40 @@
         private readonly Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
         private readonly Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService;
         private readonly Renovate.INormalAccountJobService normalAccountRenovateJobService;
+        private readonly Renovate.IProbationClassificationJobService probationClassificationRenovateJobService;
+        private readonly Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService;
+        private readonly Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService;
+        private readonly Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService;
 
-        private readonly IProbationClassificationJobService probationClassificationJobService;
+        private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
-        private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
+        private readonly Services.INewCustomerClassificationJobService newCustomerClassificationJobService;
+        private readonly Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
-            IDailyNormalClassificationJobService dailyNormalClassificationJobService,
+            Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             Services.IRealtimeClassificationJobService realtimeClassificationJobService,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
             Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
             Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
             Renovate.INormalAccountJobService normalAccountRenovateJobService,
-            IProbationClassificationJobService probationClassificationJobService,
+            Renovate.IProbationClassificationJobService probationClassificationRenovateJobService,
+            Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService,
+            Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService,
+            Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService,
+
+            Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
-            IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
+            Services.INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
+            Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,
             ITWRobotImpervaJobService robotImpervaJobService)
         {
@@ -56,10 +65,16 @@
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
             this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
+
             this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
             this.realtimeRenovateJobService = realtimeRenovateJobService;
             this.normalAccountClassificationRenovateJobService = normalAccountClassificationRenovateJobService;
             this.normalAccountRenovateJobService = normalAccountRenovateJobService;
+            this.probationClassificationRenovateJobService = probationClassificationRenovateJobService;
+            this.dailyNormalClassificationRenovateJobService = dailyNormalClassificationRenovateJobService;
+            this.newCustomerClassificationRenovateJobService = newCustomerClassificationRenovateJobService;
+            this.affectedDownlineClassificationRenovateJobService = affectedDownlineClassificationRenovateJobService;
+
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -132,6 +147,32 @@
         public async Task<bool> NormalAccountInsertRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await this.normalAccountRenovateJobService.Execute(batchExternalSize, batchInternalSize);            
+        }
+
+        [HttpPost("probationClassificationRenovate")]
+        public async Task<bool> ProbationScanningClassificationRenovate([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
+            return await this.probationClassificationRenovateJobService.Execute(batchSize);
+        }
+
+        [HttpPost("scanningDailyNormalClassificationRenovate")]
+        public async Task<bool> DailyScanningNormalClassificationRenovate()
+        {
+            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
+            return await this.dailyNormalClassificationRenovateJobService.Execute();
+        }
+
+        [HttpPost("newcustomerclassificationRenovate")]
+        public async Task<bool> NewCustomerClassificationRenovate([FromForm] int batchSize)
+        {
+            return await newCustomerClassificationRenovateJobService.Execute(batchSize);
+        }
+
+        [HttpPost("affectedDownlineClassificationFromQueueRenovate")]
+        public async Task<bool> AffectedDownlineClassificationFromQueueRenovate([FromForm] int batchSize)
+        {
+            return await this.affectedDownlineClassificationRenovateJobService.Execute(batchSize);
         }
 
         #endregion Renovate
