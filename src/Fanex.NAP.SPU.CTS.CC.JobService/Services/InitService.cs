@@ -39,6 +39,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
     using Renovate = Features.CustomerClassification.Renovate;
+    using RenovateBySport = Features.CustomerClassificationBySport.Renovate;
 
     public static class InitService
     {
@@ -111,6 +112,8 @@
             RegisterAffectedDownlineRenovate(services);
 
             RegisterNewCustomerClassificationRenovate(services);
+
+            RegisterNormalAccountClassificationBySportRenovate(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -390,6 +393,16 @@
                 Renovate.NewCustomer.NewCustomerClassificationServices>();
             services.AddSingleton<CustomerClassification.Renovate.INewCustomerClassificationJobService,
                 CustomerClassification.Renovate.NewCustomerClassificationJobService>();
+        }
+
+        public static void RegisterNormalAccountClassificationBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.NormalAccountClassificationBySport.INormalAccountClassificationBySportDataAccess,
+                RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.NormalAccountClassificationBySport.INormalAccountClassificationBySportService,
+                RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportService>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.NormalAccountClassificationBySportJobService>();
         }
     }
 }

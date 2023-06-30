@@ -6,6 +6,7 @@
     using Sentry;
     using System;
     using System.Threading.Tasks;
+    using Renovate = Services.CustomerClassificationBySport.Renovate;
 
     [ApiController]
     [Route("api/classificationBySportJobs")]
@@ -17,17 +18,22 @@
         private readonly IRealtimeClassificationBySportJobService realtimeClassificationJobService;
         private readonly IProbationClassificationBySportJobService probationClassificationBySportJobService;
 
+        private readonly Renovate.INormalAccountClassificationBySportJobService normalAccountClassificationBySportRenovateJobService;
+
         public ClassificationBySportJobController(ISentryClient sentryClient,
             INormalAccountBySportJobService normalAccountBySportJobService,
             IDailyNormalClassificationBySportJobService dailyClassificationBySportServices,
             IRealtimeClassificationBySportJobService realtimeClassificationJobService,
-            IProbationClassificationBySportJobService probationClassificationBySportJobService)
+            IProbationClassificationBySportJobService probationClassificationBySportJobService,
+            Renovate.INormalAccountClassificationBySportJobService normalAccountClassificationBySportRenovateJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountBySportJobService = normalAccountBySportJobService;
             this.dailyClassificationBySportServices = dailyClassificationBySportServices;
             this.realtimeClassificationJobService = realtimeClassificationJobService;
             this.probationClassificationBySportJobService = probationClassificationBySportJobService;
+
+            this.normalAccountClassificationBySportRenovateJobService = normalAccountClassificationBySportRenovateJobService;
         }
 
         [HttpPost("InsertNormalAccountBySport")]
@@ -57,5 +63,15 @@
 
             return await this.probationClassificationBySportJobService.Execute(batchSize);
         }
+
+        #region Renovate
+        [HttpPost("normalAccountClassificationBySportRenovate")]
+        public async Task<bool> NormalAccountClassificationBySportRenovate([FromForm] int batchInternalSize)
+        {
+            return await this.normalAccountClassificationBySportRenovateJobService.Execute(batchInternalSize);
+        }
+
+        #endregion Renovate
+
     }
 }
