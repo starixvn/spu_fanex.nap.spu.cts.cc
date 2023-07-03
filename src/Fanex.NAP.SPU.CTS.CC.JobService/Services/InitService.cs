@@ -114,6 +114,8 @@
             RegisterNewCustomerClassificationRenovate(services);
 
             RegisterNormalAccountClassificationBySportRenovate(services);
+
+            RegisterNormalAccountInsertBySportRenovate(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -403,6 +405,16 @@
                 RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportService>();
             services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountClassificationBySportJobService,
                 CustomerClassificationBySport.Renovate.NormalAccountClassificationBySportJobService>();
+        }
+
+        public static void RegisterNormalAccountInsertBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.NormalAccountInsertBySport.INormalAccountInsertBySportDataAccess,
+                RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.NormalAccountInsertBySport.INormalAccountInsertBySportService,
+                RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportService>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountInsertBySportJobService,
+                CustomerClassificationBySport.Renovate.NormalAccountInsertBySportJobService>();
         }
     }
 }
