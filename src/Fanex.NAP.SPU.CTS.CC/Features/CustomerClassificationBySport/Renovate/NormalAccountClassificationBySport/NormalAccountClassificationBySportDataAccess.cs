@@ -9,7 +9,7 @@
     {
         GetNormalPoolCustomerBySportModel GetNormalPoolCustomers();
 
-        IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custIDList);
+        IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custSportList);
 
         void ClassifyNormalPoolCustomers(string customersXML);
 
@@ -38,11 +38,11 @@
             };
         }
 
-        public IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custIDList)
+        public IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custSportList)
         {
             var criteria = new GetCurrentNormalCategoryBySportCriteria
             {
-                CustIDs = custIDList
+                CustSportList = custSportList
             };
 
             return repository.Fetch<GetCurrentNormalCategoryBySportEntity>(criteria);

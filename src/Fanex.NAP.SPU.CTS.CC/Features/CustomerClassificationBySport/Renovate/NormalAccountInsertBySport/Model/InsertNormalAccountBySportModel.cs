@@ -1,10 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountInsertBySport
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using System.Collections.Generic;
 
     public class InsertNormalAccountBySportModel
     {
-        public IEnumerable<long> CustIds { get; set; }
+        public IEnumerable<InsertNormalAccountCustInfoEntity> CustNAInserted { get; set; }
 
         public string ErrorMessage { get; set; }
     }

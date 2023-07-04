@@ -5,8 +5,8 @@
 
     public class GetCurrentNormalCategoryBySportCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDList")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_CustSport")]
+        public string CustSportList { get; set; }
 
         public override string GetSettingKey()
         {

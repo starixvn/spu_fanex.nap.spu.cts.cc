@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -52,17 +53,28 @@
             var isExistCusts = normalPoolCustomerModel != null && normalPoolCustomerModel.NormalPoolCustomers.Any();
 
             if (isExistCusts)
-            {
+            {                   
                 var customerChunks = normalPoolCustomerModel.NormalPoolCustomers.Chunk(batchInternalSize);
 
                 var actions = new List<Action>();
 
+                var idx = 4;
+
                 foreach (var custBatch in customerChunks)
-                {
+                {                  
                     actions.Add(() => ClassifyNormalAccountBySport(custBatch, normalPoolCustomerModel.ScannedMaxId));
+
+                    if (actions.Count == idx)
+                    {
+                        Parallel.Invoke(actions.ToArray());
+                        actions.Clear();
+                    }
                 }
 
-                Parallel.Invoke(actions.ToArray());
+                if (actions.Any())
+                {
+                    Parallel.Invoke(actions.ToArray());
+                }
             }
 
             return isExistCusts;
@@ -70,22 +82,26 @@
 
         private void ClassifyNormalAccountBySport(IEnumerable<GetNormalPoolCustomerBySportEntity> normalPoolCustomers, long scannedMaxID)
         {
-            var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
+            var custSportList = JsonConvert.SerializeObject(normalPoolCustomers.Select(x => new CustSportModel
+            {
+                CustId = x.CustId,
+                SportGroup = x.SportGroup
+            }).Distinct());
 
-            var customerCategories = normalClassifyService.GetCurrentCustomerCategory(custIDList);
+            var customerInfoClears = normalPoolCustomers.Select(x => new CustInfoNormalPoolClearBySportModel { CustId = x.CustId, SportGroup = x.SportGroup }).Distinct();
 
-            var customerInfos = normalPoolCustomers.Join(customerCategories, custMain => custMain.CustId,
-                                                  custCTS => custCTS.CustID,
+            var customerCategories = normalClassifyService.GetCurrentCustomerCategory(custSportList);
+
+            var customerInfos = normalPoolCustomers.Join(customerCategories, custMain => new { CustID = custMain.CustId, custMain.SportGroup },
+                                                  custCTS => new { custCTS.CustID, custCTS.SportGroup },
                                                   (custMain, custCTS) => new GetCurrentCustomerCategoryBySportModel
                                                   {
-                                                      CustId = custMain.CustId,
-                                                      CategoryId = custCTS.CategoryID,
-                                                      IsNewCreated = custCTS.IsNewCreated,
+                                                      CustID = custMain.CustId,
+                                                      SportGroup = custMain.SportGroup,
+                                                      CategoryID = custCTS.CategoryID,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsCheckBetCount = custMain.IsCheckBetCount
                                                   });
-
-            var customerInfoClears = normalPoolCustomers.Select(x => new CustInfoNormalPoolClearBySportModel { CustId = x.CustId, SportGroup = x.SportGroup }).Distinct();
 
             normalClassifyService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
                                 .ClearNormalPoolCustomers(customerInfoClears.ToXmlString(), scannedMaxID);

@@ -10,9 +10,9 @@
     {
         GetNormalAccountBySportModel GetNormalAccount();
 
-        InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<InsertNormalAccountBySportModel> custs, string serviceName);
+        InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<NormalAccountBySportEntity> custs, string serviceName);
 
-        bool CompleteNormalAccountBySport(string custIdList, long scannedMaxId, bool isSuccess);
+        bool CompleteNormalAccountBySport(string customersXML, long scannedMaxId, bool isSuccess);
     }
 
     public class NormalAccountInsertBySportService : INormalAccountInsertBySportService
@@ -31,30 +31,30 @@
             return dataAccess.GetNormalAccount();
         }
 
-        public InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<InsertNormalAccountBySportModel> custs, string serviceName)
+        public InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<NormalAccountBySportEntity> custInfos, string serviceName)
         {
             var result = new InsertNormalAccountBySportModel();
 
-            var custsJson = JsonConvert.SerializeObject(custs);
+            var custInfosJson = JsonConvert.SerializeObject(custInfos);
 
-            if (!string.IsNullOrEmpty(custsJson))
+            if (!string.IsNullOrEmpty(custInfosJson))
             {
-                result = dataAccess.InsertNormalAccount(custsJson);               
+                result = dataAccess.InsertNormalAccount(custInfosJson);
 
                 if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount By Sport throws Exception", custsJson, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertNormalAccount By Sport Renovate throws Exception", custInfosJson, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
 
             return result;
         }
 
-        public bool CompleteNormalAccountBySport(string custIdList, long scannedMaxId, bool isSuccess)
+        public bool CompleteNormalAccountBySport(string customersXML, long scannedMaxId, bool isSuccess)
         {
             if (isSuccess)
             {
-                dataAccess.CompleteNormalAccountBySport(custIdList, scannedMaxId);
+                dataAccess.CompleteNormalAccountBySport(customersXML, scannedMaxId);
             }
 
             return true;

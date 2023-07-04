@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountInsertBySport
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using System;
     using System.Linq;
 
@@ -10,7 +11,7 @@
 
         InsertNormalAccountBySportModel InsertNormalAccount(string custIdList);
 
-        void CompleteNormalAccountBySport(string custIdList, long scannedMaxId);
+        void CompleteNormalAccountBySport(string customersXML, long scannedMaxId);
     }
 
     public class NormalAccountInsertBySportDataAccess : INormalAccountInsertBySportDataAccess
@@ -43,17 +44,17 @@
                 NewClassification = custIdList
             };
 
-            var custIds = repository.Fetch<long>(criteria);
+            var custNAInserted = repository.Fetch<InsertNormalAccountCustInfoEntity>(criteria);
 
-            return new InsertNormalAccountBySportModel { CustIds = custIds, ErrorMessage = criteria.ErrorMessage };
+            return new InsertNormalAccountBySportModel { CustNAInserted = custNAInserted, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void CompleteNormalAccountBySport(string custIdList, long scannedMaxId)
+        public void CompleteNormalAccountBySport(string customersXML, long scannedMaxId)
         {
             var criteria = new CompleteNormalAccountBySportCriteria
             {
                 ScannedMaxId = scannedMaxId,
-                ListCustId = custIdList
+                CustomersXML = customersXML
             };
 
             repository.Execute(criteria);

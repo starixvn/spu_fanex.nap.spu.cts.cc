@@ -6,13 +6,13 @@
     public class GetCurrentCustomerCategoryBySportModel
     {
         [XName("CustId")]
-        public long CustId { get; set; }
+        public long CustID { get; set; }
+
+        [XName("SportGroup")]
+        public int SportGroup { get; set; }
 
         [XName("CategoryId")]
-        public int CategoryId { get; set; }
-
-        [XName("IsNewCreated")]
-        public bool IsNewCreated { get; set; }
+        public int CategoryID { get; set; }      
 
         [XName("IsCheckBetCount")]
         public bool IsCheckBetCount { get; set; }

@@ -8,8 +8,8 @@
         [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
-        [SpParam(SqlParamName = "ListCustId")]
-        public string ListCustId { get; set; }
+        [SpParam(SqlParamName = "CustomersXML")]
+        public string CustomersXML { get; set; }
 
         public override string GetSettingKey()
         {

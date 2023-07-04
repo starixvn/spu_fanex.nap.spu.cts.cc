@@ -18,25 +18,39 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
-        private readonly INormalAccountInsertBySportService normalAccountService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-       
+        private readonly INormalAccountInsertBySportService normalAccountInsertService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;       
 
-        public NormalAccountInsertBySportJobService()
+        public NormalAccountInsertBySportJobService(ISentryClient sentryClient
+            , INormalAccountInsertBySportService normalAccountInsertService
+            , ICustClassToMainDBService custClassToMainDBService
+            , IAppSettings appSettings)
         {
-
+            this.sentryClient = sentryClient;
+            this.appSettings = appSettings;
+            this.serviceName = "InsertNormalAccountBySportRenovate";
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
             try
             {
+                var isContinue = true;
 
+                if (batchInternalSize <= 0)
+                    batchInternalSize = 5000;
+
+                do
+                {
+                    isContinue = JobRun(batchExternalSize, batchInternalSize);
+
+                } while (isContinue);
             }
             catch (Exception ex)
             {
+                Utilities.LogSentryError(this.serviceName, ex.Message, string.Empty, ex, sentryClient);
 
-                throw;
+                return Task.FromResult(false);
             }
 
             return Task.FromResult(true);
@@ -46,7 +60,7 @@
         {
             var isContinue = false;
 
-            var newClassifications = normalAccountService.GetNormalAccount();
+            var newClassifications = normalAccountInsertService.GetNormalAccount();
 
             if (newClassifications.NormalAccount != null && newClassifications.NormalAccount.Any())
             {
@@ -54,14 +68,30 @@
 
                 foreach (var classifications in newClassificationChunks)
                 {
-                    //var insertNAResult = normalAccountService.InsertNormalAccount(classifications, this.serviceName, appSettings.NormalAccountBySportIsWriteLog);
+                    var insertNA = classifications.Select(x => new NormalAccountBySportEntity
+                    {
+                        CustId = x.CustId,
+                        CategoryId = x.CategoryId,
+                        TurnoverRM = x.TurnoverRM,
+                        WinlossRM = x.WinlossRM,
+                        BetCount = x.BetCount,
+                        ActiveDays = x.ActiveDays,
+                        SportId = x.SportGroup
+                    });
 
-                    //if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
-                    //{
-                    //    var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustInfos, this.serviceName, batchExternalSize);
+                    var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);
 
-                    //    normalAccountService.CompleteNormalAccountBySport(classifications, isPushCCSuccess);
-                    //}
+                    if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
+                    {
+                        var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustNAInserted, this.serviceName, batchExternalSize);
+
+                        var customerXML = insertNAResult.CustNAInserted.Select(x => new CustSportXMLModel {
+                            CustID = x.CustID,
+                            SportGroup = x.SportID
+                        }).ToXmlString();
+
+                        normalAccountInsertService.CompleteNormalAccountBySport(customerXML, newClassifications.ScannedMaxId, isPushCCSuccess);
+                    }
                 }
 
                 isContinue = true;

@@ -7,7 +7,7 @@
     {
         GetNormalPoolCustomerBySportModel GetNormalPoolCustomers();
 
-        IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custIDList);
+        IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custSportList);
 
         INormalAccountClassificationBySportService ClassifyNormalPoolCustomers(string customersXML);
 
@@ -30,9 +30,9 @@
             return dataAccess.GetNormalPoolCustomers();
         }
 
-        public IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custIDList)
+        public IEnumerable<GetCurrentNormalCategoryBySportEntity> GetCurrentCustomerCategory(string custSportList)
         {
-            return dataAccess.GetCurrentCustomerCategory(custIDList);
+            return dataAccess.GetCurrentCustomerCategory(custSportList);
         }
 
         public INormalAccountClassificationBySportService ClassifyNormalPoolCustomers(string customersXML)
