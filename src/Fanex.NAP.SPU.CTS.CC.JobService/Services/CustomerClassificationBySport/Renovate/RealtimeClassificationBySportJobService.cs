@@ -29,14 +29,13 @@
         {
             try
             {
-                if (batchExternalSize > 0 && batchInternalSize > 0)
-                {
-                    JobRun(batchExternalSize, batchInternalSize);
-                }
-                else
-                {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
-                }
+                if (batchExternalSize <= 0)
+                    batchExternalSize = 3000;
+
+                if (batchInternalSize <= 0)
+                    batchInternalSize = 1000;
+
+                JobRun(batchExternalSize, batchInternalSize);
             }
             catch (Exception ex)
             {

@@ -4,6 +4,6 @@
     {
         public long CustID { get; set; }
 
-        public int SportID { get; set; }
+        public int SportGroup { get; set; }
     }
 }

@@ -211,6 +211,12 @@
 		<Setting Key="CTS_DC_CustClassification_BySport_GetCurrentCategory" SpName="CTS_DC_CustClassification_BySport_GetCurrentCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
+	<Function Name="NormalAccountInsertBySportRenovate">
+		<Setting Key="CTS_BySportNormalClassification_NormalAccount_Get" SpName="CTS_BySportNormalClassification_NormalAccount_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_NormalAccount_Complete" SpName="CTS_BySportNormalClassification_NormalAccount_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_InsertNormalAccount" SpName="CTS_DC_CustClassification_BySport_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+	</Function>
+
 	<Function Name="RealtimeClassificationBySportRenovate">
 		<Setting Key="CTS_DC_CustClassification_BySport_Realtime_GetCategory" SpName="CTS_DC_CustClassification_BySport_Realtime_GetCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />

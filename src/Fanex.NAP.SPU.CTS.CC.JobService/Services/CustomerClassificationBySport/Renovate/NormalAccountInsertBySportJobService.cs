@@ -28,6 +28,8 @@
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
+            this.normalAccountInsertService = normalAccountInsertService;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.serviceName = "InsertNormalAccountBySportRenovate";
         }
 
@@ -76,7 +78,8 @@
                         WinlossRM = x.WinlossRM,
                         BetCount = x.BetCount,
                         ActiveDays = x.ActiveDays,
-                        SportId = x.SportGroup
+                        SportGroup = x.SportGroup,
+                        PerformanceTime = x.PerformanceTime
                     });
 
                     var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);
@@ -87,7 +90,7 @@
 
                         var customerXML = insertNAResult.CustNAInserted.Select(x => new CustSportXMLModel {
                             CustID = x.CustID,
-                            SportGroup = x.SportID
+                            SportGroup = x.SportGroup
                         }).ToXmlString();
 
                         normalAccountInsertService.CompleteNormalAccountBySport(customerXML, newClassifications.ScannedMaxId, isPushCCSuccess);
