@@ -116,6 +116,8 @@
             RegisterNormalAccountClassificationBySportRenovate(services);
 
             RegisterNormalAccountInsertBySportRenovate(services);
+
+            RegisterRealtimeClassificationBySportRenovate(services);
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -397,7 +399,7 @@
                 CustomerClassification.Renovate.NewCustomerClassificationJobService>();
         }
 
-        public static void RegisterNormalAccountClassificationBySportRenovate(this IServiceCollection services)
+        private static void RegisterNormalAccountClassificationBySportRenovate(this IServiceCollection services)
         {
             services.AddSingleton<RenovateBySport.NormalAccountClassificationBySport.INormalAccountClassificationBySportDataAccess,
                 RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportDataAccess>();
@@ -407,7 +409,7 @@
                 CustomerClassificationBySport.Renovate.NormalAccountClassificationBySportJobService>();
         }
 
-        public static void RegisterNormalAccountInsertBySportRenovate(this IServiceCollection services)
+        private static void RegisterNormalAccountInsertBySportRenovate(this IServiceCollection services)
         {
             services.AddSingleton<RenovateBySport.NormalAccountInsertBySport.INormalAccountInsertBySportDataAccess,
                 RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportDataAccess>();
@@ -415,6 +417,16 @@
                 RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportService>();
             services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountInsertBySportJobService,
                 CustomerClassificationBySport.Renovate.NormalAccountInsertBySportJobService>();
+        }
+
+        private static void RegisterRealtimeClassificationBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.RealtimeClassificationBySport.IRealtimeClassificationBySportDataAccess,
+                RenovateBySport.RealtimeClassificationBySport.RealtimeClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.RealtimeClassificationBySport.IRealtimeClassificationBySportServices,
+                RenovateBySport.RealtimeClassificationBySport.RealtimeClassificationBySportServices>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.IRealtimeClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.RealtimeClassificationBySportJobService>();
         }
     }
 }
