@@ -8,7 +8,7 @@
 
     public interface IRealtimeClassificationBySportJobService
     {
-        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
+        Task<bool> Execute(int batchInternalSize);
     }
 
     public class RealtimeClassificationBySportJobService : IRealtimeClassificationBySportJobService
@@ -25,17 +25,14 @@
             this.serviceName = "Realtime Classification By Sport Renovate";
         }
 
-        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
+        public Task<bool> Execute(int batchInternalSize)
         {
             try
-            {
-                if (batchExternalSize <= 0)
-                    batchExternalSize = 3000;
-
+            {                
                 if (batchInternalSize <= 0)
-                    batchInternalSize = 1000;
+                    batchInternalSize = 5000;
 
-                JobRun(batchExternalSize, batchInternalSize);
+                JobRun(batchInternalSize);
             }
             catch (Exception ex)
             {
@@ -47,11 +44,11 @@
             return Task.FromResult(true);
         }
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private void JobRun(int batchInternalSize)
         {
             this.realtimeClassificationServices.Start()
                 .GetNewPlaceBetCustomers()
-                .PreprocessCustomerClassRealtime(batchExternalSize, batchInternalSize)
+                .PreprocessCustomerClassRealtime(batchInternalSize)
                 .CompleteCustomerRealtime();
         }
     }

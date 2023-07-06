@@ -9,9 +9,7 @@
     public interface IRealtimeClassificationBySportDataAccess
     {
         GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
-
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerCategory(string custSportJson);
-
+        
         void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
         void CompleteCustomerRealtime(long scannedMaxId);
@@ -37,17 +35,7 @@
                 CustomerNewPlaceBets = data,
                 ScannedMaxId = criteria.ScannedMaxId
             };
-        }
-
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerCategory(string custSportJson)
-        {
-            var criteria = new GetCustomerCategoryRealtimeBySportCriteria
-            {
-                CustSportsJson = custSportJson
-            };
-
-            return repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
-        }
+        }       
 
         public void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
         {

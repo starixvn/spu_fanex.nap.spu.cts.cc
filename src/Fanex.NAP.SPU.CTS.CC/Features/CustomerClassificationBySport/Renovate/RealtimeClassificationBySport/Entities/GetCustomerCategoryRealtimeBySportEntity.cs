@@ -8,10 +8,8 @@
         [XName("CustId")]
         public long CustId { get; set; }
 
-        [XName("SportId")]
-        public int SportId { get; set; }
-
-        [XName("CategoryId")]
-        public int CategoryId { get; set; }
+        [XName("SportGroup")]
+        public int SportGroup { get; set; }
+      
     }
 }

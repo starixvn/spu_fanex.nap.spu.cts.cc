@@ -217,10 +217,19 @@
 		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_InsertNormalAccount" SpName="CTS_DC_CustClassification_BySport_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
-	<Function Name="RealtimeClassificationBySportRenovate">
-		<Setting Key="CTS_DC_CustClassification_BySport_Realtime_GetCategory" SpName="CTS_DC_CustClassification_BySport_Realtime_GetCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
+	<Function Name="RealtimeClassificationBySportRenovate">		
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+	</Function>
+
+	<Function Name="ProbationClassificationBySportRenovate">
+		<Setting Key="CTS_BySportNormalClassification_Probation_Preprocess" SpName="CTS_BySportNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_ProbationScan_Get" SpName="CTS_DC_CustClassification_BySport_ProbationScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
+
+	<Function Name="DailyNormalClassificationBySportRenovate">
+		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_BySport_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_BySportNormalClassification_Daily_Preprocess" SpName="CTS_BySportNormalClassification_Daily_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
 	</Function>
 </Functions>
