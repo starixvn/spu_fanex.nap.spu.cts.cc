@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.ProbationClassificationBySport
 {
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -10,6 +11,8 @@
         IProbationClassificationBySportService GetProbationScanClassificationBySport(int batchSize);
 
         IProbationClassificationBySportService PreprocessProbationClassificationBySport();
+
+        void UpdateScanDateProbationClassificationBySport();
 
         IEnumerable<ProbationScanClassificationBySportEntity> ProbationClassification { get; }
 
@@ -51,6 +54,18 @@
             return this;
         }
 
-       
+        public void UpdateScanDateProbationClassificationBySport()
+        {
+            if (this.probationClassification != null && this.probationClassification.Any())
+            {
+                var custJson = JsonConvert.SerializeObject(this.probationClassification.Select(x => new CustSportModel
+                {
+                    CustID = x.CustId,
+                    SportID = x.SportGroup
+                }));
+
+                dataAccess.UpdateScanDateProbationClassificationBySport(custJson);
+            }
+        }
     }
 }

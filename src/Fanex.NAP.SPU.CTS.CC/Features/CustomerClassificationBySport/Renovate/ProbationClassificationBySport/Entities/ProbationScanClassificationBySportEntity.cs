@@ -2,11 +2,8 @@
 {  
     public class ProbationScanClassificationBySportEntity
     {
-        public long CustID { get; set; }
+        public long CustId { get; set; }
 
-        public int SportID { get; set; }
-
-        // 0-Up to Good & Normal OR 1-Up to Smart, High Risk, VIP & Normal        
-        public int IsProbationLastDay { get; set; }
+        public int SportGroup { get; set; }       
     }
 }

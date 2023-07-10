@@ -121,6 +121,8 @@
 
             RegisterProbationBySportRenovate(services);
 
+            RegisterDailyNormalBySportRenovate(services);
+
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -440,6 +442,16 @@
                 RenovateBySport.ProbationClassificationBySport.ProbationClassificationBySportService>();
             services.AddSingleton<CustomerClassificationBySport.Renovate.IProbationClassificationBySportJobService,
                 CustomerClassificationBySport.Renovate.ProbationClassificationBySportJobService>();
+        }
+
+        private static void RegisterDailyNormalBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.DailyNormalClassificationBySport.IDailyNormalClassificationBySportDataAccess,
+                RenovateBySport.DailyNormalClassificationBySport.DailyNormalClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.DailyNormalClassificationBySport.IDailyNormalClassificationBySportServices,
+                RenovateBySport.DailyNormalClassificationBySport.DailyNormalClassificationBySportServices>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.IDailyNormalClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.DailyNormalClassificationBySportJobService>();
         }
     }
 }

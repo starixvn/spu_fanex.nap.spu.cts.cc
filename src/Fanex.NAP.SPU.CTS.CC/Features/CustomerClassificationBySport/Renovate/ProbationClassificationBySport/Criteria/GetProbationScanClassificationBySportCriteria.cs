@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_BySport_ProbationScan_Get";
+            return "CTS_DC_CustClassification_BySport_Renovate_ProbationScan_Get";
         }
 
         public override bool IsValid()

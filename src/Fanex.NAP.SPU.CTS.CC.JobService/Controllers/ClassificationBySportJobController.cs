@@ -22,6 +22,7 @@
         private readonly Renovate.INormalAccountInsertBySportJobService normalAccountInsertBySportRenovateJobService;
         private readonly Renovate.IRealtimeClassificationBySportJobService realtimeClassificationBySportRenovateJobService;
         private readonly Renovate.IProbationClassificationBySportJobService probationClassificationBySportRenovateJobService;
+        private readonly Renovate.IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportRenovateJobService;
 
         public ClassificationBySportJobController(ISentryClient sentryClient,
             INormalAccountBySportJobService normalAccountBySportJobService,
@@ -31,7 +32,8 @@
             Renovate.INormalAccountClassificationBySportJobService normalAccountClassificationBySportRenovateJobService,
             Renovate.INormalAccountInsertBySportJobService normalAccountInsertBySportRenovateJobService,
             Renovate.IRealtimeClassificationBySportJobService realtimeClassificationBySportRenovateJobService,
-            Renovate.IProbationClassificationBySportJobService probationClassificationBySportRenovateJobService)
+            Renovate.IProbationClassificationBySportJobService probationClassificationBySportRenovateJobService,
+            Renovate.IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportRenovateJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountBySportJobService = normalAccountBySportJobService;
@@ -43,6 +45,7 @@
             this.normalAccountInsertBySportRenovateJobService = normalAccountInsertBySportRenovateJobService;
             this.realtimeClassificationBySportRenovateJobService = realtimeClassificationBySportRenovateJobService;
             this.probationClassificationBySportRenovateJobService = probationClassificationBySportRenovateJobService;
+            this.dailyNormalClassificationBySportRenovateJobService = dailyNormalClassificationBySportRenovateJobService;
         }
 
         [HttpPost("InsertNormalAccountBySport")]
@@ -106,6 +109,14 @@
             return await this.probationClassificationBySportRenovateJobService.Execute(batchSize);
         }
 
+
+        [HttpPost("ScanningDailyNormalClassificationBySportRenovate")]
+        public async Task<bool> ScanningDailyNormalClassificationBySportRenovate([FromForm] int batchSize)
+        {
+            //sentryClient.CaptureMessage($"ScanningDailyNormalClassificationBySportRenovate Service is running at {DateTime.Now}");
+
+            return await this.dailyNormalClassificationBySportRenovateJobService.Execute();
+        }
         #endregion Renovate
 
     }

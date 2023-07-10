@@ -57,7 +57,8 @@
             probationClassificationServices
                 .Start()
                 .GetProbationScanClassificationBySport(batchSize)
-                .PreprocessProbationClassificationBySport();
+                .PreprocessProbationClassificationBySport()
+                .UpdateScanDateProbationClassificationBySport();
 
             return (probationClassificationServices.ProbationClassification != null &&
                probationClassificationServices.ProbationClassification.Any());

@@ -9,6 +9,8 @@
         IEnumerable<ProbationScanClassificationBySportEntity> GetProbationScanClassificationBySport(int numberOfRecord);
 
         void PreprocessProbationClassificationBySport(IEnumerable<ProbationScanClassificationBySportEntity> custList);
+
+        void UpdateScanDateProbationClassificationBySport(string custList);
     }
 
     public class ProbationClassificationBySportDataAccess : IProbationClassificationBySportDataAccess
@@ -35,6 +37,16 @@
             var criteria = new PreprocessProbationClassificationBySportCriteria
             {
                 CustomersXML = custList.ToXmlString()
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void UpdateScanDateProbationClassificationBySport(string custList)
+        {
+            var criteria = new UpdateScanDateProbationClassificationBySportCriteria
+            {
+                CustSportJson = custList
             };
 
             repository.Execute(criteria);

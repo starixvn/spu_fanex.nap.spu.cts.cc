@@ -255,7 +255,8 @@
 
 	<Function Name="ProbationClassificationBySportRenovate">
 		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_ProbationScan_Get" SpName="CTS_DC_CustClassification_BySport_ProbationScan_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_BySportNormalClassification_Probation_Preprocess" SpName="CTS_BySportNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />		
+		<Setting Key="CTS_BySportNormalClassification_Probation_Preprocess" SpName="CTS_BySportNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_BySport_Renovate_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_BySport_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="DailyNormalClassificationBySportRenovate">
