@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_BySport_Renovate_DailyScan_GetNormal";
+            return "CTS_DC_CustClassification_BySport_DailyScan_GetNormal";
         }
 
         public override bool IsValid()
