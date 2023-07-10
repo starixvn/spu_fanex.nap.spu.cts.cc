@@ -2,6 +2,8 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,12 +27,15 @@
         private readonly IDailyNormalClassificationBySportDataAccess dataAccess;
         private readonly ISystemParameterServices systemParameterService;
         private NormalAccountBySportModel customers;
+        private readonly ISentryClient sentryClient;
 
         public DailyNormalClassificationBySportServices(IDailyNormalClassificationBySportDataAccess dataAccess
-            , ISystemParameterServices systemParameterService)
+            , ISystemParameterServices systemParameterService
+            , ISentryClient sentryClient)
         {
             this.dataAccess = dataAccess;
             this.systemParameterService = systemParameterService;
+            this.sentryClient = sentryClient;
         }
 
         public IDailyNormalClassificationBySportServices Start()
@@ -42,7 +47,7 @@
 
         public IDailyNormalClassificationBySportServices GetCustClassificationForDailyScanning()
         {
-            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();
+            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();            
 
             return this;
         }
@@ -51,7 +56,7 @@
         {
             if (customers !=null && customers.NormalAccounts != null && customers.NormalAccounts.Any())
             {
-                this.dataAccess.PreprocessDailyNormalAccountsClassificationBySport(customers.NormalAccounts.ToXmlString());
+                this.dataAccess.PreprocessDailyNormalAccountsClassificationBySport(customers.NormalAccounts.ToXmlString());                
             }
 
             return this;
@@ -60,10 +65,10 @@
         public bool UpdateLastScan()
         {
             if (this.customers != null)
-            {
+            {                
                 systemParameterService.UpdateTimingExecution(customers.LastCategoryID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCategoryID);
                 systemParameterService.UpdateTimingExecution(customers.LastCustID.ToString(), SystemParameters.DailyNormalClassificationBySportLastCustID);
-
+                               
                 return (this.customers.NormalAccounts != null && this.customers.NormalAccounts.Any());
             }
 

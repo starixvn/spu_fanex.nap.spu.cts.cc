@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.ProbationClassificationBySport
 {
     using Newtonsoft.Json;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -21,25 +22,28 @@
     public class ProbationClassificationBySportService : IProbationClassificationBySportService
     {
         private readonly IProbationClassificationBySportDataAccess dataAccess;
-        
+        private readonly ISentryClient sentryClient;
+
         private IEnumerable<ProbationScanClassificationBySportEntity> probationClassification;
         public IEnumerable<ProbationScanClassificationBySportEntity> ProbationClassification => probationClassification;
 
-        public ProbationClassificationBySportService(IProbationClassificationBySportDataAccess probationClassificationDataAccess)
+        public ProbationClassificationBySportService(IProbationClassificationBySportDataAccess probationClassificationDataAccess
+            , ISentryClient sentryClient)
         {            
             this.dataAccess = probationClassificationDataAccess;
+            this.sentryClient = sentryClient;
         }
 
         public IProbationClassificationBySportService Start()
         {
             this.probationClassification = new List<ProbationScanClassificationBySportEntity>();
-
+            
             return this;
         }
 
         public IProbationClassificationBySportService GetProbationScanClassificationBySport(int batchSize)
         {
-            this.probationClassification = dataAccess.GetProbationScanClassificationBySport(batchSize);
+            this.probationClassification = dataAccess.GetProbationScanClassificationBySport(batchSize);            
 
             return this;
         }
@@ -48,7 +52,7 @@
         {
             if (this.probationClassification != null && this.probationClassification.Any())
             {
-                dataAccess.PreprocessProbationClassificationBySport(this.probationClassification);
+                dataAccess.PreprocessProbationClassificationBySport(this.probationClassification);               
             }
 
             return this;
@@ -64,7 +68,7 @@
                     SportID = x.SportGroup
                 }));
 
-                dataAccess.UpdateScanDateProbationClassificationBySport(custJson);
+                dataAccess.UpdateScanDateProbationClassificationBySport(custJson);               
             }
         }
     }
