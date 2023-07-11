@@ -81,13 +81,21 @@
             };
             var expectedRobotAIID = 1;
             var expectedRobotImpervaID = 2;
-            var expectedRobotAI = new List<RobotAIEntity>();
-            var expectedRobotImperva = new List<RobotImpervaEntity>();
+            var expectedRobotAI = new List<RobotAIEntity>()
+            {
+                new RobotAIEntity { CustID = 1, CategoryID = 1 , RobotDetectionID = 1, LastModifiedDate = DateTime.Now },
+                new RobotAIEntity { CustID = 2, CategoryID = 1 , RobotDetectionID = 2, LastModifiedDate = DateTime.Now}
+            };
+            var expectedRobotImperva = new List<RobotImpervaEntity>()
+            { 
+                new RobotImpervaEntity { CustID = 1, LastCreateTime = DateTime.Now, RobotImpervaLogID = 1 },
+                new RobotImpervaEntity { CustID = 2, LastCreateTime = DateTime.Now, RobotImpervaLogID = 2 }
+            };
 
             // Act
             systemParameterServices.GetLastScannedId(SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
+          
             robotDetectionDataAccess.GetRobotDetections(expectedRobotAIID, expectedRobotImpervaID).Returns((expectedRobotAI, expectedRobotImperva));
-            robotDetectionService.GetRobotDetections(SystemParameters.RobotDetection_LastID, SystemParameters.TWRobotImperva_LastID);
             
             var result = robotDetectionService.InsertRobotAIImpervaPackage(paras);
 

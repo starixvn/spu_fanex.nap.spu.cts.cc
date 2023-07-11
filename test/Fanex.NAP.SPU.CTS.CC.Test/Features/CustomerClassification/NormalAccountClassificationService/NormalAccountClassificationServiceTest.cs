@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountClassificationService
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -25,7 +26,7 @@
             // Arrange
 
             // Act
-            normalAccountDataAccess.GetNormalPoolCustomers();
+            normalAccountService.GetNormalPoolCustomers();
 
             // Assert
             normalAccountDataAccess.Received(1).GetNormalPoolCustomers();
@@ -45,7 +46,7 @@
         }
 
         [Fact]
-        public void ClassifyNormalPoolCustomers()
+        public void ClassifyNormalPoolCustomers_WhenSuccess_ReturnNotException()
         {
             // Arrange
             var custInfos = new List<GetCurrentCustomerCategoryModel>() {
@@ -53,18 +54,18 @@
                      CustId = 1, CategoryId = 1, IsCheckBetCount = true, IsNewCreated = false
                 }
             };
-
-            var jsonCustInfos = JsonConvert.SerializeObject(custInfos);
+           
+            var custInfoXml = custInfos.ToXmlString();
 
             // Act
-            normalAccountService.ClassifyNormalPoolCustomers(jsonCustInfos);
+            normalAccountService.ClassifyNormalPoolCustomers(custInfoXml);
 
             // Assert
-            normalAccountDataAccess.Received(1).ClassifyNormalPoolCustomers(jsonCustInfos);
+            normalAccountDataAccess.Received(1).ClassifyNormalPoolCustomers(custInfoXml);
         }
 
         [Fact]
-        public void ClearNormalPoolCustomers()
+        public void ClearNormalPoolCustomers_WhenSuccess_ReturnNotException()
         {
             // Arrange
             var custIDList = "1,2";

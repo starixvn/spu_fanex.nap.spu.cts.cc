@@ -1,133 +1,82 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
+    using System;
     using System.Collections.Generic;
     using Xunit;
 
     public class NormalAccountBySportServiceTest
     {
-        private readonly INormalAccountBySportDataAccess normalAccountDataAccess;
-        private readonly INormalAccountBySportService normalAccountServices;
+        private readonly INormalAccountInsertBySportDataAccess normalAccountDataAccess;
+        private readonly INormalAccountInsertBySportService normalAccountService;
 
         public NormalAccountBySportServiceTest()
         {
-            normalAccountDataAccess = Substitute.For<INormalAccountBySportDataAccess>();
-
-            normalAccountServices = new NormalAccountBySportService(normalAccountDataAccess, null);
+            normalAccountDataAccess = Substitute.For<INormalAccountInsertBySportDataAccess>();
+            normalAccountService = new NormalAccountInsertBySportService(normalAccountDataAccess, null);
         }
 
         [Fact]
-        public void GetNewClassification_WhenSuccess_ReturnNewClassificationList()
+        public void GetNormalAccount_WhenSuccess_ReturnResult()
         {
-            var normalAccounts = new List<CustomerClassificationBySportEntity>()
+            // Arrange
+
+            // Act
+            normalAccountService.GetNormalAccount();
+
+            // Assert
+            normalAccountDataAccess.Received(1).GetNormalAccount();
+        }
+
+        [Fact]
+        public void InsertNormalAccount_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var serviceName = "NormalAccountInsertBySport";
+            var custs = new List<NormalAccountBySportEntity>()
             {
-                new CustomerClassificationBySportEntity
+                new NormalAccountBySportEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
+                new NormalAccountBySportEntity { CustId = 2, ActiveDays = 7, CategoryId = 1, BetCount = 10, PerformanceTime = DateTime.Now },
+            };
+            var custsJson = JsonConvert.SerializeObject(custs);
+            var insertResult = new InsertNormalAccountBySportModel();
+
+            // Act
+            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
+
+            normalAccountService.InsertNormalAccount(custs, serviceName);
+
+            // Assert
+            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
+        }
+
+        [Fact]
+        public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
+        {
+            // Arrange                        
+            var customerXML = new List<CustSportXMLModel>() {
+                new CustSportXMLModel
                 {
-                    CustId = 1,
-                    CategoryId = 201,
-                    SportId = 1,
-                    ActiveDays = 1,
-                    BetCount = 1,
-                    TurnoverRM = 1,
-                    WinlossRM = 1
+                     CustID = 1,
+                     SportGroup = 1
                 },
-                new CustomerClassificationBySportEntity
+                new CustSportXMLModel
                 {
-                    CustId = 2,
-                    CategoryId = 202,
-                    SportId = 2,
-                    ActiveDays = 1,
-                    BetCount = 1,
-                    TurnoverRM = 1,
-                    WinlossRM = 1
+                    CustID = 1,
+                    SportGroup = 2
                 }
-            };
-            
-            normalAccountDataAccess.GetNewClassificationBySport().Returns(normalAccounts);
+            }.ToXmlString();
+            var scannedMaxId = 7;
+            // Act
+            normalAccountService.CompleteNormalAccountBySport(customerXML, scannedMaxId, true);
 
-            var result = normalAccountServices.GetNewClassificationBySport();
-
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(normalAccounts);
+            // Assert
+            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(customerXML, scannedMaxId);
         }
 
-        [Fact]
-        public void InsertCustomerClassificationBySport_WhenSuccess_ReturnCustInfos()
-        {
-            var listClassification = new List<CustomerClassificationBySportEntity>
-                {
-                    new CustomerClassificationBySportEntity
-                    {
-                        CustId = 1,
-                        CategoryId = 201,
-                        SportId = 1,
-                        ActiveDays = 1,
-                        BetCount = 1,
-                        TurnoverRM = 1,
-                        WinlossRM = 1
-                    },
-                    new CustomerClassificationBySportEntity
-                    {
-                        CustId = 2,
-                        CategoryId = 202,
-                        SportId = 2,
-                        ActiveDays = 2,
-                        BetCount = 2,
-                        TurnoverRM = 2,
-                        WinlossRM = 2
-                    }
-                };
-
-            var dataAccessResult = new InsertNormalAccountResultEntity
-            {
-                CustInfos = new List<InsertNormalAccountCustInfoEntity>(),
-                ErrorMessage = string.Empty
-            };
-
-            var custClassJsonData = JsonConvert.SerializeObject(listClassification);
-            normalAccountDataAccess.InsertCustomerClassificationBySport(custClassJsonData).Returns(dataAccessResult);
-            
-            var result = normalAccountServices.InsertCustomerClassificationBySport(listClassification, "NormalAccountInsert", false);
-
-            result.Should().BeEquivalentTo(dataAccessResult);
-        }
-
-        [Fact]
-        public void UpdateAppliedStatusClassificationBySport_WhenSuccess_ReturnTrue()
-        {
-            var listClassification = new List<CustomerClassificationBySportEntity>
-                {
-                    new CustomerClassificationBySportEntity
-                    {
-                        CustId = 1,
-                        CategoryId = 201,
-                        SportId = 1,
-                        ActiveDays = 1,
-                        BetCount = 1,
-                        TurnoverRM = 1,
-                        WinlossRM = 1
-                    },
-                    new CustomerClassificationBySportEntity
-                    {
-                        CustId = 2,
-                        CategoryId = 202,
-                        SportId = 2,
-                        ActiveDays = 2,
-                        BetCount = 2,
-                        TurnoverRM = 2,
-                        WinlossRM = 2
-                    }
-                };
-            
-            normalAccountDataAccess.UpdateAppliedStatusClassificationBySport(listClassification.ToXmlString());
-
-            var result = normalAccountServices.UpdateAppliedStatusClassificationBySport(listClassification, true);
-
-            result.Should().BeTrue();
-        }
     }
 }
