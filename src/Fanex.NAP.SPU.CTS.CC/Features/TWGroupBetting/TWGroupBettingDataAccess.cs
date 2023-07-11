@@ -15,14 +15,11 @@
 
         void CountGroupBettingTicketForDB062();
 
-        void CountTotalTicket();
+        long CountTotalTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
         void SyncGroupBettingTicketToDB062(IEnumerable<TWGroupBettingTicket> gbTickets);
-
-        void CountTotalTicketDB062();
-
     }
 
     public class TWGroupBettingDataAccess : ITWGroupBettingDataAccess
@@ -52,19 +49,18 @@
             repository.Execute(criteria);
         }
 
-        public void CountTotalTicket()
+        public long CountTotalTicket(int batchSize, long lastSequenceId)
         {
-            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria();
+            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria(false)
+            {
+                BatchSize = batchSize,
+                LastSequenceId = lastSequenceId
+            };
 
             repository.Execute(criteria);
+
+            return criteria.LastSequenceId_New;
         } 
-        
-        public void CountTotalTicketDB062()
-        {
-            var criteria = new TWGroupBetting_UpdateTotalTicketDB062Criteria();
-
-            repository.Execute(criteria);
-        }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {

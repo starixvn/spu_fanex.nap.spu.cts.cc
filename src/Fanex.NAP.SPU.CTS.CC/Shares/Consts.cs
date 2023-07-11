@@ -35,7 +35,7 @@
             ReactivatedCustomerLastScannedDate = 76,
             TWGroupBetting_LastTransSec = 77,
             TWGroupBetting_SkipTransCount = 78,
-            TWGroupBetting_LastSequenceId = 90,
+            TWGroupBetting_ScanTicket_LastSequenceId = 90,
             InactiveNewMember_LastCategoryID = 80,
             InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
@@ -56,7 +56,9 @@
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
 			//TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
-            TWRobotImperva_LastID = 134
+            TWRobotImperva_LastID = 134,
+            TWGroupBetting_CountTicket_BatchSize = 135,
+            TWGroupBetting_CountTicket_LastSequenceId = 136
         };
 
         public enum Reason

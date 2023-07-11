@@ -38,7 +38,7 @@
                 var rules = twGroupBettingService.GetAllRules();
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
-                    var lastTransId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
+                    var lastTransId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
                     var lastTransSec = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_LastTransSec);
                     var skipTransCount = twGroupBettingService.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
 
@@ -55,7 +55,7 @@
                     twGroupBettingService.CountGroupBettingTicket();
                     if (outputParams.LastSequenceId_New > 0)
                     {
-                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, SystemParameters.TWGroupBetting_LastSequenceId);
+                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
                         twGroupBettingService.UpdateConfig_Int64(outputParams.LastTransSec_New, SystemParameters.TWGroupBetting_LastTransSec);
                         twGroupBettingService.UpdateConfig_Int(outputParams.SkipTransCount_New, SystemParameters.TWGroupBetting_SkipTransCount);
                     }
@@ -75,7 +75,18 @@
         {
             try
             {
-                twGroupBettingService.CountTotalTicket();
+                var batchSize = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_BatchSize);
+                var LastSequenceId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+
+                if (batchSize > 0 && LastSequenceId> 0)
+                {
+                    var nextLastSequenceId = twGroupBettingService.CountTotalTicket((int)batchSize, LastSequenceId);
+
+                    if (nextLastSequenceId > 0)
+                    {
+                        twGroupBettingService.UpdateConfig_Int64(nextLastSequenceId, SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                    }
+                }
             }
             catch (Exception ex)
             {

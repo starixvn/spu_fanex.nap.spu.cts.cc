@@ -13,7 +13,7 @@
 
         void CountGroupBettingTicket();
 
-        void CountTotalTicket();
+        long CountTotalTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
@@ -84,9 +84,9 @@
             
         }
 
-        public void CountTotalTicket() 
+        public long CountTotalTicket(int batchSize, long LastSequenceId) 
         {
-            twGroupBettingDataAccess.CountTotalTicket();
+            return twGroupBettingDataAccess.CountTotalTicket(batchSize, LastSequenceId);
             //twGroupBettingDataAccess.CountTotalTicketDB062();
         }
 
