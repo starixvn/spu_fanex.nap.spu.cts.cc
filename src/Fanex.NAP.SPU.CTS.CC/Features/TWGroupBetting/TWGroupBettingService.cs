@@ -24,6 +24,8 @@
         int GetConfig_Int(SystemParameters paraID);
 
         void UpdateConfig_Int(int value, SystemParameters paraID);
+
+        int? GetConfigWithoutDefault(SystemParameters paraID);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -50,6 +52,12 @@
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
             int defaultValue = 0;
             return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : defaultValue;
+        }
+
+        public int? GetConfigWithoutDefault(SystemParameters paraID)
+        {
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : null;
         }
 
         public void UpdateConfig_Int64(Int64 value, SystemParameters paraID)

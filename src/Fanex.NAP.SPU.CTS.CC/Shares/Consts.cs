@@ -58,7 +58,8 @@
 			//TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
             TWRobotImperva_LastID = 134,
             TWGroupBetting_CountTicket_BatchSize = 135,
-            TWGroupBetting_CountTicket_LastSequenceId = 136
+            TWGroupBetting_CountTicket_LastSequenceId = 136,
+            TWGroupBetting_CountTicket_Status = 137
         };
 
         public enum Reason
