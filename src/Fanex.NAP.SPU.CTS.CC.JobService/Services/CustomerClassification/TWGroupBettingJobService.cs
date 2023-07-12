@@ -75,16 +75,38 @@
         {
             try
             {
-                var batchSize = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_BatchSize);
-                var LastSequenceId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                var status = twGroupBettingService.GetConfigWithoutDefault(SystemParameters.TWGroupBetting_CountTicket_Status);
 
-                if (batchSize > 0 && LastSequenceId> 0)
+                if (status != null && status == 0)
                 {
-                    var nextLastSequenceId = twGroupBettingService.CountTotalTicket((int)batchSize, LastSequenceId);
+                    var batchSize = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_BatchSize);
+                    var LastSequenceId = twGroupBettingService.GetConfig_Int64(SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
 
-                    if (nextLastSequenceId > 0)
+                    if (batchSize > 0 && LastSequenceId > 0)
                     {
-                        twGroupBettingService.UpdateConfig_Int64(nextLastSequenceId, SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                        twGroupBettingService.UpdateConfig_Int64(1, SystemParameters.TWGroupBetting_CountTicket_Status);
+
+                        long nextSequenceId = 0;
+
+                        try
+                        {
+                            nextSequenceId = twGroupBettingService.CountTotalTicket((int)batchSize, LastSequenceId);
+
+                            if (nextSequenceId > 0)
+                            {
+                                twGroupBettingService.UpdateConfig_Int64(nextSequenceId, SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                                twGroupBettingService.UpdateConfig_Int64(0, SystemParameters.TWGroupBetting_CountTicket_Status);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            string message = nextSequenceId != 0 ? 
+                                                $"CAUTION !!! To restart job, please set SystemParamterID (137) = 0 and SystemParamterID (136) NextSequenceId = {nextSequenceId}\n" :
+                                                $"CAUTION !!! To restart job, please set SystemParamterID (137) = 0 \n";
+                            message += ex.Message;
+                            throw new Exception(message, ex);
+                        }
+
                     }
                 }
             }
