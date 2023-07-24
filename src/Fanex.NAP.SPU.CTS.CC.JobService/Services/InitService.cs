@@ -39,6 +39,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
     using Renovate = Features.CustomerClassification.Renovate;
+    using RenovateBySport = Features.CustomerClassificationBySport.Renovate;
 
     public static class InitService
     {
@@ -111,6 +112,17 @@
             RegisterAffectedDownlineRenovate(services);
 
             RegisterNewCustomerClassificationRenovate(services);
+
+            RegisterNormalAccountClassificationBySportRenovate(services);
+
+            RegisterNormalAccountInsertBySportRenovate(services);
+
+            RegisterRealtimeClassificationBySportRenovate(services);
+
+            RegisterProbationBySportRenovate(services);
+
+            RegisterDailyNormalBySportRenovate(services);
+
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -390,6 +402,56 @@
                 Renovate.NewCustomer.NewCustomerClassificationServices>();
             services.AddSingleton<CustomerClassification.Renovate.INewCustomerClassificationJobService,
                 CustomerClassification.Renovate.NewCustomerClassificationJobService>();
+        }
+
+        private static void RegisterNormalAccountClassificationBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.NormalAccountClassificationBySport.INormalAccountClassificationBySportDataAccess,
+                RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.NormalAccountClassificationBySport.INormalAccountClassificationBySportService,
+                RenovateBySport.NormalAccountClassificationBySport.NormalAccountClassificationBySportService>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.NormalAccountClassificationBySportJobService>();
+        }
+
+        private static void RegisterNormalAccountInsertBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.NormalAccountInsertBySport.INormalAccountInsertBySportDataAccess,
+                RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.NormalAccountInsertBySport.INormalAccountInsertBySportService,
+                RenovateBySport.NormalAccountInsertBySport.NormalAccountInsertBySportService>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.INormalAccountInsertBySportJobService,
+                CustomerClassificationBySport.Renovate.NormalAccountInsertBySportJobService>();
+        }
+
+        private static void RegisterRealtimeClassificationBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.RealtimeClassificationBySport.IRealtimeClassificationBySportDataAccess,
+                RenovateBySport.RealtimeClassificationBySport.RealtimeClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.RealtimeClassificationBySport.IRealtimeClassificationBySportServices,
+                RenovateBySport.RealtimeClassificationBySport.RealtimeClassificationBySportServices>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.IRealtimeClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.RealtimeClassificationBySportJobService>();
+        }
+
+        private static void RegisterProbationBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.ProbationClassificationBySport.IProbationClassificationBySportDataAccess,
+                RenovateBySport.ProbationClassificationBySport.ProbationClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.ProbationClassificationBySport.IProbationClassificationBySportService,
+                RenovateBySport.ProbationClassificationBySport.ProbationClassificationBySportService>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.IProbationClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.ProbationClassificationBySportJobService>();
+        }
+
+        private static void RegisterDailyNormalBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.DailyNormalClassificationBySport.IDailyNormalClassificationBySportDataAccess,
+                RenovateBySport.DailyNormalClassificationBySport.DailyNormalClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.DailyNormalClassificationBySport.IDailyNormalClassificationBySportServices,
+                RenovateBySport.DailyNormalClassificationBySport.DailyNormalClassificationBySportServices>();
+            services.AddSingleton<CustomerClassificationBySport.Renovate.IDailyNormalClassificationBySportJobService,
+                CustomerClassificationBySport.Renovate.DailyNormalClassificationBySportJobService>();
         }
     }
 }

@@ -16,7 +16,7 @@
         public ProbationClassificationBySportServiceTest()
         {
             probationClassificationDataAccess = Substitute.For<IProbationClassificationBySportDataAccess>();
-            probationClassificationServices = new ProbationClassificationBySportService(probationClassificationDataAccess);
+            probationClassificationServices = new ProbationClassificationBySportService(probationClassificationDataAccess, null);
         }
 
         [Fact]

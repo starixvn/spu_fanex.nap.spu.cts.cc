@@ -63,7 +63,7 @@
         }
 
         [Fact]
-        public void InsertNormalAccount()
+        public void InsertNormalAccount_WhenSuccess_ReturnResult()
         {
             // Arrange
             var serviceName = "NormalAccountInsert";
@@ -93,7 +93,7 @@
         }
 
         [Fact]
-        public void UpdateCompleteNormalAccountInsert()
+        public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
         {
             // Arrange
             var custIdList = "1, 2";
