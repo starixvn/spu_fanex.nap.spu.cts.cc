@@ -47,7 +47,7 @@
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
 
-                } while (isContinue);
+                } while (isContinue);                
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@
             var newClassifications = normalAccountInsertService.GetNormalAccount();
 
             if (newClassifications.NormalAccount != null && newClassifications.NormalAccount.Any())
-            {
+            {               
                 var custChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
 
                 var actions = new List<Action>();
@@ -109,19 +109,19 @@
                 PerformanceTime = x.PerformanceTime
             });
 
-            var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);
+            var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);            
 
             if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
             {
                 var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustNAInserted, this.serviceName, batchExternalSize);
 
-                var customerXML = insertNAResult.CustNAInserted.Select(x => new CustSportXMLModel
+                var customerXML = insertNA.Select(x => new CustSportXMLModel
                 {
-                    CustID = x.CustID,
+                    CustID = x.CustId,
                     SportGroup = x.SportGroup
                 }).ToXmlString();
 
-                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);
+                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);                
             }
         }
 
