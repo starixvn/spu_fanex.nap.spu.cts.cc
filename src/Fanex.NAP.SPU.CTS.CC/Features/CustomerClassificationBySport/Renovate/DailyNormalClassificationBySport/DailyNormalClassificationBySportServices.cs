@@ -47,7 +47,9 @@
 
         public IDailyNormalClassificationBySportServices GetCustClassificationForDailyScanning()
         {
-            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();            
+            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();
+
+            Utilities.LogSentryInfo("BySportDaily", "Get data done", customers, true, sentryClient);
 
             return this;
         }
