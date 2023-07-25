@@ -2,13 +2,8 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyNormalClassificationBySportServices
@@ -47,7 +42,7 @@
 
         public IDailyNormalClassificationBySportServices GetCustClassificationForDailyScanning()
         {
-            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();            
+            this.customers = this.dataAccess.GetDailyNormalAccountsClassificationBySport();
 
             return this;
         }

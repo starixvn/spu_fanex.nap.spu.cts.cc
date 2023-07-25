@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
 
-                } while (isContinue);
+                } while (isContinue);                
             }
             catch (Exception ex)
             {
@@ -65,42 +66,64 @@
             var newClassifications = normalAccountInsertService.GetNormalAccount();
 
             if (newClassifications.NormalAccount != null && newClassifications.NormalAccount.Any())
-            {
-                var newClassificationChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
+            {               
+                var custChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
 
-                foreach (var classifications in newClassificationChunks)
+                var actions = new List<Action>();
+
+                var idx = 4;
+
+                foreach (var custBatch in custChunks)
                 {
-                    var insertNA = classifications.Select(x => new NormalAccountBySportEntity
+                    actions.Add(() => InsertNormalAccount(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
+
+                    if (actions.Count == idx)
                     {
-                        CustId = x.CustId,
-                        CategoryId = x.CategoryId,
-                        TurnoverRM = x.TurnoverRM,
-                        WinlossRM = x.WinlossRM,
-                        BetCount = x.BetCount,
-                        ActiveDays = x.ActiveDays,
-                        SportGroup = x.SportGroup,
-                        PerformanceTime = x.PerformanceTime
-                    });
-
-                    var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);
-
-                    if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
-                    {
-                        var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustNAInserted, this.serviceName, batchExternalSize);
-
-                        var customerXML = insertNAResult.CustNAInserted.Select(x => new CustSportXMLModel {
-                            CustID = x.CustID,
-                            SportGroup = x.SportGroup
-                        }).ToXmlString();
-
-                        normalAccountInsertService.CompleteNormalAccountBySport(customerXML, newClassifications.ScannedMaxId, isPushCCSuccess);
+                        Parallel.Invoke(actions.ToArray());
+                        actions.Clear();
                     }
                 }
 
+                if (actions.Any())
+                {
+                    Parallel.Invoke(actions.ToArray());
+                }
+               
                 isContinue = true;
             }
 
             return isContinue;
         }
+
+        private void InsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
+        {
+            var insertNA = custs.Select(x => new NormalAccountBySportEntity
+            {
+                CustId = x.CustId,
+                CategoryId = x.CategoryId,
+                TurnoverRM = x.TurnoverRM,
+                WinlossRM = x.WinlossRM,
+                BetCount = x.BetCount,
+                ActiveDays = x.ActiveDays,
+                SportGroup = x.SportGroup,
+                PerformanceTime = x.PerformanceTime
+            });
+
+            var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);            
+
+            if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
+            {
+                var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustNAInserted, this.serviceName, batchExternalSize);
+
+                var customerXML = insertNA.Select(x => new CustSportXMLModel
+                {
+                    CustID = x.CustId,
+                    SportGroup = x.SportGroup
+                }).ToXmlString();
+
+                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);                
+            }
+        }
+
     }
 }
