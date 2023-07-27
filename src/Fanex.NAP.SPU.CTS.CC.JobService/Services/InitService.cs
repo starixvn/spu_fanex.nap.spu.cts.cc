@@ -123,6 +123,8 @@
 
             RegisterDailyNormalBySportRenovate(services);
 
+            RegisterRescanBySportRenovate(services);
+
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)
@@ -452,6 +454,14 @@
                 RenovateBySport.DailyNormalClassificationBySport.DailyNormalClassificationBySportServices>();
             services.AddSingleton<CustomerClassificationBySport.Renovate.IDailyNormalClassificationBySportJobService,
                 CustomerClassificationBySport.Renovate.DailyNormalClassificationBySportJobService>();
+        }
+
+        private static void RegisterRescanBySportRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<RenovateBySport.RescanNormalClassificationBySport.IRescanNormalClassificationBySportDataAccess,
+                RenovateBySport.RescanNormalClassificationBySport.RescanNormalClassificationBySportDataAccess>();
+            services.AddSingleton<RenovateBySport.RescanNormalClassificationBySport.IRescanNormalClassificationBySportServices,
+                RenovateBySport.RescanNormalClassificationBySport.RescanNormalClassificationBySportServices>();
         }
     }
 }

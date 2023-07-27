@@ -1,14 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.RescanNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.DailyNormalClassificationBySport;
-    using System.Collections.Generic;
 
     public interface INewCustomerClassificationServices
     {

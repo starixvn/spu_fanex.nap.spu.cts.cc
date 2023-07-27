@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.DailyNormalClassificationBySport
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.RescanNormalClassificationBySport
 {
     using Fanex.Data.Repository;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
