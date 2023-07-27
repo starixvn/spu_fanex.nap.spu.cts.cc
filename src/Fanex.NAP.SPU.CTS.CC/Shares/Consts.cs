@@ -136,6 +136,11 @@
             ClassifyGBMatchMonitor = 54       
         };
 
+        public enum BySport_FunctionId
+        {
+            InsertNewCustJob = 4
+        };
+
         public enum RescanNormalType
         {
             Manual = 4,
