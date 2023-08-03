@@ -36,4 +36,9 @@
     <PackageReference Include="UAParser" Version="3.1.47" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\CustomerClassification\Renovate\NormalTaggingClassification\Criteria\" />
+    <Folder Include="Features\CustomerClassification\Renovate\NormalTaggingClassification\Entities\" />
+  </ItemGroup>
+
 </Project>

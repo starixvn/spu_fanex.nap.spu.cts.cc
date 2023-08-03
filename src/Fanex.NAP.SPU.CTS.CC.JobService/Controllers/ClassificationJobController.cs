@@ -36,6 +36,7 @@
         private readonly Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
+        private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
@@ -58,7 +59,8 @@
             Services.INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
             Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,
-            ITWRobotImpervaJobService robotImpervaJobService)
+            ITWRobotImpervaJobService robotImpervaJobService,
+            INormalTaggingClassificationJobService normalTaggingClassificationJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
@@ -83,6 +85,7 @@
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
             this.mmClassificationJobService = mmClassificationJobService;
             this.robotImpervaJobService = robotImpervaJobService;
+            this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -96,6 +99,13 @@
         {
             sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
             return await this.dailyNormalClassificationJobService.Execute();
+        }
+
+        [HttpPost("scanningDailyNormalTaggingClassification")]
+        public async Task<bool> DailyScanningNormalTaggingClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            sentryClient.CaptureMessage($"Daily Normal Tagging Service is running at {DateTime.Now}");
+            return await this.normalTaggingClassificationJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("scanningDailyProblemClassification")]
