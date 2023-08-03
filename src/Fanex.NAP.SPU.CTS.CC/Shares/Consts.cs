@@ -133,7 +133,8 @@
             ScanAssociatedAccount = 51,
             DownlineCustomerClassification = 52,
             TVSProblemAccountInsert = 53,
-            ClassifyGBMatchMonitor = 54       
+            ClassifyGBMatchMonitor = 54,
+            NormalTaggingJob = 55,
         };
 
         public enum BySport_FunctionId
@@ -145,7 +146,8 @@
         {
             Manual = 4,
             Auto_Customer = 5,
-            Auto_AfftectedDownline = 6
+            Auto_AfftectedDownline = 6,
+            Auto_AfterNormalScan = 7
         }
 
         public enum HttpStatus
