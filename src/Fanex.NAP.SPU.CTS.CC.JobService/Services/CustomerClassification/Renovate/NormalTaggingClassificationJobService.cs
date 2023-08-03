@@ -28,7 +28,7 @@
         {
             try
             {
-                if (batchExternalSize > batchInternalSize && batchInternalSize > 0)
+                if (batchExternalSize >= batchInternalSize && batchInternalSize > 0)
                 {
                     JobRun(batchExternalSize, batchInternalSize);
                 }
