@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert
 {
-    using System;  
+    using System;
 
     public class NormalAccountAfterCheckTWDetectionModel
     {
@@ -14,7 +14,8 @@
             this.WinlossRM = cust.WinlossRM;
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
-            this.PerformanceTime = cust.PerformanceTime;           
+            this.PerformanceTime = cust.PerformanceTime;
+            this.IsTaggingOny = cust.IsTaggingOnly;
         }
 
         public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity tWTaggedCust)
@@ -28,7 +29,8 @@
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
             this.PerformanceTime = cust.PerformanceTime;
-            
+            this.IsTaggingOny = cust.IsTaggingOnly;
+
             if (tWTaggedCust != null)
             {
                 this.TaggingID = tWTaggedCust.TaggingID;
@@ -56,7 +58,7 @@
 
         public int ActiveDays { get; set; }
 
-        public DateTime PerformanceTime { get; set; }             
+        public DateTime PerformanceTime { get; set; }
 
         public int TaggingID { get; set; }
 
@@ -70,5 +72,6 @@
 
         public decimal TWDesktopUsageRate { get; set; }
 
+        public bool IsTaggingOny { get; set; }
     }
 }

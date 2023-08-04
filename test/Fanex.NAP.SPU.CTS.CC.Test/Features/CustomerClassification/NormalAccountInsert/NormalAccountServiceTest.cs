@@ -23,7 +23,7 @@
         public void GetNormalAccounts_WhenSuccess()
         {
             // Arrange
-           
+
             // Act
             normalAccountService.GetNormalAccounts();
 
@@ -93,6 +93,18 @@
         }
 
         [Fact]
+        public void InsertNormalAccount_WhenSuccess_ReturnNotException()
+        {
+            // Arrange
+
+            // Act
+            normalAccountService.InsertNormalAccount(null, string.Empty, false);
+
+            // Assert
+            normalAccountDataAccess.Received(0).InsertNormalAccount(Arg.Any<string>());
+        }
+
+        [Fact]
         public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
         {
             // Arrange
@@ -106,5 +118,58 @@
             normalAccountDataAccess.Received(1).UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
         }
 
+        [Fact]
+        public void MergeWithTWTaggedCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<GetNormalAccountEntity> { new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 } };
+            var twTaggedCust = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999 } };
+            var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggedCust[0]) };
+
+            // Act
+            var result = normalAccountService.MergeWithTWTaggedCust(cust, twTaggedCust);
+
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
+
+        [Fact]
+        public void MergeWithTWTaggedCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+
+            // Act
+            var result = normalAccountService.MergeWithTWTaggedCust(null, null);
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void MergeWithCTSTaggedCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
+            var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
+            var compareResult = new List<InsertNormalAccountModel> { new InsertNormalAccountModel(cust[0], twTaggedCust[0]) };
+
+            // Act
+            var result = normalAccountService.MergeWithCTSTaggedCust(cust, twTaggedCust);
+
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
+
+        [Fact]
+        public void MergeWithCTSTaggedCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+
+            // Act
+            var result = normalAccountService.MergeWithCTSTaggedCust(null, null);
+
+            // Assert
+            Assert.NotNull(result);
+        }
     }
 }

@@ -37,13 +37,13 @@
         }
 
         public GetNormalAccountModel GetNormalAccounts()
-        {            
-            return dataAccess.GetNormalAccount();            
+        {
+            return dataAccess.GetNormalAccount();
         }
 
         public IEnumerable<CTSTaggedCustEntity> GetCustomerAssociationProblemAccount(string custIdList)
         {
-            return dataAccess.GetCustsAssociationProblemAccount(custIdList);           
+            return dataAccess.GetCustsAssociationProblemAccount(custIdList);
         }
 
         public IEnumerable<TWTaggedCustEntity> GetGroupBettingAndRejectCustomer(IEnumerable<GetNormalAccountEntity> custs)
@@ -62,7 +62,7 @@
         {
             var result = new InsertNormalAccountResultEntity();
 
-            var custsJson = JsonConvert.SerializeObject(custs);
+            var custsJson = custs != null ? JsonConvert.SerializeObject(custs) : string.Empty;
 
             if (!string.IsNullOrEmpty(custsJson))
             {
@@ -84,24 +84,17 @@
             if (isSuccess)
             {
                 dataAccess.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
-            }            
+            }
 
             return true;
         }
 
         public IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggedCust)
         {
-            if (custs == null || !custs.Any())
-            {
-                if (twTaggedCust == null || !twTaggedCust.Any())
-                {
-                    return custs.Select(x => new NormalAccountAfterCheckTWDetectionModel(x));
-                }
+            var custsMapping = custs ?? new List<GetNormalAccountEntity>();
+            var twTaggedCustMapping = twTaggedCust ?? new List<TWTaggedCustEntity>();
 
-                return new List<NormalAccountAfterCheckTWDetectionModel>();
-            }
-
-            return custs.GroupJoin(twTaggedCust,
+            return custsMapping.GroupJoin(twTaggedCustMapping,
                                custClass => custClass.CustId,
                                taggedCust => taggedCust.CustID,
                                (custClass, taggedCusts) => new { custClass, taggedCusts })
@@ -112,17 +105,10 @@
 
         public IEnumerable<InsertNormalAccountModel> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
         {
-            if (custs == null || !custs.Any())
-            {
-                if (ctsTaggedCust == null || !ctsTaggedCust.Any())
-                {
-                    return custs.Select(x => new InsertNormalAccountModel(x));
-                }
+            var custsMapping = custs ?? new List<NormalAccountAfterCheckTWDetectionModel>();
+            var ctsTaggedCustMapping = ctsTaggedCust ?? new List<CTSTaggedCustEntity>();
 
-                return new List<InsertNormalAccountModel>();
-            }
-
-            return custs.GroupJoin(ctsTaggedCust,
+            return custsMapping.GroupJoin(ctsTaggedCustMapping,
                                custClass => custClass.CustId,
                                taggedCust => taggedCust.CustID,
                                (custClass, taggedCusts) => new { custClass, taggedCusts })
@@ -130,6 +116,6 @@
                                     group => group.taggedCusts.DefaultIfEmpty(),
                                     (group, temp) => new InsertNormalAccountModel(group.custClass, temp));
         }
-    
+
     }
 }

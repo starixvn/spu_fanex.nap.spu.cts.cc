@@ -83,7 +83,8 @@
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
-                                                      IsCheckBetCount = custMain.IsCheckBetCount
+                                                      IsCheckBetCount = custMain.IsCheckBetCount,
+                                                      FunctionId = custMain.FunctionId
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
