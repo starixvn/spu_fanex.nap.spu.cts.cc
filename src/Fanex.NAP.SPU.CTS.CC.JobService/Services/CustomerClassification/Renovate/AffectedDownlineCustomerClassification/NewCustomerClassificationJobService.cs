@@ -82,6 +82,7 @@
                                                         .InsertVVIPForNewCustomers(paramaters)
                                                         .InsertPAForNewCustomers(paramaters)
                                                         .ResanNormalForNewCustomers(paramaters)
+                                                        .ResanNormalBySportForNewCustomers()
                                                         .UpdateComplete();
             return isSuccess;
         }

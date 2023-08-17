@@ -1,10 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.RescanNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -20,6 +22,8 @@
 
         INewCustomerClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters);
 
+        INewCustomerClassificationServices ResanNormalBySportForNewCustomers();
+
         bool UpdateComplete();
     }
 
@@ -31,6 +35,7 @@
         private readonly IRescanCustClassificationService rescanCustClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISystemParameterServices systemParameterServices;
+        private readonly IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices;
         private NewCustomerClassificationEntity newCustomerClassification;
         private bool IsSuccess;
 
@@ -40,7 +45,8 @@
                 IProblemAccountServices problemAccountServices,
                 IRescanCustClassificationService rescanCustClassificationService,
                 ICustClassToMainDBService custClassToMainDBService,
-                ISystemParameterServices systemParameterServices)
+                ISystemParameterServices systemParameterServices,
+                IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices)
         {
             this.newCTSClassificationDataAccess = newCTSClassificationDataAccess;
             this.affectedCustomerClassificationService = affectedCustomerClassificationService;
@@ -48,6 +54,7 @@
             this.rescanCustClassificationService = rescanCustClassificationService;
             this.custClassToMainDBService = custClassToMainDBService;
             this.systemParameterServices = systemParameterServices;
+            this.rescanNormalClassificationBySportServices = rescanNormalClassificationBySportServices;
         }
 
         public INewCustomerClassificationServices Start()
@@ -100,6 +107,38 @@
                 var cusIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
 
                 IsSuccess = rescanCustClassificationService.RescanCustomerClassification(cusIDs, parameters);
+            }
+
+            return this;
+        }
+
+        public INewCustomerClassificationServices ResanNormalBySportForNewCustomers()
+        {
+            if (!IsSuccess || newCustomerClassification == null)
+            {
+                return this;
+            }
+
+            var custIds = new List<long>();
+
+            if (newCustomerClassification.NormalClassification.Any())
+            {
+                custIds.AddRange(newCustomerClassification.NormalClassification.Select(x => x.CustID));
+            }
+
+            if (newCustomerClassification.VVIPClassification.Any())
+            {
+                custIds.AddRange(newCustomerClassification.VVIPClassification.Select(x => x.CustID));
+            }
+
+            if (newCustomerClassification.PAClassification.Any())
+            {
+                custIds.AddRange(newCustomerClassification.PAClassification.Select(x => x.CustID));
+            }
+
+            if (custIds.Any())
+            {
+                rescanNormalClassificationBySportServices.PreprocessRescanNormalBySportClassification(custIds.Distinct(), BySport_FunctionId.InsertNewCustJob);
             }
 
             return this;
