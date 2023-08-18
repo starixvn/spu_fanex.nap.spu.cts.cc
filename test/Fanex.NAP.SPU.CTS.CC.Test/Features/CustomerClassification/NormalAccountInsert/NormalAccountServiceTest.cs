@@ -1,11 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.JobService;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.ServiceProcess;
     using Xunit;
 
     public class NormalAccountServiceTest
@@ -170,6 +173,49 @@
 
             // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void FlowMergeDataWithIsScanOnlyTagging_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var getnormalAccountList = new List<GetNormalAccountEntity>() {
+                new GetNormalAccountEntity() { CustId = 1, IsScanOnlyTagging = true },
+                new GetNormalAccountEntity() { CustId = 2, IsScanOnlyTagging = false },
+                new GetNormalAccountEntity() { CustId = 3, IsScanOnlyTagging = true }
+            };
+
+            var twtTaggedCustsResult = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
+
+            var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
+
+            var finalNormalAccJsonResult = "[{\"CustId\":1,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":999,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true},{\"CustId\":2,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":222,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":false},{\"CustId\":3,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":0,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true}]";
+
+            // Act
+            normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twtTaggedCustsResult);
+
+            normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
+
+            var twTaggedCusts = normalAccountService.GetGroupBettingAndRejectCustomer(getnormalAccountList);
+
+            var custAfterCheckTWTagged = normalAccountService.MergeWithTWTaggedCust(getnormalAccountList, twTaggedCusts);
+
+            var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
+
+            var custAssWithPA = normalAccountService.GetCustomerAssociationProblemAccount(custIdAfterCheckTWTagged);
+
+            var finalNormalAcc = normalAccountService.MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
+
+            // Assert
+            normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
+
+            normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());
+
+            Assert.Equal(JsonConvert.SerializeObject(twtTaggedCustsResult), JsonConvert.SerializeObject(twTaggedCusts));
+
+            Assert.Equal(JsonConvert.SerializeObject(custAssWithPAReulst), JsonConvert.SerializeObject(custAssWithPA));
+
+            Assert.Equal(JsonConvert.SerializeObject(finalNormalAcc), finalNormalAccJsonResult);
         }
     }
 }

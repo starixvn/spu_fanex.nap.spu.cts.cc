@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Sentry;
     using System;
@@ -54,23 +55,42 @@
 
             if (isExistCusts)
             {
-                var customerChunks = normalPoolCustomerModel.NormalPoolCustomers.Chunk(batchInternalSize);
+                var customerNotWithTaggingList = normalPoolCustomerModel.NormalPoolCustomers.Where(x => !x.IsScanOnlyTagging);
 
-                var actions = new List<Action>();
+                var customerWithTaggingList = normalPoolCustomerModel.NormalPoolCustomers.Where(x => x.IsScanOnlyTagging);
 
-                foreach (var custBatch in customerChunks)
-                {
-                    actions.Add(() => ClassifyNormalAccount(custBatch, normalPoolCustomerModel.ScannedMaxId));
-                }
+                ClassifyNormalAccountWithBatch(customerNotWithTaggingList, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
 
-                Parallel.Invoke(actions.ToArray());
+                ClassifyNormalAccountWithBatch(customerWithTaggingList, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
             }
 
             return isExistCusts;
         }
 
+        private void ClassifyNormalAccountWithBatch(IEnumerable<GetNormalPoolCustomerEntity> customerList, long sacnnedMaxId, int batchInternalSize)
+        {
+            var actions = new List<Action>();
+
+            var idx = 4;
+
+            foreach (var custBatch in customerList.Chunk(batchInternalSize))
+            {
+                actions.Add(() => ClassifyNormalAccount(custBatch, sacnnedMaxId));
+
+                if (actions.Count == idx)
+                {
+                    Parallel.Invoke(actions.ToArray());
+                }
+            }
+
+            if (actions.Any())
+            {
+                Parallel.Invoke(actions.ToArray());
+            }
+        }
+
         private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID)
-        {            
+        {
             var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
 
             var customerCategories = normalAccountService.GetCurrentCustomerCategory(custIDList);
@@ -84,7 +104,7 @@
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsCheckBetCount = custMain.IsCheckBetCount,
-                                                      FunctionId = custMain.FunctionId
+                                                      IsScanOnlyTagging = custMain.IsScanOnlyTagging
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())

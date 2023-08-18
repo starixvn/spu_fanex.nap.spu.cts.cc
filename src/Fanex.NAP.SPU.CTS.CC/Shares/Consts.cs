@@ -59,7 +59,9 @@
             TWRobotImperva_LastID = 134,
             TWGroupBetting_CountTicket_BatchSize = 135,
             TWGroupBetting_CountTicket_LastSequenceId = 136,
-            TWGroupBetting_CountTicket_Status = 137
+            TWGroupBetting_CountTicket_Status = 137,
+            NormalTaggingClassificationLastCategoryID = 144,
+            NormalTaggingClassificationLastCustID = 145
         };
 
         public enum Reason
@@ -134,7 +136,7 @@
             DownlineCustomerClassification = 52,
             TVSProblemAccountInsert = 53,
             ClassifyGBMatchMonitor = 54,
-            NormalTaggingJob = 55,
+            NormalTaggingJob = 100,
         };
 
         public enum BySport_FunctionId

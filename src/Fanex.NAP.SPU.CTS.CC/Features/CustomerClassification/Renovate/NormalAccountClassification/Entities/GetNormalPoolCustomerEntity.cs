@@ -6,6 +6,6 @@
 
         public bool IsCheckBetCount { get; set; }
 
-        public int FunctionId { get; set; }
+        public bool IsScanOnlyTagging { get; set; }
     }
 }

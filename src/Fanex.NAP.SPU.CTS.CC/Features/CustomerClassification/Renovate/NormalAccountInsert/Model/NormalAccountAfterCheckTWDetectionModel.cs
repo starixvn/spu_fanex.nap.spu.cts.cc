@@ -15,7 +15,7 @@
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
             this.PerformanceTime = cust.PerformanceTime;
-            this.IsTaggingOny = cust.IsTaggingOnly;
+            this.IsScanOnlyTagging = cust.IsScanOnlyTagging;
         }
 
         public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity tWTaggedCust)
@@ -29,7 +29,7 @@
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
             this.PerformanceTime = cust.PerformanceTime;
-            this.IsTaggingOny = cust.IsTaggingOnly;
+            this.IsScanOnlyTagging = cust.IsScanOnlyTagging;
 
             if (tWTaggedCust != null)
             {
@@ -72,6 +72,6 @@
 
         public decimal TWDesktopUsageRate { get; set; }
 
-        public bool IsTaggingOny { get; set; }
+        public bool IsScanOnlyTagging { get; set; }
     }
 }

@@ -20,8 +20,8 @@
         [XName("IsProbationLastDay")]
         public bool IsProbationLastDay { get; set; }
 
-        [XName("FunctionId")]
-        public int FunctionId { get; set; }
+        [XName("IsScanOnlyTagging")]
+        public bool IsScanOnlyTagging { get; set; }
     }
 
 }

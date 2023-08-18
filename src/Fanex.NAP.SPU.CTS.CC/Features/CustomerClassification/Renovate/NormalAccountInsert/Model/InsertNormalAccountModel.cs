@@ -21,7 +21,7 @@
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
-            this.IsTaggingOny = cust.IsTaggingOny;
+            this.IsScanOnlyTagging = cust.IsScanOnlyTagging;
         }
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
@@ -51,7 +51,7 @@
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
-            this.IsTaggingOny = cust.IsTaggingOny;
+            this.IsScanOnlyTagging = cust.IsScanOnlyTagging;
         }
 
         public long CustId { get; set; }
@@ -88,6 +88,6 @@
 
         public decimal TWDesktopUsageRate { get; set; }
 
-        public bool IsTaggingOny { get; set; }
+        public bool IsScanOnlyTagging { get; set; }
     }
 }

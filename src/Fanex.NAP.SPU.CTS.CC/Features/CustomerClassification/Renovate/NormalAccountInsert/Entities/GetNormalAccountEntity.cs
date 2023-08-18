@@ -22,6 +22,6 @@
 
         public DateTime PerformanceTime { get; set; }       
     
-        public bool IsTaggingOnly { get; set; }
+        public bool IsScanOnlyTagging { get; set; }
     }
 }

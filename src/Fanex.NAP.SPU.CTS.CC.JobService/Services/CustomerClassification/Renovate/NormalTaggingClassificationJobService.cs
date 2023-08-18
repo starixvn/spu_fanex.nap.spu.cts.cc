@@ -55,8 +55,9 @@
             {
                 isContinue = _normalTaggingClassificationServices
                                 .Start()
-                                .GetCustIdsForNormalTaggingScanning(batchExternalSize)
-                                .PreprocessCustomerClassNormalTagging(batchInternalSize);
+                                .GetNormalTaggingScanning(batchExternalSize)
+                                .PreprocessCustomerClassNormalTagging(batchInternalSize)
+                                .UpdateLastScanningNormalTaggingParameter();
             } while (isContinue);
         }
     }
