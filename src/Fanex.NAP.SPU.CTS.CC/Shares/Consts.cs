@@ -149,7 +149,7 @@
             Manual = 4,
             Auto_Customer = 5,
             Auto_AfftectedDownline = 6,
-            Auto_AfterNormalScan = 7
+            Auto_NormalTaggingScan = 7
         }
 
         public enum HttpStatus

@@ -8,7 +8,7 @@
 
     public interface INormalTaggingClassificationJobService
     {
-        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
+        Task<bool> Execute(int batchInternalSize);
     }
 
     public class NormalTaggingClassificationJobService : INormalTaggingClassificationJobService
@@ -24,17 +24,17 @@
             this.serviceName = "NormalTaggingClassification";
         }
 
-        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
+        public Task<bool> Execute(int batchInternalSize)
         {
             try
             {
-                if (batchExternalSize >= batchInternalSize && batchInternalSize > 0)
+                if (batchInternalSize > 0)
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
+                    JobRun(batchInternalSize);
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), _sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", batchInternalSize, new NullReferenceException(), _sentryClient);
                 }
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@
             return Task.FromResult(true);
         }
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private void JobRun(int batchInternalSize)
         {
             bool isContinue;
 
@@ -55,7 +55,7 @@
             {
                 isContinue = _normalTaggingClassificationServices
                                 .Start()
-                                .GetNormalTaggingScanning(batchExternalSize)
+                                .GetNormalTaggingScanning()
                                 .PreprocessCustomerClassNormalTagging(batchInternalSize)
                                 .UpdateLastScanningNormalTaggingParameter();
             } while (isContinue);

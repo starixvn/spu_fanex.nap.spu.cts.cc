@@ -62,8 +62,8 @@
 	</Function>
 
 	<Function Name="NormalTaggingClassificationRenovate">
-		<Setting Key="CTS_DC_CustClassification_TaggingScan_Get" SpName="CTS_DC_CustClassification_TaggingScan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_TaggingScan_CheckChanges" SpName="CTS_DC_CustClassification_TaggingScan_CheckChanges" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_TaggingScan_Get" SpName="CTS_DC_CustClassification_TaggingScan_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_TaggingScan_CheckChanges" SpName="CTS_DC_CustClassification_TaggingScan_CheckChanges_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function Name="ProbationClassificationRenovate">

@@ -167,10 +167,10 @@
         }
 
         [HttpPost("scanningDailyNormalTaggingClassificationRenovate")]
-        public async Task<bool> DailyScanningNormalTaggingClassificationRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        public async Task<bool> DailyScanningNormalTaggingClassificationRenovate([FromForm] int batchSize)
         {
             sentryClient.CaptureMessage($"Daily Normal Tagging Service is running at {DateTime.Now}");
-            return await this.normalTaggingClassificationRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.normalTaggingClassificationRenovateJobService.Execute(batchSize);
         }
 
         [HttpPost("newcustomerclassificationRenovate")]

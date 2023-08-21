@@ -3,13 +3,10 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class NormalTaggingScannningGetCriteria : CriteriaBase
+    public class NormalTaggingScanningGetCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_NoOfRecord")]
-        public int NumberOfRecord { get; set; }
-
         [SpParam(SqlParamName = "op_LastCategoryID")]
-        public int LastCategoryIDfRecord { get; set; }
+        public int LastCategoryID { get; set; }
 
         [SpParam(SqlParamName = "op_LastCustID")]
         public int LastCustID { get; set; }

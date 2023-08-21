@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -12,7 +13,7 @@
     {
         public INormalTaggingClassificationServices Start();
 
-        public INormalTaggingClassificationServices GetNormalTaggingScanning(int batchExternalSize);
+        public INormalTaggingClassificationServices GetNormalTaggingScanning();
 
         public INormalTaggingClassificationServices PreprocessCustomerClassNormalTagging(int batchInternalSize);
 
@@ -42,9 +43,9 @@
             return this;
         }
 
-        public INormalTaggingClassificationServices GetNormalTaggingScanning(int batchExternalSize)
+        public INormalTaggingClassificationServices GetNormalTaggingScanning()
         {
-            _getNormalTaggingScanningModel = this._normalTaggingClassificationDataAccess.GetNormalTaggingScanning(batchExternalSize);
+            _getNormalTaggingScanningModel = this._normalTaggingClassificationDataAccess.GetNormalTaggingScanning();
             _custIDs = _getNormalTaggingScanningModel?.CustIDs;
 
             return this;
@@ -74,10 +75,10 @@
 
         public bool UpdateLastScanningNormalTaggingParameter()
         {
-            if (_custIDs != null && _custIDs.Any())
+            if (_getNormalTaggingScanningModel != null)
             {
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), SystemParameters.AssociatedGroupLastCTSCustID);
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), SystemParameters.AssociatedGroupLastCTSCustID);
+                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), SystemParameters.NormalTaggingClassificationLastCategoryID);
+                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), SystemParameters.NormalTaggingClassificationLastCustID);
 
                 return true;
             }
@@ -87,26 +88,23 @@
 
         private IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<long> custBatch)
         {
-            if (_custIDs != null && _custIDs.Any())
+            if (custBatch != null && custBatch.Any())
             {
                 var convertNormalTaggingList = custBatch.Select(cust => new GetNormalAccountEntity { CustId = cust });
 
-                var twTaggedCusts = _normalAccountService.GetGroupBettingAndRejectCustomer(convertNormalTaggingList);
+                var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(convertNormalTaggingList);
 
-                var custAfterCheckTWTagged = _normalAccountService.MergeWithTWTaggedCust(convertNormalTaggingList, twTaggedCusts);
-
-                var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
-
-                var custAssWithPA = _normalAccountService.GetCustomerAssociationProblemAccount(custIdAfterCheckTWTagged);
-
-                var finalNormalAcc = _normalAccountService.MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
-
-                return _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(finalNormalAcc.Select(x => new CheckChangesNormalTaggingScanningModel
+                var checkChangesNormalTaggingMapping = finalNormalAcc.Select(x => new CheckChangesNormalTaggingScanningModel
                 {
                     CustID = x.CustId,
                     TaggingID = x.TaggingID,
                     TaggingType = x.TaggingType
-                }));
+                });
+
+                if (checkChangesNormalTaggingMapping != null || checkChangesNormalTaggingMapping.Any())
+                {
+                    return _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(JsonConvert.SerializeObject(checkChangesNormalTaggingMapping));
+                }
             }
 
             return Enumerable.Empty<long>();

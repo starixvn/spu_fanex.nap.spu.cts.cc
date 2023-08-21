@@ -12,9 +12,9 @@
 
     public interface INormalTaggingClassificationDataAccess
     {
-        public GetNormalTaggingScanningModel GetNormalTaggingScanning(int batchSize);
+        public GetNormalTaggingScanningModel GetNormalTaggingScanning();
 
-        public IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<CheckChangesNormalTaggingScanningModel> taggedCustEntities);
+        public IEnumerable<long> CheckChangesNormalTaggingScanning(string taggedCustJsonString);
 
         public void PreprocessCustomerClassNormalTagging(string custIdList);
     }
@@ -28,36 +28,26 @@
             _repository = new DynamicRepository();
         }
 
-        public GetNormalTaggingScanningModel GetNormalTaggingScanning(int batchSize)
+        public GetNormalTaggingScanningModel GetNormalTaggingScanning()
         {
-            var criteria = new NormalTaggingScannningGetCriteria
-            {
-                NumberOfRecord = batchSize
-            };
+            var criteria = new NormalTaggingScanningGetCriteria();
 
             return new GetNormalTaggingScanningModel
             {
                 CustIDs = _repository.Fetch<long>(criteria),
-                LastCategoryID = criteria.LastCategoryIDfRecord,
+                LastCategoryID = criteria.LastCategoryID,
                 LastCustID = criteria.LastCustID
             };
         }
 
-        public IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<CheckChangesNormalTaggingScanningModel> taggedCustEntities)
+        public IEnumerable<long> CheckChangesNormalTaggingScanning(string taggedCustJsonString)
         {
-            var jsonString = taggedCustEntities != null ? JsonConvert.SerializeObject(taggedCustEntities) : null;
-            
-            if (jsonString != null)
+            var criteria = new NormalTaggingScanningCheckChangesCriteria
             {
-                var criteria = new NormalTaggingScanningCheckChangesCriteria
-                {
-                    TaggingCust = jsonString
-                };
+                TaggingCust = taggedCustJsonString
+            };
 
-                return _repository.Fetch<long>(criteria);
-            }
-
-            return Enumerable.Empty<long>();
+            return _repository.Fetch<long>(criteria);
         }
 
         public void PreprocessCustomerClassNormalTagging(string custIdList)
@@ -66,7 +56,7 @@
             {
                 ListCustId = custIdList,
                 FunctionId = (int)FunctionId.NormalTaggingJob,
-                RescanTypeId = (int)RescanNormalType.Auto_AfterNormalScan
+                RescanTypeId = (int)RescanNormalType.Auto_NormalTaggingScan
             };
 
             _repository.Execute(criteria);
