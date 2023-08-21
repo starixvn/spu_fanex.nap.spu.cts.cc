@@ -2,6 +2,8 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.JobService;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -41,188 +43,180 @@
             // Arrange
             var custIDList = "1,2";
 
-            Type type = typeof(NormalAccountService);
-            var customerList = Activator.CreateInstance(type, normalAccountDataAccess, null);
-            
-            MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-            .Where(x => x.Name == "GetCustomerAssociationProblemAccount" && x.IsPrivate)
-            .First();
+            var getCustomerAssociationProblemAccountMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.GetCustomerAssociationProblemAccount);
+
             // Act
-            method.Invoke(customerList, new object[] { custIDList });
+            getCustomerAssociationProblemAccountMethod.Invoke(normalAccountService, new object[] { custIDList });
 
             // Assert
             normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(custIDList);
         }
 
-        //[Fact]
-        //public void GetGroupBettingAndRejectCustomer_WhenSuccess()
-        //{
-        //    // Arrange
-        //    var custs = new List<GetNormalAccountEntity>()
-        //    {
-        //        new GetNormalAccountEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
-        //        new GetNormalAccountEntity { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
-        //    };
-        //    var custIds = "1,2";
+        [Fact]
+        public void GetGroupBettingAndRejectCustomer_WhenSuccess()
+        {
+            // Arrange
+            var custs = new List<GetNormalAccountEntity>()
+            {
+                new GetNormalAccountEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
+                new GetNormalAccountEntity { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
+            };
+            var custIds = "1,2";
 
-        //    // Act
-        //    normalAccountService.GetGroupBettingAndRejectCustomer(custs);
+            var getGetGroupBettingAndRejectCustomerMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.GetGroupBettingAndRejectCustomer);
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
-        //}
+            // Act
+            getGetGroupBettingAndRejectCustomerMethod.Invoke(normalAccountService, new object[] { custs });
 
-        //[Fact]
-        //public void InsertNormalAccount_WhenSuccess_ReturnResult()
-        //{
-        //    // Arrange
-        //    var serviceName = "NormalAccountInsert";
-        //    var custs = new List<InsertNormalAccountModel>()
-        //    {
-        //        new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-        //                new GetNormalAccountEntity{
-        //                    CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-        //                }
-        //            )),
-        //        new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-        //                new GetNormalAccountEntity{
-        //                    CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-        //                }
-        //            ))
-        //    };
-        //    var custsJson = JsonConvert.SerializeObject(custs);
-        //    var insertResult = new InsertNormalAccountResultEntity() { CustIds = new List<long> { 1, 2 }, ErrorMessage = string.Empty };
+            // Assert
+            normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
+        }
 
-        //    // Act
-        //    normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
+        [Fact]
+        public void InsertNormalAccount_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var serviceName = "NormalAccountInsert";
+            var custs = new List<InsertNormalAccountModel>()
+            {
+                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
+                        new GetNormalAccountEntity{
+                            CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
+                        }
+                    )),
+                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
+                        new GetNormalAccountEntity{
+                            CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
+                        }
+                    ))
+            };
+            var custsJson = JsonConvert.SerializeObject(custs);
+            var insertResult = new InsertNormalAccountResultEntity() { CustIds = new List<long> { 1, 2 }, ErrorMessage = string.Empty };
 
-        //    normalAccountService.InsertNormalAccount(custs, serviceName, false);
+            // Act
+            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
-        //}
+            normalAccountService.InsertNormalAccount(custs, serviceName, false);
 
-        //[Fact]
-        //public void InsertNormalAccount_WhenSuccess_ReturnNotException()
-        //{
-        //    // Arrange
+            // Assert
+            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
+        }
 
-        //    // Act
-        //    normalAccountService.InsertNormalAccount(null, string.Empty, false);
+        [Fact]
+        public void InsertNormalAccount_WhenSuccess_ReturnNotException()
+        {
+            // Arrange
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(0).InsertNormalAccount(Arg.Any<string>());
-        //}
+            // Act
+            normalAccountService.InsertNormalAccount(null, string.Empty, false);
 
-        //[Fact]
-        //public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
-        //{
-        //    // Arrange
-        //    var custIdList = "1, 2";
-        //    var scannedMaxId = 10;
+            // Assert
+            normalAccountDataAccess.Received(0).InsertNormalAccount(Arg.Any<string>());
+        }
 
-        //    // Act
-        //    normalAccountService.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId, true);
+        [Fact]
+        public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
+        {
+            // Arrange
+            var custIdList = "1, 2";
+            var scannedMaxId = 10;
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
-        //}
+            // Act
+            normalAccountService.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId, true);
 
-        //[Fact]
-        //public void MergeWithTWTaggedCust_WhenSuccess_ReturnResult()
-        //{
-        //    // Arrange
-        //    var cust = new List<GetNormalAccountEntity> { new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 } };
-        //    var twTaggedCust = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999 } };
-        //    var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggedCust[0]) };
+            // Assert
+            normalAccountDataAccess.Received(1).UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
+        }
 
-        //    // Act
-        //    var result = normalAccountService.MergeWithTWTaggedCust(cust, twTaggedCust);
+        [Fact]
+        public void MergeWithTWTaggedCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<GetNormalAccountEntity> { new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 } };
+            var twTaggedCust = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999 } };
+            var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggedCust[0]) };
 
-        //    // Assert
-        //    Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
-        //}
+            var getMergeWithTWTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCust);
 
-        //[Fact]
-        //public void MergeWithTWTaggedCust_WhenSuccess_ReturnNotNull()
-        //{
-        //    // Arrange
+            // Act
+            var result = getMergeWithTWTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggedCust });
 
-        //    // Act
-        //    var result = normalAccountService.MergeWithTWTaggedCust(null, null);
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
 
-        //    // Assert
-        //    Assert.NotNull(result);
-        //}
+        [Fact]
+        public void MergeWithTWTaggedCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+            var getMergeWithTWTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCust);
 
-        //[Fact]
-        //public void MergeWithCTSTaggedCust_WhenSuccess_ReturnResult()
-        //{
-        //    // Arrange
-        //    var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
-        //    var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
-        //    var compareResult = new List<InsertNormalAccountModel> { new InsertNormalAccountModel(cust[0], twTaggedCust[0]) };
+            // Act
+            var result = getMergeWithTWTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null });
 
-        //    // Act
-        //    var result = normalAccountService.MergeWithCTSTaggedCust(cust, twTaggedCust);
+            // Assert
+            Assert.NotNull(result);
+        }
 
-        //    // Assert
-        //    Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
-        //}
+        [Fact]
+        public void MergeWithCTSTaggedCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
+            var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
+            var compareResult = new List<InsertNormalAccountModel> { new InsertNormalAccountModel(cust[0], twTaggedCust[0]) };
 
-        //[Fact]
-        //public void MergeWithCTSTaggedCust_WhenSuccess_ReturnNotNull()
-        //{
-        //    // Arrange
+            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
 
-        //    // Act
-        //    var result = normalAccountService.MergeWithCTSTaggedCust(null, null);
+            // Act
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggedCust });
 
-        //    // Assert
-        //    Assert.NotNull(result);
-        //}
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
 
-        //[Fact]
-        //public void FlowMergeDataWithIsScanOnlyTagging_WhenSuccess_ReturnResult()
-        //{
-        //    // Arrange
-        //    var getnormalAccountList = new List<GetNormalAccountEntity>() {
-        //        new GetNormalAccountEntity() { CustId = 1, IsScanOnlyTagging = true },
-        //        new GetNormalAccountEntity() { CustId = 2, IsScanOnlyTagging = false },
-        //        new GetNormalAccountEntity() { CustId = 3, IsScanOnlyTagging = true }
-        //    };
+        [Fact]
+        public void MergeWithCTSTaggedCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
 
-        //    var twtTaggedCustsResult = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
+            // Act
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null });
 
-        //    var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
+            // Assert
+            Assert.NotNull(result);
+        }
 
-        //    var finalNormalAccJsonResult = "[{\"CustId\":1,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":999,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true},{\"CustId\":2,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":222,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":false},{\"CustId\":3,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":0,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true}]";
+        [Fact]
+        public void MergeWithTWTaggedCustAndCTSTaggedCust_WhenSuccess()
+        {
+            // Arrange
+            var getnormalAccountList = new List<GetNormalAccountEntity>() {
+                new GetNormalAccountEntity() { CustId = 1, IsScanOnlyTagging = true },
+                new GetNormalAccountEntity() { CustId = 2, IsScanOnlyTagging = false },
+                new GetNormalAccountEntity() { CustId = 3, IsScanOnlyTagging = true }
+            };
 
-        //    // Act
-        //    normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twtTaggedCustsResult);
+            var twtTaggedCustsResult = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
 
-        //    normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
+            var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
 
-        //    var twTaggedCusts = normalAccountService.GetGroupBettingAndRejectCustomer(getnormalAccountList);
+            var finalNormalAccJsonResult = "[{\"CustId\":1,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":999,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true},{\"CustId\":2,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":222,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":false},{\"CustId\":3,\"SportGroupId\":0,\"CategoryId\":0,\"CreatedTime\":\"0001-01-01T00:00:00\",\"TurnoverRM\":0.0,\"WinlossRM\":0.0,\"BetCount\":0,\"ActiveDays\":0,\"PerformanceTime\":\"0001-01-01T00:00:00\",\"LastXDaysMargin\":0.0,\"ProbationPeriodWinloss\":0.0,\"TaggingID\":0,\"TaggingType\":0,\"TWBetCount\":0,\"TWGroupBettingRate\":0.0,\"TWTicketRejectRate\":0.0,\"TWDesktopUsageRate\":0.0,\"IsScanOnlyTagging\":true}]";
 
-        //    var custAfterCheckTWTagged = normalAccountService.MergeWithTWTaggedCust(getnormalAccountList, twTaggedCusts);
+            // Act
+            normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twtTaggedCustsResult);
 
-        //    var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
+            normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
 
-        //    var custAssWithPA = normalAccountService.GetCustomerAssociationProblemAccount(custIdAfterCheckTWTagged);
+            var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(getnormalAccountList);
 
-        //    var finalNormalAcc = normalAccountService.MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
+            // Assert
+            normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
+            normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());
 
-        //    normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());
-
-        //    Assert.Equal(JsonConvert.SerializeObject(twtTaggedCustsResult), JsonConvert.SerializeObject(twTaggedCusts));
-
-        //    Assert.Equal(JsonConvert.SerializeObject(custAssWithPAReulst), JsonConvert.SerializeObject(custAssWithPA));
-
-        //    Assert.Equal(JsonConvert.SerializeObject(finalNormalAcc), finalNormalAccJsonResult);
-        //}
+            Assert.Equal(JsonConvert.SerializeObject(finalNormalAcc), finalNormalAccJsonResult);
+        }
     }
 }

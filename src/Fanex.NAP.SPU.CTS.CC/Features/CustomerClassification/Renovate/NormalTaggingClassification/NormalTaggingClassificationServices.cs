@@ -101,7 +101,7 @@
                     TaggingType = x.TaggingType
                 });
 
-                if (checkChangesNormalTaggingMapping != null || checkChangesNormalTaggingMapping.Any())
+                if (checkChangesNormalTaggingMapping != null && checkChangesNormalTaggingMapping.Any())
                 {
                     return _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(JsonConvert.SerializeObject(checkChangesNormalTaggingMapping));
                 }

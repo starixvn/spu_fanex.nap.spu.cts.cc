@@ -55,13 +55,13 @@
 
             if (isExistCusts)
             {
-                var customerNotWithTaggingList = normalPoolCustomerModel.NormalPoolCustomers.Where(x => !x.IsScanOnlyTagging);
+                var classificationCustomers = normalPoolCustomerModel.NormalPoolCustomers.Where(x => !x.IsScanOnlyTagging);
 
-                var customerWithTaggingList = normalPoolCustomerModel.NormalPoolCustomers.Where(x => x.IsScanOnlyTagging);
+                var taggingCustomers = normalPoolCustomerModel.NormalPoolCustomers.Where(x => x.IsScanOnlyTagging);
 
-                ClassifyNormalAccountWithBatch(customerNotWithTaggingList, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
+                ClassifyNormalAccountWithBatch(classificationCustomers, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
 
-                ClassifyNormalAccountWithBatch(customerWithTaggingList, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
+                ClassifyNormalAccountWithBatch(taggingCustomers, normalPoolCustomerModel.ScannedMaxId, batchInternalSize);
             }
 
             return isExistCusts;
@@ -69,23 +69,11 @@
 
         private void ClassifyNormalAccountWithBatch(IEnumerable<GetNormalPoolCustomerEntity> customerList, long sacnnedMaxId, int batchInternalSize)
         {
-            var actions = new List<Action>();
-
-            var idx = 4;
-
-            foreach (var custBatch in customerList.Chunk(batchInternalSize))
+            if (customerList != null && customerList.Any())
             {
-                actions.Add(() => ClassifyNormalAccount(custBatch, sacnnedMaxId));
+                var custChunks = customerList.Chunk(batchInternalSize);
 
-                if (actions.Count == idx)
-                {
-                    Parallel.Invoke(actions.ToArray());
-                }
-            }
-
-            if (actions.Any())
-            {
-                Parallel.Invoke(actions.ToArray());
+                custChunks.AsParallel().WithDegreeOfParallelism(4).ForAll(custBatch => ClassifyNormalAccount(custBatch, sacnnedMaxId));
             }
         }
 

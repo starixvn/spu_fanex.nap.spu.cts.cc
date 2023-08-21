@@ -103,15 +103,9 @@
         //    // Act
         //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalAccountService.GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
+        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5);
 
-        //    _normalAccountService.MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>()).Received(1);
-
-        //    _normalAccountService.GetCustomerAssociationProblemAccount(Arg.Any<string>()).Received(1);
-
-        //    _normalAccountService.MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>()).Received(1);
-
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
 
         //    _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>()));
 
@@ -120,13 +114,7 @@
         //    // Assert
         //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalAccountService.Received(5).GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
-
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>());
-
-        //    _normalAccountService.Received(5).GetCustomerAssociationProblemAccount(Arg.Any<string>());
-
-        //    _normalAccountService.Received(5).MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>());
+        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
         //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -144,13 +132,7 @@
         //    // Act
         //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalAccountService.GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
-
-        //    _normalAccountService.MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>()).Received(1);
-
-        //    _normalAccountService.GetCustomerAssociationProblemAccount(Arg.Any<string>()).Received(1);
-
-        //    _normalAccountService.MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>()).Received(1);
+        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
 
         //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
@@ -163,13 +145,7 @@
 
         //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalAccountService.Received(1).GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
-
-        //    _normalAccountService.Received(1).MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>());
-
-        //    _normalAccountService.Received(1).GetCustomerAssociationProblemAccount(Arg.Any<string>());
-
-        //    _normalAccountService.Received(1).MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>());
+        //    _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
         //    _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -196,23 +172,23 @@
         #endregion
 
         #region UpdateLastScanningNormalTaggingParameter
-        //[Fact]
-        //public void UpdateLastScanningNormalTaggingParameter_WhenSuccess()
-        //{
-        //    // Arrange
+        [Fact]
+        public void UpdateLastScanningNormalTaggingParameter_WhenSuccess()
+        {
+            // Arrange
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(new GetNormalTaggingScanningModel());
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(new GetNormalTaggingScanningModel());
 
-        //    _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1000).UpdateLastScanningNormalTaggingParameter();
+            _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1000).UpdateLastScanningNormalTaggingParameter();
 
-        //    // Assert
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            // Assert
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalTaggingClassificationDataAccess.Received(0).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+            _normalTaggingClassificationDataAccess.Received(0).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-        //    _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
-        //}
+            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+        }
 
         //[Fact]
         //public void UpdateLastScanningNormalTaggingParameter_ReturnNotException()
@@ -225,28 +201,16 @@
         //    // Act
         //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalAccountService.GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
+        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5);
 
-        //    _normalAccountService.MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>()).Received(1);
-
-        //    _normalAccountService.GetCustomerAssociationProblemAccount(Arg.Any<string>()).Received(1);
-
-        //    _normalAccountService.MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>()).Received(1);
-
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
 
         //    _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
         //    // Assert
         //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalAccountService.Received(5).GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
-
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>());
-
-        //    _normalAccountService.Received(5).GetCustomerAssociationProblemAccount(Arg.Any<string>());
-
-        //    _normalAccountService.Received(5).MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>());
+        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
         //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -265,13 +229,7 @@
         //    // Act
         //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalAccountService.GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
-
-        //    _normalAccountService.MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>()).Received(1);
-
-        //    _normalAccountService.GetCustomerAssociationProblemAccount(Arg.Any<string>()).Received(1);
-
-        //    _normalAccountService.MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>()).Received(1);
+        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
 
         //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
@@ -284,13 +242,7 @@
 
         //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalAccountService.Received(5).GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
-
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>());
-
-        //    _normalAccountService.Received(5).GetCustomerAssociationProblemAccount(Arg.Any<string>());
-
-        //    _normalAccountService.Received(5).MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>());
+        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
         //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -309,13 +261,7 @@
         //    // Act
         //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalAccountService.GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
-
-        //    _normalAccountService.MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>()).Received(1);
-
-        //    _normalAccountService.GetCustomerAssociationProblemAccount(Arg.Any<string>()).Received(1);
-
-        //    _normalAccountService.MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>()).Received(1);
+        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
 
         //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
@@ -328,13 +274,7 @@
 
         //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalAccountService.Received(1).GetGroupBettingAndRejectCustomer(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
-
-        //    _normalAccountService.Received(1).MergeWithTWTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>(), Arg.Any<IEnumerable<TWTaggedCustEntity>>());
-
-        //    _normalAccountService.Received(1).GetCustomerAssociationProblemAccount(Arg.Any<string>());
-
-        //    _normalAccountService.Received(1).MergeWithCTSTaggedCust(Arg.Any<IEnumerable<NormalAccountAfterCheckTWDetectionModel>>(), Arg.Any<IEnumerable<CTSTaggedCustEntity>>());
+        //    _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
         //    _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
