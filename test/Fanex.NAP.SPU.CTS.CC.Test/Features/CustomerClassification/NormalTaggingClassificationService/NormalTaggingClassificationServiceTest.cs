@@ -11,6 +11,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Serialization;
     using Xunit;
 
     public class NormalTaggingClassificationServiceTest
@@ -92,65 +93,69 @@
             _normalTaggingClassificationDataAccess.Received(0).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
         }
 
-        //[Fact]
-        //public void PreprocessCustomerClassNormalTagging_ReturnNotException()
-        //{
-        //    // Arrange
-        //    var custIds = new List<long> { 1, 2, 3, 4, 5 };
+        [Fact]
+        public void PreprocessCustomerClassNormalTagging_ReturnNotException()
+        {
+            // Arrange
+            var custIds = new List<long> { 1, 2, 3, 4, 5 };
 
-        //    var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
+            var inserAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
-        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5);
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
+            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(inserAccountList);
 
-        //    _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>()));
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
 
-        //    _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1);
+            _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>()));
 
-        //    // Assert
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1);
 
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            // Assert
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
-        //    _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
-        //}
+            _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
-        //[Fact]
-        //public void PreprocessCutomerClassNormalTagging_ReturnException()
-        //{
-        //    // Arrange
-        //    var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+        }
 
-        //    var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+        [Fact]
+        public void PreprocessCutomerClassNormalTagging_ReturnException()
+        {
+            // Arrange
+            var custIds = new List<long> { 1, 2, 3, 4, 5 };
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
 
-        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
+            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
+            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-        //    Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
-        //    // Assert
-        //    action.Should().Throw<Exception>();
+            _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1);
 
-        //    _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            // Assert
+            action.Should().Throw<Exception>();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
-        //}
+            _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+
+            _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+
+            _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+        }
 
         [Fact]
         public void PreprocessCutomerClassNormalTagging_ReturnGetNormalTaggingException()
@@ -190,98 +195,104 @@
             _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
         }
 
-        //[Fact]
-        //public void UpdateLastScanningNormalTaggingParameter_ReturnNotException()
-        //{
-        //    // Arrange
-        //    var custIds = new List<long> { 1, 2, 3, 4, 5 };
+        [Fact]
+        public void UpdateLastScanningNormalTaggingParameter_ReturnNotException()
+        {
+            // Arrange
+            var custIds = new List<long> { 1, 2, 3, 4, 5 };
 
-        //    var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
+            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
-        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5);
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
+            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(insertAccountList);
 
-        //    _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
 
-        //    // Assert
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            // Assert
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
-        //    _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+            _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
-        //    _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
-        //}
+            _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-        //[Fact]
-        //public void UpdateLastScanningNormalTaggingParameter_ReturnException()
-        //{
-        //    // Arrange
-        //    var custIds = new List<long> { 1, 2, 3, 4, 5 };
-        //    var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+        }
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
+        [Fact]
+        public void UpdateLastScanningNormalTaggingParameter_ReturnException()
+        {
+            // Arrange
+            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
 
-        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
+            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>())).Throw<Exception>();
+            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-        //    Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
-        //    // Assert
-        //    action.Should().Throw<Exception>();
+            _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>())).Throw<Exception>();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
-        //    _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            // Assert
+            action.Should().Throw<Exception>();
 
-        //    _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
-        //    _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
-        //}
+            _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
-        //[Fact]
-        //public void UpdateLastScanningNormalTaggingParameter_ReturnPreprocessException()
-        //{
-        //    // Arrange
-        //    var custIds = new List<long> { 1, 2, 3, 4, 5 };
-        //    var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-        //    // Act
-        //    _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
+            _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+        }
 
-        //    _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1);
+        [Fact]
+        public void UpdateLastScanningNormalTaggingParameter_ReturnPreprocessException()
+        {
+            // Arrange
+            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
 
-        //    _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
-        //    _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
+            // Act
+            _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-        //    Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
+            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-        //    // Assert
-        //    action.Should().Throw<Exception>();
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
 
-        //    _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
+            _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
 
-        //    _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+            // Assert
+            action.Should().Throw<Exception>();
 
-        //    _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+            _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-        //    _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
-        //}
+            _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+
+            _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
+
+            _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
+
+            _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+        }
         #endregion
     }
 }
