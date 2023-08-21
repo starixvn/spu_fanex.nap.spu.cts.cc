@@ -6,7 +6,7 @@
     {
         public int LastCategoryID { get; set; }
 
-        public int LastCustID { get; set; }
+        public ulong LastCustID { get; set; }
 
         public IEnumerable<long> CustIDs { get; set; }
     }
