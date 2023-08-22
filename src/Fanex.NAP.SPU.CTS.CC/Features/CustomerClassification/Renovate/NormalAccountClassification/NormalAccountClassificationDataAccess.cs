@@ -9,7 +9,7 @@
 
         IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList);
 
-        void ClassifyNormalPoolCustomers(string customerXML);
+        void ClassifyNormalPoolCustomers(string customerXML, bool isScanOnlyTagging);
 
         void ClearNormalPoolCustomers(string custIdList, long scannedMaxId);
     }
@@ -46,11 +46,12 @@
             return repository.Fetch<GetCurrentNormalCategoryEntity>(criteria);
         }
 
-        public void ClassifyNormalPoolCustomers(string customerXML)
+        public void ClassifyNormalPoolCustomers(string customerXML, bool isScanOnlyTagging)
         {
             var criteria = new ClassifyNormalPoolCustomerCriteria
             {
-                 CustomersXML = customerXML
+                 CustomersXML = customerXML,
+                 IsScanOnlyTagging = isScanOnlyTagging
             };
 
             repository.Execute(criteria);

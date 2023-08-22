@@ -19,9 +19,5 @@
 
         [XName("IsProbationLastDay")]
         public bool IsProbationLastDay { get; set; }
-
-        [XName("IsScanOnlyTagging")]
-        public bool IsScanOnlyTagging { get; set; }
     }
-
 }
