@@ -36,7 +36,7 @@
             this.ActiveDays = cust.ActiveDays;
             this.PerformanceTime = cust.PerformanceTime;
 
-            if (ctsTaggedCust != null && cust.TaggingID == 0)
+            if (ctsTaggedCust != null && cust.TaggingID == 0 && ctsTaggedCust.TaggingID != 0)
             {
                 this.TaggingID = ctsTaggedCust.TaggingID;
                 this.TaggingType = ctsTaggedCust.TaggingType;

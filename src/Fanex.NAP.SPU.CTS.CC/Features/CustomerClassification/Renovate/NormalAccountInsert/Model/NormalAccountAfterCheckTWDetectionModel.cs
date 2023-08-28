@@ -31,7 +31,7 @@
             this.PerformanceTime = cust.PerformanceTime;
             this.IsScanOnlyTagging = cust.IsScanOnlyTagging;
 
-            if (tWTaggedCust != null)
+            if (tWTaggedCust != null && tWTaggedCust.TaggingID != 0)
             {
                 this.TaggingID = tWTaggedCust.TaggingID;
                 this.TaggingType = tWTaggedCust.TaggingType;
