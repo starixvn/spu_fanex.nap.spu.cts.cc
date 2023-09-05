@@ -213,5 +213,12 @@
             Invalid_Inactive = 2,
             Invalid_Null = 3            
         };
+
+        public enum NormalClasification_TaggingType
+        {
+            NotExist = 0,
+            Exist = 1,
+            ExistOnly = 2,
+        };
     }
 }

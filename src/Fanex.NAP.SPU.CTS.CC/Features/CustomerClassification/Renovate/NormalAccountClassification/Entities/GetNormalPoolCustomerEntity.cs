@@ -6,6 +6,6 @@
 
         public bool IsCheckBetCount { get; set; }
 
-        public bool IsScanOnlyTagging { get; set; }
+        public int ScanTaggingType { get; set; }
     }
 }

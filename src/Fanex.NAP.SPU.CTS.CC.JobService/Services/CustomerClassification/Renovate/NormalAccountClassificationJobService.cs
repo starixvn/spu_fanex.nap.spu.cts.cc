@@ -9,6 +9,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountClassificationJobService
     {
@@ -67,7 +68,8 @@
 
         private void ClassifyNormalAccountWithBatch(GetNormalPoolCustomerModel normalPoolCustomer, int batchInternalSize, bool isScanOnlyTagging)
         {
-            var customerList = normalPoolCustomer.NormalPoolCustomers.Where(x => x.IsScanOnlyTagging == isScanOnlyTagging);
+            var customerList = isScanOnlyTagging ? normalPoolCustomer.NormalPoolCustomers.Where(x => x.ScanTaggingType == (int)NormalClasification_TaggingType.ExistOnly)
+                                                 : normalPoolCustomer.NormalPoolCustomers.Where(x => x.ScanTaggingType != (int)NormalClasification_TaggingType.ExistOnly);
 
             if (customerList != null && customerList.Any())
             {
@@ -91,7 +93,8 @@
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
-                                                      IsCheckBetCount = custMain.IsCheckBetCount
+                                                      IsCheckBetCount = custMain.IsCheckBetCount,
+                                                      ScanTaggingType = custMain.ScanTaggingType
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString(), isScanOnlyTagging)
