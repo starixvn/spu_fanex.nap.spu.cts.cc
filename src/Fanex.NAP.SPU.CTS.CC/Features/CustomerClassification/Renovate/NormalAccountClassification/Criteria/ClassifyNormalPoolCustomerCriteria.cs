@@ -8,9 +8,6 @@
         [SpParam(SqlParamName = "CustomersXML")]
         public string CustomersXML { get; set; }
 
-        [SpParam(SqlParamName = "IsScanOnlyTagging")]
-        public bool IsScanOnlyTagging { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_GeneralNormalClassification_NormalPool_Classify";

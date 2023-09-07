@@ -10,7 +10,7 @@
 
         IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList);
 
-        INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML, bool isScanOnlyTagging);
+        INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML);
 
         INormalAccountClassificationService ClearNormalPoolCustomers(string custIdList, long scannedMaxId);
     }
@@ -36,9 +36,9 @@
             return dataAccess.GetCurrentCustomerCategory(custIDList);
         }
 
-        public INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML, bool isScanOnlyTagging)
+        public INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML)
         {            
-            dataAccess.ClassifyNormalPoolCustomers(customerXML, isScanOnlyTagging);
+            dataAccess.ClassifyNormalPoolCustomers(customerXML);
             
             return this;
         }

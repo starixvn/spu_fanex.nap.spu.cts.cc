@@ -56,30 +56,25 @@
 
             if (isExistCusts)
             {
-                // classifyCustomer
-                ClassifyNormalAccountWithBatch(normalPoolCustomerModel, batchInternalSize, isScanOnlyTagging: false);
-
-                // taggingCustomer
-                ClassifyNormalAccountWithBatch(normalPoolCustomerModel, batchInternalSize, isScanOnlyTagging: true);
+                ClassifyNormalAccountWithBatch(normalPoolCustomerModel, batchInternalSize);
             }
 
             return isExistCusts;
         }
 
-        private void ClassifyNormalAccountWithBatch(GetNormalPoolCustomerModel normalPoolCustomer, int batchInternalSize, bool isScanOnlyTagging)
+        private void ClassifyNormalAccountWithBatch(GetNormalPoolCustomerModel normalPoolCustomer, int batchInternalSize)
         {
-            var customerList = isScanOnlyTagging ? normalPoolCustomer.NormalPoolCustomers.Where(x => x.ScanTaggingType == (int)NormalClasification_TaggingType.ExistOnly)
-                                                 : normalPoolCustomer.NormalPoolCustomers.Where(x => x.ScanTaggingType != (int)NormalClasification_TaggingType.ExistOnly);
+            var customerList = normalPoolCustomer.NormalPoolCustomers;
 
             if (customerList != null && customerList.Any())
             {
                 var custChunks = customerList.Chunk(batchInternalSize);
 
-                custChunks.AsParallel().WithDegreeOfParallelism(4).ForAll(custBatch => ClassifyNormalAccount(custBatch, normalPoolCustomer.ScannedMaxId, isScanOnlyTagging));
+                custChunks.AsParallel().WithDegreeOfParallelism(4).ForAll(custBatch => ClassifyNormalAccount(custBatch, normalPoolCustomer.ScannedMaxId));
             }
         }
 
-        private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID, bool isScanOnlyTagging)
+        private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID)
         {
             var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
 
@@ -97,7 +92,7 @@
                                                       ScanTaggingType = custMain.ScanTaggingType
                                                   });
 
-            normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString(), isScanOnlyTagging)
+            normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
                                 .ClearNormalPoolCustomers(custIDList, scannedMaxID);
         }
 

@@ -58,10 +58,10 @@
             var custInfoXml = custInfos.ToXmlString();
 
             // Act
-            normalAccountService.ClassifyNormalPoolCustomers(custInfoXml, false);
+            normalAccountService.ClassifyNormalPoolCustomers(custInfoXml);
 
             // Assert
-            normalAccountDataAccess.Received(1).ClassifyNormalPoolCustomers(custInfoXml, false);
+            normalAccountDataAccess.Received(1).ClassifyNormalPoolCustomers(custInfoXml);
         }
 
         [Fact]
