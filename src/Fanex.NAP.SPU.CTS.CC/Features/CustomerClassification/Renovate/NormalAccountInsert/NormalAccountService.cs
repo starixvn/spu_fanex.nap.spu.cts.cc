@@ -73,7 +73,7 @@
                 return Enumerable.Empty<InsertNormalAccountModel>();
             }
 
-            var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs);
+            var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.IsCheckTaggingTW));
 
             var custAfterCheckTWTagged = MergeWithTWTaggedCust(custs, twTaggedCusts);
 

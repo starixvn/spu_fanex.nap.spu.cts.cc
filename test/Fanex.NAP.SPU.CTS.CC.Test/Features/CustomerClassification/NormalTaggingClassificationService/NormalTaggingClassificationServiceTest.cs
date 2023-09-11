@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
@@ -62,9 +63,15 @@
         public void GetNormalTaggingScanning_ReturnNotException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var custInfos = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
 
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
@@ -97,9 +104,15 @@
         public void PreprocessCustomerClassNormalTagging_ReturnNotException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var custInfos = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
 
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
             var inserAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
@@ -108,7 +121,7 @@
 
             _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(inserAccountList);
 
-            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
             _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>()));
 
@@ -128,9 +141,15 @@
         public void PreprocessCutomerClassNormalTagging_ReturnException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var custInfos = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
 
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
             var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
@@ -139,7 +158,7 @@
 
             _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
             _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
 
@@ -199,9 +218,15 @@
         public void UpdateLastScanningNormalTaggingParameter_ReturnNotException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
+            var custIds = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
 
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custIds };
 
             var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
@@ -210,7 +235,7 @@
 
             _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(insertAccountList);
 
-            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(custIds);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
             _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
@@ -230,8 +255,14 @@
         public void UpdateLastScanningNormalTaggingParameter_ReturnException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var custInfos = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
             var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
@@ -240,7 +271,7 @@
 
             _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
             _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>())).Throw<Exception>();
 
@@ -264,8 +295,14 @@
         public void UpdateLastScanningNormalTaggingParameter_ReturnPreprocessException()
         {
             // Arrange
-            var custIds = new List<long> { 1, 2, 3, 4, 5 };
-            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustIDs = custIds };
+            var custInfos = new List<GetNormalTaggingScanningViewModel> {
+                new GetNormalTaggingScanningViewModel { CustID = 1, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 2, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 3, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 4, IsCheckTaggingTW = true },
+                new GetNormalTaggingScanningViewModel { CustID = 5, IsCheckTaggingTW = true },
+            };
+            var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
             var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
 
@@ -274,7 +311,7 @@
 
             _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
-            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(custIds);
+            _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
             _normalTaggingClassificationDataAccess.When(x => x.PreprocessCustomerClassNormalTagging(Arg.Any<string>())).Throw<Exception>();
 

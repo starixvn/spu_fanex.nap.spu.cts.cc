@@ -3,6 +3,7 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Newtonsoft.Json;
@@ -34,7 +35,7 @@
 
             return new GetNormalTaggingScanningModel
             {
-                CustIDs = _repository.Fetch<long>(criteria),
+                CustInfos = _repository.Fetch<GetNormalTaggingScanningViewModel>(criteria),
                 LastCategoryID = criteria.LastCategoryID,
                 LastCustID = criteria.LastCustID
             };

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -26,7 +27,7 @@
         private readonly ISystemParameterDataAccess _systemParameterDataAccess;
         private readonly INormalAccountService _normalAccountService;
         private GetNormalTaggingScanningModel _getNormalTaggingScanningModel;
-        private IEnumerable<long> _custIDs;
+        private IEnumerable<GetNormalTaggingScanningViewModel> _custInfos;
 
         public NormalTaggingClassificationServices(INormalTaggingClassificationDataAccess normalTaggingClassificationDataAccess, ISystemParameterDataAccess systemParameterDataAccess, INormalAccountService normalAccountService)
         {
@@ -38,7 +39,7 @@
         public INormalTaggingClassificationServices Start()
         {
             _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel();
-            _custIDs = new List<long>();
+            _custInfos = new List<GetNormalTaggingScanningViewModel>();
 
             return this;
         }
@@ -46,16 +47,16 @@
         public INormalTaggingClassificationServices GetNormalTaggingScanning()
         {
             _getNormalTaggingScanningModel = this._normalTaggingClassificationDataAccess.GetNormalTaggingScanning();
-            _custIDs = _getNormalTaggingScanningModel?.CustIDs;
+            _custInfos = _getNormalTaggingScanningModel?.CustInfos;
 
             return this;
         }
 
         public INormalTaggingClassificationServices PreprocessCustomerClassNormalTagging(int batchInternalSize)
         {
-            if (_custIDs != null && _custIDs.Any())
+            if (_custInfos != null && _custInfos.Any())
             {
-                var custIdChunks = _custIDs?.Chunk(batchInternalSize);
+                var custIdChunks = _custInfos?.Chunk(batchInternalSize);
 
                 foreach (var custBatch in custIdChunks)
                 {
@@ -80,17 +81,17 @@
                 _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), SystemParameters.NormalTaggingClassificationLastCategoryID);
                 _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), SystemParameters.NormalTaggingClassificationLastCustID);
 
-                return _custIDs != null && _custIDs.Any();
+                return _custInfos != null && _custInfos.Any();
             }
 
             return false;
         }
 
-        private IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<long> custBatch)
+        private IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<GetNormalTaggingScanningViewModel> custBatch)
         {
             if (custBatch != null && custBatch.Any())
             {
-                var convertNormalTaggingList = custBatch.Select(cust => new GetNormalAccountEntity { CustId = cust });
+                var convertNormalTaggingList = custBatch.Select(custInfo => new GetNormalAccountEntity { CustId = custInfo.CustID, IsCheckTaggingTW = custInfo.IsCheckTaggingTW });
 
                 var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(convertNormalTaggingList);
 
