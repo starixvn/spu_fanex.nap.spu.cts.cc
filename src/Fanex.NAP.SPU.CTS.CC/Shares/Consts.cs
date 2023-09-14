@@ -59,7 +59,9 @@
             TWRobotImperva_LastID = 134,
             TWGroupBetting_CountTicket_BatchSize = 135,
             TWGroupBetting_CountTicket_LastSequenceId = 136,
-            TWGroupBetting_CountTicket_Status = 137
+            TWGroupBetting_CountTicket_Status = 137,
+            NormalTaggingClassificationLastCategoryID = 144,
+            NormalTaggingClassificationLastCustID = 145
         };
 
         public enum Reason
@@ -133,7 +135,8 @@
             ScanAssociatedAccount = 51,
             DownlineCustomerClassification = 52,
             TVSProblemAccountInsert = 53,
-            ClassifyGBMatchMonitor = 54       
+            ClassifyGBMatchMonitor = 54,
+            NormalTaggingJob = 100,
         };
 
         public enum BySport_FunctionId
@@ -145,7 +148,8 @@
         {
             Manual = 4,
             Auto_Customer = 5,
-            Auto_AfftectedDownline = 6
+            Auto_AfftectedDownline = 6,
+            Auto_NormalTaggingScan = 7
         }
 
         public enum HttpStatus
@@ -208,6 +212,13 @@
         {
             Invalid_Inactive = 2,
             Invalid_Null = 3            
+        };
+
+        public enum NormalClasification_TaggingType
+        {
+            NotExist = 0,
+            Exist = 1,
+            ExistOnly = 2,
         };
     }
 }

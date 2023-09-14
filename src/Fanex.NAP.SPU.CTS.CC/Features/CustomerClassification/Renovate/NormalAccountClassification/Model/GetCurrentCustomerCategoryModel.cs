@@ -19,6 +19,8 @@
 
         [XName("IsProbationLastDay")]
         public bool IsProbationLastDay { get; set; }
-    }
 
+        [XName("ScanTaggingType")]
+        public int ScanTaggingType { get; set; }
+    }
 }

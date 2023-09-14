@@ -2,12 +2,14 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountClassificationJobService
     {
@@ -54,23 +56,26 @@
 
             if (isExistCusts)
             {
-                var customerChunks = normalPoolCustomerModel.NormalPoolCustomers.Chunk(batchInternalSize);
-
-                var actions = new List<Action>();
-
-                foreach (var custBatch in customerChunks)
-                {
-                    actions.Add(() => ClassifyNormalAccount(custBatch, normalPoolCustomerModel.ScannedMaxId));
-                }
-
-                Parallel.Invoke(actions.ToArray());
+                ClassifyNormalAccountWithBatch(normalPoolCustomerModel, batchInternalSize);
             }
 
             return isExistCusts;
         }
 
+        private void ClassifyNormalAccountWithBatch(GetNormalPoolCustomerModel normalPoolCustomer, int batchInternalSize)
+        {
+            var customerList = normalPoolCustomer.NormalPoolCustomers;
+
+            if (customerList != null && customerList.Any())
+            {
+                var custChunks = customerList.Chunk(batchInternalSize);
+
+                custChunks.AsParallel().WithDegreeOfParallelism(4).ForAll(custBatch => ClassifyNormalAccount(custBatch, normalPoolCustomer.ScannedMaxId));
+            }
+        }
+
         private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID)
-        {            
+        {
             var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
 
             var customerCategories = normalAccountService.GetCurrentCustomerCategory(custIDList);
@@ -83,7 +88,8 @@
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
-                                                      IsCheckBetCount = custMain.IsCheckBetCount
+                                                      IsCheckBetCount = custMain.IsCheckBetCount,
+                                                      ScanTaggingType = custMain.ScanTaggingType
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())

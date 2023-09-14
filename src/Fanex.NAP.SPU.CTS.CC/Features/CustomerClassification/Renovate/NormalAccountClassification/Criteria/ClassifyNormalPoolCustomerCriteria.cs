@@ -1,14 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public class ClassifyNormalPoolCustomerCriteria : NonQueryCommand
     {
+        [SpParam(SqlParamName = "CustomersXML")]
         public string CustomersXML { get; set; }
 
         public override string GetSettingKey()

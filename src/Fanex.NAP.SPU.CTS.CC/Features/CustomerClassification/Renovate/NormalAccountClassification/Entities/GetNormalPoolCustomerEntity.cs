@@ -5,5 +5,7 @@
         public long CustId { get; set; }
 
         public bool IsCheckBetCount { get; set; }
+
+        public int ScanTaggingType { get; set; }
     }
 }

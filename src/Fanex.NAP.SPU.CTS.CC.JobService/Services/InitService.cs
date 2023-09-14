@@ -103,6 +103,8 @@
 
             RegisterNormalAccountRenovate(services);
 
+            RegisterNormalTaggingClassificationRenovate(services);
+
             RegisterRescanClassificationRenovate(services);
 
             RegisterDailyNormalRenovate(services);
@@ -356,6 +358,16 @@
                 Renovate.NormalAccountInsert.NormalAccountDataAccess>();
             services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountService,
                 Renovate.NormalAccountInsert.NormalAccountService>();
+        }
+
+        private static void RegisterNormalTaggingClassificationRenovate(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomerClassification.Renovate.INormalTaggingClassificationJobService,
+                CustomerClassification.Renovate.NormalTaggingClassificationJobService>();
+            services.AddSingleton<Renovate.NormalTaggingClassification.INormalTaggingClassificationDataAccess,
+                Renovate.NormalTaggingClassification.NormalTaggingClassificationDataAccess>();
+            services.AddSingleton<Renovate.NormalTaggingClassification.INormalTaggingClassificationServices,
+                Renovate.NormalTaggingClassification.NormalTaggingClassificationServices>();
         }
 
         private static void RegisterRescanClassificationRenovate(this IServiceCollection services)

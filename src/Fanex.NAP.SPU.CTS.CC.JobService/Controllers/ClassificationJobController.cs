@@ -27,6 +27,7 @@
         private readonly Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService;
         private readonly Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService;
         private readonly Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService;
+        private readonly Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService;
 
         private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -50,6 +51,7 @@
             Renovate.IDailyNormalClassificationJobService dailyNormalClassificationRenovateJobService,
             Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService,
             Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService,
+            Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService,
 
             Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
@@ -74,6 +76,7 @@
             this.dailyNormalClassificationRenovateJobService = dailyNormalClassificationRenovateJobService;
             this.newCustomerClassificationRenovateJobService = newCustomerClassificationRenovateJobService;
             this.affectedDownlineClassificationRenovateJobService = affectedDownlineClassificationRenovateJobService;
+            this.normalTaggingClassificationRenovateJobService = normalTaggingClassificationRenovateJobService;
 
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
@@ -161,6 +164,13 @@
         {
             sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
             return await this.dailyNormalClassificationRenovateJobService.Execute();
+        }
+
+        [HttpPost("scanningDailyNormalTaggingClassificationRenovate")]
+        public async Task<bool> DailyScanningNormalTaggingClassificationRenovate([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Daily Normal Tagging Service is running at {DateTime.Now}");
+            return await this.normalTaggingClassificationRenovateJobService.Execute(batchSize);
         }
 
         [HttpPost("newcustomerclassificationRenovate")]

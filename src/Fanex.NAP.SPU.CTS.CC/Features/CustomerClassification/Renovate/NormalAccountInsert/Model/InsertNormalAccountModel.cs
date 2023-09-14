@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert
 {
-    using System;   
+    using System;
 
     public class InsertNormalAccountModel
     {
@@ -14,13 +14,14 @@
             this.WinlossRM = cust.WinlossRM;
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
-            this.PerformanceTime = cust.PerformanceTime;           
+            this.PerformanceTime = cust.PerformanceTime;
             this.TaggingID = cust.TaggingID;
             this.TaggingType = cust.TaggingType;
             this.TWBetCount = cust.TWBetCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
+            this.ScanTaggingType = cust.ScanTaggingType;
         }
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
@@ -34,8 +35,8 @@
             this.BetCount = cust.BetCount;
             this.ActiveDays = cust.ActiveDays;
             this.PerformanceTime = cust.PerformanceTime;
-            
-            if (ctsTaggedCust != null && cust.TaggingID == 0)
+
+            if (ctsTaggedCust != null && cust.TaggingID == 0 && ctsTaggedCust.TaggingID != 0)
             {
                 this.TaggingID = ctsTaggedCust.TaggingID;
                 this.TaggingType = ctsTaggedCust.TaggingType;
@@ -50,6 +51,7 @@
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
+            this.ScanTaggingType = cust.ScanTaggingType;
         }
 
         public long CustId { get; set; }
@@ -68,7 +70,7 @@
 
         public int ActiveDays { get; set; }
 
-        public DateTime PerformanceTime { get; set; }      
+        public DateTime PerformanceTime { get; set; }
 
         public decimal LastXDaysMargin { get; set; }
 
@@ -85,5 +87,7 @@
         public decimal TWTicketRejectRate { get; set; }
 
         public decimal TWDesktopUsageRate { get; set; }
+
+        public int ScanTaggingType { get; set; }
     }
 }

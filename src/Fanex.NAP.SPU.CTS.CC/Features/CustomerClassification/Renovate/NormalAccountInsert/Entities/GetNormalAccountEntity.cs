@@ -22,5 +22,8 @@
 
         public DateTime PerformanceTime { get; set; }       
     
+        public int ScanTaggingType { get; set; }
+
+        public bool IsCheckTaggingTW { get; set; }
     }
 }

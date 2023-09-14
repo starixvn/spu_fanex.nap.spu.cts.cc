@@ -86,15 +86,7 @@
 
         private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, long scannedMaxId, int batchExternalSize)
         {            
-            var twTaggedCusts = normalAccountService.GetGroupBettingAndRejectCustomer(custs);
-
-            var custAfterCheckTWTagged = normalAccountService.MergeWithTWTaggedCust(custs, twTaggedCusts);
-
-            var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
-
-            var custAssWithPA = normalAccountService.GetCustomerAssociationProblemAccount(custIdAfterCheckTWTagged);
-
-            var finalNormalAcc = normalAccountService.MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
+            var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
             var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);
 
