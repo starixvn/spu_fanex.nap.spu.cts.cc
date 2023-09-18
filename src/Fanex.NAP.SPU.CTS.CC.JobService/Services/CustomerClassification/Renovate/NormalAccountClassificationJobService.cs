@@ -88,7 +88,7 @@
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
-                                                      IsCheckBetCount = custMain.IsCheckBetCount,
+                                                      IsRealtimeOnly = custMain.IsRealtimeOnly,
                                                       ScanTaggingType = custMain.ScanTaggingType
                                                   });
 
