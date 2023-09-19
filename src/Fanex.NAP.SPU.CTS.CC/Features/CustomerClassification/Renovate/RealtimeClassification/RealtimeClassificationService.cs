@@ -71,15 +71,13 @@
 
         public IRealtimeClassificationService PreprocessCustomerClassRealtime(int batchSize)
         {
-            var normalCustCategores = this.customerCategories.CustomerCategory.Where(x => x.CategoryId != -1);
-
-            if (normalCustCategores.Any())
+            if (this.customerCategories.CustomerCategory.Any())
             {
-                var customerChunks = normalCustCategores.Chunk(batchSize);
+                var customerChunks = this.customerCategories.CustomerCategory.Chunk(batchSize);
 
                 foreach (var custBatch in customerChunks)
                 {
-                    var custIdList = string.Join(",", custBatch.Select(x =>x.CustId));                   
+                    var custIdList = string.Join(",", custBatch);                   
 
                     dataAccess.PreprocessCustomerClassRealtime(custIdList);
                 }

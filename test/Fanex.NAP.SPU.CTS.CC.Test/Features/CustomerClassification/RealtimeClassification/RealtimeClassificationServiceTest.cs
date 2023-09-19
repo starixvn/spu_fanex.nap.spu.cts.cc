@@ -46,8 +46,7 @@
             };
             var modelCustCategory = new GetCustomerCategoryRealtimeModel()
             {
-                CustomerCategory = new List<GetCustomerCategoryRealtimeEntity>() {
-                    new GetCustomerCategoryRealtimeEntity { CustId = 1, CategoryId = 7 } },
+                CustomerCategory = new List<long>() { 1, 2 },
                 CustomerPADailyScan = new List<long>()
             };
 
@@ -78,11 +77,7 @@
             };
             var modelCustCategory = new GetCustomerCategoryRealtimeModel()
             {
-                CustomerCategory = new List<GetCustomerCategoryRealtimeEntity>() 
-                { 
-                    new GetCustomerCategoryRealtimeEntity { CustId = 1, CategoryId = 7 },
-                    new GetCustomerCategoryRealtimeEntity { CustId = 2, CategoryId = 8 }
-                }        
+                CustomerCategory = new List<long> { 1, 2 }
             };
 
             // Act
@@ -114,7 +109,7 @@
             };
             var modelCustCategory = new GetCustomerCategoryRealtimeModel()
             {
-                CustomerCategory = new List<GetCustomerCategoryRealtimeEntity>(),                  
+                CustomerCategory = new List<long>(),                  
                 CustomerPADailyScan = new List<long>() { 1, 2 }
             };
 

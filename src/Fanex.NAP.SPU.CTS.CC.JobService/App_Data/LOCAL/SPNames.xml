@@ -29,7 +29,7 @@
 	</Function>
 	<Function Name="RealtimeClassification">
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_GetChanges" SpName="CTS_NormalAccountsClassification_GeneralCategorize_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
-		<Setting Key="CTS_DC_CustClassification_Realtime_GetCategory" SpName="CTS_DC_CustClassification_Realtime_GetCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_Realtime_GetCategory" SpName="CTS_DC_CustClassification_Realtime_GetCategory_xtest" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
 		<Setting Key="CTS_NormalAccountsClassification_GeneralCategorize_RealTime"  SpName="CTS_NormalAccountsClassification_GeneralCategorize_RealTime" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
 		<Setting Key="CTS_NormalAccountsClassification_Realtime_UpdateLastScan" SpName="CTS_NormalAccountsClassification_Realtime_UpdateLastScan" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_NormalAccountsClassification_RealTime_CheckChanges" SpName="CTS_NormalAccountsClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
