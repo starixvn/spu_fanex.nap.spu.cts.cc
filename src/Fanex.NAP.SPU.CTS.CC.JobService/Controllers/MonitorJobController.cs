@@ -1,8 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
     using Sentry;
+    using System;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -32,6 +35,13 @@
         public async Task<bool> MonitorRealtimeInactiveCategory([FromForm] int batchSize)
         {
             return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory(batchSize);
+        }
+
+        [HttpGet("health")]
+        public string CheckHealth()
+        {
+            sentryClient.CaptureMessage($"Check health CTS.CC services {DateTime.Now}", Sentry.Protocol.SentryLevel.Info);
+            return JsonConvert.SerializeObject(DateTime.Now.ToString());
         }
     }
 }
