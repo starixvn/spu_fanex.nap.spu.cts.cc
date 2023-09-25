@@ -14,8 +14,8 @@
         [XName("IsNewCreated")]
         public bool IsNewCreated { get; set; }
 
-        [XName("IsCheckBetCount")]
-        public bool IsCheckBetCount { get; set; }
+        [XName("IsRealtimeOnly")]
+        public bool IsRealtimeOnly { get; set; }
 
         [XName("IsProbationLastDay")]
         public bool IsProbationLastDay { get; set; }

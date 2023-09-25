@@ -51,7 +51,7 @@
             // Arrange
             var custInfos = new List<GetCurrentCustomerCategoryModel>() {
                 new GetCurrentCustomerCategoryModel {
-                     CustId = 1, CategoryId = 1, IsCheckBetCount = true, IsNewCreated = false
+                     CustId = 1, CategoryId = 1, IsRealtimeOnly = true, IsNewCreated = false
                 }
             };
            
