@@ -24,7 +24,7 @@
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null, null, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null, systemParameterDataAccess);
         }
 
         [Fact]

@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -66,18 +65,17 @@
     {
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
-        private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
-            IRescanCustClassificationService rescanClassificationService,
             ICustClassToMainDBService custClassToMainDBService,
             ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
-            this.rescanClassificationService = rescanClassificationService;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
@@ -116,6 +114,16 @@
 
                     if (customers != null && customers.Any())
                     {
+                        var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = paras.ExternalBatchSize,
+                            FeedSoon88API = paras.FeedSoon88API,
+                            IsPushCCToSoon88 = true,
+                            IsUpdateDangerToMainDB = true,
+                            IsWriteLog = false,
+                            ServiceName = serviceName
+                        });
+
                         UpdateAssociationCustomerForArchive(customers);
 
                         var isSuccess = InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result;
