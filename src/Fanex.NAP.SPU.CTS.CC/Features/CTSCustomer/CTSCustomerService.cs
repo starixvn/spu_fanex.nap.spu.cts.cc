@@ -48,9 +48,9 @@
 
         #region  Update UserName2
 
-        bool UpdateUserName2Package(ref long lastCTSCustId, bool isCustSub, int rowSize);
+        bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize);
 
-        ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub);
+        ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
 
         IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub);
 
@@ -446,7 +446,7 @@
 
         #region Update UserName2
 
-        public bool UpdateUserName2Package(ref long lastCTSCustId, bool isCustSub, int rowSize)
+        public bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize)
         {
             var scannedCusts = GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
             var isContinue = false;
@@ -477,7 +477,7 @@
             return isContinue;
         }
 
-        public ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub)
+        public ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub)
         {
             return dataAccess.GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
         }

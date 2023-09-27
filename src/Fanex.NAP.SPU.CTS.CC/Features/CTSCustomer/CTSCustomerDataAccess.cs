@@ -51,7 +51,7 @@
 
         #region UserName2
 
-        ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub);
+        ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
 
         IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub);
 
@@ -326,7 +326,7 @@
 
         #region Update UserName2
 
-        public ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub)
+        public ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub)
         {
             var criteria = new GetCustomersWithNullUsername2Criteria
             {

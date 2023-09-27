@@ -7,6 +7,8 @@
     {
         Int64 GetLastScannedId(SystemParameters paraID);
 
+        UInt64 GetLastScannedId2(SystemParameters paraID);
+
         DateTime? GetLastScannedDateTime(SystemParameters paraID);
 
         bool UpdateTimingExecution(string paraValue, SystemParameters paramId);     
@@ -26,6 +28,13 @@
             var lastScannedId = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
 
             return lastScannedId != null ? Int64.Parse(lastScannedId?.ParameterValue) : 0;
+        }
+
+        public UInt64 GetLastScannedId2(SystemParameters paraID)
+        {
+            var lastScannedId = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+
+            return lastScannedId != null ? UInt64.Parse(lastScannedId?.ParameterValue) : 0;
         }
 
         public DateTime? GetLastScannedDateTime(SystemParameters paraID)

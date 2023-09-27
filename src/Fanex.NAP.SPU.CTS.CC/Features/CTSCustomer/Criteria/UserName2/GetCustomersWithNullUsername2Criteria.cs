@@ -7,7 +7,7 @@
     public class GetCustomersWithNullUsername2Criteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_PreCTSCustID")]
-        public Int64 PreCTSCustID { get; set; }
+        public UInt64 PreCTSCustID { get; set; }
 
         [SpParam(SqlParamName = "ip_Size")]
         public int Size { get; set; }
@@ -16,7 +16,7 @@
         public bool IsCustSub { get; set; }
 
         [SpParam(SqlParamName = "op_LastCTSCustID")]
-        public Int64 LastCTSCustID { get; set; }
+        public UInt64 LastCTSCustID { get; set; }
 
         public override string GetSettingKey()
         {

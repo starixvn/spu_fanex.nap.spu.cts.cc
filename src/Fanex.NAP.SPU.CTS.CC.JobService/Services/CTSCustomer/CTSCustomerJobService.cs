@@ -134,7 +134,7 @@
         {
             try
             {
-                long lastCTSCustId = systemParameterServices.GetLastScannedId(SystemParameters.CustomerNullUsername2_LastCTSCustID);
+                UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
 
@@ -160,7 +160,7 @@
         {
             try
             {
-                long lastCTSCustId = 0;
+                UInt64 lastCTSCustId = 0;
                 bool isContinue = false;
 
                 do
