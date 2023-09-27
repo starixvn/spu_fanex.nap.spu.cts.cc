@@ -453,9 +453,14 @@
 
             if (scannedCusts.CustList.Any())
             {
-                var custFromMainDB = GetCustWithHavingUserName2(scannedCusts.CustList, isCustSub);
+                var batchCust = scannedCusts.CustList.Distinct().Chunk(rowSize);
 
-                UpdateUsername2(custFromMainDB);
+                foreach (var custs in batchCust)
+                {
+                    var custFromMainDB = GetCustWithHavingUserName2(custs, isCustSub);
+
+                    UpdateUsername2(custFromMainDB);
+                }
 
                 isContinue = true;
             }
