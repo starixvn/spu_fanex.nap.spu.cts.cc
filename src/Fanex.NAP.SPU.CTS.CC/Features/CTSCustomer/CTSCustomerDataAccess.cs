@@ -49,11 +49,15 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
-        IEnumerable<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
+        #region UserName2
 
-        IEnumerable<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
+        ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub);
 
-        int UpdateUsername2(string customerJson);
+        IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub);
+
+        void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo);
+
+        #endregion
 
         void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust);
 
@@ -322,35 +326,43 @@
 
         #region Update UserName2
 
-        public IEnumerable<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
+        public ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub)
         {
             var criteria = new GetCustomersWithNullUsername2Criteria
             {
                 Size = rowSize,
-                PreCTSCustID = preCTSCustId
+                PreCTSCustID = lastCTSCustId,
+                IsCustSub = isCustSub
             };
 
-            return repository.Fetch<GetCustIdModel>(criteria);
+            var data = repository.Fetch<CustNullUserName2Model>(criteria);
+
+            return new ScannedCustModel
+            {
+                CustList = data ?? Enumerable.Empty< CustNullUserName2Model>(),
+                LastCTSCustID = criteria.LastCustID
+            };
         }
 
-        public IEnumerable<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs)
+        public IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub)
         {
             var criteria = new GetCustomersWithHavingUsername2Criteria
             {
-                CustomerXML = custs.ToXmlString()
+                CustomerXML = custs.ToXmlString(),
+                IsCustSub = isCustSub
             };
 
-            return repository.Fetch<GetCustIdModel>(criteria);
+            return repository.Fetch<CustNullUserName2Model>(criteria);
         }
 
-        public int UpdateUsername2(string customerJson)
+        public void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo)
         {
             var criteria = new UpdateUsername2Criteria
             {
-                CustomerJson = customerJson
+                CustomerJson = JsonConvert.SerializeObject(custInfo)
             };
 
-            return repository.Execute(criteria);
+            repository.Execute(criteria);
         }
 
         #endregion Update UserName2

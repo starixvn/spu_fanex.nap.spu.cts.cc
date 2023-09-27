@@ -32,10 +32,16 @@
             return await ctsCustomerJobService.UpdateCTSCustomerInfo(batchSize);
         }
 
-        [HttpPost("UpdateUsername2")]
-        public async Task<bool> UpdateUsername2([FromForm] int batchSize)
+        [HttpPost("UpdateUsername2ForCustMain")]
+        public async Task<bool> UpdateUsername2ForCustMain([FromForm] int batchSize)
         {
-            return await ctsCustomerJobService.UpdateUsername2(batchSize);
+            return await ctsCustomerJobService.UpdateUsername2ForCustMain(batchSize);
+        }
+
+        [HttpPost("UpdateUsername2ForCustSub")]
+        public async Task<bool> UpdateUsername2ForCustSub([FromForm] int batchSize)
+        {
+            return await ctsCustomerJobService.UpdateUsername2ForCustSub(batchSize);
         }
 
         [HttpPost("InsertReactivatedCustomer")]

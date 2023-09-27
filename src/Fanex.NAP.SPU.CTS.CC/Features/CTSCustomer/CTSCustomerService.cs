@@ -46,11 +46,17 @@
 
         string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
-        List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
+        #region  Update UserName2
 
-        List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
+        bool UpdateUserName2Package(ref long lastCTSCustId, bool isCustSub, int rowSize);
 
-        int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
+        ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub);
+
+        IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub);
+
+        void UpdateUsername2(IEnumerable<CustNullUserName2Model> customerList);
+
+        #endregion
 
         IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
 
@@ -426,10 +432,6 @@
             }
         }
 
-        #endregion Update Customers Info
-
-        #region Update UserName2
-
         public bool IsValidData(TranformCustModel data)
         {
             if (data != null && data.LastCustId != null && data.LastUpdatedTime != null)
@@ -440,21 +442,44 @@
             return false;
         }
 
-        public List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
+        #endregion Update Customers Info
+
+        #region Update UserName2
+
+        public bool UpdateUserName2Package(ref long lastCTSCustId, bool isCustSub, int rowSize)
         {
-            return dataAccess.GetCustWithNullUserName2(rowSize, preCTSCustId).ToList();
+            var scannedCusts = GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
+
+            if (scannedCusts.CustList.Any())
+            {
+                var custFromMainDB = GetCustWithHavingUserName2(scannedCusts.CustList, isCustSub);
+
+                lastCTSCustId = isCustSub ? scannedCusts.CustList.Max(c => c.CTSCustID) : scannedCusts.LastCTSCustID;
+
+                UpdateUsername2(custFromMainDB);
+
+                return true;
+            }
+
+            return false;
         }
 
-        public List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs)
+        public ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub)
         {
-            return dataAccess.GetCustWithHavingUserName2(custs).ToList();
+            return dataAccess.GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
         }
 
-        public int UpdateUsername2(IEnumerable<GetCustIdModel> customerList)
+        public IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub)
         {
-            var customerJson = JsonConvert.SerializeObject(customerList);
+            return dataAccess.GetCustWithHavingUserName2(custs, isCustSub);
+        }
 
-            return dataAccess.UpdateUsername2(customerJson);
+        public void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo)
+        {
+            if (custInfo != null && custInfo.Any())
+            {
+                dataAccess.UpdateUsername2(custInfo);
+            }
         }
 
         #endregion Update UserName2

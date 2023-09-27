@@ -5,7 +5,7 @@
     using System.Xml.Serialization;
 
     [XName("Customer")]
-    public class GetCustIdModel
+    public class CustNullUserName2Model
     {
         [XName("CTSCustID")]
         public Int64 CTSCustID { get; set; }

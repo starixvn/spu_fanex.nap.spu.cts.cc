@@ -12,6 +12,12 @@
         [SpParam(SqlParamName = "ip_Size")]
         public int Size { get; set; }
 
+        [SpParam(SqlParamName = "ip_IsCustSub")]
+        public bool IsCustSub { get; set; }
+
+        [SpParam(SqlParamName = "ip_LastCustID")]
+        public Int64 LastCustID { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_CustInfo_GetNullUserName2";
