@@ -449,19 +449,27 @@
         public bool UpdateUserName2Package(ref long lastCTSCustId, bool isCustSub, int rowSize)
         {
             var scannedCusts = GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
+            var isContinue = false;
 
             if (scannedCusts.CustList.Any())
             {
                 var custFromMainDB = GetCustWithHavingUserName2(scannedCusts.CustList, isCustSub);
 
-                lastCTSCustId = isCustSub ? scannedCusts.CustList.Max(c => c.CTSCustID) : scannedCusts.LastCTSCustID;
-
                 UpdateUsername2(custFromMainDB);
 
-                return true;
+                isContinue = true;
             }
 
-            return false;
+            if (!isCustSub)
+            {
+                lastCTSCustId = scannedCusts.LastCTSCustID > 0 ? scannedCusts.LastCTSCustID : lastCTSCustId;
+            }
+            else if (scannedCusts.CustList.Any())
+            {
+                lastCTSCustId = scannedCusts.CustList.Max(c => c.CTSCustID);
+            }
+
+            return isContinue;
         }
 
         public ScannedCustModel GetCustWithNullUserName2(int rowSize, Int64 lastCTSCustId, bool isCustSub)
