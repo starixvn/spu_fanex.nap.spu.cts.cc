@@ -340,7 +340,7 @@
             return new ScannedCustModel
             {
                 CustList = data ?? Enumerable.Empty< CustNullUserName2Model>(),
-                LastCTSCustID = criteria.LastCustID
+                LastCTSCustID = criteria.LastCTSCustID
             };
         }
 

@@ -15,8 +15,8 @@
         [SpParam(SqlParamName = "ip_IsCustSub")]
         public bool IsCustSub { get; set; }
 
-        [SpParam(SqlParamName = "ip_LastCustID")]
-        public Int64 LastCustID { get; set; }
+        [SpParam(SqlParamName = "op_LastCTSCustID")]
+        public Int64 LastCTSCustID { get; set; }
 
         public override string GetSettingKey()
         {
