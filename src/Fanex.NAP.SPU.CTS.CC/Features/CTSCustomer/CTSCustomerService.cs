@@ -123,9 +123,8 @@
                         var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
                         {
                             ExternalBatchSize = paras.ExternalBatchSize,
-                            FeedSoon88API = paras.FeedSoon88API,
-                            IsPushCCToSoon88 = true,
-                            IsUpdateDangerToMainDB = true,
+                            IsPushCCToSoon88 = false,
+                            IsUpdateDangerToMainDB = false,
                             IsWriteLog = false,
                             ServiceName = serviceName
                         });
