@@ -62,7 +62,7 @@
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
-        IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs);
+        IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts);
 
         InactivateNewCustomer GetInactivateNewCustomers();
     }
@@ -508,9 +508,14 @@
             return Enumerable.Empty<ReactivatedCustModel>();
         }
 
-        public IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs)
+        public IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts)
         {
-            return dataAccess.CheckExistCTSArchiveCustomer(custIDs);
+            if(reactivedCusts != null && reactivedCusts.Any())
+            {
+                return dataAccess.CheckExistCTSArchiveCustomer(JsonConvert.SerializeObject(reactivedCusts));
+            }
+
+            return Enumerable.Empty<long>();
         }
 
         public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)

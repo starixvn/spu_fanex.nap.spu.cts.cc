@@ -5,8 +5,8 @@
 
     public class CheckExistCTSArchiveCustomerCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_CustJson")]
+        public string CustJson { get; set; }
       
         public override string GetSettingKey()
         {
@@ -15,7 +15,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustIDs);
+            return !string.IsNullOrEmpty(CustJson);
         }
     }
 }

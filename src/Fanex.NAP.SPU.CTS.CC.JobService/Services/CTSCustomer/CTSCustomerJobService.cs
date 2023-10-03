@@ -199,9 +199,8 @@
                 if (custToReactive != null && custToReactive.Any())
                 {
                     var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
-                    var custIDs = string.Join(",", custToReactive.Select(c => c.CustID).Distinct());
 
-                    var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(custIDs);
+                    var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(custToReactive);
 
                     /* 1. Push CC to MainDB */
                     var isPushCCSuccess = this.PushDataToExternal(exitedCTSArchiveCustIDs, "InsertReactivatedCustomers");
