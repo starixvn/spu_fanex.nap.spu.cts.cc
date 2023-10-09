@@ -1,10 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -23,8 +20,6 @@
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
-        private readonly IRescanCustClassificationService rescanClassificationService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
@@ -32,7 +27,7 @@
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, custClassToMainDBService, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null, systemParameterDataAccess);
         }
 
         [Fact]

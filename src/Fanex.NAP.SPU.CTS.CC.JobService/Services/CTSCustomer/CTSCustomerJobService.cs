@@ -21,7 +21,9 @@
 
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
-        Task<bool> UpdateUsername2(int batchSize);
+        Task<bool> UpdateUsername2ForCustMain(int batchSize);
+
+        Task<bool> UpdateUsername2ForCustSub(int batchSize);
 
         Task<bool> InsertReactivatedCustomers();
 
@@ -125,23 +127,18 @@
             }
         }
 
-        public Task<bool> UpdateUsername2(int batchSize)
+
+        #region Update UserName2
+
+        public Task<bool> UpdateUsername2ForCustMain(int batchSize)
         {
             try
             {
-                long preCTSCustId = 0;
-                List<GetCustIdModel> custsNullUsername2;
+                UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
-                do
-                {
-                    custsNullUsername2 = ctscustomerService.GetCustWithNullUserName2(batchSize, preCTSCustId);
-                    if (custsNullUsername2 is not null && custsNullUsername2.Any())
-                    {
-                        var custFromMainDB = ctscustomerService.GetCustWithHavingUserName2(custsNullUsername2);
-                        preCTSCustId = custsNullUsername2.Max(c => c.CTSCustID);
-                        ctscustomerService.UpdateUsername2(custFromMainDB);
-                    }
-                } while (custsNullUsername2 is not null && custsNullUsername2.Any());
+                ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
+
+                systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 return Task.FromResult(true);
             }
@@ -153,15 +150,41 @@
                       .ToString();
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+
                 return Task.FromResult(false);
             }
         }
 
-        #region MonitorMissingCustomer
 
-     
+        public Task<bool> UpdateUsername2ForCustSub(int batchSize)
+        {
+            try
+            {
+                UInt64 lastCTSCustId = 0;
+                bool isContinue = false;
 
-        #endregion MonitorMissingCustomer
+                do
+                {
+                    isContinue = ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, true, batchSize);
+
+                } while (isContinue);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+
+                return Task.FromResult(false);
+            }
+        }
+
+        #endregion Update UserName2
 
         public Task<bool> InsertReactivatedCustomers()
         {

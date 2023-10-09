@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "custXML")]
         public string CustomerXML { get; set; }
 
+        [SpParam(SqlParamName = "Is_CustSub")]
+        public bool IsCustSub { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_Customer_GetNotNULLUserName2ByXML";

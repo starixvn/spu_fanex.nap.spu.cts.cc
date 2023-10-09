@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -27,25 +25,30 @@
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, rescanClassificationService, custClassToMainDBService, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService, systemParameterDataAccess);
         }
 
         [Fact]
         public void GetCustWithNullUserName2_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<GetCustIdModel>
+            var expectedResult = new ScannedCustModel
             {
-                new GetCustIdModel
+                CustList = new List<CustNullUserName2Model>
                 {
-                    CTSCustID = 1,
-                    CustID = 1,
-                    CustSubID = 0,
-                    UserName2 = "tester2"
-                }
-            };
+                    new CustNullUserName2Model
+                    {
+                        CTSCustID = 1,
+                        CustID = 1,
+                        CustSubID = 0,
+                        UserName2 = "tester2"
+                    }
+                },
+                LastCTSCustID = 1
+            };             
 
-            dataAccess.GetCustWithNullUserName2(10, 1).Returns(expectedResult);
-            var result = ctsCustomerService.GetCustWithNullUserName2(10, 1);
+            dataAccess.GetCustWithNullUserName2(10, 1, true).Returns(expectedResult);
+
+            var result = ctsCustomerService.GetCustWithNullUserName2(10, 1, true);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -53,10 +56,10 @@
         [Fact]
         public void GetCustWithHavingUserName2_WhenSuccess_ReturnData()
         {
-            var inputParam = new List<GetCustIdModel>();
-            var expectedResult = new List<GetCustIdModel>
+            var inputParam = new List<CustNullUserName2Model>();
+            var expectedResult = new List<CustNullUserName2Model>
             {
-                new GetCustIdModel
+                new CustNullUserName2Model
                 {
                     CTSCustID = 1,
                     CustID = 1,
@@ -65,9 +68,9 @@
                 }
             };
 
-            dataAccess.GetCustWithHavingUserName2(inputParam).Returns(expectedResult);
+            dataAccess.GetCustWithHavingUserName2(inputParam, false).Returns(expectedResult);
 
-            var result = ctsCustomerService.GetCustWithHavingUserName2(inputParam);
+            var result = ctsCustomerService.GetCustWithHavingUserName2(inputParam, false);
             result.Should().BeEquivalentTo(expectedResult);
         }
     }

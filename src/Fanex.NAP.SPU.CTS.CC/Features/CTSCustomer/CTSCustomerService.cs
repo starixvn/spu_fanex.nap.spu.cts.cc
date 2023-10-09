@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -47,11 +46,17 @@
 
         string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
-        List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId);
+        #region  Update UserName2
 
-        List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs);
+        bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize);
 
-        int UpdateUsername2(IEnumerable<GetCustIdModel> customerList);
+        ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
+
+        IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub);
+
+        void UpdateUsername2(IEnumerable<CustNullUserName2Model> customerList);
+
+        #endregion
 
         IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
 
@@ -66,18 +71,17 @@
     {
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
-        private readonly IRescanCustClassificationService rescanClassificationService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
-            IRescanCustClassificationService rescanClassificationService,
             ICustClassToMainDBService custClassToMainDBService,
             ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.dataAccess = dataAccess;
-            this.rescanClassificationService = rescanClassificationService;
+            this.custClassToMainDBService = custClassToMainDBService;
             this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
@@ -116,6 +120,15 @@
 
                     if (customers != null && customers.Any())
                     {
+                        var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = paras.ExternalBatchSize,
+                            IsPushCCToSoon88 = false,
+                            IsUpdateDangerToMainDB = false,
+                            IsWriteLog = false,
+                            ServiceName = serviceName
+                        });
+
                         UpdateAssociationCustomerForArchive(customers);
 
                         var isSuccess = InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result;
@@ -418,10 +431,6 @@
             }
         }
 
-        #endregion Update Customers Info
-
-        #region Update UserName2
-
         public bool IsValidData(TranformCustModel data)
         {
             if (data != null && data.LastCustId != null && data.LastUpdatedTime != null)
@@ -432,21 +441,57 @@
             return false;
         }
 
-        public List<GetCustIdModel> GetCustWithNullUserName2(int rowSize, Int64 preCTSCustId)
+        #endregion Update Customers Info
+
+        #region Update UserName2
+
+        public bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize)
         {
-            return dataAccess.GetCustWithNullUserName2(rowSize, preCTSCustId).ToList();
+            var scannedCusts = GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
+            var isContinue = false;
+
+            if (scannedCusts.CustList.Any())
+            {
+                var batchCust = scannedCusts.CustList.Distinct().Chunk(rowSize);
+
+                foreach (var custs in batchCust)
+                {
+                    var custFromMainDB = GetCustWithHavingUserName2(custs, isCustSub);
+
+                    UpdateUsername2(custFromMainDB);
+                }
+
+                isContinue = true;
+            }
+
+            if (!isCustSub)
+            {
+                lastCTSCustId = scannedCusts.LastCTSCustID > 0 ? scannedCusts.LastCTSCustID : lastCTSCustId;
+            }
+            else if (scannedCusts.CustList.Any())
+            {
+                lastCTSCustId = scannedCusts.CustList.Max(c => c.CTSCustID);
+            }
+
+            return isContinue;
         }
 
-        public List<GetCustIdModel> GetCustWithHavingUserName2(List<GetCustIdModel> custs)
+        public ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub)
         {
-            return dataAccess.GetCustWithHavingUserName2(custs).ToList();
+            return dataAccess.GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
         }
 
-        public int UpdateUsername2(IEnumerable<GetCustIdModel> customerList)
+        public IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub)
         {
-            var customerJson = JsonConvert.SerializeObject(customerList);
+            return dataAccess.GetCustWithHavingUserName2(custs, isCustSub);
+        }
 
-            return dataAccess.UpdateUsername2(customerJson);
+        public void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo)
+        {
+            if (custInfo != null && custInfo.Any())
+            {
+                dataAccess.UpdateUsername2(custInfo);
+            }
         }
 
         #endregion Update UserName2

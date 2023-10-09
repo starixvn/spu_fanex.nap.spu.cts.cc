@@ -5,10 +5,10 @@
     using System.Xml.Serialization;
 
     [XName("Customer")]
-    public class GetCustIdModel
+    public class CustNullUserName2Model
     {
         [XName("CTSCustID")]
-        public Int64 CTSCustID { get; set; }
+        public UInt64 CTSCustID { get; set; }
 
         [XName("CustID")]
         public Int64 CustID { get; set; }
