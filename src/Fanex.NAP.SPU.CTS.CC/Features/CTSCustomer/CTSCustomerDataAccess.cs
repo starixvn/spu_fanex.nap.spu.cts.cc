@@ -63,7 +63,7 @@
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
 
-        IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs);
+        IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson);
 
         InactivateNewCustomer GetInactivateNewCustomers();
     }
@@ -379,11 +379,11 @@
             return repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();
         }
 
-        public IEnumerable<long> CheckExistCTSArchiveCustomer(string custIDs)
+        public IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson)
         {
             var criteria = new CheckExistCTSArchiveCustomerCriteria
             {
-                CustIDs = custIDs
+                CustJson = custJson
             };
 
             return repository.Fetch<long>(criteria) ?? Enumerable.Empty<long>();
