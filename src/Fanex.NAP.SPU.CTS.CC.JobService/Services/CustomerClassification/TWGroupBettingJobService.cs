@@ -21,13 +21,16 @@
         private readonly string serviceName;
         private readonly ITWGroupBettingService twGroupBettingService;
         private readonly ISentryClient sentryClient;
+        private readonly IAppSettings appSettings;
 
         public TWGroupBettingJobService(
             ISentryClient sentryClient,
-            ITWGroupBettingService twGroupBettingService)
+            ITWGroupBettingService twGroupBettingService,
+            IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.twGroupBettingService = twGroupBettingService;
+            this.appSettings = appSettings;
             this.serviceName = "TWGroupBetting";
         }
 
@@ -109,10 +112,16 @@
 
                     }
                 }
+                else
+                {
+                    return Task.FromResult(false);
+                }
             }
             catch (Exception ex)
             {
                 Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                Utilities.NotifyTelegramMessage(ex.Message, "TWGB.CountTotalTicket", appSettings.EvironmentName, appSettings.EvironmentName == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
 
                 return Task.FromResult(false);
             }
