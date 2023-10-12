@@ -109,6 +109,10 @@
 
                     }
                 }
+                else
+                {
+                    return Task.FromResult(false);
+                }
             }
             catch (Exception ex)
             {
