@@ -64,7 +64,7 @@
 
                 customers.CustomerInfos.AddRange(custSubs);
 
-                var result = ctscustomerService.InsertNewCustomer(customers, new InsertNewCustRescanEntity
+                var result = ctscustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
                 {
                     InternalBatchSize = batchSize,
                     ExternalBatchSize = batchSize,
@@ -217,7 +217,7 @@
 
                     if (custInfo != null && custInfo.CustomerInfos.Any())
                     {
-                        isSuccess = ctscustomerService.InsertNewCustomer(custInfo, new InsertNewCustRescanEntity
+                        isSuccess = ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
                         {
                             InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                             ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,

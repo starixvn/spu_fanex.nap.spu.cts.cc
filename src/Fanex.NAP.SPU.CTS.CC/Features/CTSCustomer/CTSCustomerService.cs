@@ -24,7 +24,7 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
-        bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
+        bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -57,8 +57,6 @@
         void UpdateUsername2(IEnumerable<CustNullUserName2Model> customerList);
 
         #endregion
-
-        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers);
 
         IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
 
@@ -108,7 +106,7 @@
             return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
         }
 
-        public bool InsertNewCustomer(InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
+        public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
         {
             if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
             {
@@ -116,7 +114,7 @@
 
                 foreach (var batchCust in chunkCusts)
                 {
-                    var customers = InsertNewCTSCustomer(batchCust.ToList());
+                    var customers = dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
 
                     if (customers != null && customers.Any())
                     {
@@ -144,16 +142,6 @@
             }
 
             return true;
-        }
-
-        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customers)
-        {
-            if (customers != null && customers.Any())
-            {
-                return dataAccess.InsertNewCTSCustomer(customers);
-            }
-
-            return Enumerable.Empty<InsertNewCustomerResultModel>();
         }
 
         private void UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
