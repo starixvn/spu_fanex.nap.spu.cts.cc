@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerJson { get; set; }
 
+        [SpParam(SqlParamName = "ip_IsNewCustomer")]
+        public bool IsNewCustomer { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_CustInfo_Insert";

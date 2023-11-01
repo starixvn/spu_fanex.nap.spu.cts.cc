@@ -25,7 +25,7 @@
 
         IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
 
-        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo);
+        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo, bool isNewCustomer);
 
         void UpdateAssociationCustomerForArchive(string custInfoJson);
 
@@ -152,13 +152,14 @@
             return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
-        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo)
+        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo, bool isNewCustomer)
         {
             if (customerInfo != null && customerInfo.Any())
             {
                 var criteria = new NewCTSCustomerInsertCriteria
                 {
-                    CustomerJson = JsonConvert.SerializeObject(customerInfo)
+                    CustomerJson = JsonConvert.SerializeObject(customerInfo),
+                    IsNewCustomer = isNewCustomer
                 };
 
                 return repository.Fetch<InsertNewCustomerResultModel>(criteria) ?? Enumerable.Empty<InsertNewCustomerResultModel>();
