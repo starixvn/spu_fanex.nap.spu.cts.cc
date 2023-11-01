@@ -89,6 +89,7 @@
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsRealtimeOnly = custMain.IsRealtimeOnly,
+                                                      IsScanTaggingNewCust = custMain.IsScanTaggingNewCust,
                                                       ScanTaggingType = custMain.ScanTaggingType
                                                   });
 

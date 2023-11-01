@@ -7,5 +7,7 @@
         public bool IsRealtimeOnly { get; set; }
 
         public int ScanTaggingType { get; set; }
+
+        public bool IsScanTaggingNewCust { get; set; }
     }
 }
