@@ -148,7 +148,7 @@
 		<Setting Key="CTS_TWGroupBetting_GetRules" SpName="CTS_TWGroupBetting_GetRules" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicketDB062" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.bodb02.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket_xpre" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="SQL.bodb02.bodbSPUNet" />
@@ -271,5 +271,11 @@
 
 	<Function Name="RescanClassificationBySportRenovate">
 		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+	</Function>
+
+	<Function Name="TWGBTaggingClassification">
+		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" SpName="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess" SpName="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 </Functions>

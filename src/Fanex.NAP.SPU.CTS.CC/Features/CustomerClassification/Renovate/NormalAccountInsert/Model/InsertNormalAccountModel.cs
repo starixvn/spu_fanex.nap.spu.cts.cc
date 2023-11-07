@@ -22,6 +22,7 @@
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
             this.ScanTaggingType = cust.ScanTaggingType;
+            this.SportType = cust.SportType;
         }
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
@@ -45,6 +46,7 @@
             {
                 this.TaggingID = cust.TaggingID;
                 this.TaggingType = cust.TaggingType;
+                this.SportType = cust.SportType;
             }
 
             this.TWBetCount = cust.TWBetCount;
@@ -57,6 +59,8 @@
         public long CustId { get; set; }
 
         public int SportGroupId { get; set; }
+
+        public int SportType { get; set; }
 
         public int CategoryId { get; set; }
 
