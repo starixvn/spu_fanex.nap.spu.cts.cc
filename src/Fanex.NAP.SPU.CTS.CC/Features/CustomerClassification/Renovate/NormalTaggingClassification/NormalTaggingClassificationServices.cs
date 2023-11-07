@@ -91,9 +91,9 @@
         {
             if (custBatch != null && custBatch.Any())
             {
-                var convertNormalTaggingList = custBatch.Select(custInfo => new GetNormalAccountEntity { CustId = custInfo.CustID, IsCheckTaggingTW = custInfo.IsCheckTaggingTW });
+                var convertNormalTaggingList = custBatch.Select(custInfo => new GetNormalAccountEntity { CustId = custInfo.CustID, ScanTaggingTWType = custInfo.IsCheckTaggingTW ? 1 : 0 });
 
-                var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(convertNormalTaggingList);
+                var finalNormalAcc = _normalAccountService.MergeWithTaggedNormalTaggingFlow(convertNormalTaggingList);
 
                 var checkChangesNormalTaggingMapping = finalNormalAcc.Select(x => new CheckChangesNormalTaggingScanningModel
                 {

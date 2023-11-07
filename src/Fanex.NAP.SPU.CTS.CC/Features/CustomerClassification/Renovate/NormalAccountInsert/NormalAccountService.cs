@@ -1,11 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public interface INormalAccountService
     {
@@ -14,6 +16,8 @@
         InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
         bool UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId, bool isSuccess);
+
+        IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
 
         IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs);
 
@@ -66,14 +70,14 @@
             return true;
         }
 
-        public IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
+        public IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs)
         {
             if (custs == null || !custs.Any())
             {
                 return Enumerable.Empty<InsertNormalAccountModel>();
             }
 
-            var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.IsCheckTaggingTW));
+            var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
 
             var custAfterCheckTWTagged = MergeWithTWTaggedCust(custs, twTaggedCusts);
 
@@ -86,7 +90,48 @@
             return finalNormalAcc;
         }
 
+        public IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
+        {
+            if (custs == null || !custs.Any())
+            {
+                return Enumerable.Empty<InsertNormalAccountModel>();
+            }
+
+            var twGBTaggingNewCusts = default(IEnumerable<NewTWTaggedCustEntity>);
+            var twTaggingSRPCusts = default(IEnumerable<TWTaggedCustEntity>);
+
+            var tasks = new Task[]
+            {
+                Task.Run(() => twGBTaggingNewCusts = GetNewTWGroupBetting(custs.Where(x => x.ScanTaggingTWType == 2))),
+                Task.Run(() => twTaggingSRPCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1)))
+            };
+
+            Task.WhenAll(tasks).Wait();
+
+            var custAfterCheckTWTagged = MergeWithTWTaggedCustAndNewTWCust(custs, twTaggingSRPCusts, twGBTaggingNewCusts);
+
+            var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
+
+            var custAssWithPA = GetCustomerAssociationProblemAccount(custIdAfterCheckTWTagged);
+
+            var finalNormalAcc = MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
+
+            return finalNormalAcc;
+        }
+
         #region private method
+        private IEnumerable<NewTWTaggedCustEntity> GetNewTWGroupBetting(IEnumerable<GetNormalAccountEntity> custs)
+        {
+            if (custs != null && custs.Any())
+            {
+                var custIds = string.Join(",", custs.Select(x => x.CustId).Distinct());
+
+                return dataAccess.CheckNewGroupBetting(custIds);
+            }
+
+            return new List<NewTWTaggedCustEntity>();
+        }
+
         private IEnumerable<CTSTaggedCustEntity> GetCustomerAssociationProblemAccount(string custIdList)
         {
             return dataAccess.GetCustsAssociationProblemAccount(custIdList);
@@ -116,6 +161,37 @@
                                .SelectMany(
                                     group => group.taggedCusts.DefaultIfEmpty(),
                                     (group, temp) => new NormalAccountAfterCheckTWDetectionModel(group.custClass, temp));
+        }
+
+        private IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCustAndNewTWCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggingSRPCusts, IEnumerable<NewTWTaggedCustEntity> twGBTaggingNewCusts)
+        {
+            var custsMapping = custs ?? new List<GetNormalAccountEntity>();
+            var twTaggingSRPCustMapping = twTaggingSRPCusts ?? new List<TWTaggedCustEntity>();
+            var twGBTaggingNewCustMapping = twGBTaggingNewCusts ?? new List<NewTWTaggedCustEntity>();
+
+            var result = from cust in custsMapping
+                         join srpCust in twTaggingSRPCustMapping on cust.CustId equals srpCust.CustID into srpCust_JoinTable
+                         from srpCustDefault in srpCust_JoinTable.DefaultIfEmpty()
+                         join newCust in twGBTaggingNewCustMapping on cust.CustId equals newCust.CustID into newCust_JoinTable
+                         from newCustDefault in newCust_JoinTable.DefaultIfEmpty()
+                         select MappingNormalAccountAfterCheckTWDetectionModel(cust, srpCustDefault, newCustDefault);
+
+            return result;
+        }
+
+        private NormalAccountAfterCheckTWDetectionModel MappingNormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity twTaggingSRPCust, NewTWTaggedCustEntity twGBTaggingNewCust)
+        {
+            if (twTaggingSRPCust != null)
+            {
+                return new NormalAccountAfterCheckTWDetectionModel(cust, twTaggingSRPCust);
+            }
+
+            if (twGBTaggingNewCust != null)
+            {
+                return new NormalAccountAfterCheckTWDetectionModel(cust, twGBTaggingNewCust);
+            }
+
+            return new NormalAccountAfterCheckTWDetectionModel(cust);
         }
 
         private IEnumerable<InsertNormalAccountModel> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)

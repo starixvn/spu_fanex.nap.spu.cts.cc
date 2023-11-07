@@ -1,17 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.JobService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
-    using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.ServiceProcess;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -71,6 +67,26 @@
 
             // Assert
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
+        }
+
+        [Fact]
+        public void GetNewTWGroupBetting_WhenSuccess()
+        {
+            // Arrange
+            var custs = new List<GetNormalAccountEntity>()
+            {
+                new GetNormalAccountEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
+                new GetNormalAccountEntity { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
+            };
+            var custIds = "1,2";
+
+            var getGetGroupBettingAndRejectCustomerMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.GetNewTWGroupBetting);
+
+            // Act
+            getGetGroupBettingAndRejectCustomerMethod.Invoke(normalAccountService, new object[] { custs });
+
+            // Assert
+            normalAccountDataAccess.Received(1).CheckNewGroupBetting(custIds);
         }
 
         [Fact]
@@ -190,25 +206,98 @@
         }
 
         [Fact]
+        public void MergeWithTWTaggedCustAndNewTWCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<GetNormalAccountEntity> {
+                new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, 
+                new GetNormalAccountEntity { CustId = 124, ActiveDays = 321 }
+            };
+            var twTaggingSRPCusts = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
+            var twGBTaggingNewCusts = new List<NewTWTaggedCustEntity> { new NewTWTaggedCustEntity { CustID = 124, TaggingID = 1000, TaggingType = 124, SportType = 333 } };
+            var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> {
+                new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggingSRPCusts[0]),
+                new NormalAccountAfterCheckTWDetectionModel(cust[1], twGBTaggingNewCusts[0])
+            };
+
+            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCustAndNewTWCust);
+
+            // Act
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggingSRPCusts, twGBTaggingNewCusts });
+
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
+
+        [Fact]
+        public void MergeWithTWTaggedCustAndNewTWCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+
+            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCustAndNewTWCust);
+
+            // Act
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null, null});
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public void MergeWithTWTaggedCustAndCTSTaggedCust_WhenSuccess()
         {
             // Arrange
             var getnormalAccountList = new List<GetNormalAccountEntity>() {
-                new GetNormalAccountEntity() { CustId = 1, IsCheckTaggingTW = true, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist },
-                new GetNormalAccountEntity() { CustId = 2, IsCheckTaggingTW = true, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist },
-                new GetNormalAccountEntity() { CustId = 3, IsCheckTaggingTW = true, ScanTaggingType = (int)NormalClasification_TaggingType.ExistOnly }
+                new GetNormalAccountEntity() { CustId = 1, ScanTaggingTWType = 2, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist, CategoryId = 201 },
+                new GetNormalAccountEntity() { CustId = 2, ScanTaggingTWType = 1, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist },
+                new GetNormalAccountEntity() { CustId = 3, ScanTaggingTWType = 0, ScanTaggingType = (int)NormalClasification_TaggingType.ExistOnly }
             };
 
-            var twtTaggedCustsResult = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
+            var twTaggingSRPCusts = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
+
+            var twGBTaggingNewCusts = new List<NewTWTaggedCustEntity>() { new NewTWTaggedCustEntity { CustID = 3, TaggingID = 456 } };
 
             var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
 
             // Act
-            normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twtTaggedCustsResult);
+            normalAccountDataAccess.CheckNewGroupBetting(Arg.Any<string>()).Returns(twGBTaggingNewCusts);
+
+            normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twTaggingSRPCusts);
 
             normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
 
             var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(getnormalAccountList);
+
+            // Assert
+            normalAccountDataAccess.Received(1).CheckNewGroupBetting(Arg.Any<string>());
+
+            normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
+
+            normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());
+
+            Assert.NotNull(finalNormalAcc);
+        }
+
+        [Fact]
+        public void MergeWithTaggedNormalTaggingFlow_WhenSuccess()
+        {
+            // Arrange
+            var getnormalAccountList = new List<GetNormalAccountEntity>() {
+                new GetNormalAccountEntity() { CustId = 1, ScanTaggingTWType = 0, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist, CategoryId = 201 },
+                new GetNormalAccountEntity() { CustId = 2, ScanTaggingTWType = 1, ScanTaggingType = (int)NormalClasification_TaggingType.NotExist },
+                new GetNormalAccountEntity() { CustId = 3, ScanTaggingTWType = 0, ScanTaggingType = (int)NormalClasification_TaggingType.ExistOnly }
+            };
+
+            var twTaggingSRPCusts = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
+
+            var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
+
+            // Act
+            normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twTaggingSRPCusts);
+
+            normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
+
+            var finalNormalAcc = normalAccountService.MergeWithTaggedNormalTaggingFlow(getnormalAccountList);
 
             // Assert
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());

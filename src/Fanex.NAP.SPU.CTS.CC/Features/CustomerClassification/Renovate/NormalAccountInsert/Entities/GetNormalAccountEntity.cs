@@ -24,6 +24,6 @@
     
         public int ScanTaggingType { get; set; }
 
-        public bool IsCheckTaggingTW { get; set; }
+        public int ScanTaggingTWType { get; set; }
     }
 }

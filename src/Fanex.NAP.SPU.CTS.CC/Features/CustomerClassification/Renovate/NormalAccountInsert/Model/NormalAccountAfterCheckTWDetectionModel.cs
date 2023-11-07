@@ -1,35 +1,18 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert.Entities;
     using System;
 
     public class NormalAccountAfterCheckTWDetectionModel
     {
         public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust)
         {
-            this.CustId = cust.CustId;
-            this.SportGroupId = cust.SportGroupId;
-            this.CategoryId = cust.CategoryId;
-            this.CreatedTime = cust.CreatedTime;
-            this.TurnoverRM = cust.TurnoverRM;
-            this.WinlossRM = cust.WinlossRM;
-            this.BetCount = cust.BetCount;
-            this.ActiveDays = cust.ActiveDays;
-            this.PerformanceTime = cust.PerformanceTime;
-            this.ScanTaggingType = cust.ScanTaggingType;
+            MappingGetNormalAccount(cust);
         }
 
         public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity tWTaggedCust)
         {
-            this.CustId = cust.CustId;
-            this.SportGroupId = cust.SportGroupId;
-            this.CategoryId = cust.CategoryId;
-            this.CreatedTime = cust.CreatedTime;
-            this.TurnoverRM = cust.TurnoverRM;
-            this.WinlossRM = cust.WinlossRM;
-            this.BetCount = cust.BetCount;
-            this.ActiveDays = cust.ActiveDays;
-            this.PerformanceTime = cust.PerformanceTime;
-            this.ScanTaggingType = cust.ScanTaggingType;
+            MappingGetNormalAccount(cust);
 
             if (tWTaggedCust != null && tWTaggedCust.TaggingID != 0)
             {
@@ -42,9 +25,38 @@
             }
         }
 
+        public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, NewTWTaggedCustEntity twGBTaggingNewCust)
+        {
+            MappingGetNormalAccount(cust);
+
+            if (twGBTaggingNewCust != null && twGBTaggingNewCust.TaggingID != 0)
+            {
+                this.TaggingID = twGBTaggingNewCust.TaggingID;
+                this.TaggingType = twGBTaggingNewCust.TaggingType;
+                this.TWBetCount = twGBTaggingNewCust.TWBetCount;
+                this.SportType = twGBTaggingNewCust.SportType;
+            }
+        }
+
+        private void MappingGetNormalAccount(GetNormalAccountEntity cust)
+        {
+            this.CustId = cust.CustId;
+            this.SportGroupId = cust.SportGroupId;
+            this.CategoryId = cust.CategoryId;
+            this.CreatedTime = cust.CreatedTime;
+            this.TurnoverRM = cust.TurnoverRM;
+            this.WinlossRM = cust.WinlossRM;
+            this.BetCount = cust.BetCount;
+            this.ActiveDays = cust.ActiveDays;
+            this.PerformanceTime = cust.PerformanceTime;
+            this.ScanTaggingType = cust.ScanTaggingType;
+        }
+
         public long CustId { get; set; }
 
         public int SportGroupId { get; set; }
+
+        public int SportType { get; set; }
 
         public int CategoryId { get; set; }
 
