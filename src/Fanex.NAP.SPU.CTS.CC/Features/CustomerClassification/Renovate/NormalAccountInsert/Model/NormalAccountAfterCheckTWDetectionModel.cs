@@ -33,7 +33,7 @@
             {
                 this.TaggingID = twGBTaggingNewCust.TaggingID;
                 this.TaggingType = twGBTaggingNewCust.TaggingType;
-                this.TWBetCount = twGBTaggingNewCust.TWBetCount;
+                this.First5TWGBTicketCount = twGBTaggingNewCust.First5TWGBTicketCount;
                 this.SportType = twGBTaggingNewCust.SportType;
             }
         }
@@ -77,6 +77,8 @@
         public int TaggingType { get; set; }
 
         public int TWBetCount { get; set; }
+
+        public short First5TWGBTicketCount { get; set; }
 
         public decimal TWGroupBettingRate { get; set; }
 

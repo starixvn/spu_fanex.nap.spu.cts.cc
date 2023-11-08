@@ -18,6 +18,7 @@
             this.TaggingID = cust.TaggingID;
             this.TaggingType = cust.TaggingType;
             this.TWBetCount = cust.TWBetCount;
+            this.First5TWGBTicketCount = cust.First5TWGBTicketCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
@@ -50,6 +51,7 @@
             }
 
             this.TWBetCount = cust.TWBetCount;
+            this.First5TWGBTicketCount = cust.First5TWGBTicketCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
@@ -85,6 +87,8 @@
         public int TaggingType { get; set; }
 
         public int TWBetCount { get; set; }
+        
+        public short First5TWGBTicketCount { get; set; }
 
         public decimal TWGroupBettingRate { get; set; }
 

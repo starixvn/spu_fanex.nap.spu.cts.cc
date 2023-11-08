@@ -139,7 +139,7 @@
 		<Setting Key="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" SpName="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="InactivateNewCustomer">
-		<Setting Key="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" SpName="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" SpName="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function Name="TWGroupBetting">
