@@ -56,7 +56,7 @@
 
         public int SportGroupId { get; set; }
 
-        public int SportType { get; set; }
+        public int? SportType { get; set; }
 
         public int CategoryId { get; set; }
 
@@ -78,7 +78,7 @@
 
         public int TWBetCount { get; set; }
 
-        public short First5TWGBTicketCount { get; set; }
+        public short? First5TWGBTicketCount { get; set; }
 
         public decimal TWGroupBettingRate { get; set; }
 
