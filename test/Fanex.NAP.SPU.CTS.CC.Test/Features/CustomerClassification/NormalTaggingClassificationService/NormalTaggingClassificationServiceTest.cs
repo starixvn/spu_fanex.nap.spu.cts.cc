@@ -119,7 +119,7 @@
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(inserAccountList);
+            _normalAccountService.MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(inserAccountList);
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
@@ -130,7 +130,7 @@
             // Assert
             _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            _normalAccountService.Received(5).MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
             _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -156,7 +156,7 @@
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
+            _normalAccountService.MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
@@ -169,7 +169,7 @@
 
             _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-            _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            _normalAccountService.Received(1).MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
             _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -233,7 +233,7 @@
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(insertAccountList);
+            _normalAccountService.MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(5).Returns(insertAccountList);
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Received(5).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
@@ -242,7 +242,7 @@
             // Assert
             _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            _normalAccountService.Received(5).MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
             _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -269,7 +269,7 @@
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
+            _normalAccountService.MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
@@ -282,7 +282,7 @@
 
             _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-            _normalAccountService.Received(5).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            _normalAccountService.Received(5).MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
             _normalTaggingClassificationDataAccess.Received(5).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 
@@ -309,7 +309,7 @@
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
 
-            _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
+            _normalAccountService.MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>()).Received(1).Returns(insertAccountList);
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
@@ -322,7 +322,7 @@
 
             _normalTaggingClassificationDataAccess.Received(1).GetNormalTaggingScanning();
 
-            _normalAccountService.Received(1).MergeWithTWTaggedCustAndCTSTaggedCust(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
+            _normalAccountService.Received(1).MergeWithTaggedNormalTaggingFlow(Arg.Any<IEnumerable<GetNormalAccountEntity>>());
 
             _normalTaggingClassificationDataAccess.Received(1).CheckChangesNormalTaggingScanning(Arg.Any<string>());
 

@@ -56,7 +56,7 @@
 
             return new GetCustomerCategoryRealtimeModel
             {
-                CustomerCategory = data.Read<long>()?.ToList() ??  new List<long>(),
+                CustomerCategory = data.Read<long>()?.ToList() ?? new List<long>(),
                 CustomerPADailyScan = data.Read<long>()?.ToList() ?? new List<long>()
             };
         }

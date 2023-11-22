@@ -40,6 +40,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
     using Renovate = Features.CustomerClassification.Renovate;
     using RenovateBySport = Features.CustomerClassificationBySport.Renovate;
+    using System;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
 
     public static class InitService
     {
@@ -127,6 +130,15 @@
 
             RegisterRescanBySportRenovate(services);
 
+            RegisterNewTWGroupBettingClassificationRenovate(services);
+
+        }
+
+        private static void RegisterNewTWGroupBettingClassificationRenovate(IServiceCollection services)
+        {
+            services.AddSingleton<ITWGBTaggingClassificationDataAccess, TWGBTaggingClassificationDataAccess>();
+            services.AddSingleton<ITWGBTaggingClassificationService, TWGBTaggingClassificationService>();
+            services.AddSingleton<ITWGBTaggingClassificationJobService, TWGBTaggingClassificationJobService>();
         }
 
         private static void RegisterTWGroupBetting(this IServiceCollection services)

@@ -18,10 +18,12 @@
             this.TaggingID = cust.TaggingID;
             this.TaggingType = cust.TaggingType;
             this.TWBetCount = cust.TWBetCount;
+            this.First5TWGBTicketCount = cust.First5TWGBTicketCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
             this.ScanTaggingType = cust.ScanTaggingType;
+            this.SportType = cust.SportType;
         }
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
@@ -45,9 +47,11 @@
             {
                 this.TaggingID = cust.TaggingID;
                 this.TaggingType = cust.TaggingType;
+                this.SportType = cust.SportType;
             }
 
             this.TWBetCount = cust.TWBetCount;
+            this.First5TWGBTicketCount = cust.First5TWGBTicketCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
@@ -57,6 +61,8 @@
         public long CustId { get; set; }
 
         public int SportGroupId { get; set; }
+
+        public int? SportType { get; set; }
 
         public int CategoryId { get; set; }
 
@@ -81,6 +87,8 @@
         public int TaggingType { get; set; }
 
         public int TWBetCount { get; set; }
+        
+        public short? First5TWGBTicketCount { get; set; }
 
         public decimal TWGroupBettingRate { get; set; }
 

@@ -70,7 +70,7 @@
             {
                 var custChunks = customerList.Chunk(batchInternalSize);
 
-                custChunks.AsParallel().WithDegreeOfParallelism(4).ForAll(custBatch => ClassifyNormalAccount(custBatch, normalPoolCustomer.ScannedMaxId));
+                custChunks.AsParallel().WithDegreeOfParallelism(5).ForAll(custBatch => ClassifyNormalAccount(custBatch, normalPoolCustomer.ScannedMaxId));
             }
         }
 
@@ -89,6 +89,7 @@
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsRealtimeOnly = custMain.IsRealtimeOnly,
+                                                      IsScanTaggingNewCust = custMain.IsScanTaggingNewCust,
                                                       ScanTaggingType = custMain.ScanTaggingType
                                                   });
 

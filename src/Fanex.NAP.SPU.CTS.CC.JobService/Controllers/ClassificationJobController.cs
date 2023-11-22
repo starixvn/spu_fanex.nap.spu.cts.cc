@@ -28,6 +28,7 @@
         private readonly Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService;
         private readonly Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService;
         private readonly Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService;
+        private readonly Renovate.ITWGBTaggingClassificationJobService twGBTaggingJobService;
 
         private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
@@ -52,6 +53,7 @@
             Renovate.INewCustomerClassificationJobService newCustomerClassificationRenovateJobService,
             Renovate.IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationRenovateJobService,
             Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService,
+            Renovate.ITWGBTaggingClassificationJobService newGroupBettingClassificationJobService,
 
             Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
@@ -77,6 +79,7 @@
             this.newCustomerClassificationRenovateJobService = newCustomerClassificationRenovateJobService;
             this.affectedDownlineClassificationRenovateJobService = affectedDownlineClassificationRenovateJobService;
             this.normalTaggingClassificationRenovateJobService = normalTaggingClassificationRenovateJobService;
+            this.twGBTaggingJobService = newGroupBettingClassificationJobService;
 
             this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
@@ -183,6 +186,12 @@
         public async Task<bool> AffectedDownlineClassificationFromQueueRenovate([FromForm] int batchSize)
         {
             return await this.affectedDownlineClassificationRenovateJobService.Execute(batchSize);
+        }
+
+        [HttpPost("scanningTWGBTaggingClassification")]
+        public async Task<bool> TWGBTaggingClassification(int batchSize)
+        {
+            return await this.twGBTaggingJobService.Execute(batchSize);
         }
 
         #endregion Renovate
