@@ -43,6 +43,7 @@
     using System;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
 
     public static class InitService
@@ -133,6 +134,14 @@
 
             RegisterNewTWGroupBettingClassificationRenovate(services);
 
+            RegisterDetectUnauthorizedLoginCustomer(services);
+        }
+
+        private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
+        {
+            services.AddSingleton<IDetectUnauthorizedLoginCustomerDataAccess, DetectUnauthorizedLoginCustomerDataAccess>();            
+            services.AddSingleton<IDetectUnauthorizedLoginCustomerService, DetectUnauthorizedLoginCustomerService>();
+            services.AddSingleton<IDetectUnauthorizedLoginCustomerJobService, DetectUnauthorizedLoginCustomerJobService>();
         }
 
         private static void RegisterNewTWGroupBettingClassificationRenovate(IServiceCollection services)

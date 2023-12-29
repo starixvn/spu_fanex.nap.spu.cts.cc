@@ -315,8 +315,8 @@
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
-                                                            WinlossRM = temp?.WinlossRM,
-                                                            WinlossStatus = temp?.WinlossStatus                                                            
+                                                            WinlossRM = temp?.WinlossRM,                                                          
+                                                            WinlossStatus = temp?.WinlossStatus                                                              
                                                         });
             }
 
