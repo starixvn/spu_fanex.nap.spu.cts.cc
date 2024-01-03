@@ -91,42 +91,40 @@
 
             if (data.Any())
             {
+                var custIDs = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.CustID)?.Distinct();
+                var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
+
                 switch (issueTypeID)
                 {
                     case JobMonitor_IssueType.NewCustomer_NullCategory:
                         {
-                            var newCustomerNullCategory = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.NewCustomer_NullCategory).Select(c => c.CustID).Distinct();
-                            message += $"New Customer with category NULL  - {{Total custid: {newCustomerNullCategory.Count()}}} - {string.Join(',', newCustomerNullCategory.Distinct().Take(50))}\n\n";
+                            message += $"New Customer with category NULL  - {{Total custid: {custIDs.Count()}}} - {string.Join(',', custIDs.Take(50))}\n\n";
                             break;
                         }
                     case JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory:
                         {
-                            var newBetWithInactiveCategory = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory).Select(c => c.CustID).Distinct();
-                            message += $"Realtime Classification: custid NOT RE-ACTIVATE category - {{Total custid: {newBetWithInactiveCategory.Count()}}} - {string.Join(',', newBetWithInactiveCategory.Distinct().Take(50))}\n\n";
+                            message += $"Realtime Classification: custid NOT RE-ACTIVATE category - {{Total custid: {custIDs.Count()}}} - {string.Join(',', custIDs.Take(50))}\n\n";
                             break;
                         }
                     case JobMonitor_IssueType.Realtime_NullCategory:
                         {
-                            var realtimeNullCategory = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.Realtime_NullCategory).Select(c => c.CustID).Distinct();
-                            message += $"Realtime Classification: custid with NULL category - {{Total custid: {realtimeNullCategory.Count()}}} - {string.Join(',', realtimeNullCategory.Take(50))}\n\n";
+                            message += $"Realtime Classification: custid with NULL category - {{Total custid: {custIDs.Count()}}} - {string.Join(',', custIDs.Take(50))}\n\n";
                             break;
                         }
                     case JobMonitor_IssueType.NewCustomer_Missing:
                         {
-                            var missingCustomer = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.NewCustomer_Missing).Select(c => c.CustID).Distinct();
-                            message += $"New Customer with not available on CTS - {{Total custid: {missingCustomer.Count()}}} - {string.Join(',', missingCustomer.Distinct().Take(50))}\n\n";
+                            message += $"New Customer with not available on CTS - {{Total custid: {custIDs.Count()}}} - {string.Join(',', custIDs.Take(50))}\n\n";
                             break;
                         }
-                    case JobMonitor_IssueType.Classification_PoolStatus:
+                    case JobMonitor_IssueType.Classification_GeneralPoolStatus:
+                    case JobMonitor_IssueType.Classification_BySportPoolStatus:
                         {
-                            var poolClassification = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.Classification_PoolStatus)?.OrderByDescending(c => c.ID).FirstOrDefault();
-                            message += $"Normal Classification Pool exceeds {poolClassification.TrackingInfo} \n\n";
+                            message += $"{(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds {trackingInfo} \n\n";
                             break;
                         }
                     case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                         {
-                            var lastLoginProcessStatus = data.Where(c => c.IssueTypeID == (int)JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus)?.OrderByDescending(c => c.ID).FirstOrDefault();
-                            message += $"Last Login Transaction Process exceeds {lastLoginProcessStatus.TrackingInfo} \n\n";
+                            message += $"Last Login Transaction Process exceeds {trackingInfo} \n\n";
                             break;
                         }
                 }

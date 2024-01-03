@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -11,6 +10,8 @@
 
     public interface IClassificationJobMonitorService
     {
+        #region Monitor Realtime Category
+
         IClassificationJobMonitorService Start();
 
         IEnumerable<long> GetRealtimeCustomerPlaceNewBet(DateTime fromScannedTime, DateTime toScannedTime);
@@ -22,6 +23,16 @@
         IClassificationJobMonitorService InsertInvalidCategory(int batchSize);
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
+
+        #endregion Monitor Realtime Category
+
+        #region Monitor Normal Classification Pool
+
+        NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor();
+
+        void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize);
+
+        #endregion
     }
 
     public class ClassificationJobMonitorService : IClassificationJobMonitorService
@@ -43,7 +54,7 @@
             this.sentryClient = sentryClient;
         }
 
-        #region Realtime inactive category monitor
+        #region Monitor Realtime Category
 
         public IClassificationJobMonitorService Start()
         {
@@ -112,7 +123,22 @@
 
             return custCategory;
         }
+        #endregion Monitor Realtime Category
 
-        #endregion Realtime inactive category monitor
+        #region Monitor Normal Classification Pool
+        public NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor()
+        {
+            return classificationJobMonitorDataAccess.GetNormalClassificationPoolMonitor();
+        }
+
+        public void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize)
+        {
+            if (excessiveNumber > 0)
+            {
+                var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { TrackingInfo = $"{excessiveNumber} records" } };
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
+            }
+        }
+        #endregion Monitor Normal Classification Pool
     }
 }

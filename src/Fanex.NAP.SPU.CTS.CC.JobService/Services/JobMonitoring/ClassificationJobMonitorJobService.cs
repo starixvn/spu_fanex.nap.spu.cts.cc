@@ -12,6 +12,8 @@
     public interface IClassificationJobMonitorJobService
     {
         Task<bool> MonitorRealtimeInactiveCategory(int batchSize);
+
+        Task<bool> MonitorNormalClassificationPool(int threshold);
     }
 
     public class ClassificationJobMonitorJobService : IClassificationJobMonitorJobService
@@ -58,6 +60,33 @@
 
                     systemParameterServices.UpdateTimingExecution(toScannedTime.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_RealtimeLastScannedTime);
                 }
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> MonitorNormalClassificationPool(int threshold)
+        {
+            try
+            {
+                var normalPool = classificationJobMonitorService.GetNormalClassificationPoolMonitor();
+
+                if (normalPool.GeneralPoolCount > threshold)
+                {
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralPoolCount, true, 500);
+                }
+
+                if (normalPool.BySportPoolCount > threshold)
+                {
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportPoolCount, false, 500);
+                }
+
             }
             catch (Exception ex)
             {

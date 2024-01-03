@@ -12,6 +12,8 @@
         void ClearRealtimeCustomerPlaceNewBets(DateTime fromScannedTime, DateTime toScannedTime);
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount);
+
+        NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor();
     }
 
     public class ClassificationJobMonitorDataAccess : IClassificationJobMonitorDataAccess
@@ -55,5 +57,19 @@
 
             return repository.Fetch<CustomerCategoryMonitorEntity>(criteria);
         }
+
+        public NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor()
+        {
+            var criteria = new NormalClassificationPoolMonitorGetCriteria();
+
+            repository.Execute(criteria);
+
+            return new NormalClassificationPoolMonitorEntity()
+            {
+                GeneralPoolCount = criteria.GeneralPoolCount,
+                BySportPoolCount = criteria.BySportPoolCount
+            };
+        }
+
     }
 }
