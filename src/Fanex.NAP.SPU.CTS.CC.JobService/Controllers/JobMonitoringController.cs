@@ -40,6 +40,12 @@
             return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory(batchSize);
         }
 
+        [HttpPost("NormalClassificationPoolMonitoring")]
+        public async Task<bool> MonitorNormalClassificationPool([FromForm] int threshold)
+        {
+            return await classificationJobMonitorJobService.MonitorNormalClassificationPool(threshold);
+        }
+
         [HttpPost("NotifyIncorrectDataMonitoring")]
         public async Task<bool> NotifyIncorrectDataMonitoring()
         {
