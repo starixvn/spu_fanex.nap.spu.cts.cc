@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring
 {
     using Fanex.Data.Repository;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -9,7 +8,7 @@
     {
         public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring();
 
-        void InsertIncorrectDataMonitoring(IEnumerable<InsertMonitoringEntity> dataJson, JobMonitorType type);
+        void InsertIncorrectDataMonitoring(string incorrectDataJson, JobMonitor_IssueType type);
     }
 
     public class IncorrectDataMonitoringDataAccess : IIncorrectDataMonitoringDataAccess
@@ -28,11 +27,11 @@
             return repository.Fetch<GetMonitoringEntity>(criteria);
         }
 
-        public void InsertIncorrectDataMonitoring(IEnumerable<InsertMonitoringEntity> incorrectData, JobMonitorType issueType)
+        public void InsertIncorrectDataMonitoring(string incorrectDataJson, JobMonitor_IssueType issueType)
         {
             var criteria = new JobMonitoringInsertCriteria
             {
-                IncorrectData = JsonConvert.SerializeObject(incorrectData),
+                IncorrectData = incorrectDataJson,
                 IssueTypeID = (int)issueType
             };
 

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -18,9 +19,7 @@
 
         IClassificationJobMonitorService FilterInvalidCustomerCategory(IEnumerable<CustomerCategoryMonitorEntity> custCategory);
 
-        IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize , DateTime scannedTime);
-
-        IClassificationJobMonitorService NotifyTelegram(string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo);
+        IClassificationJobMonitorService InsertInvalidCategory(int batchSize);
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
     }
@@ -28,14 +27,19 @@
     public class ClassificationJobMonitorService : IClassificationJobMonitorService
     {
         private readonly IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess;
+        private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
         private IEnumerable<CustomerCategoryMonitorEntity> realtimeNullCategory;
         private IEnumerable<CustomerCategoryMonitorEntity> realtimeInactiveCategory;
         private readonly ISentryClient sentryClient;
         private const string ServiceName = "Classification Job Monitor";
 
-        public ClassificationJobMonitorService(IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess, ISentryClient sentryClient)
+        public ClassificationJobMonitorService(
+                IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess,
+                IIncorrectDataMonitoringService incorrectDataMonitoringService,
+                ISentryClient sentryClient)
         {
             this.classificationJobMonitorDataAccess = classificationJobMonitorDataAccess;
+            this.incorrectDataMonitoringService = incorrectDataMonitoringService;
             this.sentryClient = sentryClient;
         }
 
@@ -71,35 +75,20 @@
             return this;
         }
 
-        public IClassificationJobMonitorService NotifyTelegram(string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo)
+        public IClassificationJobMonitorService InsertInvalidCategory(int batchSize)
         {
             if (realtimeInactiveCategory.Any())
             {
-                NotifyTelegram(realtimeInactiveCategory.Select(c => c.CustID).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NewPlaceBetInactiveCategory);
+                var inactiveCategory = realtimeInactiveCategory.Select(c => c.CustID).Distinct();
+
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(inactiveCategory, JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory, batchSize);
             }
 
             if (realtimeNullCategory.Any())
             {
-                NotifyTelegram(realtimeNullCategory.Select(c => c.CustID).Distinct(), environment, scannedTimeFrom, scannedTimeTo, JobMonitorType.Realtime_NullCategory);
-            }
+                var nullCategory = realtimeNullCategory.Select(c => c.CustID).Distinct();
 
-            return this;
-        }
-
-        public IClassificationJobMonitorService InsertMonitorInvalidCustomerCategory(int batchSize, DateTime scannedTime)
-        {
-            if (realtimeInactiveCategory.Any())
-            {
-                var inactiveCategory = realtimeInactiveCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustID, CategoryID = c.CurrentCategoryID });
-
-                InsertMonitorInvalidCustomerCategory(inactiveCategory, scannedTime, JobMonitorType.Realtime_NewPlaceBetInactiveCategory, batchSize);
-            }
-
-            if (realtimeNullCategory.Any())
-            {
-                var nullCategory = realtimeNullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c.CustID, CategoryID = c.CurrentCategoryID });
-
-                InsertMonitorInvalidCustomerCategory(nullCategory, scannedTime, JobMonitorType.Realtime_NullCategory, batchSize);
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(nullCategory, JobMonitor_IssueType.Realtime_NullCategory, batchSize);
             }
 
             return this;
@@ -122,49 +111,6 @@
             }
 
             return custCategory;
-        }
-
-        private void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedTime, JobMonitorType type, int batchSize)
-        {
-            if (customerList.Any())
-            {
-                var custChunks = customerList.Distinct().Chunk(batchSize);
-
-                foreach (var custBatch in custChunks)
-                {
-                    var customerJson = JsonConvert.SerializeObject(custBatch);
-
-                    classificationJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedTime, type);
-                }
-            }
-        }
-
-        private static void NotifyTelegram(IEnumerable<long> custIds, string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo, JobMonitorType type)
-        {
-            if (custIds.Any())
-            {
-                var message = string.Empty;
-
-                custIds = custIds.Distinct();
-
-                switch (type)
-                {
-                    case JobMonitorType.Realtime_NullCategory:
-                        {
-                            message = $"Please kindly check the following custid with category NULL - {{Total custid: {custIds.Count()}}} - {string.Join(',', custIds.Take(50))} - " +
-                                      $"Scan from  \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to  \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-                            break;
-                        }
-                    case JobMonitorType.Realtime_NewPlaceBetInactiveCategory:
-                        {
-                            message = $"Please kindly check the following custid NOT RE-ACTIVATE - {{Total custid: {custIds.Count()}}} - {string.Join(',', custIds.Take(50))} - " +
-                                      $"Scan from \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-                            break;
-                        }
-                }
-
-                Utilities.NotifyTelegramMessage(message, "Monitoring - Realtime Classification", environment, environment == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
-            }
         }
 
         #endregion Realtime inactive category monitor

@@ -16,11 +16,7 @@
 
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList);
 
-        void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize);
-
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
-
-        void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedDate, JobMonitorType type, int batchSize);
     }
 
     public class CustomerJobMonitorService : ICustomerJobMonitorService
@@ -44,21 +40,6 @@
         public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID)
         {
             return (lastScannedCustSubID != 0) ? customerJobMonitorDataAccess.GetCustSubInfoFromMainDBForMonitor(batchSize, toDate, lastScannedCustSubID) : new MonitoringNewCustomerViewModel();
-        }
-
-        public void InsertMonitorMissingCust(IEnumerable<MissingCustomerCompareEntity> customerList, DateTime scannedDate, int batchSize)
-        {
-            if (customerList.Any())
-            {
-                var customerChunks = customerList.ToList().Chunk(batchSize);
-
-                foreach (var custBatch in customerChunks)
-                {
-                    var customerJson = JsonConvert.SerializeObject(custBatch);
-
-                    customerJobMonitorDataAccess.InsertMonitorMissingCust(customerJson, scannedDate);
-                }
-            }
         }
 
         public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList)
@@ -85,21 +66,6 @@
             }
 
             return custCategory;
-        }
-
-        public void InsertMonitorInvalidCustomerCategory(IEnumerable<IncorrectCustomerCategoriesMonitorEntity> customerList, DateTime scannedDate, JobMonitorType type, int batchSize)
-        {
-            if (customerList.Any())
-            {
-                var custChunks = customerList.Distinct().Chunk(batchSize);
-
-                foreach (var custBatch in custChunks)
-                {
-                    var customerJson = JsonConvert.SerializeObject(custBatch);
-
-                    classificationJobMonitorDataAccess.InsertMonitorIncorrectCustCategory(customerJson, scannedDate, type);
-                }
-            }
         }
     }
 }

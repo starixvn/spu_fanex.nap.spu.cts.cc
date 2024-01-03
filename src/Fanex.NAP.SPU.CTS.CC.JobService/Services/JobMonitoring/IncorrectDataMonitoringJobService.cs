@@ -43,7 +43,7 @@
 
                 if (incorrectData != null && incorrectData.Any())
                 {
-                    //NotifyTelegram
+                    monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
 
                     systemParameterServices.UpdateTimingExecution(incorrectData.Max(c=>c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
                 }
@@ -57,33 +57,5 @@
 
             return Task.FromResult(true);
         }
-
-        //private static void NotifyTelegram(IEnumerable<long> custIds, string environment, DateTime scannedTimeFrom, DateTime scannedTimeTo, JobMonitorType type)
-        //{
-        //    if (custIds.Any())
-        //    {
-        //        var message = string.Empty;
-
-        //        custIds = custIds.Distinct();
-
-        //        switch (type)
-        //        {
-        //            case JobMonitorType.Realtime_NullCategory:
-        //                {
-        //                    message = $"Please kindly check the following custid with category NULL - {{Total custid: {custIds.Count()}}} - {string.Join(',', custIds.Take(50))} - " +
-        //                              $"Scan from  \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to  \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-        //                    break;
-        //                }
-        //            case JobMonitorType.Realtime_NewPlaceBetInactiveCategory:
-        //                {
-        //                    message = $"Please kindly check the following custid NOT RE-ACTIVATE - {{Total custid: {custIds.Count()}}} - {string.Join(',', custIds.Take(50))} - " +
-        //                              $"Scan from \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-        //                    break;
-        //                }
-        //        }
-
-        //        Utilities.NotifyTelegramMessage(message, "Monitoring - Realtime Classification", environment, environment == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
-        //    }
-        //}
     }
 }

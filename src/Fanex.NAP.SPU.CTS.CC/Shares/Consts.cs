@@ -202,12 +202,14 @@
             Reason = 2,
         };
 
-        public enum JobMonitorType
+        public enum JobMonitor_IssueType
         {
             NewCustomer_NullCategory = 1,
             Realtime_NewPlaceBetInactiveCategory = 2,
             Realtime_NullCategory = 3,
             NewCustomer_Missing = 4,
+            Classification_PoolStatus = 200,
+            DCSTransaction_LastLoginProcessStatus = 500
         };
 
         public enum InvalidCategory

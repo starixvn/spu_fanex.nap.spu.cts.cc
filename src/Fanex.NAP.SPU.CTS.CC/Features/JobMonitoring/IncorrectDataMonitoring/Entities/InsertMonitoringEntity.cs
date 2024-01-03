@@ -2,8 +2,8 @@
 {
     public class InsertMonitoringEntity
     {
-        public string IncorrectData { get; set; }
+        public long CustID { get; set; }
 
-        public int IssueTypeID { get; set; }
+        public string TrackingInfo { get; set; }
     }
 }

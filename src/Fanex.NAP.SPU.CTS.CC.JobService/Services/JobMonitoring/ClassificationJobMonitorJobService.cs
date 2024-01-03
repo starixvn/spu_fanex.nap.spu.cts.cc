@@ -51,8 +51,7 @@
                         var custCategory = classificationJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
 
                         classificationJobMonitorService.FilterInvalidCustomerCategory(custCategory)
-                                                       .InsertMonitorInvalidCustomerCategory(batchSize, toScannedTime.Value)
-                                                       .NotifyTelegram(appSettings.EvironmentName, fromScannedTime.Value, toScannedTime.Value);
+                                                       .InsertInvalidCategory(batchSize);
 
                         classificationJobMonitorService.ClearRealtimeCustomerPlaceNewBets(fromScannedTime.Value, toScannedTime.Value);
                     }

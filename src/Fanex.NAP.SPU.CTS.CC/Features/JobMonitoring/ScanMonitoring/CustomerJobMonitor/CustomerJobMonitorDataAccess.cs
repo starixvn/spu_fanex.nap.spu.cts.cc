@@ -2,11 +2,9 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorDataAccess
     {
@@ -15,8 +13,6 @@
         MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID);
 
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson);
-
-        void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate);
     }
 
     public class CustomerJobMonitorDataAccess : ICustomerJobMonitorDataAccess
@@ -78,17 +74,6 @@
             };
 
             return repository.Fetch<MissingCustomerCompareEntity>(criteria);
-        }
-
-        public void InsertMonitorMissingCust(string custDataJson, DateTime scannedDate)
-        {
-            var criteria = new InsertMonitorMissingCustCriteria
-            {
-                CustomerListJson = custDataJson,
-                ScannedDate = scannedDate
-            };
-
-            repository.Execute(criteria);
         }
     }
 }
