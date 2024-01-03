@@ -62,7 +62,8 @@
             TWGroupBetting_CountTicket_Status = 137,
             NormalTaggingClassificationLastCategoryID = 144,
             NormalTaggingClassificationLastCustID = 145,
-            CustomerNullUsername2_LastCTSCustID = 146
+            CustomerNullUsername2_LastCTSCustID = 146,
+            JobMonitoring_IncorrectData_LastScanID = 151
         };
 
         public enum Reason
