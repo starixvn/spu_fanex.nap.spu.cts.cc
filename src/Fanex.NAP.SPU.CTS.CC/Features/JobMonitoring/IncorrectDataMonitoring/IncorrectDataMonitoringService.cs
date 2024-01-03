@@ -71,8 +71,11 @@
             {
                 return;
             }
-            
-            string message = "Please kindly check the following case(s): \n";
+
+            var begin = incorrectList.Min(c => c.CreatedTime).ToString(CONVERT_TO_DATETIME);
+            var end = incorrectList.Max(c => c.CreatedTime).ToString(CONVERT_TO_DATETIME);
+
+            string message = $"Please kindly check the following case(s): \n (Scan from  {begin} to {end} )\n";
 
             foreach (JobMonitor_IssueType val in Enum.GetValues(typeof(JobMonitor_IssueType)))
             {

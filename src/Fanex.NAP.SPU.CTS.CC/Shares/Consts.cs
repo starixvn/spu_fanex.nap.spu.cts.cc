@@ -10,6 +10,8 @@
 
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss.fff";
 
+        public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
+
         public const int SabaDangerLevel_SleepTimes = 5000;
 
         public const int RobotUsers_SleepTimes = 300;
