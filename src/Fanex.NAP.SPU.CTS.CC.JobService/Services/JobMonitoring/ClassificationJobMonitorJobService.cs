@@ -71,18 +71,18 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorNormalClassificationPool(int threshold)
+        public Task<bool> MonitorNormalClassificationPool(int thresHold)
         {
             try
             {
                 var normalPool = classificationJobMonitorService.GetNormalClassificationPoolMonitor();
 
-                if (normalPool.GeneralPoolCount > threshold)
+                if (normalPool.GeneralPoolCount > thresHold)
                 {
                     classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralPoolCount, true, 500);
                 }
 
-                if (normalPool.BySportPoolCount > threshold)
+                if (normalPool.BySportPoolCount > thresHold)
                 {
                     classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportPoolCount, false, 500);
                 }
