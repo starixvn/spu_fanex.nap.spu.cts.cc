@@ -3,7 +3,6 @@
     using Fanex.Data.Repository;
     using System;
     using System.Collections.Generic;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IClassificationJobMonitorDataAccess
     {
@@ -70,6 +69,5 @@
                 BySportPoolCount = criteria.BySportPoolCount
             };
         }
-
     }
 }

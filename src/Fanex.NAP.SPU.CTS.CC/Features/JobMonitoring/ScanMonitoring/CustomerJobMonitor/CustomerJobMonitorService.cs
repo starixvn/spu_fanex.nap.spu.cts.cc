@@ -6,7 +6,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorService
     {

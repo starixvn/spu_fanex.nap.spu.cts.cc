@@ -20,7 +20,7 @@
     }
 
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
-{
+    {
         private readonly IIncorrectDataMonitoringDataAccess incorrectDataMonitoringDataAccess;
         private readonly ISentryClient sentryClient;
         private const string ServiceName = "Incorrect Data Monitoring Job";
@@ -35,7 +35,6 @@
         {
             return incorrectDataMonitoringDataAccess.GetIncorrectDataMonitoring();
         }
-
 
         public void InsertIncorrectDataMonitoring(IEnumerable<InsertMonitoringEntity> incorrectList, JobMonitor_IssueType issueType, int batchSize)
         {

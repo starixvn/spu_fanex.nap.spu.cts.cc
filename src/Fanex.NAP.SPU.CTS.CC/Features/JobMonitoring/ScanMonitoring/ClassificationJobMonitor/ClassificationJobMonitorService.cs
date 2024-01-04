@@ -32,7 +32,7 @@
 
         void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize);
 
-        #endregion
+        #endregion Monitor Normal Classification Pool
     }
 
     public class ClassificationJobMonitorService : IClassificationJobMonitorService
@@ -123,9 +123,11 @@
 
             return custCategory;
         }
+
         #endregion Monitor Realtime Category
 
         #region Monitor Normal Classification Pool
+
         public NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor()
         {
             return classificationJobMonitorDataAccess.GetNormalClassificationPoolMonitor();
@@ -139,6 +141,7 @@
                 incorrectDataMonitoringService.InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
             }
         }
+
         #endregion Monitor Normal Classification Pool
     }
 }
