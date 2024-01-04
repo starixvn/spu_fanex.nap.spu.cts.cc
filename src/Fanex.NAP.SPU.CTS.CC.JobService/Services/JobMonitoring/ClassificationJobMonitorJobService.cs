@@ -86,7 +86,6 @@
                 {
                     classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportPoolCount, false, 500);
                 }
-
             }
             catch (Exception ex)
             {

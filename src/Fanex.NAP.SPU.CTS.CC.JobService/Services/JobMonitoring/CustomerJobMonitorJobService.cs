@@ -126,7 +126,7 @@
         {
             if (newCustomers.CustomerInfo.Any())
             {
-                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1 
+                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1
                                                                            && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
                                                                            && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
                 if (custToCheckCategory.Any())
@@ -164,6 +164,7 @@
                 systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
             }
         }
+
         #endregion Private Methods
     }
 }

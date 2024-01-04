@@ -45,7 +45,7 @@
                 {
                     monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
 
-                    systemParameterServices.UpdateTimingExecution(incorrectData.Max(c=>c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
+                    systemParameterServices.UpdateTimingExecution(incorrectData.Max(c => c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
                 }
             }
             catch (Exception ex)
