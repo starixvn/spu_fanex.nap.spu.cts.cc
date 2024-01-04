@@ -5,11 +5,11 @@
 
     public class NormalClassificationPoolMonitorGetCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "GeneralPoolCount")]
-        public long GeneralPoolCount { get; set; }
+        [SpParam(SqlParamName = "GeneralRecord")]
+        public long GeneralRecord { get; set; }
 
-        [SpParam(SqlParamName = "BySportPoolCount")]
-        public long BySportPoolCount { get; set; }
+        [SpParam(SqlParamName = "BySportRecord")]
+        public long BySportRecord { get; set; }
 
         public override string GetSettingKey()
         {

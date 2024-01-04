@@ -65,8 +65,8 @@
 
             return new NormalClassificationPoolMonitorEntity()
             {
-                GeneralPoolCount = criteria.GeneralPoolCount,
-                BySportPoolCount = criteria.BySportPoolCount
+                GeneralRecord = criteria.GeneralRecord,
+                BySportRecord = criteria.BySportRecord
             };
         }
     }

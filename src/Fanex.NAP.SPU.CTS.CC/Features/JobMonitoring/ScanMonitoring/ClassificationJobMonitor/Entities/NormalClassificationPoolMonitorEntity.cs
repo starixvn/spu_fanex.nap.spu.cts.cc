@@ -2,8 +2,8 @@
 {
     public class NormalClassificationPoolMonitorEntity
     {
-        public long GeneralPoolCount { get; set; }
+        public long GeneralRecord { get; set; }
 
-        public long BySportPoolCount { get; set; }
+        public long BySportRecord { get; set; }
     }
 }

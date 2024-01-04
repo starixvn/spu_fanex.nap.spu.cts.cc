@@ -50,15 +50,22 @@
             }
         }
 
-        public void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize)
+        public void InsertIncorrectDataMonitoring(IEnumerable<long> custIDs, JobMonitor_IssueType issueType, int batchSize)
         {
-            if (incorrectList != null && incorrectList.Any())
+            if (custIDs != null && custIDs.Any())
             {
-                var dataChunks = incorrectList.Chunk(batchSize);
+                var dataChunks = custIDs.Chunk(batchSize);
 
                 foreach (var logDataBatch in dataChunks)
                 {
-                    var dataJson = JsonConvert.SerializeObject(logDataBatch);
+                    var incorrectData = new List<InsertMonitoringEntity>();
+
+                    logDataBatch.ToList().ForEach(c =>
+                    {
+                        incorrectData.Add(new InsertMonitoringEntity { CustID = c });
+                    });
+
+                    var dataJson = JsonConvert.SerializeObject(incorrectData);
                     incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(dataJson, issueType);
                 }
             }
@@ -74,7 +81,7 @@
             var begin = incorrectList.Min(c => c.CreatedTime).ToString(CONVERT_TO_DATETIME);
             var end = incorrectList.Max(c => c.CreatedTime).ToString(CONVERT_TO_DATETIME);
 
-            string message = $"Please kindly check the following case(s): \r\n<code>(Scan from  {begin} to {end})</code>";
+            string message = $"Please kindly check the following case(s): \r\n<code>(Scanning data from  {begin} to {end})</code>";
             message += "<pre>";
 
             foreach (JobMonitor_IssueType val in Enum.GetValues(typeof(JobMonitor_IssueType)))
@@ -122,12 +129,12 @@
                         case JobMonitor_IssueType.Classification_GeneralPoolStatus:
                         case JobMonitor_IssueType.Classification_BySportPoolStatus:
                             {
-                                message += $"\r\n⚠️ {(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds over {trackingInfo.TrackingInfo} records\r\n";
+                                message += $"\r\n⚠️ {(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds {trackingInfo.TrackingInfo} records\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                             {
-                                message += $"\r\n⚠️ Last Login Transaction Process exceeds over {trackingInfo.TrackingInfo} records\r\n";
+                                message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.TrackingInfo} records\r\n";
                                 break;
                             }
                     }
