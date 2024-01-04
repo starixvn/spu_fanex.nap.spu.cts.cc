@@ -46,7 +46,7 @@
             return await classificationJobMonitorJobService.MonitorNormalClassificationPool(threshold);
         }
 
-        [HttpPost("NotifyIncorrectDataMonitoring")]
+        [HttpPost("IncorrectDataMonitoringNotification")]
         public async Task<bool> NotifyIncorrectDataMonitoring()
         {
             return await incorrectDataNotificationJobService.NotififyIncorrectDataMonitoring();
