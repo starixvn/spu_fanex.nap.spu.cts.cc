@@ -207,9 +207,9 @@
         public enum JobMonitor_IssueType
         {
             NewCustomer_NullCategory = 1,
-            Realtime_NewPlaceBetInactiveCategory = 2,
-            Realtime_NullCategory = 3,
-            NewCustomer_Missing = 4,
+            NewCustomer_Missing = 2,
+            Realtime_NewPlaceBetInactiveCategory = 100,
+            Realtime_NullCategory = 101,
             Classification_GeneralPoolStatus = 200,
             Classification_BySportPoolStatus = 201,
             DCSTransaction_LastLoginProcessStatus = 500
