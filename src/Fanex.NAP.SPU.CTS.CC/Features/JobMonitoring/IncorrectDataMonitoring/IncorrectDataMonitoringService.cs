@@ -129,12 +129,12 @@
                         case JobMonitor_IssueType.Classification_GeneralPoolStatus:
                         case JobMonitor_IssueType.Classification_BySportPoolStatus:
                             {
-                                message += $"\r\n⚠️ {(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds {trackingInfo.TrackingInfo} records\r\n";
+                                message += $"\r\n⚠️ {(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds {trackingInfo.Value} records (default {trackingInfo.TrackingInfo})\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                             {
-                                message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.TrackingInfo} records\r\n";
+                                message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.Value} records (default {trackingInfo.TrackingInfo})\r\n";
                                 break;
                             }
                     }

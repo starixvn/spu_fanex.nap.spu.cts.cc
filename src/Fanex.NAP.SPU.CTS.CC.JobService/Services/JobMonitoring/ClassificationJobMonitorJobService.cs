@@ -79,12 +79,12 @@
 
                 if (normalPool.GeneralRecord > thresHold)
                 {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500);
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500, thresHold);
                 }
 
                 if (normalPool.BySportRecord > thresHold)
                 {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500);
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500, thresHold);
                 }
             }
             catch (Exception ex)

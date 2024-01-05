@@ -30,7 +30,7 @@
 
         NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor();
 
-        void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize);
+        void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize, int thresHold);
 
         #endregion Monitor Normal Classification Pool
     }
@@ -133,11 +133,11 @@
             return classificationJobMonitorDataAccess.GetNormalClassificationPoolMonitor();
         }
 
-        public void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize)
+        public void NotifyExcessiveClassificationPool(long excessiveNumber, bool isGeneralPool, int batchSize, int thresHold)
         {
             if (excessiveNumber > 0)
             {
-                var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { TrackingInfo = $"{excessiveNumber}" } };
+                var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { Value = excessiveNumber, TrackingInfo = $"thresHold = {thresHold}" } };
                 incorrectDataMonitoringService.InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
             }
         }

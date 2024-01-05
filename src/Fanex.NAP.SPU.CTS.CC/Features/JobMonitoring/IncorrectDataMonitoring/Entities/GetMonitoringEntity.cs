@@ -12,6 +12,8 @@
 
         public int? CustID { get; set; }
 
+        public long? Value { get; set; }
+
         public DateTime CreatedTime { get; set; }
     }
 }
