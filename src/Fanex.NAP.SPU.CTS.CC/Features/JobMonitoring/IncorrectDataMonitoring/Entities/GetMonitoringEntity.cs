@@ -14,6 +14,8 @@
 
         public long? Value { get; set; }
 
+        public bool IsIssueTypeValid { get; set; }
+
         public DateTime CreatedTime { get; set; }
     }
 }

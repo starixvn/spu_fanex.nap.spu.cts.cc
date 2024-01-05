@@ -42,9 +42,16 @@
                 var incorrectData = monitoringService.GetIncorrectDataMonitoring();
 
                 if (incorrectData != null && incorrectData.Any())
-                {
+                { 
                     monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
 
+                    var inValidIssueType = incorrectData.Where(c => c.IsIssueTypeValid == false);
+
+                    if (inValidIssueType.Any())
+                    {
+                        Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check these list IDs : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"), sentryClient);
+                    } 
+                    
                     systemParameterServices.UpdateTimingExecution(incorrectData.Max(c => c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
                 }
             }
