@@ -39,21 +39,32 @@
         {
             try
             {
-                var incorrectData = monitoringService.GetIncorrectDataMonitoring();
+                bool isContinue = true;
 
-                if (incorrectData != null && incorrectData.Any())
-                { 
-                    monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
+                do
+                {
+                    var incorrectData = monitoringService.GetIncorrectDataMonitoring();
 
-                    var inValidIssueType = incorrectData.Where(c => c.IsIssueTypeValid == false);
-
-                    if (inValidIssueType.Any())
+                    if (incorrectData != null && incorrectData.Any())
                     {
-                        Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check more detail with list ID (table CTS_DataCenter.JobMonitoring_IncorrectData) : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"), sentryClient);
-                    } 
-                    
-                    systemParameterServices.UpdateTimingExecution(incorrectData.Max(c => c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
-                }
+                        isContinue = true;
+
+                        monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
+
+                        var inValidIssueType = incorrectData.Where(c => c.IsIssueTypeValid == false);
+
+                        if (inValidIssueType.Any())
+                        {
+                            Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check more detail with list ID (table CTS_DataCenter.JobMonitoring_IncorrectData) : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"), sentryClient);
+                        }
+
+                        systemParameterServices.UpdateTimingExecution(incorrectData.Max(c => c.ID).ToString(), SystemParameters.JobMonitoring_IncorrectData_LastScanID);
+                    }
+                    else
+                    {
+                        isContinue = false;
+                    }
+                } while (isContinue);
             }
             catch (Exception ex)
             {

@@ -137,7 +137,7 @@
         {
             if (excessiveNumber > 0)
             {
-                var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { Value = excessiveNumber, TrackingInfo = $"thresHold = {thresHold}" } };
+                var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { Value = excessiveNumber, TrackingInfo = $"threshold = {thresHold}" } };
                 incorrectDataMonitoringService.InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
             }
         }
