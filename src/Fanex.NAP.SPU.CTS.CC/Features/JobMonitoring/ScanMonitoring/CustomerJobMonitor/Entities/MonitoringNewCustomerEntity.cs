@@ -4,7 +4,7 @@
 
     public class MonitoringNewCustomerEntity
     {
-         public int CustID { get; set; }
+        public int CustID { get; set; }
 
         public int CustSubID { get; set; }
 

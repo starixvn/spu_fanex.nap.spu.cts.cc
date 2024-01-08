@@ -2,7 +2,7 @@
 {
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -22,17 +22,20 @@
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
+        private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
         private readonly ICustomerJobMonitorService customerJobMonitorService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IAppSettings appSettings;
 
         public CustomerJobMonitorJobService(
             ISentryClient sentryClient,
+            IIncorrectDataMonitoringService incorrectDataMonitoringService,
             ICustomerJobMonitorService customerJobMonitorService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
+            this.incorrectDataMonitoringService = incorrectDataMonitoringService;
             this.customerJobMonitorService = customerJobMonitorService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
@@ -67,12 +70,10 @@
                             missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(custBatch));
                         }
 
-                        MonitoringNewCustomers(new InsertMissingCustomerModel
+                        MonitorNewCustomers(new InsertMissingCustomerModel
                         {
                             CustomerInfo = customers,
-                            MissingCustomers = missingCustomers,
-                            ScannedTimeFrom = fromDate.Value,
-                            ScannedTimeTo = toDate.Value
+                            MissingCustomers = missingCustomers
                         }, batchSize);
 
                         UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
@@ -99,7 +100,7 @@
             }
         }
 
-        public void MonitoringNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
+        public void MonitorNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
             {
@@ -115,9 +116,9 @@
         {
             if (newCustomers.MissingCustomers.Any())
             {
-                customerJobMonitorService.InsertMonitorMissingCust(newCustomers.MissingCustomers, newCustomers.ScannedTimeTo, batchSize);
+                var missingCustomers = newCustomers.MissingCustomers.Select(c => c.CustID).Distinct();
 
-                NotifyTelegramMessage(newCustomers.MissingCustomers.Select(c => c.CustID), JobMonitorType.NewCustomer_Missing, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, batchSize);
             }
         }
 
@@ -125,17 +126,14 @@
         {
             if (newCustomers.CustomerInfo.Any())
             {
-                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1 && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
-                                                                                  && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
+                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1
+                                                                           && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
+                                                                           && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
                 if (custToCheckCategory.Any())
                 {
                     var nullCategory = GetNullCategoryCustomers(custToCheckCategory.Select(c => (long)c.CustID).Distinct(), batchSize);
 
-                    customerJobMonitorService.InsertMonitorInvalidCustomerCategory(
-                            nullCategory.Select(c => new IncorrectCustomerCategoriesMonitorEntity { CustID = c, CategoryID = null }),
-                            newCustomers.ScannedTimeTo, JobMonitorType.NewCustomer_NullCategory, batchSize);
-
-                    NotifyTelegramMessage(nullCategory, JobMonitorType.NewCustomer_NullCategory, newCustomers.ScannedTimeFrom, newCustomers.ScannedTimeTo);
+                    incorrectDataMonitoringService.InsertIncorrectDataMonitoring(nullCategory, JobMonitor_IssueType.NewCustomer_NullCategory, batchSize);
                 }
             }
         }
@@ -164,32 +162,6 @@
             if (maxScannedCustSubId != null)
             {
                 systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
-            }
-        }
-
-        private void NotifyTelegramMessage(IEnumerable<long> custIds, JobMonitorType type, DateTime scannedTimeFrom, DateTime scannedTimeTo)
-        {
-            if (custIds.Any())
-            {
-                var message = string.Empty;
-
-                switch (type)
-                {
-                    case JobMonitorType.NewCustomer_NullCategory:
-                        {
-                            message = $"Please kindly check the following custid with category NULL - {{Total custid: {custIds.Distinct().Count()}}} - {string.Join(',', custIds.Distinct().Take(50))} - " +
-                                      $"Scan from  \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to  \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-                            break;
-                        }
-                    case JobMonitorType.NewCustomer_Missing:
-                        {
-                            message = $"Please kindly check the following custid with not available on CTS - {{Total custid: {custIds.Distinct().Count()}}} - {string.Join(',', custIds.Distinct().Take(50))} - " +
-                                      $"Scan from \"{scannedTimeFrom:dd/MM/yyyy HH:mm:ss}\" to \"{scannedTimeTo:dd/MM/yyyy HH:mm:ss}\"";
-                            break;
-                        }
-                }
-
-                Utilities.NotifyTelegramMessage(message, "Monitoring New Customer", appSettings.EvironmentName, appSettings.EvironmentName == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
             }
         }
 

@@ -11,7 +11,6 @@
 
         public DateTime MaxScannedDate { get; set; }
 
-
         public override string GetSettingKey()
         {
             return "CTS_Customer_Monitoring_GetCustSubInfo";

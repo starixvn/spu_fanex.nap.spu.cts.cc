@@ -43,6 +43,7 @@
     using System;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
 
     public static class InitService
     {
@@ -316,6 +317,10 @@
             services.AddSingleton<IClassificationJobMonitorJobService, ClassificationJobMonitorJobService>();
             services.AddSingleton<IClassificationJobMonitorDataAccess, ClassificationJobMonitorDataAccess>();
             services.AddSingleton<IClassificationJobMonitorService, ClassificationJobMonitorService>();
+
+            services.AddSingleton<IIncorrectDataMonitoringDataAccess, IncorrectDataMonitoringDataAccess>();
+            services.AddSingleton<IIncorrectDataMonitoringService, IncorrectDataMonitoringService>();
+            services.AddSingleton<IIncorrectDataMonitoringJobService, IncorrectDataMonitoringJobService>();
         }
 
         private static void RegisterCustomerJobMonitor(this IServiceCollection services)

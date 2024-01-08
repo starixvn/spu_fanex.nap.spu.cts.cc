@@ -12,6 +12,8 @@
     public interface IClassificationJobMonitorJobService
     {
         Task<bool> MonitorRealtimeInactiveCategory(int batchSize);
+
+        Task<bool> MonitorNormalClassificationPool(int threshold);
     }
 
     public class ClassificationJobMonitorJobService : IClassificationJobMonitorJobService
@@ -51,13 +53,38 @@
                         var custCategory = classificationJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
 
                         classificationJobMonitorService.FilterInvalidCustomerCategory(custCategory)
-                                                       .InsertMonitorInvalidCustomerCategory(batchSize, toScannedTime.Value)
-                                                       .NotifyTelegram(appSettings.EvironmentName, fromScannedTime.Value, toScannedTime.Value);
+                                                       .InsertInvalidCategory(batchSize);
 
                         classificationJobMonitorService.ClearRealtimeCustomerPlaceNewBets(fromScannedTime.Value, toScannedTime.Value);
                     }
 
                     systemParameterServices.UpdateTimingExecution(toScannedTime.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_RealtimeLastScannedTime);
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> MonitorNormalClassificationPool(int thresHold)
+        {
+            try
+            {
+                var normalPool = classificationJobMonitorService.GetNormalClassificationPoolMonitor();
+
+                if (normalPool.GeneralRecord > thresHold)
+                {
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500, thresHold);
+                }
+
+                if (normalPool.BySportRecord > thresHold)
+                {
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500, thresHold);
                 }
             }
             catch (Exception ex)

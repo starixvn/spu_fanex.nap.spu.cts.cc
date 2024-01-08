@@ -10,6 +10,8 @@
 
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss.fff";
 
+        public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
+
         public const int SabaDangerLevel_SleepTimes = 5000;
 
         public const int RobotUsers_SleepTimes = 300;
@@ -62,7 +64,8 @@
             TWGroupBetting_CountTicket_Status = 137,
             NormalTaggingClassificationLastCategoryID = 144,
             NormalTaggingClassificationLastCustID = 145,
-            CustomerNullUsername2_LastCTSCustID = 146
+            CustomerNullUsername2_LastCTSCustID = 146,
+            JobMonitoring_IncorrectData_LastScanID = 151
         };
 
         public enum Reason
@@ -201,12 +204,15 @@
             Reason = 2,
         };
 
-        public enum JobMonitorType
+        public enum JobMonitor_IssueType
         {
             NewCustomer_NullCategory = 1,
-            Realtime_NewPlaceBetInactiveCategory = 2,
-            Realtime_NullCategory = 3,
-            NewCustomer_Missing = 4,
+            NewCustomer_Missing = 2,
+            Realtime_NewPlaceBetInactiveCategory = 100,
+            Realtime_NullCategory = 101,
+            Classification_GeneralPoolStatus = 200,
+            Classification_BySportPoolStatus = 201,
+            DCSTransaction_LastLoginProcessStatus = 500
         };
 
         public enum InvalidCategory

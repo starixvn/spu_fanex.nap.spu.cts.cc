@@ -3,7 +3,6 @@
     using Fanex.Data.Repository;
     using System;
     using System.Collections.Generic;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IClassificationJobMonitorDataAccess
     {
@@ -13,7 +12,7 @@
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount);
 
-        void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type);
+        NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor();
     }
 
     public class ClassificationJobMonitorDataAccess : IClassificationJobMonitorDataAccess
@@ -58,16 +57,17 @@
             return repository.Fetch<CustomerCategoryMonitorEntity>(criteria);
         }
 
-        public void InsertMonitorIncorrectCustCategory(string custDataJson, DateTime scannedTime, JobMonitorType type)
+        public NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor()
         {
-            var criteria = new MonitorIncorrectCustCategoryInsertCriteria
-            {
-                CustomerListJson = custDataJson,
-                ScannedTime =  scannedTime,
-                InvalidType = (int)type
-            };
+            var criteria = new NormalClassificationPoolMonitorGetCriteria();
 
             repository.Execute(criteria);
+
+            return new NormalClassificationPoolMonitorEntity()
+            {
+                GeneralRecord = criteria.GeneralRecord,
+                BySportRecord = criteria.BySportRecord
+            };
         }
     }
 }

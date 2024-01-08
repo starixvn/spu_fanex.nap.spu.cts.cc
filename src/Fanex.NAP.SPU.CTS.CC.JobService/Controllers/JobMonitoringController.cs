@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
-    using Fanex.NAP.SPU.CTS.Shares;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
     using Sentry;
@@ -9,32 +8,47 @@
     using System.Threading.Tasks;
 
     [ApiController]
-    [Route("api/MonitorJob")]
-    public class MonitorJobController : ControllerBase
+    [Route("api/JobMonitoring")]
+    public class JobMonitoringController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
+        private readonly IIncorrectDataMonitoringJobService incorrectDataNotificationJobService;
         private readonly IClassificationJobMonitorJobService classificationJobMonitorJobService;
         private readonly ICustomerJobMonitorJobService customerJobMonitorService;
 
-        public MonitorJobController(ISentryClient sentryClient,
+        public JobMonitoringController(ISentryClient sentryClient,
+            IIncorrectDataMonitoringJobService incorrectDataNotificationJobService,
             IClassificationJobMonitorJobService classificationJobMonitorService,
             ICustomerJobMonitorJobService customerJobMonitorService)
         {
             this.sentryClient = sentryClient;
+            this.incorrectDataNotificationJobService = incorrectDataNotificationJobService;
             this.classificationJobMonitorJobService = classificationJobMonitorService;
             this.customerJobMonitorService = customerJobMonitorService;
         }
 
-        [HttpPost("MonitorNewCustomer")]
+        [HttpPost("NewCustomerMonitoring")]
         public async Task<bool> MonitorNewCustomer([FromForm] int batchSize, [FromForm] int externalSize)
         {
             return await customerJobMonitorService.Process(batchSize, externalSize);
         }
 
-        [HttpPost("MonitorRealtimeInactiveCategory")]
-        public async Task<bool> MonitorRealtimeInactiveCategory([FromForm] int batchSize)
+        [HttpPost("ReatimeCategoryMonitoring")]
+        public async Task<bool> MonitorRealtimeCategory([FromForm] int batchSize)
         {
             return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory(batchSize);
+        }
+
+        [HttpPost("NormalClassificationPoolMonitoring")]
+        public async Task<bool> MonitorNormalClassificationPool([FromForm] int threshold)
+        {
+            return await classificationJobMonitorJobService.MonitorNormalClassificationPool(threshold);
+        }
+
+        [HttpPost("IncorrectDataMonitoringNotification")]
+        public async Task<bool> NotifyIncorrectDataMonitoring()
+        {
+            return await incorrectDataNotificationJobService.NotififyIncorrectDataMonitoring();
         }
 
         [HttpGet("health")]
