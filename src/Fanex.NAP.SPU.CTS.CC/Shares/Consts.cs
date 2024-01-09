@@ -69,8 +69,7 @@
             UnauthorizedLogin_LastScanCustID_Credit = 147,
             UnauthorizedLogin_LastScanCustID_Licensee = 148,
             UnauthorizedLogin_LastScanDate_Credit = 149,
-            UnauthorizedLogin_LastScanDate_Licensee = 150
-            CustomerNullUsername2_LastCTSCustID = 146,
+            UnauthorizedLogin_LastScanDate_Licensee = 150,         
             JobMonitoring_IncorrectData_LastScanID = 151
         };
 
