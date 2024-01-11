@@ -18,7 +18,7 @@
 
         IEnumerable<CustFirstBetDateEntity> GetCustWithFirstBetDate(DetectUnauthorizedLoginCustParam param, DateTime processDate);
 
-        IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson);
+        IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson, DateTime processDate);
     }
 
     public class DetectUnauthorizedLoginCustomerService : IDetectUnauthorizedLoginCustomerService
@@ -82,9 +82,9 @@
             return detectUnauthorizedDataAccess.GetCustWithFirstBetDate(firstBetDateParam);
         }
 
-        public IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson)
+        public IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson, DateTime processDate)
         {
-            return detectUnauthorizedDataAccess.DetectUnauthorizedLogin(custJson);
+            return detectUnauthorizedDataAccess.DetectUnauthorizedLogin(custJson, processDate);
         }
      
 

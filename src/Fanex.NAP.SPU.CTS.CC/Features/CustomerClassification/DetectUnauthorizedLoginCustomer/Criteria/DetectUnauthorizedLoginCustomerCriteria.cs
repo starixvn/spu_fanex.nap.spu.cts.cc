@@ -2,11 +2,15 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class DetectUnauthorizedLoginCustomerCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_ListCustJson")]
-        public string CustJson { get; set; }     
+        public string CustJson { get; set; }
+
+        [SpParam(SqlParamName = "ip_ProcessedDate")]
+        public DateTime ProcessDate { get; set; }
 
         public override string GetSettingKey()
         {

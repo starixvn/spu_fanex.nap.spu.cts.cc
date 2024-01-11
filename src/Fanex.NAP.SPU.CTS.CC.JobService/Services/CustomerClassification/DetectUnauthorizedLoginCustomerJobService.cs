@@ -54,7 +54,7 @@
                   
                 } while (isContinue);
                 
-                detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanCustID, 0.ToString());
+                detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanCustID, "0");
             }
             catch (Exception ex)
             {
@@ -79,33 +79,27 @@
             {
                 custFirstBetDates.Chunk(batchInternalSize).AsParallel().WithDegreeOfParallelism(4).ForAll(cust =>
                 {
-                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust);
+                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust, processDate);
                     InsertProblemAccount(unauthorizedCustResult, batchExternalSize);
                 });            
 
-                detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanCustID, custFirstBetDates.Max(x => x.custID).ToString());
-
-                return true;
+                detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanCustID, custFirstBetDates.Max(x => x.custID).ToString());                
             }
             else
             {                              
                 detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanDate, processDate.ToString(CONVERT_TO_SQL_DATE));
-
-                return true;
+                detectUnauthorizedLoginCustService.UpdateLastScannedID(param.LastScanCustID, "0");
             }
+            return true;
         }
 
-        private IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLoginCust(IEnumerable<CustFirstBetDateEntity> custFirstBetDates)
+        private IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLoginCust(IEnumerable<CustFirstBetDateEntity> custFirstBetDates, DateTime processDate)
         {            
             if (custFirstBetDates.Any())
-            {
-                // Test
-                //custFirstBetDates = custFirstBetDates.Where(x => x.custID == 111120).Select(x => new CustFirstBetDateEntity { custID = 1284, FirstbetDate = x.FirstbetDate });
-                // End Test
-
+            {               
                 var custJson = JsonConvert.SerializeObject(custFirstBetDates.Select(x => new CustFirstBetDateModel { CustID = x.custID, FirstBetDate = x.FirstbetDate }));
 
-                return detectUnauthorizedLoginCustService.DetectUnauthorizedLogin(custJson);
+                return detectUnauthorizedLoginCustService.DetectUnauthorizedLogin(custJson, processDate);
             }
 
             return Enumerable.Empty<DetectUnauthorizedLoginCustEntity>();

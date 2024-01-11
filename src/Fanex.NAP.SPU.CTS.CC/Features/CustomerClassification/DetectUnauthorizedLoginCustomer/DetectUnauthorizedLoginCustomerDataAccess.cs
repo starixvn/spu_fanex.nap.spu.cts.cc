@@ -9,7 +9,7 @@
     {
         IEnumerable<CustFirstBetDateEntity> GetCustWithFirstBetDate(GetCustWithFirstBetDateParam param);
 
-        IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson);
+        IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson, DateTime processDate);
     }
 
     public class DetectUnauthorizedLoginCustomerDataAccess : IDetectUnauthorizedLoginCustomerDataAccess
@@ -35,11 +35,12 @@
             return repository.Fetch<CustFirstBetDateEntity>(criteria);
         }
 
-        public IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson)
+        public IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLogin(string custJson, DateTime processDate)
         {
             var criteria = new DetectUnauthorizedLoginCustomerCriteria
             {
-                CustJson = custJson
+                CustJson = custJson,
+                ProcessDate = processDate
             };
 
             return repository.Fetch<DetectUnauthorizedLoginCustEntity>(criteria);

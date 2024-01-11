@@ -125,9 +125,9 @@
             };
 
             // Act
-            unAuthorizedLogindataAccess.DetectUnauthorizedLogin(custJson).Returns(expectedResult);
+            unAuthorizedLogindataAccess.DetectUnauthorizedLogin(custJson, DateTime.Now).Returns(expectedResult);
 
-            var result = unAuthorizedLoginService.DetectUnauthorizedLogin(custJson).Returns(expectedResult);
+            var result = unAuthorizedLoginService.DetectUnauthorizedLogin(custJson, DateTime.Now).Returns(expectedResult);
 
             // Assert
             result.Should().NotBeNull();
