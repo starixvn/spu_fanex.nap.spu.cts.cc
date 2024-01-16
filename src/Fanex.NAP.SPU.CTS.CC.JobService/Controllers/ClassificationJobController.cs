@@ -38,6 +38,7 @@
         private readonly Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
+        private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
@@ -62,7 +63,8 @@
             Services.INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
             Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,
-            ITWRobotImpervaJobService robotImpervaJobService)
+            ITWRobotImpervaJobService robotImpervaJobService,
+            IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
@@ -89,6 +91,7 @@
             this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
             this.mmClassificationJobService = mmClassificationJobService;
             this.robotImpervaJobService = robotImpervaJobService;
+            this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -224,6 +227,18 @@
         public async Task<bool> TVSProblemAccountInsert([FromForm] int batchSize)
         {
             return await tvsProblemAccountJobService.Execute(batchSize);
+        }
+
+        [HttpPost("DetectUnauthorizedLoginCustomerCredit")]
+        public async Task<bool> DetectUnauthorizedLoginCustomerCredit([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await detectUnauthorizedLoginCustJobService.Execute(batchExternalSize, batchInternalSize, false);
+        }
+
+        [HttpPost("DetectUnauthorizedLoginCustomerLicensee")]
+        public async Task<bool> DetectUnauthorizedLoginCustomerLicensee([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        {
+            return await detectUnauthorizedLoginCustJobService.Execute(batchExternalSize, batchInternalSize, true);
         }
 
         [HttpPost("newcustomerclassification")]

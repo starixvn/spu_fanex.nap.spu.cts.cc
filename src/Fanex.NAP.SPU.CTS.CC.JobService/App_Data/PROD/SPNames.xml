@@ -185,6 +185,11 @@
 		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect_Archive" SpName="TicketVoiding_CTS_ProblemCustomerSelect_Archive" DbName="SQL.bodb_Archive.bodbSPUNet" />
 	</Function>
 
+	<Function name="DetectUnauthorizedLoginCustomer">
+		<Setting Key="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" SpName="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="Acc_Rpt_GetCustWithFirstbetdate" SpName="Acc_Rpt_GetCustWithFirstbetdate" DbName="DBDW.bodb_dwrs.bodbSPUNet" />
+	</Function>
+
 	<Function name="LogData">
 		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 	</Function>
