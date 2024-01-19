@@ -98,18 +98,27 @@
                             if (nextSequenceId > 0)
                             {
                                 twGroupBettingService.UpdateConfig_Int64(nextSequenceId, SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
-                                twGroupBettingService.UpdateConfig_Int64(0, SystemParameters.TWGroupBetting_CountTicket_Status);
                             }
+
+                            twGroupBettingService.UpdateConfig_Int64(0, SystemParameters.TWGroupBetting_CountTicket_Status);
                         }
                         catch (Exception ex)
                         {
-                            string message = nextSequenceId != 0 ? 
-                                                $"CAUTION !!! To restart job, please set SystemParamterID (137) = 0 and SystemParamterID (136) NextSequenceId = {nextSequenceId}\n" :
-                                                $"CAUTION !!! To restart job, please set SystemParamterID (137) = 0 \n";
+                            string message = string.Empty;
+
+                            if (nextSequenceId != 0)
+                            {
+                                message = $"CAUTION !!! To restart job, please monitor data, set SystemParamterID (137) = 0 and SystemParamterID (136) NextSequenceId = {nextSequenceId}\n";    
+                            }
+                            else
+                            { 
+                                twGroupBettingService.UpdateConfig_Int64(0, SystemParameters.TWGroupBetting_CountTicket_Status);
+                                message = $"Job was retried, LastSequenceId = {LastSequenceId} \n";
+                            }
+
                             message += ex.Message;
                             throw new Exception(message, ex);
                         }
-
                     }
                 }
                 else
