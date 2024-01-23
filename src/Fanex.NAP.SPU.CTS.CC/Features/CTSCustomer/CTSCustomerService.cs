@@ -63,6 +63,8 @@
         IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts);
 
         InactivateNewCustomer GetInactivateNewCustomers();
+
+        void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -509,6 +511,11 @@
         public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
         {
             return dataAccess.GetCustSubFromMainDB(custIds) ?? Enumerable.Empty<CustomerMainDBModel>();
+        }
+
+        public void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime)
+        {
+            dataAccess.InsertReactivedCustomerLog(lastScanTime, requestTime, maxLogTime, custInfoTime);
         }
 
         #endregion Insert Reactivated Customers
