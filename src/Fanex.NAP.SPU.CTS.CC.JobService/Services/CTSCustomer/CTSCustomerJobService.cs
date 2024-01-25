@@ -213,6 +213,7 @@
                     var insertNewCusts = custToReactive.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs);
                     var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
 
+                    custInfoTime = DateTime.Now;
                     var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
                     var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
 
@@ -221,8 +222,6 @@
 
                     if (custInfo != null && custInfo.CustomerInfos.Any())
                     {
-                        custInfoTime = DateTime.Now;
-
                         isSuccess = ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
                         {
                             InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
