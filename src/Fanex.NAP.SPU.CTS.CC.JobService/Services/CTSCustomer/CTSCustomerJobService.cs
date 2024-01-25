@@ -194,6 +194,10 @@
 
                 var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ReactivatedCustomerLastScannedDate);
 
+                var maxLogTime = DateTime.MaxValue;
+                var custInfoTime = DateTime.MaxValue;
+                var requestTime = DateTime.Now;
+                
                 var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
 
                 if (custToReactive != null && custToReactive.Any())
@@ -209,6 +213,7 @@
                     var insertNewCusts = custToReactive.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs);
                     var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
 
+                    custInfoTime = DateTime.Now;
                     var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
                     var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
 
@@ -232,9 +237,12 @@
 
                     if (isPushCCSuccess && isSuccess)
                     {
+                        maxLogTime = custToReactive.Select(c => c.LogTime).Max();
                         isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
+
+                ctscustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
 
                 return Task.FromResult(isSuccess);
             }

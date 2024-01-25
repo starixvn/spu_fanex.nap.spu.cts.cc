@@ -66,6 +66,8 @@
         IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson);
 
         InactivateNewCustomer GetInactivateNewCustomers();
+
+        void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -399,6 +401,19 @@
             };
 
             return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
+        }
+
+        public void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime)
+        {
+            var criteria = new ReactivedCustomerLogInsertCriteria
+            {
+                LastScanTime = lastScanTime,
+                RequestTime = requestTime,
+                MaxLogTime = maxLogTime,
+                CustInfoTime = custInfoTime
+            };
+
+            repository.Execute(criteria);
         }
 
         #endregion Insert Reactivated Customers
