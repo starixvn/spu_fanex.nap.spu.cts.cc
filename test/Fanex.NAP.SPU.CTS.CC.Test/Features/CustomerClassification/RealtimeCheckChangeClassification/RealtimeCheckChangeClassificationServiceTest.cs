@@ -66,7 +66,7 @@
         public void UpdateNextScanCheckChange_WhenSuccess()
         {
             // Arrange
-            var nextScanned = DateTime.Now;
+            var nextScanned = new RealtimeCheckChangeModel();
 
             // Act
             realtimeCheckChangeService.UpdateNextScanCheckChange(nextScanned);
@@ -79,7 +79,7 @@
         public void UpdateNextScanCheckChange_WhenDidNotUpdate()
         {
             // Arrange
-            var nextScanned = DateTime.Now;
+            var nextScanned = new RealtimeCheckChangeModel();
 
             // Act            
 

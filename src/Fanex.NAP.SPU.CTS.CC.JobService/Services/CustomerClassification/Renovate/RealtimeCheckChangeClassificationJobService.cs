@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -32,21 +31,21 @@
         {
             try
             {
-                var checkChangeModel = realtimeCheckChangeServices.CheckChange();
+                var realtimeChanges = realtimeCheckChangeServices.CheckChange();
 
-                if (checkChangeModel.CustInfos != null && checkChangeModel.CustInfos.Any())
+                if (realtimeChanges.CustInfos != null && realtimeChanges.CustInfos.Any())
                 {
-                    var batchChunks = checkChangeModel.CustInfos.Chunk(batchSize);
+                    var batchChunks = realtimeChanges.CustInfos.Chunk(batchSize);
 
                     foreach (var transDateList in batchChunks)
                     {
                         realtimeCheckChangeServices.UpdateLastTransDate(transDateList);
 
-                        Thread.Sleep(100);
+                        Thread.Sleep(10);
                     }
                 }
 
-                realtimeCheckChangeServices.UpdateNextScanCheckChange(checkChangeModel.NextScannedDateTime);
+                realtimeCheckChangeServices.UpdateNextScanCheckChange(realtimeChanges);
             }
             catch (Exception ex)
             {
@@ -57,6 +56,5 @@
 
             return Task.FromResult(true);
         }
-
     }
 }

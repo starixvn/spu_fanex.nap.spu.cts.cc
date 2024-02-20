@@ -13,6 +13,12 @@
 
         public IEnumerable<RealtimeCheckChangeEntities> CustInfos { get; set; }
 
-        public DateTime? NextScannedDateTime { get; set; }
+        public DateTime? NextScannedDateTime1 { get; set; }
+
+        public DateTime? NextScannedDateTime2 { get; set; }
+
+        public DateTime? NextScannedDateTime3 { get; set; }
+
+        public DateTime? NextScannedDateTime4 { get; set; }
     }
 }
