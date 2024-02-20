@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
     using FluentAssertions;
     using NSubstitute;
-    using System;
     using System.Collections.Generic;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -24,19 +23,27 @@
             twGroupbettingServices = new TWGroupBettingService(twGroupBettingDataAccess, systemParameterDataAccess);
         }
 
-        //[Fact]
-        //public void GetLastScanTime_WhenSuccess_RunSuccessfully()
-        //{
-        //    var result = twGroupbettingServices.GetConfig_Int64(SystemParameters.TWGroupBetting_LastSequenceId);
-        //    result.Should().NotBe(0);
-        //}
+        [Fact]
+        public void GetLastScanTime_WhenSuccess_RunSuccessfully()
+        {
+            var output = new SystemParameterEntity { ParameterDataType = "BIGINT", ParameterValue = "1" };
 
-        //[Fact]
-        //public void GetLastTimeCountTotalTicket_WhenSuccess_RunSuccessfully()
-        //{
-        //    var result = twGroupbettingServices.GetConfig_Int(SystemParameters.TWGroupBetting_SkipTransCount);
-        //    result.Should().NotBe(0);
-        //}
+            systemParameterDataAccess.GetPreviousTimingExecution(CTS_Main_SystemParameters.TWGroupBetting_LastTransSec).Returns(output);
+
+            var result = twGroupbettingServices.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_LastTransSec);
+            result.Should().NotBe(0);
+        }
+
+        [Fact]
+        public void GetLastTimeCountTotalTicket_WhenSuccess_RunSuccessfully()
+        {
+            var output = new SystemParameterEntity { ParameterDataType = "INT", ParameterValue = "1" };
+
+            systemParameterDataAccess.GetPreviousTimingExecution(CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount).Returns(output);
+
+            var result = twGroupbettingServices.GetConfig_Int(CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount);
+            result.Should().NotBe(0);
+        }
 
         [Fact]
         public void GetAllRule_WhenSuccess_RunSuccessfully()

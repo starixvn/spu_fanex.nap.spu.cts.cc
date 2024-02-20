@@ -48,14 +48,14 @@
         {
             try
             {
-                var fromDate = systemParameterServices.GetLastScannedDateTime(SystemParameters.JobMonitor_NewCustomerLastScannedTime);
+                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                 var toDate = fromDate?.AddMinutes(60);
                 bool isSuccess = true;
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
-                    var lastScannedCustID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
-                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                    var lastScannedCustID = systemParameterServices.GetLastScannedId(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
 
                     var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
                     var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
@@ -83,7 +83,7 @@
 
                     if (customers != null && !customers.Any() && lastScannedCustID != 0 && lastScannedCustSubID != 0)
                     {
-                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.JobMonitor_NewCustomerLastScannedTime);
+                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                     }
                 }
 
@@ -208,12 +208,12 @@
         {
             if (maxScannedCustId != null)
             {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
             }
 
             if (maxScannedCustSubId != null)
             {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
             }
         }
 

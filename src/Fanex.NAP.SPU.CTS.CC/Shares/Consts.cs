@@ -29,16 +29,16 @@
             Report = 2,
         };
 
-        public enum SystemParameters
+        public enum CTS_DC_SystemParameters
         {
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20,
             JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
-            TWGroupBetting_LastTransSec = 77,
-            TWGroupBetting_SkipTransCount = 78,
-            TWGroupBetting_ScanTicket_LastSequenceId = 90,
+            //TWGroupBetting_LastTransSec = 77,
+            //TWGroupBetting_SkipTransCount = 78,
+            //TWGroupBetting_ScanTicket_LastSequenceId = 90,
             InactiveNewMember_LastCategoryID = 80,
             InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
@@ -58,11 +58,11 @@
             JobMonitor_NewCustomerLastScannedCustID = 131,
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
-			//TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
+            //TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
             TWRobotImperva_LastID = 134,
-            TWGroupBetting_CountTicket_BatchSize = 135,
-            TWGroupBetting_CountTicket_LastSequenceId = 136,
-            TWGroupBetting_CountTicket_Status = 137,
+            //TWGroupBetting_CountTicket_BatchSize = 135,
+            //TWGroupBetting_CountTicket_LastSequenceId = 136,
+            //TWGroupBetting_CountTicket_Status = 137,
             NormalTaggingClassificationLastCategoryID = 144,
             NormalTaggingClassificationLastCustID = 145,
             CustomerNullUsername2_LastCTSCustID = 146,
@@ -74,8 +74,18 @@
             JobMonitoring_NewCustomer_LastCTSCustID = 152
         };
 
+        public enum CTS_Main_SystemParameters
+        {
+            TWGroupBetting_LastTransSec = 1,
+            TWGroupBetting_SkipTransCount = 2,
+            TWGroupBetting_ScanTicket_LastSequenceId = 3,
+            TWGroupBetting_CountTicket_BatchSize = 4,
+            TWGroupBetting_CountTicket_LastSequenceId = 5,
+            TWGroupBetting_CountTicket_Status = 6,
+        }
+
         public enum Reason
-        {          
+        {
             TVSRobot36 = 36,
             TVSRobot105 = 105,
             ABBet32 = 32,
@@ -232,7 +242,7 @@
         public enum InvalidCategory
         {
             Invalid_Inactive = 2,
-            Invalid_Null = 3            
+            Invalid_Null = 3
         };
 
         public enum NormalClasification_TaggingType

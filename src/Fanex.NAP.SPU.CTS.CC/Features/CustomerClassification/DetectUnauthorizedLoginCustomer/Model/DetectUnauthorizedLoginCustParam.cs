@@ -15,15 +15,15 @@
             {
                 this.FirstBetFromDay = -3;
                 this.FirstBetToDay = -1;
-                this.LastScanCustID = SystemParameters.UnauthorizedLogin_LastScanCustID_Licensee;
-                this.LastScanDate = SystemParameters.UnauthorizedLogin_LastScanDate_Licensee;
+                this.LastScanCustID = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanCustID_Licensee;
+                this.LastScanDate = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Licensee;
             }
             else
             {
                 this.FirstBetFromDay = -14;
                 this.FirstBetToDay = -8;
-                this.LastScanCustID = SystemParameters.UnauthorizedLogin_LastScanCustID_Credit;
-                this.LastScanDate = SystemParameters.UnauthorizedLogin_LastScanDate_Credit;
+                this.LastScanCustID = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanCustID_Credit;
+                this.LastScanDate = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Credit;
             }
         }
 
@@ -31,9 +31,9 @@
 
         public int FirstBetToDay { get; set; }
 
-        public SystemParameters LastScanCustID { get; set; }
+        public CTS_DC_SystemParameters LastScanCustID { get; set; }
 
-        public SystemParameters LastScanDate { get; set; }
+        public CTS_DC_SystemParameters LastScanDate { get; set; }
 
         public bool IsLicensee { get; set; }
     }

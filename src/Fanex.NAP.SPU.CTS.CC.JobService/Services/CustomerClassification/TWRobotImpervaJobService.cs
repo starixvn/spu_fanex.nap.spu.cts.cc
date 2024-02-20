@@ -31,7 +31,7 @@
         {
             try
             {
-                var lastLogID = twRobotImpervaService.GetLastScannedID(SystemParameters.TWRobotImperva_LastLogID);                
+                var lastLogID = twRobotImpervaService.GetLastScannedID(CTS_DC_SystemParameters.TWRobotImperva_LastLogID);                
 
                 var robots = twRobotImpervaService.GetTWRobotImperva(lastLogID);                
 
@@ -39,7 +39,7 @@
                 {
                     twRobotImpervaService.InsertTWRobotImperva(robots.RobotInfos);
 
-                    twRobotImpervaService.UpdateLastScannedID(SystemParameters.TWRobotImperva_LastLogID, robots.MaxLogID);
+                    twRobotImpervaService.UpdateLastScannedID(CTS_DC_SystemParameters.TWRobotImperva_LastLogID, robots.MaxLogID);
                 }              
             }
             catch (Exception ex)
