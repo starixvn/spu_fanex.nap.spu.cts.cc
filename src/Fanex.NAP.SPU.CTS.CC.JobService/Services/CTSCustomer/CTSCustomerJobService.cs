@@ -214,6 +214,8 @@
                     var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
 
                     custInfoTime = DateTime.Now;
+                    Thread.Sleep(2000);
+
                     var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
                     var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
 

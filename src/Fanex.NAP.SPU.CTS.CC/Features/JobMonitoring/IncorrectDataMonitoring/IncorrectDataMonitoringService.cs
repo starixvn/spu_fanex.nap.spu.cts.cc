@@ -107,23 +107,19 @@
                     switch (issueTypeID)
                     {
                         case JobMonitor_IssueType.NewCustomer_NullCategory:
+                        case JobMonitor_IssueType.Realtime_NullCategory:
                             {
-                                message += $"\r\n🆘 New customer with NULL category: {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                message += $"\r\n🆘 NULL customer category: {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                message += $"\r\n🆘 New Customer with not available on CTS {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                message += $"\r\n🆘 Missing Customer {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory:
                             {
-                                message += $"\r\n🆘 Realtime Classification with NOT RE-ACTIVATE category {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))} \r\n";
-                                break;
-                            }
-                        case JobMonitor_IssueType.Realtime_NullCategory:
-                            {
-                                message += $"\r\n🆘 Realtime Classification with NULL category {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                message += $"\r\n🆘 Incorrect customer category {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))} \r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.Classification_GeneralPoolStatus:
