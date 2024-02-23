@@ -52,7 +52,7 @@
 
         public int DangerSabaBkb { get; set; }
 
-        public bool IsLicensee { get; set; }
+        public bool? IsLicensee { get; set; }
         
         public bool IsLicenseeVIP { get; set; }
 
