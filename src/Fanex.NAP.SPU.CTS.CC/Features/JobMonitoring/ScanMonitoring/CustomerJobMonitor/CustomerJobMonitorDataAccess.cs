@@ -5,6 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorDataAccess
     {
@@ -13,6 +14,8 @@
         MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID);
 
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson);
+
+        MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID);
     }
 
     public class CustomerJobMonitorDataAccess : ICustomerJobMonitorDataAccess
@@ -70,10 +73,33 @@
         {
             var criteria = new MissingCustomerCheckCriteria
             {
-                CustomerListJson = custDataJson
+                CustomerListJson = custDataJson,
+                LastCTSCustID = null,
+                QueryTypeID = (int)CustomerMonitor_QueryType.MissingCustomer
             };
 
             return repository.Fetch<MissingCustomerCompareEntity>(criteria);
+        }
+
+        public MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID)
+        {
+            var criteria = new MissingCustomerCheckCriteria
+            {
+                CustomerListJson = null,
+                LastCTSCustID = ctsCustID,
+                QueryTypeID = (int)CustomerMonitor_QueryType.MissingCustInfo
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var result = db.QueryMultiple(criteria);
+            var missingCustomerInfo = result?.Read<long>();
+            var nextScannedCTSCustId = result?.Read<long?>();
+
+            return new MissingCustomerInfoModel()
+            {
+                NextScannedCTSCustId = nextScannedCTSCustId?.FirstOrDefault(),
+                CustomerInfo = missingCustomerInfo ?? Enumerable.Empty<long>()
+            };
         }
     }
 }

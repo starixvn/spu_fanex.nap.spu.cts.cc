@@ -30,7 +30,13 @@
         [HttpPost("NewCustomerMonitoring")]
         public async Task<bool> MonitorNewCustomer([FromForm] int batchSize, [FromForm] int externalSize)
         {
-            return await customerJobMonitorService.Process(batchSize, externalSize);
+            return await customerJobMonitorService.ScanMissingCustomer(batchSize, externalSize);
+        }
+
+        [HttpPost("CustomerInfoMonitoring")]
+        public async Task<bool> MonitorCustomerInfo([FromForm] int batchSize)
+        {
+            return await customerJobMonitorService.ScanMissingCustomerInfo(batchSize);
         }
 
         [HttpPost("ReatimeCategoryMonitoring")]

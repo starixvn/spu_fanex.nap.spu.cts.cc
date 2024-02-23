@@ -8,6 +8,12 @@
         [SpParam(SqlParamName = "ip_CustomerList")]
         public string CustomerListJson { get; set; }
 
+        [SpParam(SqlParamName = "ip_LastCTSCustID")]
+        public ulong? LastCTSCustID { get; set; }
+
+        [SpParam(SqlParamName = "ip_QueryTypeID")]
+        public int QueryTypeID { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_Monitoring_CheckMissingCustomer";
@@ -15,7 +21,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustomerListJson);
+            return true;
         }
     }
 }
