@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RealtimeCheckChangeClassification
 {
     using Fanex.Data.Repository;
-    using System; 
 
     public interface IRealtimeCheckChangeClassificationDataAccess
     {
@@ -9,8 +8,7 @@
 
         void UpdateLastTransDate(string custInfos);
 
-        void UpdateNextScanCheckChange(DateTime? nextScanned);
-        
+        void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
     }
 
     public class RealtimeCheckChangeClassificationDataAccess : IRealtimeCheckChangeClassificationDataAccess
@@ -22,7 +20,7 @@
             repository = new DynamicRepository();
         }
 
-        public RealtimeCheckChangeModel CheckChange() 
+        public RealtimeCheckChangeModel CheckChange()
         {
             var criteria = new RealtimeCheckChangeCriteria();
 
@@ -31,7 +29,10 @@
             return new RealtimeCheckChangeModel
             {
                 CustInfos = data,
-                NextScannedDateTime = criteria.NextScannedDateTime
+                NextScannedDateTime1 = criteria.NextScannedDateTime1,
+                NextScannedDateTime2 = criteria.NextScannedDateTime2,
+                NextScannedDateTime3 = criteria.NextScannedDateTime3,
+                NextScannedDateTime4 = criteria.NextScannedDateTime4,
             };
         }
 
@@ -45,15 +46,17 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateNextScanCheckChange(DateTime? nextScanned)
+        public void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned)
         {
             var criteria = new RealtimeCheckChangeUpdateNextScanCriteria
             {
-                NextScannedDateTime = nextScanned
+                NextScannedDateTime1 = nextScanned.NextScannedDateTime1,
+                NextScannedDateTime2 = nextScanned.NextScannedDateTime2,
+                NextScannedDateTime3 = nextScanned.NextScannedDateTime3,
+                NextScannedDateTime4 = nextScanned.NextScannedDateTime4,
             };
 
             repository.Execute(criteria);
         }
-        
     }
 }
