@@ -4,7 +4,7 @@
 
     public class MissingCustomerInfoModel
     {
-       public long? NextScannedCTSCustId { get; set; }
+        public ulong? NextScannedCTSCustId { get; set; }
 
         public IEnumerable<long> CustomerInfo { get; set; }
     }

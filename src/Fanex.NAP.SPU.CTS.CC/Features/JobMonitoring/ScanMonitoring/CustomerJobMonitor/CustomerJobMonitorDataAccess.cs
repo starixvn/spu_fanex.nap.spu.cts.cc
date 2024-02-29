@@ -93,7 +93,7 @@
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
             using var result = db.QueryMultiple(criteria);
             var missingCustomerInfo = result?.Read<long>();
-            var nextScannedCTSCustId = result?.Read<long?>();
+            var nextScannedCTSCustId = result?.Read<ulong?>();
 
             return new MissingCustomerInfoModel()
             {

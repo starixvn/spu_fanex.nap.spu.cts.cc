@@ -120,7 +120,9 @@
                             InsertMissingCustomerInfo(result.CustomerInfo, batchSize);
                         }
 
-                        if (result.NextScannedCTSCustId != null && result.NextScannedCTSCustId > 0)
+                        if (result.NextScannedCTSCustId != null 
+                            && result.NextScannedCTSCustId > 0
+                            && result.NextScannedCTSCustId > lastCTSCustId)
                         {
                             systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
                         }
