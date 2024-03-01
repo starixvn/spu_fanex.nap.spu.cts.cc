@@ -114,7 +114,12 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                message += $"\r\n🆘 Missing Customer {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                message += $"\r\n🆘 Missing customer {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
+                            {
+                                message += $"\r\n🆘 Incorrect customer info {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory:

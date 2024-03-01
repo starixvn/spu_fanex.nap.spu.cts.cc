@@ -215,7 +215,7 @@
         {
             NewCustomer_NullCategory = 1,
             NewCustomer_Missing = 2,
-            NewCustomer_MissingCustInfo = 3,
+            NewCustomer_IncorrectCustInfo = 3,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
             Classification_GeneralPoolStatus = 200,

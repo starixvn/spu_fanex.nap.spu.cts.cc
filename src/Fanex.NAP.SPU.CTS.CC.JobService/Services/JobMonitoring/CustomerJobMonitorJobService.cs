@@ -17,7 +17,7 @@
     {
         Task<bool> ScanMissingCustomer(int batchSize, int externalSize);
 
-        Task<bool> ScanMissingCustomerInfo(int batchSize);
+        Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
 
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
@@ -102,7 +102,7 @@
             }
         }
 
-        public Task<bool> ScanMissingCustomerInfo(int batchSize)
+        public Task<bool> ScanIncorrectCustomerInfo(int batchSize)
         {
             try
             {
@@ -117,7 +117,7 @@
                     {
                         if (result.CustomerInfo != null && result.CustomerInfo.Any())
                         {
-                            InsertMissingCustomerInfo(result.CustomerInfo, batchSize);
+                            InsertIncorrectCustomerInfo(result.CustomerInfo, batchSize);
                         }
 
                         if (result.NextScannedCTSCustId != null 
@@ -166,11 +166,11 @@
             }
         }
 
-        private void InsertMissingCustomerInfo(IEnumerable<long> missingCustomerInfo, int batchSize)
+        private void InsertIncorrectCustomerInfo(IEnumerable<long> missingCustomerInfo, int batchSize)
         {
             if (missingCustomerInfo.Any())
             {
-                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomerInfo.Distinct(), JobMonitor_IssueType.NewCustomer_MissingCustInfo, batchSize);
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomerInfo.Distinct(), JobMonitor_IssueType.NewCustomer_IncorrectCustInfo, batchSize);
             }
         }
 
