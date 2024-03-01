@@ -226,7 +226,7 @@
         public enum CustomerMonitor_QueryType
         {
             MissingCustomer = 1,
-            MissingCustInfo = 2,
+            IncorrectCustInfo = 2,
         };
 
         public enum InvalidCategory

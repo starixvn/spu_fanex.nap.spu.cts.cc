@@ -18,7 +18,7 @@
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
 
-        MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID);
+        IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID);
     }
 
     public class CustomerJobMonitorService : ICustomerJobMonitorService
@@ -56,14 +56,14 @@
             return Enumerable.Empty<MissingCustomerCompareEntity>();
         }
 
-        public MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID)
+        public IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID)
         {
             if (ctsCustID > 0)
             {
-                return customerJobMonitorDataAccess.CheckMissingCustomerInfo(ctsCustID);
+                return customerJobMonitorDataAccess.CheckIncorrectCustomerInfo(ctsCustID);
             }
 
-            return new MissingCustomerInfoModel();
+            return new IncorrectCustomerInfoModel();
         }
 
         public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize)

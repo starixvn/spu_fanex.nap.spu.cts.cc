@@ -15,7 +15,7 @@
 
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(string custDataJson);
 
-        MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID);
+        IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID);
     }
 
     public class CustomerJobMonitorDataAccess : ICustomerJobMonitorDataAccess
@@ -81,13 +81,13 @@
             return repository.Fetch<MissingCustomerCompareEntity>(criteria);
         }
 
-        public MissingCustomerInfoModel CheckMissingCustomerInfo(ulong ctsCustID)
+        public IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID)
         {
             var criteria = new MissingCustomerCheckCriteria
             {
                 CustomerListJson = null,
                 LastCTSCustID = ctsCustID,
-                QueryTypeID = (int)CustomerMonitor_QueryType.MissingCustInfo
+                QueryTypeID = (int)CustomerMonitor_QueryType.IncorrectCustInfo
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
@@ -95,7 +95,7 @@
             var missingCustomerInfo = result?.Read<long>();
             var nextScannedCTSCustId = result?.Read<ulong?>();
 
-            return new MissingCustomerInfoModel()
+            return new IncorrectCustomerInfoModel()
             {
                 NextScannedCTSCustId = nextScannedCTSCustId?.FirstOrDefault(),
                 CustomerInfo = missingCustomerInfo ?? Enumerable.Empty<long>()

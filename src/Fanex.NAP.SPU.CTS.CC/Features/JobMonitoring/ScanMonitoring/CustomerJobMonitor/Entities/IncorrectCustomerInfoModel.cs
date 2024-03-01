@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class MissingCustomerInfoModel
+    public class IncorrectCustomerInfoModel
     {
         public ulong? NextScannedCTSCustId { get; set; }
 

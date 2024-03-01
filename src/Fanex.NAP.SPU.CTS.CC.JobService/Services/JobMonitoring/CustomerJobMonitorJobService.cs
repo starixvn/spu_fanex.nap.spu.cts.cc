@@ -111,7 +111,7 @@
 
                 if (lastCTSCustId > 0)
                 {
-                    var result = customerJobMonitorService.CheckMissingCustomerInfo(lastCTSCustId);
+                    var result = customerJobMonitorService.CheckIncorrectCustomerInfo(lastCTSCustId);
 
                     if (result != null)
                     {
