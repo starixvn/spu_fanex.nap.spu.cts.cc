@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorService
     {
@@ -16,6 +17,8 @@
         IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList);
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize);
+
+        IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID);
     }
 
     public class CustomerJobMonitorService : ICustomerJobMonitorService
@@ -43,9 +46,24 @@
 
         public IEnumerable<MissingCustomerCompareEntity> CheckMissingCustomer(IEnumerable<MonitoringNewCustomerEntity> customerList)
         {
-            var customerJson = JsonConvert.SerializeObject(customerList);
+            if (customerList != null && customerList.Any())
+            {
+                var customerJson = JsonConvert.SerializeObject(customerList);
 
-            return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
+                return customerJobMonitorDataAccess.CheckMissingCustomer(customerJson) ?? Enumerable.Empty<MissingCustomerCompareEntity>();
+            }
+
+            return Enumerable.Empty<MissingCustomerCompareEntity>();
+        }
+
+        public IncorrectCustomerInfoModel CheckIncorrectCustomerInfo(ulong ctsCustID)
+        {
+            if (ctsCustID > 0)
+            {
+                return customerJobMonitorDataAccess.CheckIncorrectCustomerInfo(ctsCustID);
+            }
+
+            return new IncorrectCustomerInfoModel();
         }
 
         public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(IEnumerable<long> custIds, int batchSize)

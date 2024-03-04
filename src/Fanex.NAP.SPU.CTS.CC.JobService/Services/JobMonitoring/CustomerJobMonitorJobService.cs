@@ -15,7 +15,9 @@
 
     public interface ICustomerJobMonitorJobService
     {
-        Task<bool> Process(int batchSize, int externalSize);
+        Task<bool> ScanMissingCustomer(int batchSize, int externalSize);
+
+        Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
 
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
@@ -42,7 +44,7 @@
             this.serviceName = "CustomerJobMonitor";
         }
 
-        public Task<bool> Process(int batchSize, int externalSize)
+        public Task<bool> ScanMissingCustomer(int batchSize, int externalSize)
         {
             try
             {
@@ -100,7 +102,51 @@
             }
         }
 
-        public void MonitorNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
+        public Task<bool> ScanIncorrectCustomerInfo(int batchSize)
+        {
+            try
+            {
+                var lastCTSCustId = systemParameterServices.GetLastScannedId2(SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                bool isSuccess = true;
+
+                if (lastCTSCustId > 0)
+                {
+                    var result = customerJobMonitorService.CheckIncorrectCustomerInfo(lastCTSCustId);
+
+                    if (result != null)
+                    {
+                        if (result.CustomerInfo != null && result.CustomerInfo.Any())
+                        {
+                            InsertIncorrectCustomerInfo(result.CustomerInfo, batchSize);
+                        }
+
+                        if (result.NextScannedCTSCustId != null 
+                            && result.NextScannedCTSCustId > 0
+                            && result.NextScannedCTSCustId > lastCTSCustId)
+                        {
+                            systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                        }
+                    }
+                }
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+
+                return Task.FromResult(false);
+            }
+        }
+
+        #region Private Methods
+
+        private void MonitorNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
             {
@@ -110,8 +156,6 @@
             InsertNullCategoryCustomer(newCustomers, batchSize);
         }
 
-        #region Private Methods
-
         private void InsertMissingCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
         {
             if (newCustomers.MissingCustomers.Any())
@@ -119,6 +163,14 @@
                 var missingCustomers = newCustomers.MissingCustomers.Select(c => c.CustID).Distinct();
 
                 incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, batchSize);
+            }
+        }
+
+        private void InsertIncorrectCustomerInfo(IEnumerable<long> missingCustomerInfo, int batchSize)
+        {
+            if (missingCustomerInfo.Any())
+            {
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomerInfo.Distinct(), JobMonitor_IssueType.NewCustomer_IncorrectCustInfo, batchSize);
             }
         }
 

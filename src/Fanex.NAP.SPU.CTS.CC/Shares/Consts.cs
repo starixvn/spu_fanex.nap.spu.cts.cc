@@ -70,7 +70,8 @@
             UnauthorizedLogin_LastScanCustID_Licensee = 148,
             UnauthorizedLogin_LastScanDate_Credit = 149,
             UnauthorizedLogin_LastScanDate_Licensee = 150,         
-            JobMonitoring_IncorrectData_LastScanID = 151
+            JobMonitoring_IncorrectData_LastScanID = 151,
+            JobMonitoring_NewCustomer_LastCTSCustID = 152
         };
 
         public enum Reason
@@ -214,11 +215,18 @@
         {
             NewCustomer_NullCategory = 1,
             NewCustomer_Missing = 2,
+            NewCustomer_IncorrectCustInfo = 3,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
             Classification_GeneralPoolStatus = 200,
             Classification_BySportPoolStatus = 201,
             DCSTransaction_LastLoginProcessStatus = 500
+        };
+
+        public enum CustomerMonitor_QueryType
+        {
+            MissingCustomer = 1,
+            IncorrectCustInfo = 2,
         };
 
         public enum InvalidCategory
