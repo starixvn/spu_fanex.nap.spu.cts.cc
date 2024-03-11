@@ -29,7 +29,7 @@
             Report = 2,
         };
 
-        public enum CTS_DC_SystemParameters
+        public enum CTS_SystemParameters
         {
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
@@ -74,7 +74,7 @@
             JobMonitoring_NewCustomer_LastCTSCustID = 152
         };
 
-        public enum CTS_Main_SystemParameters
+        public enum Main_SystemParameters
         {
             TWGroupBetting_LastTransSec = 1,
             TWGroupBetting_SkipTransCount = 2,

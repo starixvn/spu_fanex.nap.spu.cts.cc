@@ -20,8 +20,8 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.MatchMonitorLastScannedTrans)]
-        public void GetLastScannedId_WhenSuccess_ReturnLastScannedId(CTS_DC_SystemParameters paraID)
+        [InlineData(CTS_SystemParameters.MatchMonitorLastScannedTrans)]
+        public void GetLastScannedId_WhenSuccess_ReturnLastScannedId(CTS_SystemParameters paraID)
         {
             var output = new SystemParameterEntity
             {
@@ -38,9 +38,9 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.DailyNormalClassificationLastCategoryID)]
-        [InlineData(CTS_DC_SystemParameters.RobotAccountLastScannedTime)]
-        public void GetLastScannedTime_WhenSuccess_ReturnLastScannedTime(CTS_DC_SystemParameters paraID)
+        [InlineData(CTS_SystemParameters.DailyNormalClassificationLastCategoryID)]
+        [InlineData(CTS_SystemParameters.RobotAccountLastScannedTime)]
+        public void GetLastScannedTime_WhenSuccess_ReturnLastScannedTime(CTS_SystemParameters paraID)
         {
             var output = new SystemParameterEntity
             {
@@ -56,8 +56,8 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.DailyNormalClassificationLastCategoryID, "2021-07-05 22:50:53")]
-        public void UpdateTimingExecution_WhenSuccess(CTS_DC_SystemParameters paraId, string lastScannedTime)
+        [InlineData(CTS_SystemParameters.DailyNormalClassificationLastCategoryID, "2021-07-05 22:50:53")]
+        public void UpdateTimingExecution_WhenSuccess(CTS_SystemParameters paraId, string lastScannedTime)
         {
             systemParameterDataAccess.UpdateTimingExecution(lastScannedTime, paraId);
 

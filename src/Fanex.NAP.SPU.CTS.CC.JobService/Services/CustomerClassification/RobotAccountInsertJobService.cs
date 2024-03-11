@@ -128,7 +128,7 @@
         public bool InsertAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                                                 .GetRobotDetections(CTS_DC_SystemParameters.RobotDetection_LastID, CTS_DC_SystemParameters.TWRobotImperva_LastID)
+                                                 .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID)
                                                  .InsertRobotAIImpervaPackage(new InsertRobotParaEntity
                                                  {
                                                      BatchInternalSize = batchInternalSize,
@@ -152,7 +152,7 @@
 
             if (isSuccess)
             {
-                robotDetectionService.UpdateLastScannedId(CTS_DC_SystemParameters.RobotDetection_LastID, CTS_DC_SystemParameters.TWRobotImperva_LastID);
+                robotDetectionService.UpdateLastScannedId(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID);
             }
 
             return isSuccess;

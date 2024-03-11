@@ -23,9 +23,9 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.UnauthorizedLogin_LastScanCustID_Credit)]
-        [InlineData(CTS_DC_SystemParameters.UnauthorizedLogin_LastScanCustID_Licensee)]
-        public void GetLastScannedCustID_WhenSuccess_ReturnLastScannedID(CTS_DC_SystemParameters paraID)
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanCustID_Credit)]
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanCustID_Licensee)]
+        public void GetLastScannedCustID_WhenSuccess_ReturnLastScannedID(CTS_SystemParameters paraID)
         {
             // Arrange
             var output = new SystemParameterEntity
@@ -45,9 +45,9 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Credit)]
-        [InlineData(CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Licensee)]
-        public void GetLastScannedDate_WhenSuccess_ReturnLastScannedDate(CTS_DC_SystemParameters paraID)
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Credit)]
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Licensee)]
+        public void GetLastScannedDate_WhenSuccess_ReturnLastScannedDate(CTS_SystemParameters paraID)
         {
             // Arrange
             var output = new SystemParameterEntity
@@ -66,8 +66,8 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Credit, "2023-12-29 10:50:53")]
-        public void UpdateLastScannedID_WhenSuccess(CTS_DC_SystemParameters paraID, string lastScannedTime)
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Credit, "2023-12-29 10:50:53")]
+        public void UpdateLastScannedID_WhenSuccess(CTS_SystemParameters paraID, string lastScannedTime)
         {
             // Arrange
 
@@ -98,8 +98,8 @@
                 FirstBetFromDay = 1,
                 FirstBetToDay = 3,
                 IsLicensee = false,
-                LastScanCustID = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanCustID_Credit,
-                LastScanDate = CTS_DC_SystemParameters.UnauthorizedLogin_LastScanDate_Credit
+                LastScanCustID = CTS_SystemParameters.UnauthorizedLogin_LastScanCustID_Credit,
+                LastScanDate = CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Credit
             };
 
             var expectedCustWithFirstBetDate = new List<CustFirstBetDateEntity>() { };

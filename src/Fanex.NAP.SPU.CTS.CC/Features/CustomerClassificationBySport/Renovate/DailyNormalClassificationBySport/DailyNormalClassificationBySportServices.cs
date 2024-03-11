@@ -61,8 +61,8 @@
         {
             if (this.customers != null)
             {                
-                systemParameterService.UpdateTimingExecution(customers.LastCategoryID.ToString(), CTS_DC_SystemParameters.DailyNormalClassificationBySportLastCategoryID);
-                systemParameterService.UpdateTimingExecution(customers.LastCustID.ToString(), CTS_DC_SystemParameters.DailyNormalClassificationBySportLastCustID);
+                systemParameterService.UpdateTimingExecution(customers.LastCategoryID.ToString(), CTS_SystemParameters.DailyNormalClassificationBySportLastCategoryID);
+                systemParameterService.UpdateTimingExecution(customers.LastCustID.ToString(), CTS_SystemParameters.DailyNormalClassificationBySportLastCustID);
                                
                 return (this.customers.NormalAccounts != null && this.customers.NormalAccounts.Any());
             }

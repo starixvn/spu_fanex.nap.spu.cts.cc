@@ -128,8 +128,8 @@
 
                 if (dbResult.ErrorCode == 0)
                 {
-                    this.systemParameterServices.UpdateTimingExecution(custInfo.GroupID.ToString(), Constants.CTS_DC_SystemParameters.AssociatedGroupLastGroupID);
-                    this.systemParameterServices.UpdateTimingExecution(custInfo.LastCTSCustID.ToString(), Constants.CTS_DC_SystemParameters.AssociatedGroupLastCTSCustID);
+                    this.systemParameterServices.UpdateTimingExecution(custInfo.GroupID.ToString(), Constants.CTS_SystemParameters.AssociatedGroupLastGroupID);
+                    this.systemParameterServices.UpdateTimingExecution(custInfo.LastCTSCustID.ToString(), Constants.CTS_SystemParameters.AssociatedGroupLastCTSCustID);
                 }
             }
             catch (Exception ex)

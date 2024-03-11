@@ -36,7 +36,7 @@
         [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
-            var result = robotDetectionService.GetRobotDetections(CTS_DC_SystemParameters.RobotDetection_LastID, CTS_DC_SystemParameters.TWRobotImperva_LastID);
+            var result = robotDetectionService.GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID);
 
             // Assert
             Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
@@ -93,7 +93,7 @@
             };
 
             // Act
-            systemParameterServices.GetLastScannedId(CTS_DC_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
+            systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
           
             robotDetectionDataAccess.GetRobotDetections(expectedRobotAIID, expectedRobotImpervaID).Returns((expectedRobotAI, expectedRobotImperva));
             

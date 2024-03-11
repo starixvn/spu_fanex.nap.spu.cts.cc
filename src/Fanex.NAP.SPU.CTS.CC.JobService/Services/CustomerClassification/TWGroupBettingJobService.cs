@@ -41,9 +41,9 @@
                 var rules = twGroupBettingService.GetAllRules();
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
-                    var lastTransId = twGroupBettingService.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
-                    var lastTransSec = twGroupBettingService.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_LastTransSec);
-                    var skipTransCount = twGroupBettingService.GetConfig_Int(CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount);
+                    var lastTransId = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
+                    var lastTransSec = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_LastTransSec);
+                    var skipTransCount = twGroupBettingService.GetConfig_Int(Main_SystemParameters.TWGroupBetting_SkipTransCount);
 
                     var configs = new TWGroupBetting_ScanTicketCriteria
                     {
@@ -58,9 +58,9 @@
                     twGroupBettingService.CountGroupBettingTicket();
                     if (outputParams.LastSequenceId_New > 0)
                     {
-                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, CTS_Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
-                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastTransSec_New, CTS_Main_SystemParameters.TWGroupBetting_LastTransSec);
-                        twGroupBettingService.UpdateConfig_Int(outputParams.SkipTransCount_New, CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount);
+                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
+                        twGroupBettingService.UpdateConfig_Int64(outputParams.LastTransSec_New, Main_SystemParameters.TWGroupBetting_LastTransSec);
+                        twGroupBettingService.UpdateConfig_Int(outputParams.SkipTransCount_New, Main_SystemParameters.TWGroupBetting_SkipTransCount);
                     }
                 }
             }
@@ -78,16 +78,16 @@
         {
             try
             {
-                var status = twGroupBettingService.GetConfigWithoutDefault(CTS_Main_SystemParameters.TWGroupBetting_CountTicket_Status);
+                var status = twGroupBettingService.GetConfigWithoutDefault(Main_SystemParameters.TWGroupBetting_CountTicket_Status);
 
                 if (status != null && status == 0)
                 {
-                    var batchSize = twGroupBettingService.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_CountTicket_BatchSize);
-                    var LastSequenceId = twGroupBettingService.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                    var batchSize = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_CountTicket_BatchSize);
+                    var LastSequenceId = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
 
                     if (batchSize > 0 && LastSequenceId > 0)
                     {
-                        twGroupBettingService.UpdateConfig_Int64(1, CTS_Main_SystemParameters.TWGroupBetting_CountTicket_Status);
+                        twGroupBettingService.UpdateConfig_Int64(1, Main_SystemParameters.TWGroupBetting_CountTicket_Status);
 
                         long nextSequenceId = 0;
 
@@ -97,10 +97,10 @@
 
                             if (nextSequenceId > 0)
                             {
-                                twGroupBettingService.UpdateConfig_Int64(nextSequenceId, CTS_Main_SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
+                                twGroupBettingService.UpdateConfig_Int64(nextSequenceId, Main_SystemParameters.TWGroupBetting_CountTicket_LastSequenceId);
                             }
 
-                            twGroupBettingService.UpdateConfig_Int64(0, CTS_Main_SystemParameters.TWGroupBetting_CountTicket_Status);
+                            twGroupBettingService.UpdateConfig_Int64(0, Main_SystemParameters.TWGroupBetting_CountTicket_Status);
                         }
                         catch (Exception ex)
                         {
@@ -112,7 +112,7 @@
                             }
                             else
                             { 
-                                twGroupBettingService.UpdateConfig_Int64(0, CTS_Main_SystemParameters.TWGroupBetting_CountTicket_Status);
+                                twGroupBettingService.UpdateConfig_Int64(0, Main_SystemParameters.TWGroupBetting_CountTicket_Status);
                                 message = $"Job was retried, LastSequenceId = {LastSequenceId} \n";
                             }
 

@@ -48,14 +48,14 @@
         {
             try
             {
-                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
+                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                 var toDate = fromDate?.AddMinutes(60);
                 bool isSuccess = true;
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
-                    var lastScannedCustID = systemParameterServices.GetLastScannedId(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
-                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                    var lastScannedCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
 
                     var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
                     var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
@@ -83,7 +83,7 @@
 
                     if (customers != null && !customers.Any() && lastScannedCustID != 0 && lastScannedCustSubID != 0)
                     {
-                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
+                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                     }
                 }
 
@@ -106,7 +106,7 @@
         {
             try
             {
-                var lastCTSCustId = systemParameterServices.GetLastScannedId2(SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                var lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
                 bool isSuccess = true;
 
                 if (lastCTSCustId > 0)
@@ -124,7 +124,7 @@
                             && result.NextScannedCTSCustId > 0
                             && result.NextScannedCTSCustId > lastCTSCustId)
                         {
-                            systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                            systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
                         }
                     }
                 }
@@ -208,12 +208,12 @@
         {
             if (maxScannedCustId != null)
             {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
             }
 
             if (maxScannedCustSubId != null)
             {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), CTS_DC_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
             }
         }
 

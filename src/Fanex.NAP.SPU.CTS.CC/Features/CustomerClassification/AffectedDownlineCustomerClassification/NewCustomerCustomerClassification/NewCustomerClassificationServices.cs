@@ -109,7 +109,7 @@
         {
             if (IsSuccess)
             {
-                IsSuccess = systemParameterServices.UpdateTimingExecution(newCustomerClassification.LastCTSCustID.ToString(), CTS_DC_SystemParameters.NewCTSCustomerClassificationLastCustID);
+                IsSuccess = systemParameterServices.UpdateTimingExecution(newCustomerClassification.LastCTSCustID.ToString(), CTS_SystemParameters.NewCTSCustomerClassificationLastCustID);
             }
 
             return IsSuccess;

@@ -41,7 +41,7 @@
         {
             try
             {
-                var fromScannedTime = systemParameterServices.GetLastScannedDateTime(CTS_DC_SystemParameters.JobMonitor_RealtimeLastScannedTime);
+                var fromScannedTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitor_RealtimeLastScannedTime);
                 var toScannedTime = fromScannedTime?.AddMinutes(60);
 
                 if (fromScannedTime != null && toScannedTime <= DateTime.Now.AddMinutes(-60))
@@ -58,7 +58,7 @@
                         classificationJobMonitorService.ClearRealtimeCustomerPlaceNewBets(fromScannedTime.Value, toScannedTime.Value);
                     }
 
-                    systemParameterServices.UpdateTimingExecution(toScannedTime.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_DC_SystemParameters.JobMonitor_RealtimeLastScannedTime);
+                    systemParameterServices.UpdateTimingExecution(toScannedTime.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitor_RealtimeLastScannedTime);
                 }
             }
             catch (Exception ex)

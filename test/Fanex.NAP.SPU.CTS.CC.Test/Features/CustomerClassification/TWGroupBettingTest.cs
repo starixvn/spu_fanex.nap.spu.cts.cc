@@ -28,9 +28,9 @@
         {
             var output = new SystemParameterEntity { ParameterDataType = "BIGINT", ParameterValue = "1" };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(CTS_Main_SystemParameters.TWGroupBetting_LastTransSec).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecution(Main_SystemParameters.TWGroupBetting_LastTransSec).Returns(output);
 
-            var result = twGroupbettingServices.GetConfig_Int64(CTS_Main_SystemParameters.TWGroupBetting_LastTransSec);
+            var result = twGroupbettingServices.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_LastTransSec);
             result.Should().NotBe(0);
         }
 
@@ -39,9 +39,9 @@
         {
             var output = new SystemParameterEntity { ParameterDataType = "INT", ParameterValue = "1" };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecution(Main_SystemParameters.TWGroupBetting_SkipTransCount).Returns(output);
 
-            var result = twGroupbettingServices.GetConfig_Int(CTS_Main_SystemParameters.TWGroupBetting_SkipTransCount);
+            var result = twGroupbettingServices.GetConfig_Int(Main_SystemParameters.TWGroupBetting_SkipTransCount);
             result.Should().NotBe(0);
         }
 

@@ -28,7 +28,7 @@
         public void GetLastScannedID_WhenSuccess()
         {            
             // Act
-            var result = robotImpervaService.GetLastScannedID(Shares.Constants.CTS_DC_SystemParameters.TWRobotImperva_LastLogID);
+            var result = robotImpervaService.GetLastScannedID(Shares.Constants.CTS_SystemParameters.TWRobotImperva_LastLogID);
 
             // Assert
             Assert.IsAssignableFrom<long>(result);
@@ -80,8 +80,8 @@
         }
 
         [Theory]
-        [InlineData(CTS_DC_SystemParameters.TWRobotImperva_LastLogID, 17)]
-        public void UpdateLastScannedID_WhenSuccess(CTS_DC_SystemParameters para, long maxLogID)
+        [InlineData(CTS_SystemParameters.TWRobotImperva_LastLogID, 17)]
+        public void UpdateLastScannedID_WhenSuccess(CTS_SystemParameters para, long maxLogID)
         {
             // Arrange
             sysDataAccess.UpdateTimingExecution(maxLogID.ToString(), para);
