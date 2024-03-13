@@ -17,15 +17,15 @@
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
-        Int64 GetConfig_Int64(SystemParameters paraID);
+        Int64 GetConfig_Int64(Main_SystemParameters paraID);
 
-        void UpdateConfig_Int64(Int64 value, SystemParameters paraID);
+        void UpdateConfig_Int64(Int64 value, Main_SystemParameters paraID);
 
-        int GetConfig_Int(SystemParameters paraID);
+        int GetConfig_Int(Main_SystemParameters paraID);
 
-        void UpdateConfig_Int(int value, SystemParameters paraID);
+        void UpdateConfig_Int(int value, Main_SystemParameters paraID);
 
-        int? GetConfigWithoutDefault(SystemParameters paraID);
+        int? GetConfigWithoutDefault(Main_SystemParameters paraID);
     }
 
     public class TWGroupBettingService : ITWGroupBettingService
@@ -40,32 +40,32 @@
             this.systemParameterDataAccess = systemParameterDataAccess;
         }
 
-        public Int64 GetConfig_Int64(SystemParameters paraID)
+        public Int64 GetConfig_Int64(Main_SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
             Int64 defaultValue = 0;
             return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
         
-        public int GetConfig_Int(SystemParameters paraID)
+        public int GetConfig_Int(Main_SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
             int defaultValue = 0;
             return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
 
-        public int? GetConfigWithoutDefault(SystemParameters paraID)
+        public int? GetConfigWithoutDefault(Main_SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
             return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : null;
         }
 
-        public void UpdateConfig_Int64(Int64 value, SystemParameters paraID)
+        public void UpdateConfig_Int64(Int64 value, Main_SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
         
-        public void UpdateConfig_Int(int value, SystemParameters paraID)
+        public void UpdateConfig_Int(int value, Main_SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }

@@ -9,9 +9,9 @@
 
     public interface ITWRobotImpervaService
     {
-        long GetLastScannedID(SystemParameters paraID);
+        long GetLastScannedID(CTS_SystemParameters paraID);
 
-        void UpdateLastScannedID(SystemParameters para, long maxLogID);
+        void UpdateLastScannedID(CTS_SystemParameters para, long maxLogID);
 
         TWRobotImpervaGetModel GetTWRobotImperva(long lastLogID);
 
@@ -29,14 +29,14 @@
             this.sysDataAccess = sysDataAccess;
         }
 
-        public long GetLastScannedID(SystemParameters paraID)
+        public long GetLastScannedID(CTS_SystemParameters paraID)
         {
             var lastValue = sysDataAccess.GetPreviousTimingExecution(paraID);
             
             return lastValue != null ? long.Parse(lastValue?.ParameterValue) : -1;
         }
 
-        public void UpdateLastScannedID(SystemParameters para, long maxLogID)
+        public void UpdateLastScannedID(CTS_SystemParameters para, long maxLogID)
         {
             if (maxLogID > 0)
             {

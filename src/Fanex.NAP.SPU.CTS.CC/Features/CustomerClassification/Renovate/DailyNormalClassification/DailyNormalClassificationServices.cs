@@ -64,8 +64,8 @@
         {
             if (scanningCustomers != null)
             {
-                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCustID.ToString(), SystemParameters.DailyNormalClassificationLastCustID);
-                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCategoryID.ToString(), SystemParameters.DailyNormalClassificationLastCategoryID);
+                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCustID.ToString(), CTS_SystemParameters.DailyNormalClassificationLastCustID);
+                systemParameterService.UpdateTimingExecution(scanningCustomers.op_LastCategoryID.ToString(), CTS_SystemParameters.DailyNormalClassificationLastCategoryID);
 
                 return (scanningCustomers.CustID != null && scanningCustomers.CustID.Any());
             }

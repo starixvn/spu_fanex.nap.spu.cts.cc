@@ -8,13 +8,13 @@
 
     public interface IDetectUnauthorizedLoginCustomerService
     {
-        int GetLastScannedCustID(SystemParameters paraID);
+        int GetLastScannedCustID(CTS_SystemParameters paraID);
 
-        DateTime GetLastScannedDate(SystemParameters paraID);
+        DateTime GetLastScannedDate(CTS_SystemParameters paraID);
 
-        DateTime GetProcessDate(SystemParameters lastScanDate);
+        DateTime GetProcessDate(CTS_SystemParameters lastScanDate);
 
-        bool UpdateLastScannedID(SystemParameters paraID, string value);
+        bool UpdateLastScannedID(CTS_SystemParameters paraID, string value);
 
         IEnumerable<CustFirstBetDateEntity> GetCustWithFirstBetDate(DetectUnauthorizedLoginCustParam param, DateTime processDate);
 
@@ -32,21 +32,21 @@
             this.systemDataAccess = systemDataAccess;
         }
        
-        public int GetLastScannedCustID(SystemParameters paraID)
+        public int GetLastScannedCustID(CTS_SystemParameters paraID)
         {
             var lastValue = systemDataAccess.GetPreviousTimingExecution(paraID);
 
             return lastValue != null ? int.Parse(lastValue?.ParameterValue) : 0;
         }
 
-        public DateTime GetLastScannedDate(SystemParameters paraID)
+        public DateTime GetLastScannedDate(CTS_SystemParameters paraID)
         {
             var lastValue = systemDataAccess.GetPreviousTimingExecution(paraID);
 
             return (lastValue != null && !string.IsNullOrEmpty(lastValue.ParameterValue)) ? DateTime.Parse(lastValue?.ParameterValue) : DateTime.MinValue;
         }
 
-        public bool UpdateLastScannedID(SystemParameters para, string value)
+        public bool UpdateLastScannedID(CTS_SystemParameters para, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
@@ -56,7 +56,7 @@
             return true;
         }
 
-        public DateTime GetProcessDate(SystemParameters lastScanDate)
+        public DateTime GetProcessDate(CTS_SystemParameters lastScanDate)
         {
             var now = DateTime.Now;
             var lastScannedDate = this.GetLastScannedDate(lastScanDate);

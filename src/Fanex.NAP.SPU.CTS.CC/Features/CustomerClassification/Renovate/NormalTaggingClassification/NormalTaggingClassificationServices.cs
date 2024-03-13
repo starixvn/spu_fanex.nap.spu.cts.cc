@@ -78,8 +78,8 @@
         {
             if (_getNormalTaggingScanningModel != null)
             {
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), SystemParameters.NormalTaggingClassificationLastCategoryID);
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), SystemParameters.NormalTaggingClassificationLastCustID);
+                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCategoryID);
+                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCustID);
 
                 return _custInfos != null && _custInfos.Any();
             }

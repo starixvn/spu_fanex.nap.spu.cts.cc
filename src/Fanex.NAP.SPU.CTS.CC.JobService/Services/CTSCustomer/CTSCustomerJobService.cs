@@ -134,11 +134,11 @@
         {
             try
             {
-                UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(SystemParameters.CustomerNullUsername2_LastCTSCustID);
+                UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
 
-                systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), SystemParameters.CustomerNullUsername2_LastCTSCustID);
+                systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 return Task.FromResult(true);
             }
@@ -192,7 +192,7 @@
             {
                 var isSuccess = true;
 
-                var lastScannedTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.ReactivatedCustomerLastScannedDate);
+                var lastScannedTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
 
                 var maxLogTime = DateTime.MaxValue;
                 var custInfoTime = DateTime.MaxValue;
@@ -240,7 +240,7 @@
                     if (isPushCCSuccess && isSuccess)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
@@ -304,8 +304,8 @@
                         isContinue = false;
                     }
 
-                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), SystemParameters.InactiveNewMember_LastCategoryID);
-                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), SystemParameters.InactiveNewMember_LastCustID);
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCategoryID);
+                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCustID);
 
                     Thread.Sleep(10000);
                 } while (isContinue);

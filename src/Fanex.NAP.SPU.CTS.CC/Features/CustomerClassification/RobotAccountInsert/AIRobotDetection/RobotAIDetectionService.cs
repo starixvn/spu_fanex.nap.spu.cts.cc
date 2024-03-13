@@ -16,7 +16,7 @@
     {
         IRobotAIDetectionService Start();
 
-        IRobotAIDetectionService GetRobotDetections(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
+        IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters robotAILastTime, CTS_SystemParameters robotImpervaLastTime);
 
         bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras);       
 
@@ -24,7 +24,7 @@
 
         IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
 
-        IRobotAIDetectionService UpdateLastScannedId(SystemParameters robotAILastTime, SystemParameters robotImpervaLastTime);
+        IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters robotAILastTime, CTS_SystemParameters robotImpervaLastTime);
     }
 
     public class RobotAIDetectionService : IRobotAIDetectionService
@@ -55,7 +55,7 @@
             return this;
         }
 
-        public IRobotAIDetectionService GetRobotDetections(SystemParameters lastRobotAIIDPara, SystemParameters lastRobotImpervaIDPara)
+        public IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters lastRobotAIIDPara, CTS_SystemParameters lastRobotImpervaIDPara)
         {
             var lastRobotAIID = systemParameterServices.GetLastScannedId(lastRobotAIIDPara);
 
@@ -100,7 +100,7 @@
             return true;
         }
 
-        public IRobotAIDetectionService UpdateLastScannedId(SystemParameters lastRobotAIIDPara, SystemParameters lastRobotImpervaIDPara)
+        public IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters lastRobotAIIDPara, CTS_SystemParameters lastRobotImpervaIDPara)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {               

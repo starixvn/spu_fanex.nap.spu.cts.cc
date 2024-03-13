@@ -71,7 +71,7 @@
         {
             var isSuccess = true;
 
-            var lastDateTime = systemParameterServices.GetLastScannedDateTime(SystemParameters.TVS_LastScanDateTime);
+            var lastDateTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.TVS_LastScanDateTime);
 
             var tvsProblemAccounts = tvsProblemAccountServices.GetTVSProblemAccounts(lastDateTime);
 
@@ -100,7 +100,7 @@
 
             if (isSuccess && tvsProblemAccounts != null)
             {
-                systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), SystemParameters.TVS_LastScanDateTime);
+                systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.TVS_LastScanDateTime);
             }
 
             return isSuccess;

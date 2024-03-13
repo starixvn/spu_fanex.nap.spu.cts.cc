@@ -70,7 +70,7 @@
 
         public IRobotTWInsertServices GetLastTimespan()
         {
-            lastScannedTimespan = systemParameterServices.GetLastScannedId(SystemParameters.RobotAccountLastScannedTime);
+            lastScannedTimespan = systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotAccountLastScannedTime);
 
             return this;
         }
@@ -158,7 +158,7 @@
             {
                 string lastTimespan = robotInfo.MaxTimestamp.ToString();
 
-                systemParameterServices.UpdateTimingExecution(lastTimespan, SystemParameters.RobotAccountLastScannedTime);
+                systemParameterServices.UpdateTimingExecution(lastTimespan, CTS_SystemParameters.RobotAccountLastScannedTime);
             }
         }
 

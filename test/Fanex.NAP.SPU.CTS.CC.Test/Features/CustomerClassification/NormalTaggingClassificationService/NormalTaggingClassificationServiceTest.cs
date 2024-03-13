@@ -211,7 +211,7 @@
 
             _normalTaggingClassificationDataAccess.Received(0).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
         }
 
         [Fact]
@@ -248,7 +248,7 @@
 
             _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
         }
 
         [Fact]
@@ -273,7 +273,7 @@
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
-            _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>())).Throw<Exception>();
+            _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>())).Throw<Exception>();
 
             Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
@@ -288,7 +288,7 @@
 
             _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+            _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
         }
 
         [Fact]
@@ -328,7 +328,7 @@
 
             _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.SystemParameters>());
+            _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
         }
         #endregion
     }

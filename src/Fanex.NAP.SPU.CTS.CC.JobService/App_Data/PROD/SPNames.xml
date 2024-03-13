@@ -4,6 +4,8 @@
 	<Function Name="ProblemAccount">
 		<Setting Key="CTS_DC_SystemParameter_Get" SpName="CTS_DC_SystemParameter_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_SystemParameter_Update" SpName="CTS_DC_SystemParameter_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_SystemParameter_Get" SpName="CTS_SystemParameter_Get" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_SystemParameter_Update" SpName="CTS_SystemParameter_Update" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="Acc_CustomerUpdateCustomerClass" SpName="Acc_CustomerUpdateCustomerClass" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_GetForSoon88" SpName="CTS_DC_CustClassification_GetForSoon88" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustEvidence_CheckCleanCust" SpName="CTS_DC_CustEvidence_CheckCleanCust" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -14,7 +16,7 @@
 		<Setting Key="CTS_NormalAccountsClassification_GetNewClassification" SpName="CTS_NormalAccountsClassification_GetNewClassification" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600" />
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
-		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.bodb02.bodbSPUNet" />
+		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.WASAVerse.bodbSPUNet" />
 	</Function>
 	<Function Name="DailyNormalClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
@@ -145,13 +147,13 @@
 	</Function>
 
 	<Function Name="TWGroupBetting">
-		<Setting Key="CTS_TWGroupBetting_GetRules" SpName="CTS_TWGroupBetting_GetRules" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicketDB062" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="DB062.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600" />
-		<Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="DB062.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="DB062.bodb02.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_GetRules" SpName="CTS_TWGroupBetting_GetRules" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicketDB062" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.WASAVerse.bodbSPUNet" TimeOut="600" />
+		<Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_CustomerClassification_CheckNewGroupBetting" SpName="CTS_CustomerClassification_CheckNewGroupBetting" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 

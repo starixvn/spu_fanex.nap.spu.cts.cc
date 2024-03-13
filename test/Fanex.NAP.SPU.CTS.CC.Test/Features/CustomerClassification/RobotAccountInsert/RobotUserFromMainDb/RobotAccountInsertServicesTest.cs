@@ -106,7 +106,7 @@
 
 
             // Act
-            systemParameterServices.GetLastScannedId(SystemParameters.RobotAccountLastScannedTime).Returns(expectedLastTimespan);
+            systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotAccountLastScannedTime).Returns(expectedLastTimespan);
 
             robotTWInsertServices.GetLastTimespan();
 

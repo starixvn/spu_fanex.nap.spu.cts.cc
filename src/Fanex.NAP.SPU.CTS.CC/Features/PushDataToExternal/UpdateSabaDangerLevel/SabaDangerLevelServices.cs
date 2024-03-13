@@ -103,7 +103,7 @@
         {
             if (sabaDangerLevel.UpdatedResult.IsSuccess)
             {
-                systemParameterServices.UpdateTimingExecution(sabaDangerLevel.LastHistoryID.ToString(), SystemParameters.SabaDangerLevel_LastHistoryID);
+                systemParameterServices.UpdateTimingExecution(sabaDangerLevel.LastHistoryID.ToString(), CTS_SystemParameters.SabaDangerLevel_LastHistoryID);
 
                 return true;
             }
@@ -167,9 +167,9 @@
         {
             if (initSabaDangerLevel.UpdatedResult.IsSuccess)
             {
-                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCategoryID.ToString(), SystemParameters.SabaDangerLevel_LastCategoryID);
+                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCategoryID.ToString(), CTS_SystemParameters.SabaDangerLevel_LastCategoryID);
 
-                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCustID.ToString(), SystemParameters.SabaDangerLevel_LastCustID);
+                systemParameterServices.UpdateTimingExecution(initSabaDangerLevel.LastCustID.ToString(), CTS_SystemParameters.SabaDangerLevel_LastCustID);
 
                 return true;
             }
