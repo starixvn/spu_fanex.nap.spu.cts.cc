@@ -71,7 +71,8 @@
             UnauthorizedLogin_LastScanDate_Credit = 149,
             UnauthorizedLogin_LastScanDate_Licensee = 150,         
             JobMonitoring_IncorrectData_LastScanID = 151,
-            JobMonitoring_NewCustomer_LastCTSCustID = 152
+            JobMonitoring_NewCustomer_LastCTSCustID = 152,
+            DailyDangerousDetectionToCC_LastScannedDate = 153
         };
 
         public enum Main_SystemParameters

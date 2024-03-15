@@ -251,4 +251,9 @@
 	<Function Name="RescanClassificationBySportRenovate">
 		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
+
+	<Function Name="DailyDangerousScoreClassification">
+		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_CheckIsDangerousScore" SpName="CTS_DC_CustClassification_CheckIsDangerousScore" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
 </Functions>

@@ -290,4 +290,9 @@
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess" SpName="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
+
+	<Function Name="DailyDangerousScoreClassification">
+		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_CheckIsDangerousScore" SpName="CTS_DC_CustClassification_CheckIsDangerousScore" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
 </Functions>
