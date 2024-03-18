@@ -84,6 +84,8 @@
 
         public bool IsFromTVS { get; set; }
 
+        public bool IsFromAI { get; set; }
+
         public int? TVSRequestID { get; set; }
 
         public bool? IsParlay { get; set; }

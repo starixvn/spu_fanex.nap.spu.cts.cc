@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousScoreClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -10,27 +9,26 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public interface IDailyDangerousScoreClassificationJobService
+    public interface IDailyDangerousClassificationJobService
     {
         Task<bool> Execute(int batchSize);
     }
 
-    public class DailyDangerousClassificationJobService : IDailyDangerousScoreClassificationJobService
+    public class DailyDangerousClassificationJobService : IDailyDangerousClassificationJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly IDailyDangerousClassificationService dailyDangerousClassificationService;
+        private readonly IDailyDangerousClassificationService dailyDangerousCCService;
         private readonly ISystemParameterServices systemParameterService;
-        private readonly IAppSettings appSettings;
 
         public DailyDangerousClassificationJobService(ISentryClient sentryClient,
             IDailyDangerousClassificationService dailyDangerousClassificationService,
-            ISystemParameterServices systemParameterService,
-            IAppSettings appSettings)
+            ISystemParameterServices systemParameterService)
         {
             this.sentryClient = sentryClient;
-            this.dailyDangerousClassificationService = dailyDangerousClassificationService;
-            this.appSettings = appSettings;
+            this.dailyDangerousCCService = dailyDangerousClassificationService;
+            this.systemParameterService = systemParameterService;
+            this.serviceName = "DailyDangerousClassificationJobService";
         }
 
         public Task<bool> Execute(int batchSize)
@@ -51,14 +49,25 @@
 
         private void JobRun(int batchSize)
         {
-            var scannedDate = DateTime.Now;
+            var isLicensee = false;
+            bool isContinue;
 
-            var dangerousCusts = dailyDangerousClassificationService.GetCustDangerousDetection(scannedDate);
-
-            if (dangerousCusts != null && dangerousCusts.Any())
+            do
             {
+                var dangerousCCs = dailyDangerousCCService.GetDangerousClassification(isLicensee);
 
-            }
+                isContinue = dangerousCCs.DangerousCCLastScanned != null && dangerousCCs.DangerousCCLastScanned.LastCustID > 0;
+
+                if (isContinue)
+                {
+                    dailyDangerousCCService.InsertDangerousClassification(dangerousCCs.DangerousCCs, isLicensee, batchSize);
+
+                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastCustID.ToString(), Constants.CTS_SystemParameters.DailyDangerousClassification_LastCustID);
+
+                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastScannedDate?.ToString(Constants.CONVERT_TO_SQL_DATETIME), Constants.CTS_SystemParameters.DailyDangerousClassification_LastScannedDate);
+                }                
+
+            } while (isContinue);
         }
 
     }

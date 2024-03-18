@@ -165,6 +165,7 @@
 
                     var rescanPACustIDs = result.CustomerInfo.Where(x => !x.IsCleanPA).Select(x => x.CustID);
                     parameters.IsRescanPA = true;
+                    parameters.IsRescanPADangerous = true;
                     isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanPACustIDs, parameters);
                 }
             }
@@ -200,6 +201,7 @@
                 var custIDs = result.Select(x => x.CustID);
 
                 parameters.IsRescanPA = true;
+                parameters.IsRescanPADangerous = true;
                 isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 

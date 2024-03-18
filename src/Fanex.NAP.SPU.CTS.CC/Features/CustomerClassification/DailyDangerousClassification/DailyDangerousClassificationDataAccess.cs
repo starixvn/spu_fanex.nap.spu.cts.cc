@@ -1,14 +1,13 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousScoreClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification
 {
     using Fanex.Data.Repository;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IDailyDangerousClassificationDataAccess
     {
-        IEnumerable<DangerousDetectionToCCEntity> GetDangerousScoreToCC(DateTime scannedDate);
-
-        IEnumerable<CheckIsDangerousDetectionByCustEntity> CheckIsDangerousByCust(int CustID);
+        DangerousToCCModel GetDangerousClassification(bool isLicensee);        
     }
 
     public class DailyDangerousClassificationDataAccess : IDailyDangerousClassificationDataAccess
@@ -20,25 +19,21 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<DangerousDetectionToCCEntity> GetDangerousScoreToCC(DateTime scannedDate)
+        public DangerousToCCModel GetDangerousClassification(bool isLicensee)
         {
             var criteria = new GetDangerousDetectionToCCCriteria
             {
-                ScannedDate = scannedDate
+                IsLicensee = isLicensee
             };
 
-            return repository.Fetch<DangerousDetectionToCCEntity>(criteria);
-        }
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<DangerousToCCLastScannedEntity, DangerousToCCEntity>(criteria);
 
-        public IEnumerable<CheckIsDangerousDetectionByCustEntity> CheckIsDangerousByCust(int CustID)
-        {
-            var criteria = new CheckIsDangerousDetectionByCustCriteria
+            return new DangerousToCCModel
             {
-                CustID = CustID
+                DangerousCCLastScanned = firstResultSet.SingleOrDefault(),
+                DangerousCCs = secondResultSet
             };
-
-            return repository.Fetch<CheckIsDangerousDetectionByCustEntity>(criteria);
         }
-
+      
     }
 }

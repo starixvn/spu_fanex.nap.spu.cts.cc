@@ -58,6 +58,7 @@
         private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
+        private List<long> custIdsToRescanPADangerous;
         private List<long> custIdsToRemoveOldPA;
         private List<long> smaCustIds;
         private bool isSuccess;
@@ -82,6 +83,7 @@
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
+            this.custIdsToRescanPADangerous = new List<long>();
             this.custIdsToRemoveOldPA = new List<long>();
             this.smaCustIds = new List<long>();
             this.isSuccess = true;
@@ -104,6 +106,11 @@
                    .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
+                }
+
+                if (parameters.IsRescanPADangerous)
+                {
+                    RescanPADangerous(custIds, parameters);
                 }
 
                 GetAgentCusts(custIds)
@@ -281,6 +288,7 @@
             {
                 var custToRescanNormal = custIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPADangerous.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
               
                 if (custToRescanNormal.Any())
@@ -312,6 +320,46 @@
             }
 
             return this;
+        }
+
+        public void RescanPADangerous(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        {
+            if (custIds.Any())
+            {
+                var custIDs = string.Join(",", custIds);
+
+                var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
+
+                if (pasDangerous != null && pasDangerous.Any())
+                {
+                    var pas = pasDangerous.Select(x =>
+                    {
+                        return new InsertProblemAccountEntity
+                        {
+                            CustID = x.CustID,
+                            CTSCustID = x.CTSCustID,
+                            RoleID = x.RoleID,
+                            SubscriberID = x.SubscriberID,
+                            CategoryID = x.CategoryID,
+                            CategoryGroup = x.CategoryID,
+                            IsLicensee = x.IsLicensee,
+                            IsFromAI = true,
+                            IsDirectPA = false,
+                            IsFromCTS = true,
+                            IsFromTVS = false,
+                            IsFromTW = false,
+                            CreatedBy = Constants.StarixITId,
+                            Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {decimal.ToInt32(x.ClassifiedScore) * 100}%"
+                        };
+                    });
+
+                    var custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+
+                    custIdsToRescanPADangerous.AddRange(custPaDangerous);
+
+                    custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
+                }
+            }
         }
 
         public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)

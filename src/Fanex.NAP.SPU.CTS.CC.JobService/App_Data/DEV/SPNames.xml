@@ -293,6 +293,6 @@
 	
 	<Function Name="DailyDangerousScoreClassification">
 		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_CheckIsDangerousScore" SpName="CTS_DC_CustClassification_CheckIsDangerousScore_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_PA_Dangerous_ReScan" SpName="CTS_DC_CustClassification_PA_Dangerous_ReScan_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 </Functions>

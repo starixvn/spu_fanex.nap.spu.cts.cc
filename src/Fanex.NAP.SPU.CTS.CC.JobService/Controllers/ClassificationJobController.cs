@@ -39,7 +39,7 @@
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
-        private readonly IDailyDangerousScoreClassificationJobService dailyDangerousScoreClassificationJobService;
+        private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
@@ -66,7 +66,7 @@
             IMatchMonitorClassificationJobService mmClassificationJobService,
             ITWRobotImpervaJobService robotImpervaJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
-            IDailyDangerousScoreClassificationJobService dailyDangerousScoreClassificationJobService)
+            IDailyDangerousClassificationJobService dailyDangerousClassificationJobService)
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
@@ -94,7 +94,7 @@
             this.mmClassificationJobService = mmClassificationJobService;
             this.robotImpervaJobService = robotImpervaJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
-            this.dailyDangerousScoreClassificationJobService = dailyDangerousScoreClassificationJobService;
+            this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -117,12 +117,12 @@
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
-        [HttpPost("scanningDailyDangerousScoreClassification")]
-        public async Task<bool> DailyScanningDangerousScoreClassification([FromForm] int batchSize)
+        [HttpPost("scanningDailyDangerousClassification")]
+        public async Task<bool> DailyScanningDangerousClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Dangerous Score classify to 2800 Service is running at {DateTime.Now}");
+            sentryClient.CaptureMessage($"Daily Dangerous classification Service is running at {DateTime.Now}");
 
-            return await this.dailyDangerousScoreClassificationJobService.Execute(batchSize);
+            return await this.dailyDangerousClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("scanningRealtimeClassification")]

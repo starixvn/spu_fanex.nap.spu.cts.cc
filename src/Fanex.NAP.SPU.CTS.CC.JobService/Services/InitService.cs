@@ -45,7 +45,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousScoreClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
 
     public static class InitService
     {
@@ -137,7 +137,7 @@
 
             RegisterDetectUnauthorizedLoginCustomer(services);
 
-            RegisterDailyDangerousScoreClassification(services);
+            RegisterDailyDangerousClassification(services);
         }       
 
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
@@ -505,11 +505,11 @@
                 RenovateBySport.RescanNormalClassificationBySport.RescanNormalClassificationBySportServices>();
         }
 
-        private static void RegisterDailyDangerousScoreClassification(IServiceCollection services)
+        private static void RegisterDailyDangerousClassification(IServiceCollection services)
         {
-            services.AddSingleton<IDailyDangerousScoreClassificationJobService, DailyDangerousClassificationJobService>();
-            services.AddSingleton<IDailyDangerousScoreClassificationService, DailyDangerousClassificationService>();
-            services.AddSingleton<IDailyDangerousScoreClassificationDataAccess, DailyDangerousClassificationDataAccess>();
+            services.AddSingleton<IDailyDangerousClassificationJobService, DailyDangerousClassificationJobService>();
+            services.AddSingleton<IDailyDangerousClassificationService, DailyDangerousClassificationService>();
+            services.AddSingleton<IDailyDangerousClassificationDataAccess, DailyDangerousClassificationDataAccess>();
         }
     }
 }

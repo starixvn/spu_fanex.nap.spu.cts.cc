@@ -113,7 +113,7 @@
             {
                 CheckNewPAAssociationCustomerForRollback(customerInfo);
 
-                var custIds = customerInfo.Select(x => x.CustID).Distinct();
+                var custIds = customerInfo.Where(x => x.CategoryType == 1).Select(x => x.CustID).Distinct();
 
                 UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
             }
@@ -302,6 +302,7 @@
                                                             MatchID = group.pa.MatchID,
                                                            
                                                             IsDirectPA = group.pa.IsDirectPA,
+                                                            IsFromAI = group.pa.IsFromAI,
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             TVSRequestID = group.pa.TVSRequestID,

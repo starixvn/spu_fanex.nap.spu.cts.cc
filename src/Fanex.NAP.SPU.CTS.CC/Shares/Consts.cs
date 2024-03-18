@@ -12,6 +12,7 @@
 
         public const string CONVERT_TO_SQL_DATE = "yyyy-MM-dd";
         public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
+        public const string CONVERT_TO_DATETIME_ddMMMyyyy = "dd MMM, yyyy";
 
         public const int SabaDangerLevel_SleepTimes = 5000;
 
@@ -72,7 +73,8 @@
             UnauthorizedLogin_LastScanDate_Licensee = 150,         
             JobMonitoring_IncorrectData_LastScanID = 151,
             JobMonitoring_NewCustomer_LastCTSCustID = 152,
-            DailyDangerousDetectionToCC_LastScannedDate = 153
+            DailyDangerousClassification_LastScannedDate = 153,
+            DailyDangerousClassification_LastCustID = 154
         };
 
         public enum Main_SystemParameters
@@ -158,7 +160,8 @@
             TVSProblemAccountInsert = 53,
             ClassifyGBMatchMonitor = 54,
             NormalTaggingJob = 100,
-            DetectUnauthorizedLoginCust = 101
+            DetectUnauthorizedLoginCust = 101,
+            DailyDangerousClassification = 102
         };
 
         public enum BySport_FunctionId
