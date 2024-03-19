@@ -58,25 +58,31 @@
         {
             try
             {
+                var isSuccess = true;
+
                 var lastScanned = ctscustomerService.GetLastInsertCust();
                 var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
-                var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID).ToList();
 
-                customers.CustomerInfos.AddRange(custSubs);
-
-                var result = ctscustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
+                if (customers?.CustomerInfos != null && customers.CustomerInfos.Any())
                 {
-                    InternalBatchSize = batchSize,
-                    ExternalBatchSize = batchSize,
-                    IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                    IsInsertMissingCust = false,
-                    InsertVIPURL = appSettings.InsertVIPURL,
-                    InsertBAURL = appSettings.InsertBAURL,
-                    serviceName = "InsertNewCustomer"
-                });
+                    var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID);
 
-                return Task.FromResult(result);
+                    customers.CustomerInfos.AddRange(custSubs);
+
+                    isSuccess = ctscustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
+                    {
+                        InternalBatchSize = batchSize,
+                        ExternalBatchSize = batchSize,
+                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsInsertMissingCust = false,
+                        InsertVIPURL = appSettings.InsertVIPURL,
+                        InsertBAURL = appSettings.InsertBAURL,
+                        serviceName = "InsertNewCustomer"
+                    });
+                }
+
+                return Task.FromResult(isSuccess);
             }
             catch (Exception ex)
             {
@@ -197,7 +203,7 @@
                 var maxLogTime = DateTime.MaxValue;
                 var custInfoTime = DateTime.MaxValue;
                 var requestTime = DateTime.Now;
-                
+
                 var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
 
                 if (custToReactive != null && custToReactive.Any())
