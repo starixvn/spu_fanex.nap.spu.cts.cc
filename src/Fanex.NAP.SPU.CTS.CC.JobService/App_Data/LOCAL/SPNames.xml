@@ -206,7 +206,7 @@
 	<Function Name="NormalAccountBySport">
 		<Setting Key="Acc_CustomerUpdateCustomerClassBySport" SpName="Acc_CustomerUpdateCustomerClassBySport" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />		
 		<Setting Key="CTS_NormalAccountsClassification_BySport_GetNewClassification" SpName="CTS_NormalAccountsClassification_BySport_GetNewClassification" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustClassification_BySport_GetCC" SpName="CTS_DC_CustClassification_BySport_GetCC" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_BySport_GetCC" SpName="CTS_DC_CustClassification_BySport_GetCC_UAT1" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_NormalAccountsClassification_BySport_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_BySport_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 

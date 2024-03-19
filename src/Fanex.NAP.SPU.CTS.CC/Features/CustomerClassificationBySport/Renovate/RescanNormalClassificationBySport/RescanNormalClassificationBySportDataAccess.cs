@@ -24,7 +24,8 @@
                 var criteria = new PreprocessRescanNormalClassificationBySportCriteria
                 {
                     ListCustId = custIds,
-                    FunctionId = (int)functionId
+                    FunctionId = (int)functionId,
+                    QueryType = (int)BySport_RescanNormalType.Service,
                 };
 
                 repository.Execute(criteria);

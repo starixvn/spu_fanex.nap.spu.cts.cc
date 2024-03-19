@@ -181,6 +181,12 @@
             Auto_NormalTaggingScan = 7
         }
 
+        public enum BySport_RescanNormalType
+        {
+            Service = 1,
+            Manual = 2
+        }
+
         public enum HttpStatus
         {
             Unauthorized = 401,
