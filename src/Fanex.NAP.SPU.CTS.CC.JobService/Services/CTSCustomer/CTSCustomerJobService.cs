@@ -3,10 +3,12 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models.ArchiveCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -204,46 +206,21 @@
                 var custInfoTime = DateTime.MaxValue;
                 var requestTime = DateTime.Now;
 
+                // step 1 get
                 var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
 
-                if (custToReactive != null && custToReactive.Any())
+                // step 2
+                var ctsArchiveCustIDs = CheckExistCTSArchiveCustomerAndPushCC(custToReactive);
+
+                custInfoTime = DateTime.Now;
+
+                if (ctsArchiveCustIDs.IsPushCCSuccess)
                 {
-                    var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
+                    // step 3
+                    var isInsertReactivedCust = InsertNewCustFromReactivedCust(ctsArchiveCustIDs.NotExistCusts);
 
-                    var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(custToReactive);
-
-                    /* 1. Push CC to MainDB */
-                    var isPushCCSuccess = this.PushDataToExternal(exitedCTSArchiveCustIDs, "InsertReactivatedCustomers");
-
-                    /* 2. Insert New Customer */
-                    var insertNewCusts = custToReactive.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs);
-                    var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
-
-                    custInfoTime = DateTime.Now;
-                    Thread.Sleep(2000);
-
-                    var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
-                    var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
-
-                    custInfo.CustomerInfos.AddRange(mainCusts);
-                    custInfo.CustomerInfos.AddRange(subCusts);
-
-                    if (custInfo != null && custInfo.CustomerInfos.Any())
-                    {
-                        isSuccess = ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
-                        {
-                            InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                            ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                            IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsInsertMissingCust = false,
-                            InsertVIPURL = appSettings.InsertVIPURL,
-                            InsertBAURL = appSettings.InsertBAURL,
-                            serviceName = "ReactivatedCustomer"
-                        });
-                    }
-
-                    if (isPushCCSuccess && isSuccess)
+                    // step 4 update scantime for next
+                    if (isInsertReactivedCust)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
                         isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
@@ -345,6 +322,63 @@
             });
         }
 
+        #endregion
+
+        #region Private Methods InsertReactivatedCustomers
+        private CheckExistCTSArchiveCustModel CheckExistCTSArchiveCustomerAndPushCC(IEnumerable<ReactivatedCustModel> reactivedCusts)
+        {
+            if (reactivedCusts.IsNullOrEmpty())
+            {
+                return new CheckExistCTSArchiveCustModel();
+            }
+
+            var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(reactivedCusts);
+
+            return new CheckExistCTSArchiveCustModel
+            {
+                ExistCusts = exitedCTSArchiveCustIDs,
+                NotExistCusts = reactivedCusts.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs),
+                IsPushCCSuccess = PushDataToExternal(exitedCTSArchiveCustIDs, "InsertReactivatedCustomers")
+            };
+        }
+
+        private bool InsertNewCustFromReactivedCust(IEnumerable<long> insertNewCusts)
+        {
+            if (insertNewCusts.IsNullOrEmpty())
+            {
+                return true;
+            }
+
+            var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
+
+            // sleep for latency
+            Thread.Sleep(2000);
+
+            var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
+
+            if (mainCusts.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
+
+            var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
+            custInfo.CustomerInfos.AddRange(mainCusts);
+            custInfo.CustomerInfos.AddRange(subCusts);
+
+            return ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
+            {
+                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
+                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                IsInsertMissingCust = false,
+                InsertVIPURL = appSettings.InsertVIPURL,
+                InsertBAURL = appSettings.InsertBAURL,
+                serviceName = "ReactivatedCustomer"
+            });
+        }
         #endregion Private Methods
     }
 }

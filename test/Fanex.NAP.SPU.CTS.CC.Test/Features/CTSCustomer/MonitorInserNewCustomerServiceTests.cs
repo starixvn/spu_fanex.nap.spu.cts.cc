@@ -67,7 +67,7 @@
         [Fact]
         public void CompareCustomerDataForMonitor_WhenSuccess_RunSuccessfully()
         {
-            var inputData = new List<MonitoringNewCustomerEntity>();
+            var inputData = new List<MonitoringNewCustomerEntity>() { new MonitoringNewCustomerEntity() };
             var expectedResult = new List<MissingCustomerCompareEntity> { CreateSampleCustomerCompareModel() };
 
             var customerJson = JsonConvert.SerializeObject(inputData);
