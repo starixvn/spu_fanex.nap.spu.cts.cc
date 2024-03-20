@@ -16,7 +16,7 @@
     {
         DangerousToCCModel GetDangerousClassification(bool isLicensee);
 
-        bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, int batchSize);
+        bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, PushDataToExternalEntity paras);
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);       
     }
@@ -25,16 +25,13 @@
     {
         private readonly IDailyDangerousClassificationDataAccess dangerousClassificationDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISystemParameterServices systemParameterService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;  
         private readonly string serviceName;
 
-        public DailyDangerousClassificationService(ISystemParameterServices systemParameterService,
-            IProblemAccountServices problemAccountServices,
+        public DailyDangerousClassificationService(IProblemAccountServices problemAccountServices,
             IDailyDangerousClassificationDataAccess dangerousClassificationDataAccess,
             ICustClassToMainDBService custClassToMainDBService)
-        {
-            this.systemParameterService = systemParameterService;
+        {        
             this.problemAccountServices = problemAccountServices;
             this.dangerousClassificationDataAccess = dangerousClassificationDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
@@ -51,12 +48,12 @@
             return problemAccountServices.GetProblemAccountLosingClassification(custIds, funcId);
         }
 
-        public bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, int batchSize)
+        public bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, PushDataToExternalEntity paras)
         {           
             if (dangerousCCs != null && dangerousCCs.Any())
             {                
                 var pas = dangerousCCs.Select(x =>
-                {
+                {                   
                     return new InsertProblemAccountEntity
                     {
                         CustID = x.CustID,
@@ -72,15 +69,17 @@
                         IsFromTVS = false,
                         IsFromTW = false,                        
                         CreatedBy = Constants.StarixITId,
-                        Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(decimal.ToInt32(x.ClassifiedScore) * 100)}%"
+                        Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(int)(x.ClassifiedScore * 100)}%"
                     };
                 });
 
-                var pasChunks = pas.Chunk(batchSize);
+                var pasChunks = pas.Chunk(paras.ExternalBatchSize);
 
                 foreach (var pasChunk in pasChunks) 
                 {
-                    problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, serviceName);
+                    var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, serviceName);                   
+
+                    custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
                 }                
             }
 

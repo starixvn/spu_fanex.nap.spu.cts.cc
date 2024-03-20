@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -20,14 +22,17 @@
         private readonly ISentryClient sentryClient;
         private readonly IDailyDangerousClassificationService dailyDangerousCCService;
         private readonly ISystemParameterServices systemParameterService;
+        private readonly IAppSettings appSettings;
 
         public DailyDangerousClassificationJobService(ISentryClient sentryClient,
             IDailyDangerousClassificationService dailyDangerousClassificationService,
-            ISystemParameterServices systemParameterService)
+            ISystemParameterServices systemParameterService,
+            IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.dailyDangerousCCService = dailyDangerousClassificationService;
             this.systemParameterService = systemParameterService;
+            this.appSettings = appSettings;
             this.serviceName = "DailyDangerousClassificationJobService";
         }
 
@@ -52,15 +57,25 @@
             var isLicensee = false;
             bool isContinue;
 
+            var paras = new PushDataToExternalEntity
+            {
+                ExternalBatchSize = batchSize,
+                FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                IsPushCCToSoon88 = true,
+                IsUpdateDangerToMainDB = true,
+                IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                ServiceName = serviceName
+            };
+
             do
             {
                 var dangerousCCs = dailyDangerousCCService.GetDangerousClassification(isLicensee);
-
+      
                 isContinue = dangerousCCs.DangerousCCLastScanned != null && dangerousCCs.DangerousCCLastScanned.LastCustID > 0;
 
                 if (isContinue)
                 {
-                    dailyDangerousCCService.InsertDangerousClassification(dangerousCCs.DangerousCCs, isLicensee, batchSize);
+                    dailyDangerousCCService.InsertDangerousClassification(dangerousCCs.DangerousCCs, isLicensee, paras);
 
                     systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastCustID.ToString(), Constants.CTS_SystemParameters.DailyDangerousClassification_LastCustID);
 
