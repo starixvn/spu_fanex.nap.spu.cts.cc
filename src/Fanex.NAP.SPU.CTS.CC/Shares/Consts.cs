@@ -13,6 +13,10 @@
         public const string CONVERT_TO_SQL_DATE = "yyyy-MM-dd";
         public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
         public const string CONVERT_TO_DATETIME_ddMMMyyyy = "dd MMM, yyyy";
+        public const string FormatDecimalToString_2Places = "0.00";
+        public const string FormatDecimalToString_Thousands = "#,##0";
+        public const string FormatDecimalToString_Thousands2Places = "#,##0.00";
+        public const string FormatDecimalToString_Thousands3Places = "#,##0.##";
 
         public const int SabaDangerLevel_SleepTimes = 5000;
 

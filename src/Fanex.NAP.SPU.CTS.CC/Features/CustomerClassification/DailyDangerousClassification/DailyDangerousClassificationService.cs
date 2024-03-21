@@ -68,8 +68,8 @@
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,                        
-                        CreatedBy = Constants.StarixITId,
-                        Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(int)(x.ClassifiedScore * 100)}%"
+                        CreatedBy = StarixITId,
+                        Remark = $"Detection Date: { x.ClassifiedDate.ToString(CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(x.ClassifiedScore * 100).ToString(FormatDecimalToString_2Places)}%"
                     };
                 });
 
