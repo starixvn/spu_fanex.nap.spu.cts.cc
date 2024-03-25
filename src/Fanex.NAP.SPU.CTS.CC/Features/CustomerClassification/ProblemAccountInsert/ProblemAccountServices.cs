@@ -221,7 +221,7 @@
         {
             if (assCustForRollbacks != null && assCustForRollbacks.Any())
             {
-                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
+                var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks.Where(x=>x.CategoryType != 2));
 
                 problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(custInfoJson);
             }

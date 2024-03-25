@@ -344,7 +344,7 @@
                             CategoryGroup = x.CategoryID,
                             IsLicensee = x.IsLicensee,
                             IsFromAI = true,
-                            IsDirectPA = false,
+                            IsDirectPA = null,
                             IsFromCTS = true,
                             IsFromTVS = false,
                             IsFromTW = false,

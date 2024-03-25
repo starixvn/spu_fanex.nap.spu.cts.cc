@@ -16,9 +16,7 @@
     {
         DangerousToCCModel GetDangerousClassification(bool isLicensee);
 
-        bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, PushDataToExternalEntity paras);
-
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);       
+        bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, PushDataToExternalEntity paras);       
     }
 
     public class DailyDangerousClassificationService : IDailyDangerousClassificationService
@@ -41,12 +39,7 @@
         public DangerousToCCModel GetDangerousClassification(bool isLicensee)
         {
             return dangerousClassificationDataAccess.GetDangerousClassification(isLicensee);
-        }
-
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
-        {
-            return problemAccountServices.GetProblemAccountLosingClassification(custIds, funcId);
-        }
+        }        
 
         public bool InsertDangerousClassification(IEnumerable<DangerousToCCEntity> dangerousCCs, bool isLicensee, PushDataToExternalEntity paras)
         {           
@@ -64,7 +57,7 @@
                         CategoryGroup = x.CategoryID,
                         IsLicensee = isLicensee,
                         IsFromAI = true,
-                        IsDirectPA = false,
+                        IsDirectPA = null,
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,                        

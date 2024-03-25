@@ -68,7 +68,7 @@
 
         public string Remark { get; set; }
 
-        public bool IsDirectPA { get; set; }
+        public bool? IsDirectPA { get; set; }
 
         public int? WinlossStatus { get; set; }
 
