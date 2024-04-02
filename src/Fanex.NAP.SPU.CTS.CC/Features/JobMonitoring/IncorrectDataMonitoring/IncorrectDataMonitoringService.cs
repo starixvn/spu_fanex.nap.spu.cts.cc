@@ -16,8 +16,6 @@
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
-        void InsertIncorrectDataMonitoring(string trackingInfo, long? value, JobMonitor_IssueType issueType);
-
         void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment);
     }
 
@@ -73,23 +71,6 @@
             }
         }
 
-        public void InsertIncorrectDataMonitoring(string trackingInfo, long? value, JobMonitor_IssueType issueType)
-        {
-            if (!string.IsNullOrEmpty(trackingInfo))
-            {  
-                var incorrectData = new List<InsertMonitoringEntity>
-                {
-                    new InsertMonitoringEntity
-                    {
-                       TrackingInfo = trackingInfo,
-                       Value = value
-                    }
-                };
-
-                incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(JsonConvert.SerializeObject(incorrectData), issueType);
-            }
-        }
-
         public void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment)
         {
             if (incorrectList == null || !incorrectList.Any())
@@ -120,6 +101,7 @@
             {
                 var custIDs = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.CustID)?.Distinct();
                 var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
+                var values = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.Value)?.Distinct();
 
                 if (custIDs.Any() || trackingInfo != null)
                 {
@@ -159,7 +141,7 @@
                             }
                         case JobMonitor_IssueType.Classification_MissingTVSProblemAccount:
                             {
-                                message += $"\r\n🆘 Missing TVS Problem Account {{RequestId(s): {trackingInfo.Value}}} \r\n";
+                                message += $"\r\n🆘 Missing TVS Problem Account {{Total RequestId: {values.Count()}}} {string.Join(',', values.Take(50))}\r\n";
                                 break;
                             }
                     }

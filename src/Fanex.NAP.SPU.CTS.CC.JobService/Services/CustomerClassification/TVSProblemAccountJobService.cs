@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -121,15 +122,15 @@
         {
             if (!string.IsNullOrEmpty(missingData))
             {
-                var dataToList = missingData.Split(",").ToList();
+                var dataToList = missingData.Split(',').Select(long.Parse).ToList();
 
-                var dataChunks = dataToList.Chunk(50);
+                var datalog = new List<InsertMonitoringEntity>();
 
-                foreach (var logDataBatch in dataChunks)
-                {
-                    var dataToString = string.Join(",", logDataBatch);
-                    monitoringService.InsertIncorrectDataMonitoring(dataToString, null, JobMonitor_IssueType.Classification_MissingTVSProblemAccount);
-                }
+                dataToList.ForEach(c => {
+                    datalog.Add(new InsertMonitoringEntity { TrackingInfo = "TVS RequestID", Value = c });
+                });
+
+                monitoringService.InsertIncorrectDataMonitoring(datalog, JobMonitor_IssueType.Classification_MissingTVSProblemAccount, 500);
             }
         }
     }
