@@ -15,6 +15,9 @@
         [SpParam(SqlParamName = "MaxTimeRequestActive")]
         public DateTime? MaxTimeRequestActive { get; set; }
 
+        [SpParam(SqlParamName = "MissingDataRequestIds")]
+        public string MissingDataRequestIds { get; set; }
+
         public override string GetSettingKey()
         {
             return "TicketVoiding_CTS_ProblemCustomerSelect";

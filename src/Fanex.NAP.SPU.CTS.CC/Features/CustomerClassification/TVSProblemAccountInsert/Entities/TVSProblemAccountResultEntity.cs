@@ -8,5 +8,7 @@
         public IEnumerable<TVSProblemAccountEntity> ProblemAccounts { get; set; }
 
         public DateTime? MaxTimeRequestActive { get; set; }
+
+        public string MissingDataRequestIds { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -24,6 +25,7 @@
         private readonly ITVSProblemAccountServices tvsProblemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
+        private readonly IIncorrectDataMonitoringService monitoringService;        
 
         public TVSProblemAccountJobService(
             ISentryClient sentryClient,
@@ -74,7 +76,7 @@
             var lastDateTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.TVS_LastScanDateTime);
 
             var tvsProblemAccounts = tvsProblemAccountServices.GetTVSProblemAccounts(lastDateTime);
-
+            
             if (tvsProblemAccounts != null && tvsProblemAccounts.ProblemAccounts.Any())
             {
                 var paramaters = new PushDataToExternalEntity()
@@ -102,6 +104,13 @@
             {
                 systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.TVS_LastScanDateTime);
             }
+
+            if (tvsProblemAccounts != null && !string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
+            {
+                Utilities.LogSentryError(serviceName, "Missing TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception(), sentryClient);
+
+                monitoringService.InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds, null, JobMonitor_IssueType.CTS_MissingTVSProblemAccount);
+            } 
 
             return isSuccess;
         }

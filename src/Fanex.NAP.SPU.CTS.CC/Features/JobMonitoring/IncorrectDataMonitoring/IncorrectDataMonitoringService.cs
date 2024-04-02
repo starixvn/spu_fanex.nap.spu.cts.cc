@@ -16,6 +16,8 @@
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
+        void InsertIncorrectDataMonitoring(string trackingInfo, long? value, JobMonitor_IssueType issueType);
+
         void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment);
     }
 
@@ -68,6 +70,20 @@
                     var dataJson = JsonConvert.SerializeObject(incorrectData);
                     incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(dataJson, issueType);
                 }
+            }
+        }
+
+        public void InsertIncorrectDataMonitoring(string trackingInfo, long? value, JobMonitor_IssueType issueType)
+        {
+            if (!string.IsNullOrEmpty(trackingInfo))
+            {
+                var incorrectData = new InsertMonitoringEntity
+                {
+                   TrackingInfo = trackingInfo,
+                   Value = value
+                };
+
+                incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(JsonConvert.SerializeObject(incorrectData), issueType);
             }
         }
 
@@ -136,6 +152,11 @@
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                             {
                                 message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.Value} records ({trackingInfo.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.CTS_MissingTVSProblemAccount:
+                            {
+                                message += $"\r\n🆘 Missing TVS Problem Account {{RequestId(s): {trackingInfo.Value}}} \r\n";
                                 break;
                             }
                     }
