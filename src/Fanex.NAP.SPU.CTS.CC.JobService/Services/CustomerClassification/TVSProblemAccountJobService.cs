@@ -110,7 +110,7 @@
 
             if (!string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
             {
-                Utilities.LogSentryError(serviceName, "Missing TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception(), sentryClient);
+                Utilities.LogSentryError(serviceName, "TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception("Missing TVS Problem Account"), sentryClient);
 
                 InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds);
             } 
