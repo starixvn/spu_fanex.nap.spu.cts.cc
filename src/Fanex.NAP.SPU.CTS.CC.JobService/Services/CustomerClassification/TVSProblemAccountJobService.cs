@@ -109,7 +109,7 @@
             {
                 Utilities.LogSentryError(serviceName, "Missing TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception(), sentryClient);
 
-                monitoringService.InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds, null, JobMonitor_IssueType.CTS_MissingTVSProblemAccount);
+                monitoringService.InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds, null, JobMonitor_IssueType.Classification_MissingTVSProblemAccount);
             } 
 
             return isSuccess;

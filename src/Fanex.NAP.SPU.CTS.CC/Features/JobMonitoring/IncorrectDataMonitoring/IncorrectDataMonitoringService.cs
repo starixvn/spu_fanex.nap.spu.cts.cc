@@ -154,7 +154,7 @@
                                 message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.Value} records ({trackingInfo.TrackingInfo})\r\n";
                                 break;
                             }
-                        case JobMonitor_IssueType.CTS_MissingTVSProblemAccount:
+                        case JobMonitor_IssueType.Classification_MissingTVSProblemAccount:
                             {
                                 message += $"\r\n🆘 Missing TVS Problem Account {{RequestId(s): {trackingInfo.Value}}} \r\n";
                                 break;
