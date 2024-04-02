@@ -76,11 +76,14 @@
         public void InsertIncorrectDataMonitoring(string trackingInfo, long? value, JobMonitor_IssueType issueType)
         {
             if (!string.IsNullOrEmpty(trackingInfo))
-            {
-                var incorrectData = new InsertMonitoringEntity
+            {  
+                var incorrectData = new List<InsertMonitoringEntity>
                 {
-                   TrackingInfo = trackingInfo,
-                   Value = value
+                    new InsertMonitoringEntity
+                    {
+                       TrackingInfo = trackingInfo,
+                       Value = value
+                    }
                 };
 
                 incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(JsonConvert.SerializeObject(incorrectData), issueType);

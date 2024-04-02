@@ -32,13 +32,15 @@
             IAppSettings appSettings,
             ITVSProblemAccountServices tvsProblemAccountServices,
             ISystemParameterServices systemParameterServices,
-            IDataLogTrackingServices dataLogTrackingServices)
+            IDataLogTrackingServices dataLogTrackingServices,
+            IIncorrectDataMonitoringService monitoringService)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.tvsProblemAccountServices = tvsProblemAccountServices;
             this.systemParameterServices = systemParameterServices;
             this.dataLogTrackingServices = dataLogTrackingServices;
+            this.monitoringService = monitoringService;
             this.serviceName = "TVSProblemAccountInsert";
         }
 
@@ -76,8 +78,8 @@
             var lastDateTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.TVS_LastScanDateTime);
 
             var tvsProblemAccounts = tvsProblemAccountServices.GetTVSProblemAccounts(lastDateTime);
-            
-            if (tvsProblemAccounts != null && tvsProblemAccounts.ProblemAccounts.Any())
+
+            if (tvsProblemAccounts.ProblemAccounts.Any())
             {
                 var paramaters = new PushDataToExternalEntity()
                 {
@@ -100,19 +102,35 @@
                 }
             }
 
-            if (isSuccess && tvsProblemAccounts != null)
+            if (isSuccess)
             {
                 systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.TVS_LastScanDateTime);
             }
 
-            if (tvsProblemAccounts != null && !string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
+            if (!string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
             {
                 Utilities.LogSentryError(serviceName, "Missing TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception(), sentryClient);
 
-                monitoringService.InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds, null, JobMonitor_IssueType.Classification_MissingTVSProblemAccount);
+                InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds);
             } 
 
             return isSuccess;
+        }
+
+        private void InsertIncorrectDataMonitoring(string missingData)
+        {
+            if (!string.IsNullOrEmpty(missingData))
+            {
+                var dataToList = missingData.Split(",").ToList();
+
+                var dataChunks = dataToList.Chunk(50);
+
+                foreach (var logDataBatch in dataChunks)
+                {
+                    var dataToString = string.Join(",", logDataBatch);
+                    monitoringService.InsertIncorrectDataMonitoring(dataToString, null, JobMonitor_IssueType.Classification_MissingTVSProblemAccount);
+                }
+            }
         }
     }
 
