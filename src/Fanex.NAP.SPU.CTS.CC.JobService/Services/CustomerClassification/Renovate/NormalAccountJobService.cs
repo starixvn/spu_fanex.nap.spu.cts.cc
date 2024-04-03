@@ -70,15 +70,8 @@
             if (normalAccountModel.IsContinute)
             {
                 var custChunks = normalAccountModel.NormalAccount.Chunk(batchInternalSize);
-
-                var actions = new List<Action>();
-
-                foreach (var custBatch in custChunks)
-                {
-                    actions.Add(() => InsertNormalAccount(custBatch, normalAccountModel.ScannedMaxId, batchExternalSize));
-                }
-
-                Parallel.Invoke(actions.ToArray());
+              
+                custChunks.AsParallel().WithDegreeOfParallelism(5).ForAll(custBatch => InsertNormalAccount(custBatch, normalAccountModel.ScannedMaxId, batchExternalSize));
             }
 
             return normalAccountModel.IsContinute;

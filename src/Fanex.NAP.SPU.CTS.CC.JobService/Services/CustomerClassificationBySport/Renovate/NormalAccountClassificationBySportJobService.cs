@@ -53,28 +53,10 @@
             var isExistCusts = normalPoolCustomerModel != null && normalPoolCustomerModel.NormalPoolCustomers.Any();
 
             if (isExistCusts)
-            {                   
-                var customerChunks = normalPoolCustomerModel.NormalPoolCustomers.Chunk(batchInternalSize);
+            {
+                var customerChunks = normalPoolCustomerModel.NormalPoolCustomers.Chunk(batchInternalSize);                
 
-                var actions = new List<Action>();
-
-                var idx = 3;
-
-                foreach (var custBatch in customerChunks)
-                {                  
-                    actions.Add(() => ClassifyNormalAccountBySport(custBatch, normalPoolCustomerModel.ScannedMaxId));
-
-                    if (actions.Count == idx)
-                    {
-                        Parallel.Invoke(actions.ToArray());
-                        actions.Clear();
-                    }
-                }
-
-                if (actions.Any())
-                {
-                    Parallel.Invoke(actions.ToArray());
-                }
+                customerChunks.AsParallel().WithDegreeOfParallelism(5).ForAll(custBatch => ClassifyNormalAccountBySport(custBatch, normalPoolCustomerModel.ScannedMaxId));
             }
 
             return isExistCusts;
