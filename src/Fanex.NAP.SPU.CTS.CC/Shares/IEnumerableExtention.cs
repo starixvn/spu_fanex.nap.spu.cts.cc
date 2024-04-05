@@ -15,5 +15,15 @@
         {
             return from item in data.GroupBy(predicate) select item.First();
         }
+
+        public static bool IsNotNullOrEmpty<T>(this IEnumerable<T> data)
+        {
+            return data != null && data.Any();
+        }
+
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> data)
+        {
+            return !IsNotNullOrEmpty(data);
+        }
     }
 }
