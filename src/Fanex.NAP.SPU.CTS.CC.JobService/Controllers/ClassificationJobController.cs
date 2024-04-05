@@ -103,12 +103,12 @@
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("scanningDailyNormalClassification")]
-        public async Task<bool> DailyScanningNormalClassification()
-        {
-            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
-            return await this.dailyNormalClassificationJobService.Execute();
-        }
+        //[HttpPost("scanningDailyNormalClassification")]
+        //public async Task<bool> DailyScanningNormalClassification()
+        //{
+        //    sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
+        //    return await this.dailyNormalClassificationJobService.Execute();
+        //}
 
         [HttpPost("scanningDailyProblemClassification")]
         public async Task<bool> DailyScanningProblemClassification([FromForm] int batchSize)
@@ -130,6 +130,11 @@
         {
             return await this.realtimeClassificationJobService.ProcessClassification(batchExternalSize, batchInternalSize);
         }
+        //[HttpPost("scanningRealtimeClassification")]
+        //public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        //{
+        //    return await this.realtimeClassificationJobService.ProcessClassification(batchExternalSize, batchInternalSize);
+        //}
 
         [HttpPost("checkChangeRealtimeClassification")]
         public async Task<bool> RealtimeCheckChanges()
@@ -252,17 +257,17 @@
             return await detectUnauthorizedLoginCustJobService.Execute(batchExternalSize, batchInternalSize, true);
         }
 
-        [HttpPost("newcustomerclassification")]
-        public async Task<bool> NewCustomerClassification([FromForm] int batchSize)
-        {
-            return await newCustomerClassificationJobService.Execute(batchSize);
-        }
+        //[HttpPost("newcustomerclassification")]
+        //public async Task<bool> NewCustomerClassification([FromForm] int batchSize)
+        //{
+        //    return await newCustomerClassificationJobService.Execute(batchSize);
+        //}
 
-        [HttpPost("affectedDownlineClassificationFromQueue")]
-        public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
-        {
-            return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
-        }
+        //[HttpPost("affectedDownlineClassificationFromQueue")]
+        //public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
+        //{
+        //    return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
+        //}
 
         [HttpPost("UpdateStatusMatchMonitor")]
         public async Task<bool> UpdateStatusMatchMonitor()
