@@ -15,9 +15,7 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly Services.INormalAccountJobService normalAccountInsertJobService;
-        private readonly Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
-        private readonly Services.IRealtimeClassificationJobService realtimeClassificationJobService;
 
         private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService;
         private readonly Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
@@ -30,12 +28,9 @@
         private readonly Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService;
         private readonly Renovate.ITWGBTaggingClassificationJobService twGBTaggingJobService;
 
-        private readonly Services.IProbationClassificationJobService probationClassificationJobService;
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly Services.INewCustomerClassificationJobService newCustomerClassificationJobService;
-        private readonly Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
@@ -43,9 +38,7 @@
 
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
-            Services.IDailyNormalClassificationJobService dailyNormalClassificationJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
-            Services.IRealtimeClassificationJobService realtimeClassificationJobService,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
             Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
             Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
@@ -57,12 +50,9 @@
             Renovate.INormalTaggingClassificationJobService normalTaggingClassificationRenovateJobService,
             Renovate.ITWGBTaggingClassificationJobService newGroupBettingClassificationJobService,
 
-            Services.IProbationClassificationJobService probationClassificationJobService,
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            Services.INewCustomerClassificationJobService newCTSCustomerClassificationJobService,
-            Services.IAffectedDownlineCustomerClassificationJobService affectedDownlineCustomerClassificationJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,
             ITWRobotImpervaJobService robotImpervaJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
@@ -70,9 +60,7 @@
         {
             this.sentryClient = sentryClient;
             this.normalAccountInsertJobService = normalAccountInsertJobService;
-            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
-            this.dailyNormalClassificationJobService = dailyNormalClassificationJobService;
-            this.realtimeClassificationJobService = realtimeClassificationJobService;
+            this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
 
             this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
             this.realtimeRenovateJobService = realtimeRenovateJobService;
@@ -85,12 +73,9 @@
             this.normalTaggingClassificationRenovateJobService = normalTaggingClassificationRenovateJobService;
             this.twGBTaggingJobService = newGroupBettingClassificationJobService;
 
-            this.probationClassificationJobService = probationClassificationJobService;
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
-            this.newCustomerClassificationJobService = newCTSCustomerClassificationJobService;
-            this.affectedDownlineCustomerClassificationJobService = affectedDownlineCustomerClassificationJobService;
             this.mmClassificationJobService = mmClassificationJobService;
             this.robotImpervaJobService = robotImpervaJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
@@ -102,14 +87,7 @@
         {
             return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
         }
-
-        //[HttpPost("scanningDailyNormalClassification")]
-        //public async Task<bool> DailyScanningNormalClassification()
-        //{
-        //    sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
-        //    return await this.dailyNormalClassificationJobService.Execute();
-        //}
-
+      
         [HttpPost("scanningDailyProblemClassification")]
         public async Task<bool> DailyScanningProblemClassification([FromForm] int batchSize)
         {
@@ -117,36 +95,12 @@
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
-        [HttpPost("scanningDailyDangerousClassification")]
+ 		[HttpPost("scanningDailyDangerousClassification")]
         public async Task<bool> DailyScanningDangerousClassification([FromForm] int batchSize)
         {
             sentryClient.CaptureMessage($"Daily Dangerous classification Service is running at {DateTime.Now}");
 
             return await this.dailyDangerousClassificationJobService.Execute(batchSize);
-        }
-
-        [HttpPost("scanningRealtimeClassification")]
-        public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.realtimeClassificationJobService.ProcessClassification(batchExternalSize, batchInternalSize);
-        }
-        //[HttpPost("scanningRealtimeClassification")]
-        //public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        //{
-        //    return await this.realtimeClassificationJobService.ProcessClassification(batchExternalSize, batchInternalSize);
-        //}
-
-        [HttpPost("checkChangeRealtimeClassification")]
-        public async Task<bool> RealtimeCheckChanges()
-        {
-            return await this.realtimeClassificationJobService.CheckChanges();
-        }
-
-        [HttpPost("probationClassification")]
-        public async Task<bool> ProbationScanningClassification([FromForm] int batchSize)
-        {
-            sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
-            return await this.probationClassificationJobService.Execute(batchSize);
         }
 
         #region Renovate
@@ -255,19 +209,7 @@
         public async Task<bool> DetectUnauthorizedLoginCustomerLicensee([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await detectUnauthorizedLoginCustJobService.Execute(batchExternalSize, batchInternalSize, true);
-        }
-
-        //[HttpPost("newcustomerclassification")]
-        //public async Task<bool> NewCustomerClassification([FromForm] int batchSize)
-        //{
-        //    return await newCustomerClassificationJobService.Execute(batchSize);
-        //}
-
-        //[HttpPost("affectedDownlineClassificationFromQueue")]
-        //public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
-        //{
-        //    return await this.affectedDownlineCustomerClassificationJobService.Execute(batchSize);
-        //}
+        }       
 
         [HttpPost("UpdateStatusMatchMonitor")]
         public async Task<bool> UpdateStatusMatchMonitor()
