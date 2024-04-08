@@ -7,5 +7,7 @@
         public long CTSCustID { get; set; }
 
         public bool IsRobot { get; set; }
+
+        public int CategoryType { get; set; } // 1: PA, 2: PA Dangerous
     }
 }

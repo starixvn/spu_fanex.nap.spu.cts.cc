@@ -59,6 +59,7 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
+                IsRescanPADangerous = true,
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
                 RescanNormalType = RescanNormalType.Auto_Customer,

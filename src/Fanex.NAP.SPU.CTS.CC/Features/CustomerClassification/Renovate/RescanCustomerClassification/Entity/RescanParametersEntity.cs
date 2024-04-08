@@ -10,6 +10,8 @@
             IsWriteLog = false;
         }
 
+        public bool IsRescanPADangerous { get; set; }
+
         public bool IsRescanPA { get; set; }
 
         public bool IsToQueue { get; set; }

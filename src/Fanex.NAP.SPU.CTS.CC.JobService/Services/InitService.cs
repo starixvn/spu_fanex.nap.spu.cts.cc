@@ -45,6 +45,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
 
     public static class InitService
     {
@@ -135,7 +136,9 @@
             RegisterNewTWGroupBettingClassificationRenovate(services);
 
             RegisterDetectUnauthorizedLoginCustomer(services);
-        }
+
+            RegisterDailyDangerousClassification(services);
+        }       
 
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
         {
@@ -500,6 +503,13 @@
                 RenovateBySport.RescanNormalClassificationBySport.RescanNormalClassificationBySportDataAccess>();
             services.AddSingleton<RenovateBySport.RescanNormalClassificationBySport.IRescanNormalClassificationBySportServices,
                 RenovateBySport.RescanNormalClassificationBySport.RescanNormalClassificationBySportServices>();
+        }
+
+        private static void RegisterDailyDangerousClassification(IServiceCollection services)
+        {
+            services.AddSingleton<IDailyDangerousClassificationJobService, DailyDangerousClassificationJobService>();
+            services.AddSingleton<IDailyDangerousClassificationService, DailyDangerousClassificationService>();
+            services.AddSingleton<IDailyDangerousClassificationDataAccess, DailyDangerousClassificationDataAccess>();
         }
     }
 }

@@ -68,7 +68,7 @@
 
         public string Remark { get; set; }
 
-        public bool IsDirectPA { get; set; }
+        public bool? IsDirectPA { get; set; }
 
         public int? WinlossStatus { get; set; }
 
@@ -83,6 +83,8 @@
         public bool IsFromCTS { get; set; }
 
         public bool IsFromTVS { get; set; }
+
+        public bool IsFromAI { get; set; }
 
         public int? TVSRequestID { get; set; }
 
