@@ -31,7 +31,8 @@
             return new TVSProblemAccountResultEntity
             {
                 ProblemAccounts = result ?? Enumerable.Empty<TVSProblemAccountEntity>(),
-                MaxTimeRequestActive = criteria.MaxTimeRequestActive
+                MaxTimeRequestActive = criteria.MaxTimeRequestActive,
+                MissingDataRequestIds = criteria.MissingDataRequestIds
             };
         }
     }

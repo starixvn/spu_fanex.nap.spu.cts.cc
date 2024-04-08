@@ -238,6 +238,7 @@
             Realtime_NullCategory = 101,
             Classification_GeneralPoolStatus = 200,
             Classification_BySportPoolStatus = 201,
+            Classification_MissingTVSProblemAccount = 202,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 

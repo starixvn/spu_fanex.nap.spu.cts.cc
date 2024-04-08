@@ -101,6 +101,7 @@
             {
                 var custIDs = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.CustID)?.Distinct();
                 var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
+                var values = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.Value)?.Distinct();
 
                 if (custIDs.Any() || trackingInfo != null)
                 {
@@ -136,6 +137,11 @@
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                             {
                                 message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.Value} records ({trackingInfo.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.Classification_MissingTVSProblemAccount:
+                            {
+                                message += $"\r\n🆘 Missing TVS Problem Account {{Total RequestId: {values.Count()}}} {string.Join(',', values.Take(50))}\r\n";
                                 break;
                             }
                     }

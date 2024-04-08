@@ -2,11 +2,13 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -24,19 +26,22 @@
         private readonly ITVSProblemAccountServices tvsProblemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
+        private readonly IIncorrectDataMonitoringService monitoringService;        
 
         public TVSProblemAccountJobService(
             ISentryClient sentryClient,
             IAppSettings appSettings,
             ITVSProblemAccountServices tvsProblemAccountServices,
             ISystemParameterServices systemParameterServices,
-            IDataLogTrackingServices dataLogTrackingServices)
+            IDataLogTrackingServices dataLogTrackingServices,
+            IIncorrectDataMonitoringService monitoringService)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.tvsProblemAccountServices = tvsProblemAccountServices;
             this.systemParameterServices = systemParameterServices;
             this.dataLogTrackingServices = dataLogTrackingServices;
+            this.monitoringService = monitoringService;
             this.serviceName = "TVSProblemAccountInsert";
         }
 
@@ -75,7 +80,7 @@
 
             var tvsProblemAccounts = tvsProblemAccountServices.GetTVSProblemAccounts(lastDateTime);
 
-            if (tvsProblemAccounts != null && tvsProblemAccounts.ProblemAccounts.Any())
+            if (tvsProblemAccounts.ProblemAccounts.Any())
             {
                 var paramaters = new PushDataToExternalEntity()
                 {
@@ -98,12 +103,35 @@
                 }
             }
 
-            if (isSuccess && tvsProblemAccounts != null)
+            if (isSuccess)
             {
                 systemParameterServices.UpdateTimingExecution(tvsProblemAccounts.MaxTimeRequestActive?.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.TVS_LastScanDateTime);
             }
 
+            if (!string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
+            {
+                Utilities.LogSentryError(serviceName, "TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception("Missing TVS Problem Account"), sentryClient);
+
+                InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds);
+            } 
+
             return isSuccess;
+        }
+
+        private void InsertIncorrectDataMonitoring(string missingData)
+        {
+            if (!string.IsNullOrEmpty(missingData))
+            {
+                var dataToList = missingData.Split(',').Select(long.Parse).ToList();
+
+                var datalog = new List<InsertMonitoringEntity>();
+
+                dataToList.ForEach(c => {
+                    datalog.Add(new InsertMonitoringEntity { TrackingInfo = "TVS RequestID", Value = c });
+                });
+
+                monitoringService.InsertIncorrectDataMonitoring(datalog, JobMonitor_IssueType.Classification_MissingTVSProblemAccount, 500);
+            }
         }
     }
 

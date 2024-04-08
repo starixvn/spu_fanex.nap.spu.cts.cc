@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -39,13 +40,11 @@
 
         public TVSProblemAccountResultEntity GetTVSProblemAccounts(DateTime? lastDateTime)
         {
-            return tvsProblemAccountDataAccess.GetTWProblemAccount(lastDateTime);
+            return tvsProblemAccountDataAccess.GetTWProblemAccount(lastDateTime) ?? new TVSProblemAccountResultEntity();
         }
 
         public bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, PushDataToExternalEntity parameters)
         {
-            bool isSuccess = true;
-
             if (problemAccounts != null && problemAccounts.Any())
             {
                 var insertedPA = problemAccounts.Where(c => c.ReasonID != (int)Reason.ABBet32
@@ -53,33 +52,58 @@
                                                        && c.ReasonID != (int)Reason.TVSRobot36
                                                        && c.ReasonID != (int)Reason.TVSRobot105).Select(c => new InsertProblemAccountEntity(c));
 
-                var result = problemAccountServices.InsertProblemAccountPackage(insertedPA, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, true, parameters.ServiceName);
+                if (!insertedPA.Any())
+                {
+                    return true;
+                }
 
-                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters);
+                var insertedPAChunks = insertedPA.Chunk(parameters.ExternalBatchSize);
+
+                foreach (var insertedPABatch in insertedPAChunks)
+                {
+                    var result = problemAccountServices.InsertProblemAccountPackage(insertedPABatch, FunctionId.TVSProblemAccountInsert, InsertPA_ByType.Reason, true, parameters.ServiceName);
+
+                    var isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters);
+
+                    if (!isSuccess)
+                        return isSuccess;
+                }
             }
 
-            return isSuccess;
+            return true;
         }
 
         public bool InsertTVSRobot(IEnumerable<TVSProblemAccountEntity> robots, PushDataToExternalEntity parameters)
         {
-            bool isSuccess = true;
-
             if (robots != null && robots.Any())
             {
                 var insertRobot = robots.Where(c => c.ReasonID == (int)Reason.TVSRobot36 && c.ReasonID == (int)Reason.TVSRobot105).Select(c => new InsertRobotEntity(c));
 
-                var result = problemAccountServices.InsertRobotAccountPackage(insertRobot, false);
-
-                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
-
-                if (isSuccess)
+                if (!insertRobot.Any())
                 {
-                    isSuccess = problemAccountServices.CheckPAToUnflagBetlimit(result?.Select(c => c.CTSCustID)?.Distinct(), parameters.ServiceName);
+                    return true;
+                }
+
+                var insertRobotChunks = insertRobot.Chunk(parameters.ExternalBatchSize);
+
+                foreach (var insertedPABatch in insertRobotChunks)
+                {
+                    var result = problemAccountServices.InsertRobotAccountPackage(insertedPABatch, false);
+
+                    var isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result?.Select(c => c.CustID)?.Distinct(), parameters);
+
+                    if (isSuccess)
+                    {
+                        isSuccess = problemAccountServices.CheckPAToUnflagBetlimit(result?.Select(c => c.CTSCustID)?.Distinct(), parameters.ServiceName);
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
 
-            return isSuccess;
+            return true;
         }
     }
 }
