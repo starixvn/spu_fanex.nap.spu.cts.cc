@@ -11,13 +11,13 @@
 
     public class RealtimeClassificationTest
     {
-        private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
-        private readonly IRealtimeClassificationServices realtimeClassificationServices;
+        //private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
+        //private readonly IRealtimeClassificationServices realtimeClassificationServices;
 
         public RealtimeClassificationTest()
         {
-            realtimeClassificationDataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
-            realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess, null);
+            //realtimeClassificationDataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
+            //realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess, null);
         }
 
         //[Fact]
@@ -118,14 +118,14 @@
         //    action.Should().NotThrow<Exception>();
         //}
 
-        [Fact]
-        public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
-        {
-            realtimeClassificationDataAccess.UpdateGeneralRealtimeLastScan(true);
+        //[Fact]
+        //public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
+        //{
+        //    realtimeClassificationDataAccess.UpdateGeneralRealtimeLastScan(true);
 
-            Action action = () => realtimeClassificationServices.UpdateGeneralRealtimeLastScan();
+        //    Action action = () => realtimeClassificationServices.UpdateGeneralRealtimeLastScan();
 
-            action.Should().NotThrow<Exception>();
-        }
+        //    action.Should().NotThrow<Exception>();
+        //}
     }
 }

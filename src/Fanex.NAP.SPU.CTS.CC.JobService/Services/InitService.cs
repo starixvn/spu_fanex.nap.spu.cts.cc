@@ -37,6 +37,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
 
     public static class InitService
     {
@@ -76,9 +78,9 @@
 
             RegisterRobotImperva(services);
 
-            RegisterRealtimeClassificationRenovate(services);
+            RegisterRealtimeClassification(services);
 
-            RegisterRealtimeCheckChangeClassificationRenovate(services);
+            RegisterRealtimeCheckChangeClassification(services);
 
             RegisterNormalAccountClassificationRenovate(services);
 
@@ -264,24 +266,19 @@
             services.AddSingleton<ITWRobotImpervaDataAccess, TWRobotImpervaDataAccess>();
         }
 
-        private static void RegisterRealtimeClassificationRenovate(this IServiceCollection services)
+        private static void RegisterRealtimeClassification(this IServiceCollection services)
         {
-            services.AddSingleton<CustomerClassification.Renovate.IRealtimeClassificationJobService, 
-                CustomerClassification.Renovate.RealtimeClassificationJobService>();
-            services.AddSingleton<Renovate.RealtimeClassification.IRealtimeClassificationService, 
-                Renovate.RealtimeClassification.RealtimeClassificationService>();
-            services.AddSingleton<Renovate.RealtimeClassification.IRealtimeClassificationDataAccess, 
-                Renovate.RealtimeClassification.RealtimeClassificationDataAccess>();
+            services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();
+            services.AddSingleton<IRealtimeClassificationService, RealtimeClassificationService>();
+            services.AddSingleton<IRealtimeClassificationDataAccess, RealtimeClassificationDataAccess>();
         }
 
-        private static void RegisterRealtimeCheckChangeClassificationRenovate(this IServiceCollection services)
+        private static void RegisterRealtimeCheckChangeClassification(this IServiceCollection services)
         {
-            services.AddSingleton<CustomerClassification.Renovate.IRealtimeCheckChangeClassificationJobService, 
-                CustomerClassification.Renovate.RealtimeCheckChangeClassificationJobService>();
-            services.AddSingleton<Renovate.RealtimeCheckChangeClassification.IRealtimeCheckChangeClassificationService,
-                Renovate.RealtimeCheckChangeClassification.RealtimeCheckChangeClassificationService>();
-            services.AddSingleton<Renovate.RealtimeCheckChangeClassification.IRealtimeCheckChangeClassificationDataAccess,
-                Renovate.RealtimeCheckChangeClassification.RealtimeCheckChangeClassificationDataAccess>();
+            services.AddSingleton<IRealtimeCheckChangeClassificationJobService, 
+                RealtimeCheckChangeClassificationJobService>();
+            services.AddSingleton<IRealtimeCheckChangeClassificationService, RealtimeCheckChangeClassificationService>();
+            services.AddSingleton<IRealtimeCheckChangeClassificationDataAccess, RealtimeCheckChangeClassificationDataAccess>();
         }
 
         private static void RegisterNormalAccountClassificationRenovate(this IServiceCollection services)

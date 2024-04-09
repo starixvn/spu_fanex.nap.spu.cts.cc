@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
-    public class RealtimeNewPlaceBetCustomerEntity
+    public class GetNewPlaceBetCustomerEntity
     {
         public long CustId { get; set; }
 

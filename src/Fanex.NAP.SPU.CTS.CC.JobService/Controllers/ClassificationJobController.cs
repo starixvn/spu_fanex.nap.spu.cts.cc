@@ -17,8 +17,8 @@
         private readonly Services.INormalAccountJobService normalAccountInsertJobService;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
 
-        private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService;
-        private readonly Renovate.IRealtimeClassificationJobService realtimeRenovateJobService;
+        private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeJobService;
+        private readonly IRealtimeClassificationJobService realtimeJobService;
         private readonly Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService;
         private readonly Renovate.INormalAccountJobService normalAccountRenovateJobService;
         private readonly Renovate.IProbationClassificationJobService probationClassificationRenovateJobService;
@@ -39,8 +39,8 @@
         public ClassificationJobController(ISentryClient sentryClient,
             Services.INormalAccountJobService normalAccountInsertJobService,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
-            IRealtimeCheckChangeClassificationJobService realtimeCheckChangeRenovateJobService,
-            Renovate.IRealtimeClassificationJobService realtimeRenovateJobService,
+            IRealtimeCheckChangeClassificationJobService realtimeCheckChangeJobService,
+            IRealtimeClassificationJobService realtimeJobService,
             Renovate.INormalAccountClassificationJobService normalAccountClassificationRenovateJobService,
             Renovate.INormalAccountJobService normalAccountRenovateJobService,
             Renovate.IProbationClassificationJobService probationClassificationRenovateJobService,
@@ -62,8 +62,8 @@
             this.normalAccountInsertJobService = normalAccountInsertJobService;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
 
-            this.realtimeCheckChangeRenovateJobService = realtimeCheckChangeRenovateJobService;
-            this.realtimeRenovateJobService = realtimeRenovateJobService;
+            this.realtimeCheckChangeJobService = realtimeCheckChangeJobService;
+            this.realtimeJobService = realtimeJobService;
             this.normalAccountClassificationRenovateJobService = normalAccountClassificationRenovateJobService;
             this.normalAccountRenovateJobService = normalAccountRenovateJobService;
             this.probationClassificationRenovateJobService = probationClassificationRenovateJobService;
@@ -104,16 +104,16 @@
         }
 
         #region Renovate
-        [HttpPost("realtimeCheckChangesRenovate")]
-        public async Task<bool> RealtimeCheckChangesRenovate([FromForm] int batchSize)
+        [HttpPost("realtimeCheckChanges")]
+        public async Task<bool> RealtimeCheckChanges([FromForm] int batchSize)
         {
-            return await this.realtimeCheckChangeRenovateJobService.Execute(batchSize);           
+            return await this.realtimeCheckChangeJobService.Execute(batchSize);           
         }
 
-        [HttpPost("scanningRealtimeClassificationRenovate")]
-        public async Task<bool> RealtimeScanningClassificationRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("scanningRealtimeClassification")]
+        public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.realtimeRenovateJobService.Execute(batchExternalSize, batchInternalSize);            
+            return await this.realtimeJobService.Execute(batchExternalSize, batchInternalSize);            
         }
 
         [HttpPost("normalAccountClassificationRenovate")]

@@ -2,26 +2,23 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Criteria;
     using Fanex.NAP.SPU.CTS.Shares;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     public interface IRealtimeClassificationDataAccess
     {
-        void CheckNewChangesForRealtime();
+        GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
 
-        IEnumerable<RealtimeNewPlaceBetCustomerEntity> GetNewPlaceBetCustomers();
+        GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIdList);
 
-        CustomerCategoryRealtimeViewEntity GetCustomerCategory(string custIDs);
+        void PreprocessCustomerClassRealtime(string custIdList);
 
-        void ClassifyRealtimePerformance(IEnumerable<CustomerCategoryRealtimeEntity> customers);
+        void InsertPADailyScanQueue(string custIDList);
 
-        void UpdateGeneralRealtimeLastScan(bool isGeneralFlow);
+        void CompleteCustomerRealtime(long scannedMaxId);
 
-        void UpdateAssociationCustomerLastTicket(string custIdList);
-
-        void InsertPADailyScanQueue(string custIdList);
     }
 
     public class RealtimeClassificationDataAccess : IRealtimeClassificationDataAccess
@@ -33,76 +30,66 @@
             repository = new DynamicRepository();
         }
 
-        public void CheckNewChangesForRealtime()
+        public GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers()
         {
-            var criteria = new NewChangesRealtimeCheckCriteria();
+            var criteria = new GetChangeCustomerRealtimeCriteria();
 
-            repository.Execute(criteria);
-        }
+            var data = repository.Fetch<GetNewPlaceBetCustomerEntity>(criteria);
 
-        public IEnumerable<RealtimeNewPlaceBetCustomerEntity> GetNewPlaceBetCustomers()
-        {
-            var criteria = new CustomerNewPlaceBetRealtimeGetCriteria();
-
-            return repository.Fetch<RealtimeNewPlaceBetCustomerEntity>(criteria);
-        }
-
-        public CustomerCategoryRealtimeViewEntity GetCustomerCategory(string custIDs)
-        {
-            var criteria = new CustomerCategoryRealtimeGetCriteria
+            return new GetNewPlaceBetCustomerModel
             {
-                CustIDs = custIDs
-            };
-
-            var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-
-            var result = db.QueryMultiple(criteria);
-
-            return new CustomerCategoryRealtimeViewEntity()
-            {
-                CustCategoryRealtime = result?.Read<CustomerCategoryRealtimeEntity>() ?? Enumerable.Empty<CustomerCategoryRealtimeEntity>(),
-                CustPADailyScan = result?.Read<long>() ?? Enumerable.Empty<long>()
+                CustomerNewPlaceBets = data,
+                ScannedMaxId = criteria.ScannedMaxId
             };
         }
 
-        public void ClassifyRealtimePerformance(IEnumerable<CustomerCategoryRealtimeEntity> customers)
+        public GetCustomerCategoryRealtimeModel GetCustomerCategory(string custIdList)
         {
-            var criteria = new NormalAccountsClassificationGeneralCategorizeRealtimeCriteria
-            {
-                CustomersXML = customers.ToXmlString()
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public void UpdateGeneralRealtimeLastScan(bool isGeneralFlow)
-        {
-            var criteria = new LastScanRealtimeUpdateCriteria
-            {
-                IsGeneralFlow = isGeneralFlow
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public void UpdateAssociationCustomerLastTicket(string custIdList)
-        {
-            var criteria = new UpdateAssociationCustomerLastTicketCriteria
+            var criteria = new GetCustomerCategoryRealtimeCriteria
             {
                 CustIdList = custIdList
             };
 
-            repository.Execute(criteria);
+            var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+
+            var data = db.QueryMultiple(criteria);
+
+            return new GetCustomerCategoryRealtimeModel
+            {
+                CustomerCategory = data.Read<long>()?.ToList() ?? new List<long>(),
+                CustomerPADailyScan = data.Read<long>()?.ToList() ?? new List<long>()
+            };
         }
 
-        public void InsertPADailyScanQueue(string custIdList)
+        public void PreprocessCustomerClassRealtime(string custIdList)
         {
-            var criteria = new QueuePADailyInsertCriteria
+            var criteria = new PreprocessCustomerRealtimeCriteria
             {
-                CustIDs = custIdList
+                ListCustId = custIdList
             };
 
             repository.Execute(criteria);
         }
+
+        public void InsertPADailyScanQueue(string custIDList)
+        {
+            var criteria = new InsertQueuePADailyCriteria
+            {
+                CustIDList = custIDList
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void CompleteCustomerRealtime(long scannedMaxId)
+        {
+            var criteria = new CompleteCustomerRealtimeCriteria
+            {
+                ScannedMaxId = scannedMaxId
+            };
+
+            repository.Execute(criteria);
+        }
+
     }
 }

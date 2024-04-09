@@ -1,10 +1,10 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RealtimeCheckChangeClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
     using System;
 
-    public class RealtimeCheckChangeCriteria : NonQueryCommand
+    public class RealtimeCheckChangeUpdateNextScanCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "NextScannedDateTime1")]
         public DateTime? NextScannedDateTime1 { get; set; }
@@ -20,7 +20,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_NormalClassification_RealTime_CheckChanges";
+            return "CTS_NormalClassification_RealTime_UpdateNextScannedTime";
         }
 
         public override bool IsValid()

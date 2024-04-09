@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification.Model;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;

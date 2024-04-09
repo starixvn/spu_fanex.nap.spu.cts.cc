@@ -1,12 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
+    using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class CustomerNewPlaceBetRealtimeGetCriteria : CriteriaBase
-    {
+    public class CompleteCustomerRealtimeCriteria : NonQueryCommand
+    {    
+        public long ScannedMaxId { get; set; }
+
         public override string GetSettingKey()
         {
-            return "CTS_NormalAccountsClassification_GeneralCategorize_RealTime_GetChanges";
+            return "CTS_GeneralNormalClassification_RealTime_Complete";
         }
 
         public override bool IsValid()

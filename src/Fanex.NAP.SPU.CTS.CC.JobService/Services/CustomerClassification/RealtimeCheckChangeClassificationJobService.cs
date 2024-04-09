@@ -1,6 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RealtimeCheckChangeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
