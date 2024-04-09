@@ -1,19 +1,25 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface INormalAccountDataAccess
     {
-        IEnumerable<CustomerClassificationEntity> GetNewClassification();
+        GetNormalAccountModel GetNormalAccount();
 
-        IEnumerable<TaggedCustomerEntity> GetCustsAssociationProblemAccount(string custIds);
+        IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList);
 
-        InsertCategoryResultEntity InsertMainCustomerClassification(string newClassification);
+        IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList);
 
-        void UpdateAppliedStatusClassification(string custIdList);
+        IEnumerable<NewTWTaggedCustEntity> CheckNewGroupBetting(string custIdList);
 
-        IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds);
+        InsertNormalAccountResultEntity InsertNormalAccount(string custInfoList);
+
+        void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId);
+
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -25,53 +31,72 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<CustomerClassificationEntity> GetNewClassification()
+        public GetNormalAccountModel GetNormalAccount()
         {
-            var criteria = new NewClassificationGetCriteria();
+            var criteria = new GetNormalAccountCriteria();
 
-            return repository.Fetch<CustomerClassificationEntity>(criteria);
+            var data = repository.Fetch<GetNormalAccountEntity>(criteria);
+
+            return new GetNormalAccountModel
+            {
+                NormalAccount = data,
+                ScannedMaxId = criteria.ScannedMaxId,
+                IsContinute = data != null && data.Any()
+            };
         }
 
-        public IEnumerable<TaggedCustomerEntity> GetCustsAssociationProblemAccount(string custIds)
+        public IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList)
         {
             var criteria = new TaggingByAssociationWithPAGetCriteria
             {
-                CustIdList = custIds
+                CustIdList = custIdList
             };
 
-            return repository.Fetch<TaggedCustomerEntity>(criteria);
+            return repository.Fetch<CTSTaggedCustEntity>(criteria);
         }
 
-        public IEnumerable<TaggedCustomerEntity> CheckGroupBettingAndRejectCustomer(string custIds)
+        public IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList)
         {
             var criteria = new CheckGroupBettingAndRejectCriteria
             {
-                CustIdList = custIds
+                CustIdList = custIdList
             };
 
-            return repository.Fetch<TaggedCustomerEntity>(criteria);
+            return repository.Fetch<TWTaggedCustEntity>(criteria);
         }
 
-        public InsertCategoryResultEntity InsertMainCustomerClassification(string newClassification)
+
+        public InsertNormalAccountResultEntity InsertNormalAccount(string custIdList)
         {
-            var criteria = new InsertMainCustomerClassificationCriteria
+            var criteria = new InsertNormalAccountCriteria
             {
-                NewClassification = newClassification
+                NewClassification = custIdList
             };
 
             var custIds = repository.Fetch<long>(criteria);
 
-            return new InsertCategoryResultEntity { ErrorMessage = criteria.ErrorMessage, CustIds = custIds };
+            return new InsertNormalAccountResultEntity { CustIds = custIds, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void UpdateAppliedStatusClassification(string custIdList)
+        public void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId)
         {
-            var criteria = new CustClassificationAppliedStatusUpdateCriteria
+            var criteria = new InsertCompleteNormalAccountCrieria
             {
-                ListCustIds = custIdList,
+                ScannedMaxId = scannedMaxId,
+                ListCustId = custIdList
             };
 
             repository.Execute(criteria);
+        }
+
+        public IEnumerable<NewTWTaggedCustEntity> CheckNewGroupBetting(string custIdList)
+        {
+            var criteria = new CheckNewGroupBettingCriteria()
+            {
+                CustIdList = custIdList
+            };
+
+            return repository.Fetch<NewTWTaggedCustEntity>(criteria);
         }
     }
 }

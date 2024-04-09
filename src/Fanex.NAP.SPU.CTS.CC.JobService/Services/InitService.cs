@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
@@ -29,16 +28,21 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
-    using Renovate = Features.CustomerClassification.Renovate;
+    //using Renovate = Features.CustomerClassification.Renovate;
     using RenovateBySport = Features.CustomerClassificationBySport.Renovate;
-    using System;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NewTWGroupBettingClassification;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.Renovate;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewTWGroupBettingClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
 
     public static class InitService
     {
@@ -48,9 +52,7 @@
 
             RegisterProblemAccount(services);
 
-            RegisterDataAccesLayer(services);
-
-            RegisterNormalAccount(services);         
+            RegisterDataAccesLayer(services);        
 
             RegisterDailyProblemClassification(services);       
 
@@ -82,21 +84,21 @@
 
             RegisterRealtimeCheckChangeClassification(services);
 
-            RegisterNormalAccountClassificationRenovate(services);
+            RegisterNormalAccountClassification(services);
 
-            RegisterNormalAccountRenovate(services);
+            RegisterNormalAccount(services);
 
-            RegisterNormalTaggingClassificationRenovate(services);
+            RegisterNormalTaggingClassification(services);
 
-            RegisterRescanClassificationRenovate(services);
+            RegisterRescanClassification(services);
 
-            RegisterDailyNormalRenovate(services);
+            RegisterDailyNormal(services);
 
-            RegisterProbationRenovate(services);
+            RegisterProbation(services);
 
-            RegisterAffectedDownlineRenovate(services);
+            RegisterAffectedDownline(services);
 
-            RegisterNewCustomerClassificationRenovate(services);
+            RegisterNewCustomerClassification(services);
 
             RegisterNormalAccountClassificationBySportRenovate(services);
 
@@ -156,14 +158,7 @@
         {
             services.AddSingleton<IProblemAccountDataAccess, ProblemAccountDataAccess>();
             services.AddSingleton<IProblemAccountServices, ProblemAccountServices>();
-        }
-
-        private static void RegisterNormalAccount(this IServiceCollection services)
-        {
-            services.AddSingleton<INormalAccountDataAccess, NormalAccountDataAccess>();
-            services.AddSingleton<INormalAccountServices, NormalAccountServices>();
-            services.AddSingleton<INormalAccountJobService, NormalAccountJobService>();
-        }        
+        }      
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
         {
@@ -281,82 +276,59 @@
             services.AddSingleton<IRealtimeCheckChangeClassificationDataAccess, RealtimeCheckChangeClassificationDataAccess>();
         }
 
-        private static void RegisterNormalAccountClassificationRenovate(this IServiceCollection services)
+        private static void RegisterNormalAccountClassification(this IServiceCollection services)
         {
-            services.AddSingleton<CustomerClassification.Renovate.INormalAccountClassificationJobService,
-                CustomerClassification.Renovate.NormalAccountClassificationJobService>();
-            services.AddSingleton<Renovate.NormalAccountClassification.INormalAccountClassificationDataAccess,
-                Renovate.NormalAccountClassification.NormalAccountClassificationDataAccess>();
-            services.AddSingleton<Renovate.NormalAccountClassification.INormalAccountClassificationService,
-                Renovate.NormalAccountClassification.NormalAccountClassificationService>();
+            services.AddSingleton<INormalAccountClassificationJobService, NormalAccountClassificationJobService>();
+            services.AddSingleton<INormalAccountClassificationDataAccess, NormalAccountClassificationDataAccess>();
+            services.AddSingleton<INormalAccountClassificationService, NormalAccountClassificationService>();
         }
 
-        private static void RegisterNormalAccountRenovate(this IServiceCollection services)
+        private static void RegisterNormalAccount(this IServiceCollection services)
         {
-            services.AddSingleton<CustomerClassification.Renovate.INormalAccountJobService,
-                CustomerClassification.Renovate.NormalAccountJobService>();
-            services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountDataAccess,
-                Renovate.NormalAccountInsert.NormalAccountDataAccess>();
-            services.AddSingleton<Renovate.NormalAccountInsert.INormalAccountService,
-                Renovate.NormalAccountInsert.NormalAccountService>();
+            services.AddSingleton<INormalAccountJobService, NormalAccountJobService>();
+            services.AddSingleton<INormalAccountDataAccess, NormalAccountDataAccess>();
+            services.AddSingleton<INormalAccountService, NormalAccountService>();
         }
 
-        private static void RegisterNormalTaggingClassificationRenovate(this IServiceCollection services)
+        private static void RegisterNormalTaggingClassification(this IServiceCollection services)
         {
-            services.AddSingleton<CustomerClassification.Renovate.INormalTaggingClassificationJobService,
-                CustomerClassification.Renovate.NormalTaggingClassificationJobService>();
-            services.AddSingleton<Renovate.NormalTaggingClassification.INormalTaggingClassificationDataAccess,
-                Renovate.NormalTaggingClassification.NormalTaggingClassificationDataAccess>();
-            services.AddSingleton<Renovate.NormalTaggingClassification.INormalTaggingClassificationServices,
-                Renovate.NormalTaggingClassification.NormalTaggingClassificationServices>();
+            services.AddSingleton<INormalTaggingClassificationJobService, NormalTaggingClassificationJobService>();
+            services.AddSingleton<INormalTaggingClassificationDataAccess, NormalTaggingClassificationDataAccess>();
+            services.AddSingleton<INormalTaggingClassificationServices, NormalTaggingClassificationServices>();
         }
 
-        private static void RegisterRescanClassificationRenovate(this IServiceCollection services)
+        private static void RegisterRescanClassification(this IServiceCollection services)
         {
-            services.AddSingleton<Renovate.RescanCustomerClassification.IRescanCustClassificationDataAccess,
-                Renovate.RescanCustomerClassification.RescanCustClassificationDataAccess>();
-            services.AddSingleton<Renovate.RescanCustomerClassification.IRescanCustClassificationService,
-                Renovate.RescanCustomerClassification.RescanCustClassificationService>();
+            services.AddSingleton<IRescanCustClassificationDataAccess, RescanCustClassificationDataAccess>();
+            services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
         }
 
-        private static void RegisterProbationRenovate(this IServiceCollection services)
+        private static void RegisterProbation(this IServiceCollection services)
         {
-            services.AddSingleton<Renovate.ProbationClassification.IProbationClassificationDataAccess,
-                Renovate.ProbationClassification.ProbationClassificationDataAccess>();
-            services.AddSingleton<Renovate.ProbationClassification.IProbationClassificationServices,
-                Renovate.ProbationClassification.ProbationClassificationServices>();
-            services.AddSingleton<CustomerClassification.Renovate.IProbationClassificationJobService,
-                CustomerClassification.Renovate.ProbationClassificationJobService>();
+            services.AddSingleton<IProbationClassificationDataAccess, ProbationClassificationDataAccess>();
+            services.AddSingleton<IProbationClassificationServices, ProbationClassificationServices>();
+            services.AddSingleton<IProbationClassificationJobService, ProbationClassificationJobService>();
         }
 
-        private static void RegisterDailyNormalRenovate(this IServiceCollection services)
+        private static void RegisterDailyNormal(this IServiceCollection services)
         {
-            services.AddSingleton<Renovate.DailyNormalClassification.IDailyNormalClassificationDataAccess,
-                Renovate.DailyNormalClassification.DailyNormalClassificationDataAccess>();
-            services.AddSingleton<Renovate.DailyNormalClassification.IDailyNormalClassificationServices,
-                Renovate.DailyNormalClassification.DailyNormalClassificationServices>();
-            services.AddSingleton<CustomerClassification.Renovate.IDailyNormalClassificationJobService,
-                CustomerClassification.Renovate.DailyNormalClassificationJobService>();
+            services.AddSingleton<IDailyNormalClassificationDataAccess, DailyNormalClassificationDataAccess>();
+            services.AddSingleton<IDailyNormalClassificationServices, DailyNormalClassificationServices>();
+            services.AddSingleton<IDailyNormalClassificationJobService, DailyNormalClassificationJobService>();
         }
 
-        private static void RegisterAffectedDownlineRenovate(this IServiceCollection services)
+        private static void RegisterAffectedDownline(this IServiceCollection services)
         {
-            services.AddSingleton<Renovate.AffectedDownline.IAffectedDownlineCustomerClassificationDataAccess,
-                Renovate.AffectedDownline.AffectedDownlineCustomerClassificationDataAccess>();
-            services.AddSingleton<Renovate.AffectedDownline.IAffectedDownlineCustomerClassificationService,
-                Renovate.AffectedDownline.AffectedDownlineCustomerClassificationService>();
-            services.AddSingleton<CustomerClassification.Renovate.IAffectedDownlineCustomerClassificationJobService,
-                CustomerClassification.Renovate.AffectedDownlineCustomerClassificationJobService>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationDataAccess, AffectedDownlineCustomerClassificationDataAccess>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationService, AffectedDownlineCustomerClassificationService>();
+            services.AddSingleton<IAffectedDownlineCustomerClassificationJobService, AffectedDownlineCustomerClassificationJobService>();
         }  
         
-        private static void RegisterNewCustomerClassificationRenovate(this IServiceCollection services)
+        private static void RegisterNewCustomerClassification(this IServiceCollection services)
         {
-            services.AddSingleton<Renovate.NewCustomer.INewCustomerClassificationDataAccess,
-                Renovate.NewCustomer.NewCustomerClassificationDataAccess>();
-            services.AddSingleton<Renovate.NewCustomer.INewCustomerClassificationServices,
-                Renovate.NewCustomer.NewCustomerClassificationServices>();
-            services.AddSingleton<CustomerClassification.Renovate.INewCustomerClassificationJobService,
-                CustomerClassification.Renovate.NewCustomerClassificationJobService>();
+            services.AddSingleton<INewCustomerClassificationDataAccess, NewCustomerClassificationDataAccess>();
+            services.AddSingleton<INewCustomerClassificationServices, NewCustomerClassificationServices>();
+            services.AddSingleton<INewCustomerClassificationJobService, NewCustomerClassificationJobService>();
         }
 
         private static void RegisterNormalAccountClassificationBySportRenovate(this IServiceCollection services)

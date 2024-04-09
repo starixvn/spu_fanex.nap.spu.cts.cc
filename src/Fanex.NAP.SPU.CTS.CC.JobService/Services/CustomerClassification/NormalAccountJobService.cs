@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -13,28 +14,25 @@
     public interface INormalAccountJobService
     {
         Task<bool> Execute(int batchExternalSize, int batchInternalSize);
-
-        Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog);
     }
 
     public class NormalAccountJobService : INormalAccountJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly INormalAccountServices normalAccountServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAppSettings appSettings;
+        private readonly INormalAccountService normalAccountService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;       
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
 
-        public NormalAccountJobService(
-            ISentryClient sentryClient,
-            INormalAccountServices normalAccountServices,
+        public NormalAccountJobService(ISentryClient sentryClient,
+            IAppSettings appSettings,
+            INormalAccountService normalAccountService,
             ICustClassToMainDBService pushDataToExternalService,
-            IAntiFraudCenterServices antiFraudCenterServices,
-            IAppSettings appSettings)
+            IAntiFraudCenterServices antiFraudCenterServices)
         {
             this.sentryClient = sentryClient;
-            this.normalAccountServices = normalAccountServices;
+            this.normalAccountService = normalAccountService;
             this.custClassToMainDBService = pushDataToExternalService;
             this.appSettings = appSettings;
             this.antiFraudCenterServices = antiFraudCenterServices;
@@ -45,14 +43,15 @@
         {
             try
             {
-                if (batchExternalSize > 0 && batchInternalSize > 0)
+                var isContinue = true;
+
+                if (batchInternalSize <= 0)
+                    batchInternalSize = 5000;
+
+                do
                 {
-                    JobRun(batchExternalSize, batchInternalSize);
-                }
-                else
-                {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
-                }
+                    isContinue = JobRun(batchExternalSize, batchInternalSize);
+                } while (isContinue);
             }
             catch (Exception ex)
             {
@@ -64,73 +63,49 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> UpdateWriteLogSetting(string serviceName, bool isWriteLog)
+        private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
-            try
+            var normalAccountModel = normalAccountService.GetNormalAccounts();
+            
+            if (normalAccountModel.IsContinute)
             {
-                bool result = appSettings.UpdateIsWriteLogSetting(serviceName, isWriteLog);
+                var custChunks = normalAccountModel.NormalAccount.Chunk(batchInternalSize);
+              
+                custChunks.AsParallel().WithDegreeOfParallelism(5).ForAll(custBatch => InsertNormalAccount(custBatch, normalAccountModel.ScannedMaxId, batchExternalSize));
+            }
 
-                return Task.FromResult(result);
-            }
-            catch (Exception e)
-            {
-                sentryClient.CaptureException(e);
-                return Task.FromResult(false);
-            }
+            return normalAccountModel.IsContinute;
         }
 
-        #region Private Methods
+        private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, long scannedMaxId, int batchExternalSize)
+        {            
+            var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
-        private void JobRun(int batchExternalSize, int batchInternalSize)
-        {
-            var newClassification = normalAccountServices.GetNewClassification(serviceName, appSettings.NormalAccountIsWriteLog);
+            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);
 
-            if (newClassification.GeneralCustClassifications != null && newClassification.GeneralCustClassifications.Any())
+            if (string.IsNullOrEmpty(result.ErrorMessage))
             {
-                var generalClassificationChunk = newClassification.GeneralCustClassifications.Chunk(batchInternalSize).ToList();
-
-                foreach (var listClassification in generalClassificationChunk)
+                Parallel.Invoke(() =>
                 {
-                    var twDetection = normalAccountServices.GetGroupBettingAndRejectCustomer(listClassification);
-
-                    var custClassificationAfterCheckTWDetection = normalAccountServices.MergeWithTaggedCust(listClassification, twDetection);
-
-                    var custAssociationWithPA = normalAccountServices.GetCustomerAssociationProblemAccount(custClassificationAfterCheckTWDetection.Where(c=>c.TaggingID==0));
-
-                    var finalCustClassification = normalAccountServices.MergeWithTaggedCust(custClassificationAfterCheckTWDetection, custAssociationWithPA);
-
-                    var result = normalAccountServices.InsertMainCustomerClassification(finalCustClassification, serviceName, appSettings.NormalAccountIsWriteLog);
-
-                    if (string.IsNullOrEmpty(result.ErrorMessage))
+                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
                     {
-                        Parallel.Invoke(() =>
-                        {
-                            var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
-                            {
-                                ExternalBatchSize = batchExternalSize,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                IsPushCCToSoon88 = true,
-                                IsUpdateDangerToMainDB = true,
-                                IsWriteLog = appSettings.NormalAccountIsWriteLog,
-                                ServiceName = serviceName
-                            });
+                        ExternalBatchSize = batchExternalSize,
+                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
+                        IsPushCCToSoon88 = true,
+                        IsUpdateDangerToMainDB = true,
+                        IsWriteLog = appSettings.NormalAccountIsWriteLog,
+                        ServiceName = serviceName
+                    });
 
-                            normalAccountServices.UpdateAppliedStatusClassification(listClassification, isPushCCSuccess);
-                        },
-                        () =>
-                        {
-                            antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
-                        });
-                    }
-                }
-            }
+                    var custIdInsertResult = string.Join(",", finalNormalAcc.Select(x => x.CustId).Distinct());
 
-            if (newClassification.IsContinute)
-            {
-                JobRun(batchExternalSize, batchInternalSize);
+                    normalAccountService.UpdateCompleteNormalAccountInsert(custIdInsertResult, scannedMaxId, isPushCCSuccess);
+                },
+                () =>
+                {
+                    antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                });
             }
         }
     }
-
-    #endregion Private Methods
 }

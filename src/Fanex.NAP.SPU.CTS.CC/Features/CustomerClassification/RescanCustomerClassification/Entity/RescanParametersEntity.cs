@@ -10,13 +10,15 @@
             IsWriteLog = false;
         }
 
-        public bool IsRescanPA { get; set; }
-
         public bool IsRescanPADangerous { get; set; }
+
+        public bool IsRescanPA { get; set; }
 
         public bool IsToQueue { get; set; }
 
         public FunctionId FunctionId { get; set; }
+
+        public RescanNormalType RescanNormalType { get; set; }
 
         public int InternalBatchSize { get; set; }
 
