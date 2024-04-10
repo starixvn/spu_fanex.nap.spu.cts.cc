@@ -245,7 +245,8 @@
                 CTSCustID = 0,
                 CategoryID = 0,
                 LastModifiedDate = DateTime.MinValue,
-                CreatedBy = StarixITId
+                CreatedBy = StarixITId,
+                IsDirectPA = false
             };
 
             return data;
