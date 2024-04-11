@@ -18,8 +18,7 @@
 
         InsertNormalAccountResultEntity InsertNormalAccount(string custInfoList);
 
-        void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId);
-
+        void CompleteNormalAccountInsert(long scannedMaxId);
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -78,12 +77,11 @@
             return new InsertNormalAccountResultEntity { CustIds = custIds, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId)
+        public void CompleteNormalAccountInsert(long scannedMaxId)
         {
             var criteria = new InsertCompleteNormalAccountCrieria
             {
-                ScannedMaxId = scannedMaxId,
-                ListCustId = custIdList
+                ScannedMaxId = scannedMaxId
             };
 
             repository.Execute(criteria);

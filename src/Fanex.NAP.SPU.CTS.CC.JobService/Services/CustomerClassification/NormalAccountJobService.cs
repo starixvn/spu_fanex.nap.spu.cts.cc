@@ -97,9 +97,7 @@
                         ServiceName = serviceName
                     });
 
-                    var custIdInsertResult = string.Join(",", finalNormalAcc.Select(x => x.CustId).Distinct());
-
-                    normalAccountService.UpdateCompleteNormalAccountInsert(custIdInsertResult, scannedMaxId, isPushCCSuccess);
+                    normalAccountService.CompleteNormalAccountInsert(scannedMaxId, isPushCCSuccess);
                 },
                 () =>
                 {

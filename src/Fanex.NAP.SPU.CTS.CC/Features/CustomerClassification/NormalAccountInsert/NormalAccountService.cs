@@ -15,7 +15,7 @@
 
         InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
-        bool UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId, bool isSuccess);
+        bool CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
         IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
 
@@ -60,11 +60,11 @@
             return result;
         }
 
-        public bool UpdateCompleteNormalAccountInsert(string custIdList, long scannedMaxId, bool isSuccess)
+        public bool CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess)
         {
             if (isSuccess)
             {
-                dataAccess.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
+                dataAccess.CompleteNormalAccountInsert(scannedMaxId);
             }
 
             return true;
@@ -207,6 +207,7 @@
                                     group => group.taggedCusts.DefaultIfEmpty(),
                                     (group, temp) => new InsertNormalAccountModel(group.custClass, temp));
         }
+
         #endregion
     }
 }

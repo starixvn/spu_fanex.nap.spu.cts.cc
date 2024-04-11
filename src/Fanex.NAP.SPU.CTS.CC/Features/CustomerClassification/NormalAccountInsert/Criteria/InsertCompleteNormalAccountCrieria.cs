@@ -8,9 +8,6 @@
         [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
-        [SpParam(SqlParamName = "ListCustId")]
-        public string ListCustId { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_GeneralNormalClassification_NormalAccount_Complete";
@@ -22,3 +19,4 @@
         }
     }
 }
+

@@ -58,25 +58,15 @@
         public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
         {
             // Arrange                        
-            var customerXML = new List<CustSportXMLModel>() {
-                new CustSportXMLModel
-                {
-                     CustID = 1,
-                     SportGroup = 1
-                },
-                new CustSportXMLModel
-                {
-                    CustID = 1,
-                    SportGroup = 2
-                }
-            }.ToXmlString();
-            var scannedMaxId = 7;
+            long scannedMaxId = 7;
+
             // Act
-            normalAccountService.CompleteNormalAccountBySport(customerXML, scannedMaxId, true);
+            normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
 
             // Assert
-            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(customerXML, scannedMaxId);
+            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
         }
 
     }
 }
+
