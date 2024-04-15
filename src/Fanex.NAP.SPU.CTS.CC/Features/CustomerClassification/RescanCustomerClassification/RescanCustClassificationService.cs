@@ -345,7 +345,7 @@
                             IsLicensee = x.IsLicensee,
                             IsFromAI = true,
                             IsDirectPA = null,
-                            IsFromCTS = true,
+                            IsFromCTS = false,
                             IsFromTVS = false,
                             IsFromTW = false,
                             CreatedBy = Constants.StarixITId,
