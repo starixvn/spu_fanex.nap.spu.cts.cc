@@ -58,7 +58,7 @@
                         IsLicensee = isLicensee,
                         IsFromAI = true,
                         IsDirectPA = null,
-                        IsFromCTS = true,
+                        IsFromCTS = false,
                         IsFromTVS = false,
                         IsFromTW = false,                        
                         CreatedBy = StarixITId,
