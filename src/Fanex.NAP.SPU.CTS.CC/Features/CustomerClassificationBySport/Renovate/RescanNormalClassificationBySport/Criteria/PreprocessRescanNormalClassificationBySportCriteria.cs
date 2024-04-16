@@ -11,6 +11,9 @@
         [SpParam(SqlParamName = "FunctionId")]
         public int FunctionId { get; set; }
 
+        [SpParam(SqlParamName = "QueryType")]
+        public int QueryType { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_BySportNormalClassification_RescanNormal_Preprocess";

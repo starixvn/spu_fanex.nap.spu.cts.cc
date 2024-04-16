@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport.Renovate
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -20,7 +21,9 @@
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly INormalAccountInsertBySportService normalAccountInsertService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;       
+        private readonly ICustClassToMainDBService custClassToMainDBService;
+
+        private const int CategoryIdFromSpecialCC = -1;
 
         public NormalAccountInsertBySportJobService(ISentryClient sentryClient
             , INormalAccountInsertBySportService normalAccountInsertService
@@ -65,29 +68,14 @@
 
             var newClassifications = normalAccountInsertService.GetNormalAccount();
 
-            if (newClassifications.NormalAccount != null && newClassifications.NormalAccount.Any())
+            if (newClassifications.NormalAccount.IsNotNullOrEmpty())
             {               
                 var custChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
 
-                var actions = new List<Action>();
-
-                var idx = 4;
-
-                foreach (var custBatch in custChunks)
-                {
-                    actions.Add(() => InsertNormalAccount(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
-
-                    if (actions.Count == idx)
-                    {
-                        Parallel.Invoke(actions.ToArray());
-                        actions.Clear();
-                    }
-                }
-
-                if (actions.Any())
-                {
-                    Parallel.Invoke(actions.ToArray());
-                }
+                custChunks
+                    .AsParallel()
+                    .WithDegreeOfParallelism(4)
+                    .ForAll(custBatch => PrepareDataForInsertNormalAccount(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
                
                 isContinue = true;
             }
@@ -95,8 +83,60 @@
             return isContinue;
         }
 
-        private void InsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
+        private void PrepareDataForInsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
         {
+            var insertNormalAccounts    = custs.Where(x => x.CategoryId != CategoryIdFromSpecialCC);
+            var specialCCAcounts        = custs.Where(x => x.CategoryId == CategoryIdFromSpecialCC);
+
+            var resultInsertNormalAccount = InsertNormalAccount(insertNormalAccounts);
+
+            if (IsInsertNormalAccountSuccess(resultInsertNormalAccount) || specialCCAcounts.IsNotNullOrEmpty())
+            {
+                var isPushCCSuccess = PushCCBySportToMainDB(resultInsertNormalAccount?.CustNAInserted, specialCCAcounts, batchExternalSize);
+
+                var customerXML = custs.Select(x => new CustSportXMLModel
+                {
+                    CustID = x.CustId,
+                    SportGroup = x.SportGroup
+                }).ToXmlString();
+
+                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);
+            }
+        }
+
+        private bool IsInsertNormalAccountSuccess(InsertNormalAccountBySportModel resultInsertNormalAccount)
+        {
+            return resultInsertNormalAccount != null && string.IsNullOrEmpty(resultInsertNormalAccount.ErrorMessage);
+        }
+
+        private bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> resultCustNAInserted, IEnumerable<GetNormalAccountBySportEntity> specialCCAccounts, int batchExternalSize)
+        {
+            var pushCCList = new List<InsertNormalAccountCustInfoEntity>();
+
+            if (resultCustNAInserted.IsNotNullOrEmpty())
+            {
+                pushCCList.AddRange(resultCustNAInserted);
+            }
+
+            if (specialCCAccounts.IsNotNullOrEmpty())
+            {
+                pushCCList.AddRange(specialCCAccounts.Select(x => new InsertNormalAccountCustInfoEntity
+                {
+                    CustID = x.CustId,
+                    SportGroup = x.SportGroup
+                }));
+            }
+
+            return custClassToMainDBService.PushCCBySportToMainDB(pushCCList, this.serviceName, batchExternalSize);
+        }
+
+        private InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs)
+        {
+            if (custs.IsNullOrEmpty())
+            {
+                return default;
+            }
+
             var insertNA = custs.Select(x => new NormalAccountBySportEntity
             {
                 CustId = x.CustId,
@@ -109,21 +149,7 @@
                 PerformanceTime = x.PerformanceTime
             });
 
-            var insertNAResult = normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);            
-
-            if (string.IsNullOrEmpty(insertNAResult.ErrorMessage))
-            {
-                var isPushCCSuccess = custClassToMainDBService.PushCCBySportToMainDB(insertNAResult.CustNAInserted, this.serviceName, batchExternalSize);
-
-                var customerXML = insertNA.Select(x => new CustSportXMLModel
-                {
-                    CustID = x.CustId,
-                    SportGroup = x.SportGroup
-                }).ToXmlString();
-
-                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);                
-            }
+            return normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);            
         }
-
     }
 }
