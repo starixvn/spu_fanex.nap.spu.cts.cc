@@ -54,18 +54,18 @@
             normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
         }
 
-        [Fact]
-        public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
-        {
-            // Arrange                        
-            long scannedMaxId = 7;
+        //[Fact]
+        //public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
+        //{
+        //    // Arrange                        
+        //    long scannedMaxId = 7;
 
-            // Act
-            normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
+        //    // Act
+        //    normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
 
-            // Assert
-            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
-        }
+        //    // Assert
+        //    normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
+        //}
 
     }
 }

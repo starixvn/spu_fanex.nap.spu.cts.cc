@@ -12,7 +12,8 @@
 
         InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<NormalAccountBySportEntity> custs, string serviceName);
 
-        bool CompleteNormalAccountBySport(long scannedMaxId, bool isSuccess);
+        bool CompleteNormalAccountBySport(string customersXML, long scannedMaxId, bool isSuccess);
+
     }
 
     public class NormalAccountInsertBySportService : INormalAccountInsertBySportService
@@ -50,14 +51,15 @@
             return result;
         }
 
-        public bool CompleteNormalAccountBySport(long scannedMaxId, bool isSuccess)
+        public bool CompleteNormalAccountBySport(string customersXML, long scannedMaxId, bool isSuccess)
         {
             if (isSuccess)
             {
-                dataAccess.CompleteNormalAccountBySport(scannedMaxId);
+                dataAccess.CompleteNormalAccountBySport(customersXML, scannedMaxId);
             }
 
             return true;
         }
     }
+
 }

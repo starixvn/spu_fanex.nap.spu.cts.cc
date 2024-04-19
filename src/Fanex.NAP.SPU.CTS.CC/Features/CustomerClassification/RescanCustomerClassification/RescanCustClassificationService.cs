@@ -35,7 +35,7 @@
         IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
-       
+
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
@@ -67,7 +67,7 @@
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
-            ICustClassToMainDBService custClassToMainDBService,            
+            ICustClassToMainDBService custClassToMainDBService,
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
@@ -94,9 +94,9 @@
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
             if (custIds != null && custIds.Any())
-            {                
+            {
                 Start();
-              
+
                 if (parameters.IsRescanPA)
                 {
                     GetExistedProblemAccounts(custIds)
@@ -290,7 +290,7 @@
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPADangerous.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
-              
+
                 if (custToRescanNormal.Any())
                 {
                     var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
@@ -349,7 +349,7 @@
                             IsFromTVS = false,
                             IsFromTW = false,
                             CreatedBy = Constants.StarixITId,
-                            Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(x.ClassifiedScore * 100).ToString(FormatDecimalToString_2Places)}%"
+                            Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Dangerous Score: {(x.ClassifiedScore * 100).ToString(FormatDecimalToString_2Places)}%"
                         };
                     });
 

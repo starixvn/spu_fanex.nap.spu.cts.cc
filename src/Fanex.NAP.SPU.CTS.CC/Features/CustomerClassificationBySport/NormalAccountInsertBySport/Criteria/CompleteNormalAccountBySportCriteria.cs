@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
+        [SpParam(SqlParamName = "CustomersXML")]
+        public string CustomersXML { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_BySportNormalClassification_NormalAccount_Complete";
@@ -18,4 +21,5 @@
             return true;
         }
     }
+
 }

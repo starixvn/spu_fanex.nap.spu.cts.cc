@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using System;
     using System.Linq;
 
     public interface INormalAccountInsertBySportDataAccess
@@ -11,7 +9,7 @@
 
         InsertNormalAccountBySportModel InsertNormalAccount(string custIdList);
 
-        void CompleteNormalAccountBySport(long scannedMaxId);
+        void CompleteNormalAccountBySport(string customersXML, long scannedMaxId);
     }
 
     public class NormalAccountInsertBySportDataAccess : INormalAccountInsertBySportDataAccess
@@ -49,14 +47,17 @@
             return new InsertNormalAccountBySportModel { CustNAInserted = custNAInserted, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void CompleteNormalAccountBySport(long scannedMaxId)
+        public void CompleteNormalAccountBySport(string customersXML, long scannedMaxId)
         {
             var criteria = new CompleteNormalAccountBySportCriteria
             {
-                ScannedMaxId = scannedMaxId
+                ScannedMaxId = scannedMaxId,
+                CustomersXML = customersXML
             };
 
             repository.Execute(criteria);
         }
+
     }
+
 }
