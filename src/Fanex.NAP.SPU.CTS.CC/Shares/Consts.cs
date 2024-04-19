@@ -12,7 +12,7 @@
 
         public const string CONVERT_TO_SQL_DATE = "yyyy-MM-dd";
         public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
-        public const string CONVERT_TO_DATETIME_ddMMMyyyy = "dd MMM, yyyy";
+        public const string CONVERT_TO_DATETIME_MMMddyyyy = "MMM dd, yyyy";
         public const string FormatDecimalToString_2Places = "0.00";
         public const string FormatDecimalToString_Thousands = "#,##0";
         public const string FormatDecimalToString_Thousands2Places = "#,##0.00";
