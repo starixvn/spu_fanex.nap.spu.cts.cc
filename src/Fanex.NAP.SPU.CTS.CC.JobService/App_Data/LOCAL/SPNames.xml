@@ -75,7 +75,7 @@
 
 	<Function Name="DailyNormalClassificationRenovate">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
-		<Setting Key="CTS_GeneralNormalClassification_Daily_Preprocess" SpName="CTS_GeneralNormalClassification_Daily_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
+		<Setting Key="CTS_GeneralNormalClassification_Daily_Preprocess" SpName="CTS_GeneralNormalClassification_Daily_Preprocess_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
 	</Function>
 	
 	<Function Name="MatchMonitorClassification">
@@ -240,7 +240,7 @@
 
 	<Function Name="RealtimeClassificationBySportRenovate">		
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
