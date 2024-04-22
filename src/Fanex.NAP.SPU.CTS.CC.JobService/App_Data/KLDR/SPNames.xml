@@ -137,11 +137,8 @@
 	<Function Name="TWGroupBetting">
 		<Setting Key="CTS_TWGroupBetting_GetRules" SpName="CTS_TWGroupBetting_GetRules" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicket" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="SQL.WASAVerse.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_UpdateTotalTicketDB062" SpName="CTS_TWGroupBetting_UpdateTotalTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_ScanTicket" SpName="CTS_TWGroupBetting_ScanTicket" DbName="SQL.WASAVerse.bodbSPUNet" TimeOut="600" />
-		<Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.WASAVerse.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
-		<Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_CustomerClassification_CheckNewGroupBetting" SpName="CTS_CustomerClassification_CheckNewGroupBetting" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
 	<Function Name="CustomerClassification">

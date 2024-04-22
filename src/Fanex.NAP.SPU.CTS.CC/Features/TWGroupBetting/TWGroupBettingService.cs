@@ -11,9 +11,7 @@
     {
         TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
-        void CountGroupBettingTicket();
-
-        long CountTotalTicket(int batchSize, long LastSequenceId);
+        long UpdateTotalGBTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
@@ -75,27 +73,9 @@
             return twGroupBettingDataAccess.ScanTicket(criteria);
         }
 
-        public void CountGroupBettingTicket()
+        public long UpdateTotalGBTicket(int batchSize, long LastSequenceId)
         {
-            try
-            {
-                twGroupBettingDataAccess.CountGroupBettingTicket();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            //finally 
-            //{
-            //    twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
-            //}
-            
-        }
-
-        public long CountTotalTicket(int batchSize, long LastSequenceId) 
-        {
-            return twGroupBettingDataAccess.CountTotalTicket(batchSize, LastSequenceId);
-            //twGroupBettingDataAccess.CountTotalTicketDB062();
+            return twGroupBettingDataAccess.UpdateTotalGBTicket(batchSize, LastSequenceId);
         }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()

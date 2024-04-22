@@ -39,6 +39,7 @@
             try
             {
                 var rules = twGroupBettingService.GetAllRules();
+
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
                     var lastTransId = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
@@ -53,9 +54,9 @@
                         LastTransSec = lastTransSec,
                         SkipTransCount = skipTransCount
                     };
+
                     var outputParams = twGroupBettingService.ScanTicket(configs);
                     
-                    twGroupBettingService.CountGroupBettingTicket();
                     if (outputParams.LastSequenceId_New > 0)
                     {
                         twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
@@ -93,7 +94,7 @@
 
                         try
                         {
-                            nextSequenceId = twGroupBettingService.CountTotalTicket((int)batchSize, LastSequenceId);
+                            nextSequenceId = twGroupBettingService.UpdateTotalGBTicket((int)batchSize, LastSequenceId);
 
                             if (nextSequenceId > 0)
                             {
