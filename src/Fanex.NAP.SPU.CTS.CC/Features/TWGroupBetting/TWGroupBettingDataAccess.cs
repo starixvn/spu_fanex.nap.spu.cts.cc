@@ -3,15 +3,13 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Entities;
-    using Fanex.NAP.SPU.CTS.Shares;
-    using System;
     using System.Collections.Generic;
 
     public interface ITWGroupBettingDataAccess
     {
         TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
-        long UpdateTotalGBTicket(int batchSize, long LastSequenceId);
+        long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
     }
@@ -31,7 +29,7 @@
             return criteria;
         }
 
-        public long UpdateTotalGBTicket(int batchSize, long lastSequenceId)
+        public long UpdateTotalTWGBTicket(int batchSize, long lastSequenceId)
         {
             var criteria = new TWGroupBetting_UpdateTotalTicketCriteria()
             {
@@ -42,7 +40,7 @@
             repository.Execute(criteria);
 
             return criteria.LastSequenceId_New;
-        } 
+        }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()
         {

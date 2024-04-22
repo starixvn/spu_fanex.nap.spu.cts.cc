@@ -11,7 +11,7 @@
     {
         TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
-        long UpdateTotalGBTicket(int batchSize, long LastSequenceId);
+        long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
@@ -44,7 +44,7 @@
             Int64 defaultValue = 0;
             return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
-        
+
         public int GetConfig_Int(Main_SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
@@ -62,20 +62,20 @@
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
-        
+
         public void UpdateConfig_Int(int value, Main_SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
 
-        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria) 
+        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria)
         {
             return twGroupBettingDataAccess.ScanTicket(criteria);
         }
 
-        public long UpdateTotalGBTicket(int batchSize, long LastSequenceId)
+        public long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId)
         {
-            return twGroupBettingDataAccess.UpdateTotalGBTicket(batchSize, LastSequenceId);
+            return twGroupBettingDataAccess.UpdateTotalTWGBTicket(batchSize, LastSequenceId);
         }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()

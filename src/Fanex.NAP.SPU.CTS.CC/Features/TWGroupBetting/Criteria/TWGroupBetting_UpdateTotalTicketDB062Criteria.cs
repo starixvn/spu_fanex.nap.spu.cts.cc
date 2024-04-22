@@ -7,7 +7,7 @@
         public int BatchSize { get; set; }
 
         public long LastSequenceId { get; set; }
-   
+
         public long LastSequenceId_New { get; set; }
 
         public override string GetSettingKey()
