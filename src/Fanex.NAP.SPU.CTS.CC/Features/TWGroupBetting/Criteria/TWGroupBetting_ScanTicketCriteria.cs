@@ -16,7 +16,9 @@
         public int SkipTransCount { get; set; }
 
         public Int64 LastSequenceId_New { get; set; }
+
         public Int64 LastTransSec_New { get; set; }
+        
         public int SkipTransCount_New { get; set; }
 
         public override string GetSettingKey()
