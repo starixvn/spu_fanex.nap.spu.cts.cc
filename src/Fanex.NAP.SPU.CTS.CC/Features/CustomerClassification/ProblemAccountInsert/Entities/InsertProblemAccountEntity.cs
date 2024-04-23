@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
 
@@ -44,6 +45,42 @@
             this.IssueTypeID = tvsPACust.IssueTypeId;
             this.IsFromTVS = true;
             this.IsDirectPA = true;
+        }
+
+        public InsertProblemAccountEntity(RescanPADangerousEntity rescanPADangerous)
+        {
+            this.CustID = rescanPADangerous.CustID;
+            this.CTSCustID = rescanPADangerous.CTSCustID;
+            this.RoleID = rescanPADangerous.RoleID;
+            this.SubscriberID = rescanPADangerous.SubscriberID;
+            this.CategoryID = rescanPADangerous.CategoryID;
+            this.CategoryGroup = rescanPADangerous.CategoryID;
+            this.IsLicensee = rescanPADangerous.IsLicensee;
+            this.IsFromAI = true;
+            this.IsDirectPA = null;
+            this.IsFromCTS = false;
+            this.IsFromTVS = false;
+            this.IsFromTW = false;
+            this.CreatedBy = Constants.StarixITId;
+            this.Remark = $"Detection Date: { rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places)}%";
+        }
+
+        public InsertProblemAccountEntity(GetInitialTWGroupBettingEntity twGBCust, PotentialPACustInfoEntity ctsCust)
+        {
+            this.CustID = twGBCust.CustID;
+            this.CTSCustID = ctsCust.CTSCustID;
+            this.RoleID = ctsCust.RoleID;
+            this.SubscriberID = ctsCust.SubscriberID;
+            this.CategoryID = ctsCust.CategoryID;
+            this.CategoryGroup = ctsCust.CategoryGroup;
+            this.IsLicensee = ctsCust.IsLicensee;
+            this.IsFromAI = false;
+            this.IsDirectPA = null;
+            this.IsFromCTS = false;
+            this.IsFromTVS = false;
+            this.IsFromTW = true;
+            this.CreatedBy = Constants.StarixITId;           
+            this.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - GB Bet Count: {twGBCust.TWGBTicketCount}";
         }
 
         public Int64 CustID { get; set; }
