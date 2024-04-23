@@ -90,7 +90,7 @@
 
             var resultInsertNormalAccount = InsertNormalAccount(insertNormalAccounts);
 
-            if (IsInsertNormalAccountSuccess(resultInsertNormalAccount) || specialCCAcounts.IsNotNullOrEmpty())
+            if (IsInsertNormalAccountSuccess(resultInsertNormalAccount))
             {
                 var isPushCCSuccess = PushCCBySportToMainDB(resultInsertNormalAccount?.CustNAInserted, specialCCAcounts, batchExternalSize);
 
