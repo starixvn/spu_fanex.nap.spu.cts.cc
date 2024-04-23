@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -9,24 +9,24 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public interface ITWInitialGroupBettingJobService
+    public interface IDailyTWInitialGroupBettingJobService
     {
         Task<bool> Execute(int batchSize);
     }
 
-    public class TWInitialGroupBettingJobService : ITWInitialGroupBettingJobService
+    public class DailyTWInitialGroupBettingJobService : IDailyTWInitialGroupBettingJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly ITWInitialGroupBettingService twInitialGBService;
 
-        public TWInitialGroupBettingJobService(ISentryClient sentryClient, IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
+        public DailyTWInitialGroupBettingJobService(ISentryClient sentryClient, IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
         {
             this.sentryClient = sentryClient;
             this.twInitialGBService = twInitialGBService;        
             this.appSettings = appSettings;
-            this.serviceName = "TWInitialGroupBettingJobService";
+            this.serviceName = "Daily TW Initial Group Betting JobService";
         }
 
         public Task<bool> Execute(int batchSize)
@@ -63,11 +63,13 @@
             {
                 var twInitialGB = twInitialGBService.GetChanges();
 
-                isContinue = twInitialGB.CustIDs != null && twInitialGB.CustIDs.Any();
+                isContinue = twInitialGB.CustInfos != null && twInitialGB.CustInfos.Any();
 
                 if (isContinue)
                 {
-                    twInitialGBService.InsertTWInitalGBClassification(twInitialGB.CustIDs, paras);
+                    twInitialGBService.InsertTWInitalGBClassification(twInitialGB.CustInfos, paras);
+
+                    twInitialGBService.UpdateNextScannedTime(twInitialGB.NextScannedDateTime, twInitialGB.NextScannedCustID);
                 }
 
             } while (isContinue);

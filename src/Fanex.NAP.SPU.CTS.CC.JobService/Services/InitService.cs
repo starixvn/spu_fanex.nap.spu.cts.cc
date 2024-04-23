@@ -32,22 +32,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
 
     public static class InitService
     {
@@ -123,8 +108,9 @@
 
             RegisterDailyDangerousClassification(services);
 
-        }       
-
+            RegisterTWInitialGroupBetting(services);
+        }
+      
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
         {
             services.AddSingleton<IDetectUnauthorizedLoginCustomerDataAccess, DetectUnauthorizedLoginCustomerDataAccess>();            
@@ -385,6 +371,13 @@
             services.AddSingleton<IDailyDangerousClassificationJobService, DailyDangerousClassificationJobService>();
             services.AddSingleton<IDailyDangerousClassificationService, DailyDangerousClassificationService>();
             services.AddSingleton<IDailyDangerousClassificationDataAccess, DailyDangerousClassificationDataAccess>();
+        }
+
+        private static void RegisterTWInitialGroupBetting(IServiceCollection services)
+        {
+            services.AddSingleton<IDailyTWInitialGroupBettingJobService, DailyTWInitialGroupBettingJobService>();
+            services.AddSingleton<ITWInitialGroupBettingDataAccess, TWInitialGroupBettingDataAccess>();
+            services.AddSingleton<ITWInitialGroupBettingService, TWInitialGroupBettingService>();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
@@ -50,8 +51,10 @@
     public class RescanCustClassificationService : IRescanCustClassificationService
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
+        private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+
         private readonly ISentryClient sentryClient;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
@@ -65,12 +68,14 @@
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
+            ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService,            
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
+            this.twInitialGBDataAccess = twInitialGBDataAccess;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
@@ -356,12 +361,12 @@
 
             if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
             {
-                var custInfos = rescanCustClassificationDataAccess.GetCustInfos(custIDs);
+                var custInfos = twInitialGBDataAccess.GetCustInfos(custIDs);
 
                 var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
                                (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
                
-                var custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+                var custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
 
                 custIdsToRescanPotentialPA.AddRange(custPaTWGB);
 

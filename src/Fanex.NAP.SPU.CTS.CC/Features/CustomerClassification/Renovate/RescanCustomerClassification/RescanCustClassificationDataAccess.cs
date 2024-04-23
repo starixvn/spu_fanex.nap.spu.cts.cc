@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -15,9 +16,7 @@
 
         IEnumerable<RescanPADangerousEntity> RescanPADangerous(string custIDs);
 
-        IEnumerable<GetInitialTWGroupBettingEntity> GetInitialTWGroupBetting(string custIDs);
-
-        IEnumerable<PotentialPACustInfoEntity> GetCustInfos(string custIDs);
+        IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs);
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -72,22 +71,12 @@
             return repository.Fetch<RescanPADangerousEntity>(criteria);
         }
 
-        public IEnumerable<GetInitialTWGroupBettingEntity> GetInitialTWGroupBetting(string custIDs)
+        public IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs)
         {
             var criteria = new RescanInitialTWGroupBettingCriteria() { CustIDs = custIDs };
 
-            return repository.Fetch<GetInitialTWGroupBettingEntity>(criteria);
+            return repository.Fetch<TWInitialGBGetChangesEntity>(criteria);
         }
-
-        public IEnumerable<PotentialPACustInfoEntity> GetCustInfos(string custIDs)
-        {
-            var criteria = new GetCustInfoByCustIDCriteria
-            {
-                CustIDs = custIDs
-            };
-
-            return repository.Fetch<PotentialPACustInfoEntity>(criteria);
-        }
-
+       
     }
 }

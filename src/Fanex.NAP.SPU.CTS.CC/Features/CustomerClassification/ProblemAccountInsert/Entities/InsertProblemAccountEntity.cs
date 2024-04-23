@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -65,7 +66,7 @@
             this.Remark = $"Detection Date: { rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - Dangerous Score: {(rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places)}%";
         }
 
-        public InsertProblemAccountEntity(GetInitialTWGroupBettingEntity twGBCust, PotentialPACustInfoEntity ctsCust)
+        public InsertProblemAccountEntity(TWInitialGBGetChangesEntity twGBCust, PotentialPACustInfoEntity ctsCust)
         {
             this.CustID = twGBCust.CustID;
             this.CTSCustID = ctsCust.CTSCustID;
@@ -80,7 +81,7 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;           
-            this.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - GB Bet Count: {twGBCust.TWGBTicketCount}";
+            this.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_ddMMMyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
         }
 
         public Int64 CustID { get; set; }
