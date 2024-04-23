@@ -9,7 +9,7 @@
 
         InsertNormalAccountBySportModel InsertNormalAccount(string custIdList);
 
-        void CompleteNormalAccountBySport(string customersXML, long scannedMaxId);
+        void CompleteNormalAccountBySport(long scannedMaxId);
     }
 
     public class NormalAccountInsertBySportDataAccess : INormalAccountInsertBySportDataAccess
@@ -47,12 +47,11 @@
             return new InsertNormalAccountBySportModel { CustNAInserted = custNAInserted, ErrorMessage = criteria.ErrorMessage };
         }
 
-        public void CompleteNormalAccountBySport(string customersXML, long scannedMaxId)
+        public void CompleteNormalAccountBySport(long scannedMaxId)
         {
             var criteria = new CompleteNormalAccountBySportCriteria
             {
-                ScannedMaxId = scannedMaxId,
-                CustomersXML = customersXML
+                ScannedMaxId = scannedMaxId
             };
 
             repository.Execute(criteria);
