@@ -32,7 +32,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
 
     public static class InitService
     {
@@ -375,7 +375,7 @@
 
         private static void RegisterTWInitialGroupBetting(IServiceCollection services)
         {
-            services.AddSingleton<IDailyTWInitialGroupBettingJobService, DailyTWInitialGroupBettingJobService>();
+            services.AddSingleton<IRealtimeTWInitialGroupBettingJobService, RealtimeTWInitialGroupBettingJobService>();
             services.AddSingleton<ITWInitialGroupBettingDataAccess, TWInitialGroupBettingDataAccess>();
             services.AddSingleton<ITWInitialGroupBettingService, TWInitialGroupBettingService>();
         }

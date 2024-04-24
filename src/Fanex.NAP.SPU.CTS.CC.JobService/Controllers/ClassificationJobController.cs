@@ -32,7 +32,7 @@
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
-        private readonly IDailyTWInitialGroupBettingJobService dailyTWInitialGroupBettingJobService;
+        private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,           
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
@@ -54,7 +54,7 @@
             ITWRobotImpervaJobService robotImpervaJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
-            IDailyTWInitialGroupBettingJobService dailyTWInitialGroupBettingJobService)
+            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService)
         {
             this.sentryClient = sentryClient;           
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
@@ -77,7 +77,7 @@
             this.robotImpervaJobService = robotImpervaJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
-            this.dailyTWInitialGroupBettingJobService = dailyTWInitialGroupBettingJobService;
+            this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
         }
 
         [HttpPost("insertNormalAccount")]
@@ -229,12 +229,12 @@
 <<<<<<< .mine
         }
 
-        [HttpPost("scanningDailyTWInitialGBClassification")]
-        public async Task<bool> DailyTWInitialGBClassification([FromForm] int batchSize)
+        [HttpPost("scanningSecondlyTWInitialGBClassification")]
+        public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
         {
             sentryClient.CaptureMessage($"TW Initial GB classification Service is running at {DateTime.Now}");
 
-            return await this.dailyTWInitialGroupBettingJobService.Execute(batchSize);
+            return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
         }
 
         [HttpPost("updatewritelog")]

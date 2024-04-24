@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyTWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -9,19 +9,19 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public interface IDailyTWInitialGroupBettingJobService
+    public interface IRealtimeTWInitialGroupBettingJobService
     {
         Task<bool> Execute(int batchSize);
     }
 
-    public class DailyTWInitialGroupBettingJobService : IDailyTWInitialGroupBettingJobService
+    public class RealtimeTWInitialGroupBettingJobService : IRealtimeTWInitialGroupBettingJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly ITWInitialGroupBettingService twInitialGBService;
 
-        public DailyTWInitialGroupBettingJobService(ISentryClient sentryClient, IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
+        public RealtimeTWInitialGroupBettingJobService(ISentryClient sentryClient, IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
         {
             this.sentryClient = sentryClient;
             this.twInitialGBService = twInitialGBService;        

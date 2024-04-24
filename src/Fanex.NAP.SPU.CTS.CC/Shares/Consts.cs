@@ -28,6 +28,7 @@
         public const string Telegram_GroupId_Local = "-869606030";
 
         public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
+        public const string TWInitialGBMissSport = "Soccer/Basketball";
 
         public enum MatchMonitorQueryTypes
         {
