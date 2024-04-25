@@ -96,6 +96,5 @@
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
                                 .ClearNormalPoolCustomers(custIDList, scannedMaxID);
         }
-
     }
 }

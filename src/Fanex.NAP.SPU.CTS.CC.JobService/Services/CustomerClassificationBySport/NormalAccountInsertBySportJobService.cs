@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -40,7 +41,7 @@
         {
             try
             {
-                var isContinue = true;
+                bool isContinue = true;
 
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
@@ -54,7 +55,7 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(this.serviceName, ex.Message, string.Empty, ex, sentryClient);
-
+                
                 return Task.FromResult(false);
             }
 
@@ -69,12 +70,16 @@
 
             if (newClassifications.NormalAccount.IsNotNullOrEmpty())
             {
+                var failedThreads = new ConcurrentBag<bool>();
+
                 var custChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
 
                 custChunks
                     .AsParallel()
                     .WithDegreeOfParallelism(4)
-                    .ForAll(custBatch => Process(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
+                    .ForAll(custBatch => Process(custBatch, batchExternalSize, failedThreads));
+
+                normalAccountInsertService.CompleteNormalAccountBySport(newClassifications.ScannedMaxId, failedThreads.IsEmpty);
 
                 isContinue = true;
             }
@@ -82,7 +87,7 @@
             return isContinue;
         }
 
-        private void Process(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
+        private void Process(IEnumerable<GetNormalAccountBySportEntity> custs, int batchExternalSize, ConcurrentBag<bool> result)
         {
             var insertNormalAccounts = custs.Where(x => x.CategoryId != CategoryIdFromSpecialCC);
             var specialCCAcounts = custs.Where(x => x.CategoryId == CategoryIdFromSpecialCC);
@@ -90,15 +95,9 @@
             var isInsertNormalSuccess = InsertNormalAndPushCC(insertNormalAccounts, batchExternalSize);
             var isSpecialCCSucess = PushSpecialCC(specialCCAcounts, batchExternalSize);
 
-            if (isInsertNormalSuccess && isSpecialCCSucess)
+            if (!isInsertNormalSuccess || !isSpecialCCSucess)
             {
-                var customerXML = custs.Select(x => new CustSportXMLModel
-                {
-                    CustID = x.CustId,
-                    SportGroup = x.SportGroup
-                }).ToXmlString();
-
-                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, true);
+                result.Add(false);  
             }
         }
 

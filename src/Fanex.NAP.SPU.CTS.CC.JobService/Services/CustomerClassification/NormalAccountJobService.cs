@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -69,15 +70,22 @@
             
             if (normalAccountModel.IsContinute)
             {
+                var failedThreads = new ConcurrentBag<bool>();
+                
                 var custChunks = normalAccountModel.NormalAccount.Chunk(batchInternalSize);
-              
-                custChunks.AsParallel().WithDegreeOfParallelism(5).ForAll(custBatch => InsertNormalAccount(custBatch, normalAccountModel.ScannedMaxId, batchExternalSize));
+
+                custChunks
+                    .AsParallel()
+                    .WithDegreeOfParallelism(5)
+                    .ForAll(custBatch => InsertNormalAccount(custBatch, batchExternalSize, failedThreads));
+
+                normalAccountService.CompleteNormalAccountInsert(normalAccountModel.ScannedMaxId, failedThreads.IsEmpty);
             }
 
             return normalAccountModel.IsContinute;
         }
 
-        private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, long scannedMaxId, int batchExternalSize)
+        private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, int batchExternalSize, ConcurrentBag<bool> failedThreads)
         {            
             var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
@@ -97,7 +105,10 @@
                         ServiceName = serviceName
                     });
 
-                    normalAccountService.CompleteNormalAccountInsert(scannedMaxId, isPushCCSuccess);
+                    if (!isPushCCSuccess)
+                    {
+                        failedThreads.Add(false);
+                    }
                 },
                 () =>
                 {
