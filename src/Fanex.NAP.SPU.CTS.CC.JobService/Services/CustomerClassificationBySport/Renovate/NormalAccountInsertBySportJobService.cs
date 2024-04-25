@@ -23,7 +23,7 @@
         private readonly INormalAccountInsertBySportService normalAccountInsertService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private const int CategoryIdFromSpecialCC = -1;
+        private const int CategoryIdFromSpecialCC = -1; // for special cc cust no performance
 
         public NormalAccountInsertBySportJobService(ISentryClient sentryClient
             , INormalAccountInsertBySportService normalAccountInsertService
@@ -88,10 +88,10 @@
             var insertNormalAccounts = custs.Where(x => x.CategoryId != CategoryIdFromSpecialCC);
             var specialCCAcounts = custs.Where(x => x.CategoryId == CategoryIdFromSpecialCC);
 
-            var isPushCCInserNormalAccounts = IsInsertNormalAccountAndPushCC(insertNormalAccounts, batchExternalSize);
-            var isPushCCSpecialCCAccounts = IsPushCCSpecialCCAccount(specialCCAcounts, batchExternalSize);
+            var isInsertNormalSuccess = InsertNormalAndPushCC(insertNormalAccounts, batchExternalSize);
+            var isSpecialCCSucess = PushSpecialCC(specialCCAcounts, batchExternalSize);
 
-            if (isPushCCInserNormalAccounts && isPushCCSpecialCCAccounts)
+            if (isInsertNormalSuccess && isSpecialCCSucess)
             {
                 var customerXML = custs.Select(x => new CustSportXMLModel
                 {
@@ -103,7 +103,7 @@
             }
         }
 
-        private bool IsInsertNormalAccountAndPushCC(IEnumerable<GetNormalAccountBySportEntity> insertNormalAccounts, int batchExternalSize)
+        private bool InsertNormalAndPushCC(IEnumerable<GetNormalAccountBySportEntity> insertNormalAccounts, int batchExternalSize)
         {
             var isSuccess = true;
 
@@ -118,7 +118,7 @@
             return isSuccess;
         }
 
-        private bool IsPushCCSpecialCCAccount(IEnumerable<GetNormalAccountBySportEntity> specialCCAcounts, int batchExternalSize)
+        private bool PushSpecialCC(IEnumerable<GetNormalAccountBySportEntity> specialCCAcounts, int batchExternalSize)
         {
             var isSuccess = true;
 
