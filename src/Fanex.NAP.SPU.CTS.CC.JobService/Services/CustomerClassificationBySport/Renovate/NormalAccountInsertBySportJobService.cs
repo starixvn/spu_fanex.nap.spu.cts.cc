@@ -23,7 +23,7 @@
         private readonly INormalAccountInsertBySportService normalAccountInsertService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private const int CategoryIdFromSpecialCC = -1;
+        private const int CategoryIdFromSpecialCC = -1; // for special cc cust no performance
 
         public NormalAccountInsertBySportJobService(ISentryClient sentryClient
             , INormalAccountInsertBySportService normalAccountInsertService
@@ -50,7 +50,7 @@
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
 
-                } while (isContinue);                
+                } while (isContinue);
             }
             catch (Exception ex)
             {
@@ -69,74 +69,75 @@
             var newClassifications = normalAccountInsertService.GetNormalAccount();
 
             if (newClassifications.NormalAccount.IsNotNullOrEmpty())
-            {               
+            {
                 var custChunks = newClassifications.NormalAccount.Chunk(batchInternalSize).ToList();
 
                 custChunks
                     .AsParallel()
                     .WithDegreeOfParallelism(4)
-                    .ForAll(custBatch => PrepareDataForInsertNormalAccount(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
-               
+                    .ForAll(custBatch => Process(custBatch, newClassifications.ScannedMaxId, batchExternalSize));
+
                 isContinue = true;
             }
 
             return isContinue;
         }
 
-        private void PrepareDataForInsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
+        private void Process(IEnumerable<GetNormalAccountBySportEntity> custs, long scannedMaxId, int batchExternalSize)
         {
-            var insertNormalAccounts    = custs.Where(x => x.CategoryId != CategoryIdFromSpecialCC);
-            var specialCCAcounts        = custs.Where(x => x.CategoryId == CategoryIdFromSpecialCC);
+            var insertNormalAccounts = custs.Where(x => x.CategoryId != CategoryIdFromSpecialCC);
+            var specialCCAcounts = custs.Where(x => x.CategoryId == CategoryIdFromSpecialCC);
 
-            var resultInsertNormalAccount = InsertNormalAccount(insertNormalAccounts);
+            var isInsertNormalSuccess = InsertNormalAndPushCC(insertNormalAccounts, batchExternalSize);
+            var isSpecialCCSucess = PushSpecialCC(specialCCAcounts, batchExternalSize);
 
-            if (IsInsertNormalAccountSuccess(resultInsertNormalAccount))
+            if (isInsertNormalSuccess && isSpecialCCSucess)
             {
-                var isPushCCSuccess = PushCCBySportToMainDB(resultInsertNormalAccount?.CustNAInserted, specialCCAcounts, batchExternalSize);
-
                 var customerXML = custs.Select(x => new CustSportXMLModel
                 {
                     CustID = x.CustId,
                     SportGroup = x.SportGroup
                 }).ToXmlString();
 
-                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, isPushCCSuccess);
+                normalAccountInsertService.CompleteNormalAccountBySport(customerXML, scannedMaxId, true);
             }
         }
 
-        private bool IsInsertNormalAccountSuccess(InsertNormalAccountBySportModel resultInsertNormalAccount)
+        private bool InsertNormalAndPushCC(IEnumerable<GetNormalAccountBySportEntity> insertNormalAccounts, int batchExternalSize)
         {
-            return resultInsertNormalAccount != null && string.IsNullOrEmpty(resultInsertNormalAccount.ErrorMessage);
-        }
+            var isSuccess = true;
 
-        private bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> resultCustNAInserted, IEnumerable<GetNormalAccountBySportEntity> specialCCAccounts, int batchExternalSize)
-        {
-            var pushCCList = new List<InsertNormalAccountCustInfoEntity>();
-
-            if (resultCustNAInserted.IsNotNullOrEmpty())
+            if (insertNormalAccounts.IsNotNullOrEmpty())
             {
-                pushCCList.AddRange(resultCustNAInserted);
+                var resultInsertNormalAccount = InsertNormalAccount(insertNormalAccounts);
+
+                isSuccess = string.IsNullOrEmpty(resultInsertNormalAccount?.ErrorMessage) &&
+                            custClassToMainDBService.PushCCBySportToMainDB(resultInsertNormalAccount.CustNAInserted, this.serviceName, batchExternalSize);
             }
 
-            if (specialCCAccounts.IsNotNullOrEmpty())
+            return isSuccess;
+        }
+
+        private bool PushSpecialCC(IEnumerable<GetNormalAccountBySportEntity> specialCCAcounts, int batchExternalSize)
+        {
+            var isSuccess = true;
+
+            if (specialCCAcounts.IsNotNullOrEmpty())
             {
-                pushCCList.AddRange(specialCCAccounts.Select(x => new InsertNormalAccountCustInfoEntity
+                var pushCCListSpecialCC = specialCCAcounts.Select(x => new InsertNormalAccountCustInfoEntity
                 {
                     CustID = x.CustId,
                     SportGroup = x.SportGroup
-                }));
+                });
+
+                isSuccess = custClassToMainDBService.PushCCBySportToMainDB(pushCCListSpecialCC, this.serviceName, batchExternalSize);
             }
 
-            return custClassToMainDBService.PushCCBySportToMainDB(pushCCList, this.serviceName, batchExternalSize);
+            return isSuccess;
         }
 
         private InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<GetNormalAccountBySportEntity> custs)
         {
-            if (custs.IsNullOrEmpty())
-            {
-                return default;
-            }
-
             var insertNA = custs.Select(x => new NormalAccountBySportEntity
             {
                 CustId = x.CustId,
@@ -149,7 +150,7 @@
                 PerformanceTime = x.PerformanceTime
             });
 
-            return normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);            
+            return normalAccountInsertService.InsertNormalAccount(insertNA, this.serviceName);
         }
     }
 }
