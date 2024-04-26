@@ -52,6 +52,7 @@
                 do
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
+
                 } while (isContinue);
             }
             catch (Exception ex)
