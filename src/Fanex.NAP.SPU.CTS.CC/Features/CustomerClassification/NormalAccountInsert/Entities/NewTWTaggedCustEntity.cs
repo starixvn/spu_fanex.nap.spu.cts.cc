@@ -6,9 +6,7 @@
 
         public int TaggingID { get; set; }
 
-        public int TaggingType { get; set; }
-
-        public short? First5TWGBTicketCount { get; set; }
+        public int TaggingType { get; set; }       
 
         public int? SportType { get; set; }
     }

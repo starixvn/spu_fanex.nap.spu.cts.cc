@@ -115,7 +115,7 @@
 
                 if (parameters.IsRescanPotentialPA)
                 {
-                    RescanPotentialProblemAccount(custIds, parameters);
+                    RescanPotentialProblemAccount(custIds.ToList(), parameters);
                 }
 
                 GetAgentCusts(custIds)
@@ -327,36 +327,43 @@
             return this;
         }
 
-        public void RescanPotentialProblemAccount(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        public void RescanPotentialProblemAccount(List<long> custIDs, RescanParametersEntity parameters)
         {
-            if (custIds.Any())
-            {
-                var custIDs = string.Join(",", custIds);
+            if (custIDs.Any())
+            {               
+                var custPaDangerous = RescanDangerousPA(string.Join(",", custIDs), parameters);
 
-                RescanDangerousPA(custIDs, parameters);
+                custIDs.RemoveAll(x => custPaDangerous.Contains(x));
 
-                RescanInitialTWGroupBettingPA(custIDs, parameters);
+                custIdsToRescanPotentialPA.AddRange(custPaDangerous);
+
+                var custPaTWGB = RescanInitialTWGroupBettingPA(string.Join(",", custIDs), parameters);
+
+                custIdsToRescanPotentialPA.AddRange(custPaTWGB);
             }
         }
 
-        public void RescanDangerousPA(string custIDs, RescanParametersEntity parameters)
+        public IEnumerable<long> RescanDangerousPA(string custIDs, RescanParametersEntity parameters)
         {
+            var custPaDangerous = Enumerable.Empty<long>();
+
             var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
 
             if (pasDangerous != null && pasDangerous.Any())
             {
                 var pas = pasDangerous.Select(x => new InsertProblemAccountEntity(x));
 
-                var custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
-
-                custIdsToRescanPotentialPA.AddRange(custPaDangerous);
+                custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
 
                 custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
             }
+
+            return custPaDangerous;
         }
 
-        public void RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
-        {    
+        public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
+        {
+            var custPaTWGB = Enumerable.Empty<long>();
             var rescanInitialTWGB = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(custIDs);
 
             if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
@@ -366,12 +373,14 @@
                 var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
                                (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
                
-                var custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+                custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
 
-                custIdsToRescanPotentialPA.AddRange(custPaTWGB);
+                custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
 
                 custClassToMainDBService.PushExternalProblemAcountPackage(custPaTWGB.Distinct(), parameters.PushDataExternal);
             }
+
+            return custPaTWGB;
         }
 
         public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)

@@ -231,9 +231,7 @@
 
         [HttpPost("scanningSecondlyTWInitialGBClassification")]
         public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
-        {
-            sentryClient.CaptureMessage($"TW Initial GB classification Service is running at {DateTime.Now}");
-
+        {            
             return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
         }
 
