@@ -1,11 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System.Threading.Tasks;
-    using Renovate = Services.CustomerClassificationBySport.Renovate;
 
     [ApiController]
     [Route("api/classificationBySportJobs")]
@@ -13,61 +11,56 @@
     {
         private readonly ISentryClient sentryClient;
 
-        private readonly Renovate.INormalAccountClassificationBySportJobService normalAccountClassificationBySportRenovateJobService;
-        private readonly Renovate.INormalAccountInsertBySportJobService normalAccountInsertBySportRenovateJobService;
-        private readonly Renovate.IRealtimeClassificationBySportJobService realtimeClassificationBySportRenovateJobService;
-        private readonly Renovate.IProbationClassificationBySportJobService probationClassificationBySportRenovateJobService;
-        private readonly Renovate.IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportRenovateJobService;
+        private readonly INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService;
+        private readonly INormalAccountInsertBySportJobService normalAccountInsertBySportJobService;
+        private readonly IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService;
+        private readonly IProbationClassificationBySportJobService probationClassificationBySportJobService;
+        private readonly IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService;
 
         public ClassificationBySportJobController(ISentryClient sentryClient,
-            Renovate.INormalAccountClassificationBySportJobService normalAccountClassificationBySportRenovateJobService,
-            Renovate.INormalAccountInsertBySportJobService normalAccountInsertBySportRenovateJobService,
-            Renovate.IRealtimeClassificationBySportJobService realtimeClassificationBySportRenovateJobService,
-            Renovate.IProbationClassificationBySportJobService probationClassificationBySportRenovateJobService,
-            Renovate.IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportRenovateJobService)
+            INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService,
+            INormalAccountInsertBySportJobService normalAccountInsertBySportJobService,
+            IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService,
+            IProbationClassificationBySportJobService probationClassificationBySportJobService,
+            IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService)
         {
             this.sentryClient = sentryClient;
-            this.normalAccountClassificationBySportRenovateJobService = normalAccountClassificationBySportRenovateJobService;
-            this.normalAccountInsertBySportRenovateJobService = normalAccountInsertBySportRenovateJobService;
-            this.realtimeClassificationBySportRenovateJobService = realtimeClassificationBySportRenovateJobService;
-            this.probationClassificationBySportRenovateJobService = probationClassificationBySportRenovateJobService;
-            this.dailyNormalClassificationBySportRenovateJobService = dailyNormalClassificationBySportRenovateJobService;
+            this.normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
+            this.normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
+            this.realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;
+            this.probationClassificationBySportJobService = probationClassificationBySportJobService;
+            this.dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
         }
 
         #region Renovate
-        [HttpPost("NormalAccountClassificationBySportRenovate")]
-        public async Task<bool> NormalAccountClassificationBySportRenovate([FromForm] int batchInternalSize)
+        [HttpPost("NormalAccountClassificationBySport")]
+        public async Task<bool> NormalAccountClassificationBySport([FromForm] int batchInternalSize)
         {
-            return await this.normalAccountClassificationBySportRenovateJobService.Execute(batchInternalSize);
+            return await this.normalAccountClassificationBySportJobService.Execute(batchInternalSize);
         }
 
-        [HttpPost("NormalAccountInsertBySportRenovate")]
-        public async Task<bool> NormalAccountInsertBySportRenovate([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        [HttpPost("NormalAccountInsertBySport")]
+        public async Task<bool> NormalAccountInsertBySport([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.normalAccountInsertBySportRenovateJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.normalAccountInsertBySportJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("ScanRealtimeClassificationBySportRenovate")]
-        public async Task<bool> ScanRealtimeClassificationBySportRenovate([FromForm] int batchInternalSize)
+        [HttpPost("ScanRealtimeClassificationBySport")]
+        public async Task<bool> ScanRealtimeClassificationBySport([FromForm] int batchInternalSize)
         {
-            return await this.realtimeClassificationBySportRenovateJobService.Execute(batchInternalSize);
+            return await this.realtimeClassificationBySportJobService.Execute(batchInternalSize);
         }
 
-        [HttpPost("ScanProbationClassificationBySportRenovate")]
-        public async Task<bool> ScanProbationClassificationBySportRenovate([FromForm] int batchSize)
+        [HttpPost("ScanProbationClassificationBySport")]
+        public async Task<bool> ScanProbationClassificationBySport([FromForm] int batchSize)
         {
-            //sentryClient.CaptureMessage($"ScanProbationClassificationBySportRenovate Service is running at {DateTime.Now}");
-
-            return await this.probationClassificationBySportRenovateJobService.Execute(batchSize);
+            return await this.probationClassificationBySportJobService.Execute(batchSize);
         }
 
-
-        [HttpPost("ScanningDailyNormalClassificationBySportRenovate")]
-        public async Task<bool> ScanningDailyNormalClassificationBySportRenovate([FromForm] int batchSize)
+        [HttpPost("ScanningDailyNormalClassificationBySport")]
+        public async Task<bool> ScanningDailyNormalClassificationBySport([FromForm] int batchSize)
         {
-            //sentryClient.CaptureMessage($"ScanningDailyNormalClassificationBySportRenovate Service is running at {DateTime.Now}");
-
-            return await this.dailyNormalClassificationBySportRenovateJobService.Execute();
+            return await this.dailyNormalClassificationBySportJobService.Execute();
         }
 
         #endregion Renovate

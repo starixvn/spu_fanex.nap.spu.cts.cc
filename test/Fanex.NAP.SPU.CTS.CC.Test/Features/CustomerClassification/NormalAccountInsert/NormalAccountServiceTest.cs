@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using Newtonsoft.Json;
@@ -135,14 +135,13 @@
         public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
         {
             // Arrange
-            var custIdList = "1, 2";
-            var scannedMaxId = 10;
+            long scannedMaxId = 10;
 
             // Act
-            normalAccountService.UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId, true);
+            normalAccountService.CompleteNormalAccountInsert(scannedMaxId, true);
 
             // Assert
-            normalAccountDataAccess.Received(1).UpdateCompleteNormalAccountInsert(custIdList, scannedMaxId);
+            normalAccountDataAccess.Received(1).CompleteNormalAccountInsert(scannedMaxId);
         }
 
         [Fact]

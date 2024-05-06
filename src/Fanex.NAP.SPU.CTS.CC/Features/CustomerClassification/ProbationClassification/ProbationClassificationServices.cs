@@ -10,21 +10,17 @@
 
         IProbationClassificationServices GetProbationCustForScanning(int batchSize);
 
-        IProbationClassificationServices ScanningProbationClassification();
+        IProbationClassificationServices ClassifyProbation();
 
-        void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations);
+        bool UpdateLastScanDate();
 
-        IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList);
-
-        void UpdateLastScanDateForProbationCust();
-
-        IEnumerable<ProbationEntity> CustomerClassification { get; }
+        public IEnumerable<ProbationEntity> Customers { get; }
     }
 
     public class ProbationClassificationServices : IProbationClassificationServices
     {
         private readonly IProbationClassificationDataAccess probationClassificationDataAccess;
-        private IEnumerable<ProbationEntity> probationClassification;
+        private IEnumerable<ProbationEntity> custProbation;
 
         public ProbationClassificationServices(IProbationClassificationDataAccess probationClassificationDataAccess)
         {
@@ -33,7 +29,7 @@
 
         public IProbationClassificationServices Start()
         {
-            probationClassification = new List<ProbationEntity>();
+            custProbation = new List<ProbationEntity>();
 
             return this;
         }
@@ -42,51 +38,38 @@
         {
             if (batchSize > 0)
             {
-                probationClassification = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+                custProbation = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
             }
 
             return this;
         }
 
-        public IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList)
+        public IProbationClassificationServices ClassifyProbation()
         {
-            return probationClassificationDataAccess.ClassifyCategoryForProbationCust(custList);
-        }
-
-        public void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations)
-        {
-            if (failProbations != null && failProbations.Any())
+            if (custProbation != null && custProbation.Any())
             {
-                probationClassificationDataAccess.InsertProbationNotification(scanList, failProbations);
-            }
-        }
+                var custToString = string.Join(",", custProbation.Select(c => c.CustId).Distinct());
 
-        public IProbationClassificationServices ScanningProbationClassification()
-        {
-            if (probationClassification != null && probationClassification.Any())
-            {
-                var custs = ClassifyCategoryForProbationCust(probationClassification);
-
-                if (custs != null && custs.Any())
-                {
-                    var failedCusts = custs.Where(cus => !cus.IsPassed);
-                    InsertProbationNotification(probationClassification, failedCusts);
-                }
+                probationClassificationDataAccess.ClassifyProbation(custToString);
             }
 
             return this;
         }
 
-        public void UpdateLastScanDateForProbationCust()
+        public bool UpdateLastScanDate()
         {
-            if (probationClassification != null && probationClassification.Any())
+            if (custProbation != null && custProbation.Any())
             {
-                var custJson = JsonConvert.SerializeObject(probationClassification);
+                var custJson = JsonConvert.SerializeObject(custProbation);
 
-                probationClassificationDataAccess.UpdateLastScanDateForProbationCust(custJson);
+                probationClassificationDataAccess.UpdateLastScanDate(custJson);
+
+                return true;
             }
+
+            return false;
         }
 
-        public IEnumerable<ProbationEntity> CustomerClassification => probationClassification;
+        public IEnumerable<ProbationEntity> Customers => custProbation;
     }
 }

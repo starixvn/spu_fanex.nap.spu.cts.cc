@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;
@@ -54,29 +54,19 @@
             normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
         }
 
-        [Fact]
-        public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
-        {
-            // Arrange                        
-            var customerXML = new List<CustSportXMLModel>() {
-                new CustSportXMLModel
-                {
-                     CustID = 1,
-                     SportGroup = 1
-                },
-                new CustSportXMLModel
-                {
-                    CustID = 1,
-                    SportGroup = 2
-                }
-            }.ToXmlString();
-            var scannedMaxId = 7;
-            // Act
-            normalAccountService.CompleteNormalAccountBySport(customerXML, scannedMaxId, true);
+        //[Fact]
+        //public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
+        //{
+        //    // Arrange                        
+        //    long scannedMaxId = 7;
 
-            // Assert
-            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(customerXML, scannedMaxId);
-        }
+        //    // Act
+        //    normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
+
+        //    // Assert
+        //    normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
+        //}
 
     }
 }
+

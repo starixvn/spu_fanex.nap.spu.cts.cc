@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalTaggingClassificationService
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalTaggingClassification.Model;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;

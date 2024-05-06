@@ -1,10 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     public interface IProbationClassificationJobService
@@ -54,17 +53,16 @@
 
         private void JobRun(int batchSize)
         {
-            probationClassificationServices
-                .Start()
-                .GetProbationCustForScanning(batchSize)
-                .ScanningProbationClassification()
-                .UpdateLastScanDateForProbationCust();
+            bool isContinue;
 
-            if (probationClassificationServices.CustomerClassification != null &&
-                probationClassificationServices.CustomerClassification.Any())
+            do
             {
-                JobRun(batchSize);
-            }
+                isContinue = probationClassificationServices
+                                .Start()
+                                .GetProbationCustForScanning(batchSize)
+                                .ClassifyProbation()
+                                .UpdateLastScanDate();
+            } while (isContinue);
         }
     }
 

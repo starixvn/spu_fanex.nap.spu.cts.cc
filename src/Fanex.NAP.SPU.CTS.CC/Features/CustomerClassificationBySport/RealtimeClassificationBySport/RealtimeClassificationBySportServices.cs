@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -11,91 +11,64 @@
     {
         IRealtimeClassificationBySportServices Start();
 
-        IRealtimeClassificationBySportServices GetCustomerBySportHasChange();
+        IRealtimeClassificationBySportServices GetNewPlaceBetCustomers();
 
-        IRealtimeClassificationBySportServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize);
+        IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int internalBatchSize);        
 
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customerHasChanges);
-
-        IRealtimeClassificationBySportServices UpdateLastScanRealtimeBySport();
-
-        IEnumerable<CustClassificationRealtimeBySportEntity> CustomerClassification { get; }
+        IRealtimeClassificationBySportServices CompleteCustomerRealtime();
     }
 
     public class RealtimeClassificationBySportServices : IRealtimeClassificationBySportServices
     {
-        private readonly IRealtimeClassificationBySportDataAccess realtimeClassificationDataAccess;
-        private IEnumerable<CustClassificationRealtimeBySportEntity> customerClassification;
+        private readonly IRealtimeClassificationBySportDataAccess dataAccess;
+        private GetNewPlaceBetCustomerModel customers;
         private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Realtime Classification Service";
+        private const string ServiceName = "Realtime Classification By Sport Service";
 
-        public RealtimeClassificationBySportServices(IRealtimeClassificationBySportDataAccess realtimeClassificationDataAccess
+        public RealtimeClassificationBySportServices(IRealtimeClassificationBySportDataAccess dataAccess
                                                     , ISentryClient sentryClient)
         {
-            this.realtimeClassificationDataAccess = realtimeClassificationDataAccess;
+            this.dataAccess = dataAccess;
             this.sentryClient = sentryClient;
         }
 
         public IRealtimeClassificationBySportServices Start()
         {
-            customerClassification = new List<CustClassificationRealtimeBySportEntity>();
+            customers = new GetNewPlaceBetCustomerModel();
 
             return this;
         }
 
-        public IRealtimeClassificationBySportServices GetCustomerBySportHasChange()
+        public IRealtimeClassificationBySportServices GetNewPlaceBetCustomers()
         {
-            this.customerClassification = realtimeClassificationDataAccess.GetCustomerBySportHasChangeForRunRealtime();
+            this.customers = dataAccess.GetNewPlaceBetCustomers();
 
             return this;
-        }
+        }       
 
-        public IRealtimeClassificationBySportServices ScanningRealtimeClassification(int externalBatchSize, int internalBatchSize)
+        public IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int internalBatchSize)
         {
-            if (customerClassification != null && customerClassification.Any())
+            if (this.customers != null && this.customers.CustomerNewPlaceBets.Any())
             {
-                var custExternalChunks = customerClassification.Chunk(externalBatchSize).ToList();
-                var scanList = new List<CustClassificationRealtimeBySportEntity>();
+                var custInternalChunks = customers.CustomerNewPlaceBets.Chunk(internalBatchSize);
+                
+                foreach (var cust in custInternalChunks)
+                {                    
+                    dataAccess.PreprocessCustomerClassRealtime(cust);
+                }              
+            }
 
-                foreach (var custHasChange in custExternalChunks)
-                {
-                    var custInternalChunks = custHasChange.Chunk(internalBatchSize).ToList();
+            return this;
+        }       
 
-                    foreach (var custCategory in custInternalChunks)
-                    {
-                        scanList.AddRange(GetCustomerBySportForRunRealtime(custCategory));
-                    }
-
-                    if (scanList.Any())
-                    {
-                        realtimeClassificationDataAccess.ClassifyCustomerBySportRealtime(scanList);
-                        scanList.Clear();
-                    }
-                }
+        public IRealtimeClassificationBySportServices CompleteCustomerRealtime()
+        {
+            if (this.customers != null && this.customers.ScannedMaxId > 0)
+            {
+                this.dataAccess.CompleteCustomerRealtime(this.customers.ScannedMaxId);
             }
 
             return this;
         }
-
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customerHasChanges)
-        {
-            if (customerHasChanges != null && customerHasChanges.Any())
-            {
-                var custSportJson = JsonConvert.SerializeObject(customerHasChanges);
-
-                return realtimeClassificationDataAccess.GetCustomerBySportForRunRealtime(custSportJson) ?? new List<CustClassificationRealtimeBySportEntity>();
-            }
-
-            return Enumerable.Empty<CustClassificationRealtimeBySportEntity>();
-        }
-
-        public IRealtimeClassificationBySportServices UpdateLastScanRealtimeBySport()
-        {
-            realtimeClassificationDataAccess.UpdateLastScanRealtimeBySport(false);
-
-            return this;
-        }
-
-        IEnumerable<CustClassificationRealtimeBySportEntity> IRealtimeClassificationBySportServices.CustomerClassification => customerClassification;
     }
 }

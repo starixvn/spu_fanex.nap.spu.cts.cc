@@ -4,7 +4,7 @@
     using Fanex.Data.Repository;
 
     public class InsertNormalAccountBySportCriteria : NonQueryCommand
-    {
+    { 
         [SpParam(SqlParamName = "ip_NewClassification")]
         public string NewClassification { get; set; }
 

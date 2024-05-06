@@ -1,6 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -59,8 +59,10 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
+                IsRescanPADangerous = true,
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
+                RescanNormalType = RescanNormalType.Auto_Customer,
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
                 PushDataExternal = new PushDataToExternalEntity
@@ -81,6 +83,7 @@
                                                         .InsertVVIPForNewCustomers(paramaters)
                                                         .InsertPAForNewCustomers(paramaters)
                                                         .ResanNormalForNewCustomers(paramaters)
+                                                        .ResanNormalBySportForNewCustomers()
                                                         .UpdateComplete();
             return isSuccess;
         }

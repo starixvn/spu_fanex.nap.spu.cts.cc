@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.Renovate.NormalAccountClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;

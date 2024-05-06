@@ -33,18 +33,14 @@
             {
                 var isContinue = true;
 
-                if (batchSize > 0)
-                {
-                    do
-                    {
-                        isContinue = JobRun(batchSize);
+                if (batchSize <= 0)
+                    batchSize = 500;
 
-                    } while (isContinue);
-                }
-                else
+                do
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new NullReferenceException(), sentryClient);
-                }
+                    isContinue = JobRun(batchSize);
+
+                } while (isContinue);
             }
             catch (Exception ex)
             {
@@ -57,15 +53,16 @@
         }
 
         private bool JobRun(int batchSize)
-        {            
+        {
             probationClassificationServices
                 .Start()
-                .GetProbationCustClassificationBySport(batchSize)
-                .ScanProbationClassificationBySport()
+                .GetProbationScanClassificationBySport(batchSize)
+                .PreprocessProbationClassificationBySport()
                 .UpdateScanDateProbationClassificationBySport();
 
-            return (probationClassificationServices.CustomerClassification != null &&
-               probationClassificationServices.CustomerClassification.Any());           
+            return (probationClassificationServices.ProbationClassification != null &&
+               probationClassificationServices.ProbationClassification.Any());
         }
+
     }
 }

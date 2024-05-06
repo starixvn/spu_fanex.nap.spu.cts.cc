@@ -1,19 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
-    using System.Linq;
 
     public interface IProbationClassificationDataAccess
     {
         IEnumerable<ProbationEntity> GetProbationCustForScanning(int numberOfRecord);
 
-        IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList);
+        void ClassifyProbation(string custList);
 
-        void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations);
-
-        void UpdateLastScanDateForProbationCust(string custSport);
+        void UpdateLastScanDate(string custSport);
     }
 
     public class ProbationClassificationDataAccess : IProbationClassificationDataAccess
@@ -27,7 +23,7 @@
 
         public IEnumerable<ProbationEntity> GetProbationCustForScanning(int numberOfRecord)
         {
-            var criteria = new CustClassificationForProbationScanningGetCriteria
+            var criteria = new ProbationScanningGetCriteria
             {
                 NumberOfRecord = numberOfRecord
             };
@@ -35,31 +31,19 @@
             return repository.Fetch<ProbationEntity>(criteria);
         }
 
-        public IEnumerable<ProbationEntity> ClassifyCategoryForProbationCust(IEnumerable<ProbationEntity> custList)
+        public void ClassifyProbation(string custList)
         {
-            var criteria = new NormalAccountsClassificationProbationClassifyCriteria
+            var criteria = new ProbationClassifCriteria
             {
-                CustomersXML = custList.ToXmlString()
-            };
-
-            return repository.Fetch<ProbationEntity>(criteria);
-        }
-
-        public void InsertProbationNotification(IEnumerable<ProbationEntity> scanList, IEnumerable<ProbationEntity> failProbations)
-        {
-            var criteria = new ProbationNotificationInsertCriteria
-            {
-                TotalScanned = scanList.Count(),
-                TotalFailed = failProbations.Count(),
-                TotalGeneralFailed = failProbations.Count(c => c.SportGroupId == 200)
+                ListCustId = custList
             };
 
             repository.Execute(criteria);
         }
 
-        public void UpdateLastScanDateForProbationCust(string custSport)
+        public void UpdateLastScanDate(string custSport)
         {
-            var criteria = new LastScanDateForProbationCustUpdateCriteria
+            var criteria = new ProbationScanningCompleteCriteria
             {
                 CustSportJson = custSport
             };

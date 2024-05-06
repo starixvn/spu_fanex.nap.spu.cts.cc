@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountClassificationService
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;

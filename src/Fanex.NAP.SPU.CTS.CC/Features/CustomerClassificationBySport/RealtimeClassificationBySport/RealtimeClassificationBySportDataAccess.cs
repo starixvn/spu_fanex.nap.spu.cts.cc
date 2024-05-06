@@ -1,19 +1,18 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
-{
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
+{    
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Criteria;
     using Fanex.NAP.SPU.CTS.Shares;
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IRealtimeClassificationBySportDataAccess
     {
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportHasChangeForRunRealtime();
+        GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
+        
+        void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
-        IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(string custSportJson);
-
-        void ClassifyCustomerBySportRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
-
-        void UpdateLastScanRealtimeBySport(bool isGeneralFlow);
+        void CompleteCustomerRealtime(long scannedMaxId);
     }
 
     public class RealtimeClassificationBySportDataAccess : IRealtimeClassificationBySportDataAccess
@@ -25,26 +24,22 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportHasChangeForRunRealtime()
+        public GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers()
         {
-            var criteria = new GetCustHasChangeForScanningCriteria();
+            var criteria = new GetChangeCustomerRealtimeBySportCriteria();
 
-            return repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
-        }
+            var data = repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
 
-        public IEnumerable<CustClassificationRealtimeBySportEntity> GetCustomerBySportForRunRealtime(string custSportJson)
-        {
-            var criteria = new GetCustClassificationBySportByCustIDCriteria
+            return new GetNewPlaceBetCustomerModel
             {
-                CustSportsJson = custSportJson
+                CustomerNewPlaceBets = data,
+                ScannedMaxId = criteria.ScannedMaxId
             };
+        }       
 
-            return repository.Fetch<CustClassificationRealtimeBySportEntity>(criteria);
-        }
-
-        public void ClassifyCustomerBySportRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
+        public void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
         {
-            var criteria = new NormalAccountsClassificationBySportCategorizeRealtimeCriteria
+            var criteria = new PreprocessCustomerRealtimeBySportCriteria
             {
                 CustomersXML = customers.ToXmlString()
             };
@@ -52,14 +47,15 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateLastScanRealtimeBySport(bool isGeneralFlow)
+        public void CompleteCustomerRealtime(long scannedMaxId)
         {
-            var criteria = new UpdateLastScanBySportCriteria 
-            { 
-                IsGeneralFlow = isGeneralFlow
+            var criteria = new CompleteCustomerRealtimeBySportCriteria
+            {
+                ScannedMaxId = scannedMaxId
             };
 
             repository.Execute(criteria);
         }
+
     }
 }

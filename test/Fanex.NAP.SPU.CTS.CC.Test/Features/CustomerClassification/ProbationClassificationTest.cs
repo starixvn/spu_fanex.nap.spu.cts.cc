@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.ProbationClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;

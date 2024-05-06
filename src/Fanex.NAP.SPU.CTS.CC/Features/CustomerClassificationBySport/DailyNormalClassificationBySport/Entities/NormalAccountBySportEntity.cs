@@ -6,12 +6,10 @@
     public class NormalAccountBySportEntity
     {
         [XName("CustId")]
-        public long CustID { get; set; }
+        public long CustId { get; set; }
 
-        [XName("SportId")]
-        public int SportID { get; set; }
-
-        [XName("CategoryId")]
-        public int CurrentCategoryID { get; set; }
+        [XName("SportGroup")]
+        public int SportGroup { get; set; }
+       
     }
 }

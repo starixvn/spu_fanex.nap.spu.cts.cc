@@ -2,15 +2,15 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares;
-    using System.Collections.Generic;       
+    using System.Collections.Generic;
 
     public interface IProbationClassificationBySportDataAccess
     {
-        IEnumerable<ProbationClassificationBySportEntity> GetProbationCustClassificationBySport(int numberOfRecord);
+        IEnumerable<ProbationScanClassificationBySportEntity> GetProbationScanClassificationBySport(int numberOfRecord);
 
-        void ScanProbationClassificationBySport(IEnumerable<ScanProbationClassificationBySportEntity> custList);
+        void PreprocessProbationClassificationBySport(IEnumerable<ProbationScanClassificationBySportEntity> custList);
 
-        void UpdateScanDateProbationClassificationBySport(string custSport);
+        void UpdateScanDateProbationClassificationBySport(string custList);
     }
 
     public class ProbationClassificationBySportDataAccess : IProbationClassificationBySportDataAccess
@@ -21,20 +21,20 @@
         {
             repository = new DynamicRepository();
         }
-       
-        public IEnumerable<ProbationClassificationBySportEntity> GetProbationCustClassificationBySport(int numberOfRecord)
+
+        public IEnumerable<ProbationScanClassificationBySportEntity> GetProbationScanClassificationBySport(int numberOfRecord)
         {
-            var criteria = new GetProbationCustClassificationBySportCriteria
+            var criteria = new GetProbationScanClassificationBySportCriteria
             {
                 NumberOfRecord = numberOfRecord
             };
 
-            return repository.Fetch<ProbationClassificationBySportEntity>(criteria);
+            return repository.Fetch<ProbationScanClassificationBySportEntity>(criteria);
         }
 
-        public void ScanProbationClassificationBySport(IEnumerable<ScanProbationClassificationBySportEntity> custList)
+        public void PreprocessProbationClassificationBySport(IEnumerable<ProbationScanClassificationBySportEntity> custList)
         {
-            var criteria = new ScanProbationClassificationBySportCriteria
+            var criteria = new PreprocessProbationClassificationBySportCriteria
             {
                 CustomersXML = custList.ToXmlString()
             };
@@ -42,11 +42,11 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateScanDateProbationClassificationBySport(string custSport)
+        public void UpdateScanDateProbationClassificationBySport(string custList)
         {
             var criteria = new UpdateScanDateProbationClassificationBySportCriteria
             {
-                CustSportJson = custSport
+                CustSportJson = custList
             };
 
             repository.Execute(criteria);

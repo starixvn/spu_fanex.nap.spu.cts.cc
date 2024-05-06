@@ -1,11 +1,10 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyNormalClassificationJobService
     {
@@ -47,15 +46,15 @@
 
         private void JobRun()
         {
-            var isContinue = dailyClassificationServices.Start()
-                                                        .GetCustClassificationForDailyScanning()
-                                                        .ScanningDailyNormalClassification(FunctionId.NormalDailyJob)
-                                                        .UpdateLastScan();
+            bool isContinue;
 
-            if (isContinue)
+            do
             {
-                JobRun();
-            }
+                isContinue = dailyClassificationServices.Start()
+                                                        .GetCustomerForDailyNormalScanning()
+                                                        .ClassifyDailyNormal()
+                                                        .UpdateLastScan();
+            } while (isContinue);
         }
     }
 

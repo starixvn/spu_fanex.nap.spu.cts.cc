@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;

@@ -1,6 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -8,7 +8,7 @@
 
     public interface IRealtimeClassificationBySportJobService
     {
-        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
+        Task<bool> Execute(int batchInternalSize);
     }
 
     public class RealtimeClassificationBySportJobService : IRealtimeClassificationBySportJobService
@@ -17,27 +17,22 @@
         private readonly ISentryClient sentryClient;
         private readonly IRealtimeClassificationBySportServices realtimeClassificationServices;
 
-        public RealtimeClassificationBySportJobService(
-            ISentryClient sentryClient,
+        public RealtimeClassificationBySportJobService(ISentryClient sentryClient,
             IRealtimeClassificationBySportServices realtimeClassificationServices)
         {
             this.sentryClient = sentryClient;
             this.realtimeClassificationServices = realtimeClassificationServices;
-            this.serviceName = "RealtimeClassificationBySport";
+            this.serviceName = "Realtime Classification By Sport";
         }
 
-        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
+        public Task<bool> Execute(int batchInternalSize)
         {
             try
-            {
-                if (batchExternalSize > 0 && batchInternalSize > 0)
-                {
-                    JobRun(batchExternalSize, batchInternalSize);
-                }
-                else
-                {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new NullReferenceException(), sentryClient);
-                }
+            {                
+                if (batchInternalSize <= 0)
+                    batchInternalSize = 5000;
+
+                JobRun(batchInternalSize);
             }
             catch (Exception ex)
             {
@@ -49,17 +44,12 @@
             return Task.FromResult(true);
         }
 
-        #region Private Methods
-
-        private void JobRun(int batchExternalSize, int batchInternalSize)
+        private void JobRun(int batchInternalSize)
         {
-            realtimeClassificationServices
-                .Start()
-                .GetCustomerBySportHasChange()
-                .ScanningRealtimeClassification(batchExternalSize, batchInternalSize)
-                .UpdateLastScanRealtimeBySport();
+            this.realtimeClassificationServices.Start()
+                .GetNewPlaceBetCustomers()
+                .PreprocessCustomerClassRealtime(batchInternalSize)
+                .CompleteCustomerRealtime();
         }
     }
-
-    #endregion Private Methods
 }

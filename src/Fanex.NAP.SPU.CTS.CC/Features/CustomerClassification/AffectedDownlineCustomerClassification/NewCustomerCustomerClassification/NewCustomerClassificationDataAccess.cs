@@ -1,8 +1,8 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System.Linq;
 

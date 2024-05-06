@@ -1,7 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using Fanex.Data;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
@@ -37,7 +35,7 @@
         IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
         IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
-       
+
         IEnumerable<long> CustIdsToRescanPA { get; }
 
         IEnumerable<InsertRobotEntity> RobotUsers { get; }
@@ -55,12 +53,12 @@
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
-        private readonly IDailyNormalClassificationServices dailyClassificationServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
         private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
+        private List<long> custIdsToRescanPADangerous;
         private List<long> custIdsToRemoveOldPA;
         private List<long> smaCustIds;
         private bool isSuccess;
@@ -70,14 +68,12 @@
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IDailyNormalClassificationServices dailyClassificationServices,
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
-            this.dailyClassificationServices = dailyClassificationServices;
             this.dataLogTrackingServices = dataLogTrackingServices;
         }
 
@@ -87,6 +83,7 @@
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
+            this.custIdsToRescanPADangerous = new List<long>();
             this.custIdsToRemoveOldPA = new List<long>();
             this.smaCustIds = new List<long>();
             this.isSuccess = true;
@@ -97,9 +94,9 @@
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
         {
             if (custIds != null && custIds.Any())
-            {                
+            {
                 Start();
-              
+
                 if (parameters.IsRescanPA)
                 {
                     GetExistedProblemAccounts(custIds)
@@ -109,6 +106,11 @@
                    .InsertRobot()
                    .PushExternalProblemAccounts(parameters.PushDataExternal)
                    .RemoveOldProblemAccount();
+                }
+
+                if (parameters.IsRescanPADangerous)
+                {
+                    RescanPADangerous(custIds, parameters);
                 }
 
                 GetAgentCusts(custIds)
@@ -286,15 +288,18 @@
             {
                 var custToRescanNormal = custIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPADangerous.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
-              
+
                 if (custToRescanNormal.Any())
                 {
                     var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
 
                     foreach (var batchCustIds in custIdsChunk)
                     {
-                        dailyClassificationServices.ScanningDailyNormalClassification(batchCustIds, paras.FunctionId);
+                        var custIdToString = string.Join(",", batchCustIds);
+
+                        rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
                     }
                 }
             }
@@ -317,12 +322,52 @@
             return this;
         }
 
+        public void RescanPADangerous(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        {
+            if (custIds.Any())
+            {
+                var custIDs = string.Join(",", custIds);
+
+                var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
+
+                if (pasDangerous != null && pasDangerous.Any())
+                {
+                    var pas = pasDangerous.Select(x =>
+                    {
+                        return new InsertProblemAccountEntity
+                        {
+                            CustID = x.CustID,
+                            CTSCustID = x.CTSCustID,
+                            RoleID = x.RoleID,
+                            SubscriberID = x.SubscriberID,
+                            CategoryID = x.CategoryID,
+                            CategoryGroup = x.CategoryID,
+                            IsLicensee = x.IsLicensee,
+                            IsFromAI = true,
+                            IsDirectPA = null,
+                            IsFromCTS = false,
+                            IsFromTVS = false,
+                            IsFromTW = false,
+                            CreatedBy = Constants.StarixITId,
+                            Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Dangerous Score: {(x.ClassifiedScore * 100).ToString(FormatDecimalToString_2Places)}%"
+                        };
+                    });
+
+                    var custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+
+                    custIdsToRescanPADangerous.AddRange(custPaDangerous);
+
+                    custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
+                }
+            }
+        }
+
         public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)
         {
             dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
 
             return this;
-        }        
+        }
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 

@@ -1,81 +1,75 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport
-{    
+{
     using Newtonsoft.Json;
     using Sentry;
-    using System;
     using System.Collections.Generic;
-    using System.Linq;   
+    using System.Linq;
 
     public interface IProbationClassificationBySportService
     {
         IProbationClassificationBySportService Start();
 
-        IProbationClassificationBySportService GetProbationCustClassificationBySport(int batchSize);
+        IProbationClassificationBySportService GetProbationScanClassificationBySport(int batchSize);
 
-        IProbationClassificationBySportService ScanProbationClassificationBySport();
+        IProbationClassificationBySportService PreprocessProbationClassificationBySport();
 
         void UpdateScanDateProbationClassificationBySport();
 
-        IEnumerable<ProbationClassificationBySportEntity> CustomerClassification { get; }
+        IEnumerable<ProbationScanClassificationBySportEntity> ProbationClassification { get; }
+
     }
 
     public class ProbationClassificationBySportService : IProbationClassificationBySportService
     {
-        private readonly IProbationClassificationBySportDataAccess probationClassificationDataAccess;
-        private IEnumerable<ProbationClassificationBySportEntity> probationClassification;
+        private readonly IProbationClassificationBySportDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
+
+        private IEnumerable<ProbationScanClassificationBySportEntity> probationClassification;
+        public IEnumerable<ProbationScanClassificationBySportEntity> ProbationClassification => probationClassification;
 
         public ProbationClassificationBySportService(IProbationClassificationBySportDataAccess probationClassificationDataAccess
             , ISentryClient sentryClient)
-        {
-            this.probationClassificationDataAccess = probationClassificationDataAccess;
+        {            
+            this.dataAccess = probationClassificationDataAccess;
             this.sentryClient = sentryClient;
-        }        
+        }
 
         public IProbationClassificationBySportService Start()
         {
-            probationClassification = new List<ProbationClassificationBySportEntity>();
-
+            this.probationClassification = new List<ProbationScanClassificationBySportEntity>();
+            
             return this;
         }
 
-        public IProbationClassificationBySportService GetProbationCustClassificationBySport(int batchSize)
+        public IProbationClassificationBySportService GetProbationScanClassificationBySport(int batchSize)
         {
-            if (batchSize > 0)
-            {
-                probationClassification = probationClassificationDataAccess.GetProbationCustClassificationBySport(batchSize);               
-            }
+            this.probationClassification = dataAccess.GetProbationScanClassificationBySport(batchSize);            
 
             return this;
         }
 
-        public IProbationClassificationBySportService ScanProbationClassificationBySport()
+        public IProbationClassificationBySportService PreprocessProbationClassificationBySport()
         {
             if (this.probationClassification != null && this.probationClassification.Any())
             {
-                var probations = this.probationClassification.Select(x => new ScanProbationClassificationBySportEntity
-                {
-                    CustId = x.CustID,
-                    SportId = x.SportID,
-                    IsProbationLastDay = x.IsProbationLastDay
-                });
-
-                probationClassificationDataAccess.ScanProbationClassificationBySport(probations);               
+                dataAccess.PreprocessProbationClassificationBySport(this.probationClassification);               
             }
 
-            return this;          
+            return this;
         }
 
         public void UpdateScanDateProbationClassificationBySport()
         {
-            if (probationClassification != null && probationClassification.Any())
+            if (this.probationClassification != null && this.probationClassification.Any())
             {
-                var custJson = JsonConvert.SerializeObject(probationClassification);
+                var custJson = JsonConvert.SerializeObject(this.probationClassification.Select(x => new CustSportModel
+                {
+                    CustID = x.CustId,
+                    SportID = x.SportGroup
+                }));
 
-                probationClassificationDataAccess.UpdateScanDateProbationClassificationBySport(custJson);                
+                dataAccess.UpdateScanDateProbationClassificationBySport(custJson);               
             }
         }
-
-        public IEnumerable<ProbationClassificationBySportEntity> CustomerClassification => probationClassification;
     }
 }

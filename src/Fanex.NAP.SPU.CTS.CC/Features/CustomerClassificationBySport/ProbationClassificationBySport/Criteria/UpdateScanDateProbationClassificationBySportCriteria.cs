@@ -6,7 +6,7 @@
     public class UpdateScanDateProbationClassificationBySportCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustSport")]
-        public string CustSportJson { get; set; }     
+        public string CustSportJson { get; set; }
 
         public override string GetSettingKey()
         {

@@ -1,19 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyNormalClassificationDataAccess
     {
-        NormalClassificationDailyEntity GetCustomerForDailyNormalScanning();
+        DailyNormalClassificationEntity GetCustomerForDailyNormalScanning();
 
-        void ScanningDailyNormalClassification(string customers, FunctionId funcId);
-
-        IEnumerable<RescanCategoryNormalEntity> GetExistingCustClassificationNormal(string custIDList);
+        void ClassifyDailyNormal(string custIds);
     }
 
     public class DailyNormalClassificationDataAccess : IDailyNormalClassificationDataAccess
@@ -25,13 +20,13 @@
             repository = new DynamicRepository();
         }
 
-        public NormalClassificationDailyEntity GetCustomerForDailyNormalScanning()
+        public DailyNormalClassificationEntity GetCustomerForDailyNormalScanning()
         {
-            var criteria = new NormalClassificationForDailyScanningGetCriteria();
+            var criteria = new DailyNormalScanningGetCriteria();
 
             var result = repository.Fetch<Int64>(criteria);
 
-            return new NormalClassificationDailyEntity
+            return new DailyNormalClassificationEntity
             {
                 CustID = result ?? Enumerable.Empty<Int64>(),
                 op_LastCategoryID = criteria.LastCategoryID,
@@ -39,28 +34,17 @@
             };
         }
 
-        public void ScanningDailyNormalClassification(string customers, FunctionId funcId)
+        public void ClassifyDailyNormal(string custIds)
         {
-            if (!string.IsNullOrEmpty(customers))
+            if (!string.IsNullOrEmpty(custIds))
             {
-                var criteria = new NormalAccountsClassificationGeneralCategorizeDailyCriteria
+                var criteria = new DailyClassifyCriteria
                 {
-                    CustomersXML = customers,               
-                    FunctionId = (int)funcId
+                    ListCustId = custIds
                 };
 
                 repository.Execute(criteria);
             }
-        }
-
-        public IEnumerable<RescanCategoryNormalEntity> GetExistingCustClassificationNormal(string custIDList)
-        {
-            var criteria = new GetExistingCustClassificationNormalCriteria
-            {
-                CustIDList = custIDList
-            };
-
-            return repository.Fetch<RescanCategoryNormalEntity>(criteria);
         }
     }
 }

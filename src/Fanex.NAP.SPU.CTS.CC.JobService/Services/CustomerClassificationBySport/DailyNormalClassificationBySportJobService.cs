@@ -4,10 +4,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyNormalClassificationBySportJobService
     {
@@ -18,13 +15,13 @@
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly IDailyNormalClassificationBySportServices dailyClassificationBySportServices;
+        private readonly IDailyNormalClassificationBySportServices dailyService;
 
         public DailyNormalClassificationBySportJobService(ISentryClient sentryClient,
-            IDailyNormalClassificationBySportServices dailyClassificationBySportServices)
+            IDailyNormalClassificationBySportServices dailyService)
         {
             this.sentryClient = sentryClient;
-            this.dailyClassificationBySportServices = dailyClassificationBySportServices;
+            this.dailyService = dailyService;
             this.serviceName = "DailyNormalClassificationBySport";
         }
 
@@ -38,7 +35,7 @@
                 {
                     isContinue = JobRun();
 
-                } while (isContinue);                    
+                } while (isContinue);
             }
             catch (Exception ex)
             {
@@ -52,10 +49,10 @@
 
         private bool JobRun()
         {
-            return this.dailyClassificationBySportServices.Start()
-                                                       .GetCustClassificationForDailyScanning()
-                                                       .ScanningDailyNormalClassification()
-                                                       .UpdateLastScan();            
+            return this.dailyService.Start()
+                .GetCustClassificationForDailyScanning()
+                .PreprocessDailyNormalClassification()
+                .UpdateLastScan();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCTSCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer
 {
     public class NormalRescanEntity
     {

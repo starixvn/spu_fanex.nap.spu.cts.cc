@@ -9,7 +9,7 @@
         public int LastCategoryID { get; set; }
 
         [SpParam(SqlParamName = "op_LastCustID")]
-        public ulong LastCustID { get; set; }      
+        public ulong LastCustID { get; set; }
 
         public override string GetSettingKey()
         {

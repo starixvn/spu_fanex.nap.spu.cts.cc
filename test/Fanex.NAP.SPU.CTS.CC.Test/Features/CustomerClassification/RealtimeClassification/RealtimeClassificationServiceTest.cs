@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RealtimeClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;

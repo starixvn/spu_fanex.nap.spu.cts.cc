@@ -1,15 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport
 {
     using Fanex.Data.Repository;
-    using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using System.Linq;    
 
     public interface IDailyNormalClassificationBySportDataAccess
     {
-        DailyNormalAccountsClassificationBySportEntity GetDailyNormalAccountsClassificationBySport();
+        NormalAccountBySportModel GetDailyNormalAccountsClassificationBySport();
 
-        void ScanDailyNormalAccountsClassificationBySport(string custs);
-
+        void PreprocessDailyNormalAccountsClassificationBySport(string customersXML);
     }
 
     public class DailyNormalClassificationBySportDataAccess : IDailyNormalClassificationBySportDataAccess
@@ -21,27 +19,27 @@
             repository = new DynamicRepository();
         }
 
-        public DailyNormalAccountsClassificationBySportEntity GetDailyNormalAccountsClassificationBySport()
+        public NormalAccountBySportModel GetDailyNormalAccountsClassificationBySport()
         {
             var criteria = new GetDailyNormalAccountsClassificationBySportCriteria();
 
             var data = repository.Fetch<NormalAccountBySportEntity>(criteria);
 
-            return new DailyNormalAccountsClassificationBySportEntity
+            return new NormalAccountBySportModel
             {
                 NormalAccounts = data ?? Enumerable.Empty<NormalAccountBySportEntity>(),
                 LastCategoryID = criteria.LastCategoryID,
-                LastCustID = criteria.LastCustID               
+                LastCustID = criteria.LastCustID
             };
         }
 
-        public void ScanDailyNormalAccountsClassificationBySport(string custs)
+        public void PreprocessDailyNormalAccountsClassificationBySport(string customersXML)
         {
-            if (!string.IsNullOrEmpty(custs))
+            if (!string.IsNullOrEmpty(customersXML))
             {
-                var criteria = new ScanDailyNormalAccountsClassificationBySportCriteria
+                var criteria = new PreprocessDailyNormalAccountsClassificationBySportCriteria
                 {
-                    CustomersXML = custs
+                    CustomersXML = customersXML
                 };
 
                 repository.Execute(criteria);

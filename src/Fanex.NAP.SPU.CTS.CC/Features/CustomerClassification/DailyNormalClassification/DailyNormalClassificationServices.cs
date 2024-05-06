@@ -1,9 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification
-{  
+{
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
-    using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -11,21 +10,18 @@
     {
         IDailyNormalClassificationServices Start();
 
-        IDailyNormalClassificationServices GetCustClassificationForDailyScanning();
+        IDailyNormalClassificationServices GetCustomerForDailyNormalScanning();
 
-        IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId);
+        IDailyNormalClassificationServices ClassifyDailyNormal();
 
-        void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId);
-        
         bool UpdateLastScan();
-    
     }
 
     public class DailyNormalClassificationServices : IDailyNormalClassificationServices
     {
         private readonly IDailyNormalClassificationDataAccess dailyClassificationDataAccess;
         private readonly ISystemParameterServices systemParameterService;
-        private NormalClassificationDailyEntity scanningCustomers;
+        private DailyNormalClassificationEntity scanningCustomers;
         private readonly ISentryClient sentryClient;
 
         public DailyNormalClassificationServices(
@@ -40,48 +36,28 @@
 
         public IDailyNormalClassificationServices Start()
         {
-            scanningCustomers = new NormalClassificationDailyEntity();
+            scanningCustomers = new DailyNormalClassificationEntity();
 
             return this;
         }
 
-        public IDailyNormalClassificationServices GetCustClassificationForDailyScanning()
+        public IDailyNormalClassificationServices GetCustomerForDailyNormalScanning()
         {
             scanningCustomers = dailyClassificationDataAccess.GetCustomerForDailyNormalScanning();
-           
+
             return this;
         }
 
-        public IDailyNormalClassificationServices ScanningDailyNormalClassification(FunctionId funcId)
+        public IDailyNormalClassificationServices ClassifyDailyNormal()
         {
             if (scanningCustomers != null && scanningCustomers.CustID != null && scanningCustomers.CustID.Any())
             {
-                var custIds = string.Join(",", scanningCustomers.CustID);
-                
-                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIds);
-                
-                if (custNormalInfos.Any())
-                {
-                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
-                }
+                var custIds = string.Join(",", scanningCustomers.CustID.Distinct());
+
+                dailyClassificationDataAccess.ClassifyDailyNormal(custIds);
             }
 
             return this;
-        }
-
-        public void ScanningDailyNormalClassification(IEnumerable<long> customers, FunctionId funcId)
-        {
-            if (customers != null && customers.Any())
-            {
-                var custIdToString = string.Join(",", customers);
-
-                var custNormalInfos = dailyClassificationDataAccess.GetExistingCustClassificationNormal(custIdToString);
-
-                if (custNormalInfos.Any())
-                {
-                    dailyClassificationDataAccess.ScanningDailyNormalClassification(custNormalInfos.Distinct().ToXmlString(), funcId);
-                }                
-            }
         }
 
         public bool UpdateLastScan()
@@ -95,6 +71,6 @@
             }
 
             return false;
-        }       
+        }
     }
 }
