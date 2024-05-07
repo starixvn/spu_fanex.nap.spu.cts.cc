@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -14,6 +15,8 @@
         void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type);
 
         IEnumerable<RescanPADangerousEntity> RescanPADangerous(string custIDs);
+
+        IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs);
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -67,5 +70,13 @@
 
             return repository.Fetch<RescanPADangerousEntity>(criteria);
         }
+
+        public IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs)
+        {
+            var criteria = new RescanInitialTWGroupBettingCriteria() { CustIDs = custIDs };
+
+            return repository.Fetch<TWInitialGBGetChangesEntity>(criteria);
+        }
+
     }
 }

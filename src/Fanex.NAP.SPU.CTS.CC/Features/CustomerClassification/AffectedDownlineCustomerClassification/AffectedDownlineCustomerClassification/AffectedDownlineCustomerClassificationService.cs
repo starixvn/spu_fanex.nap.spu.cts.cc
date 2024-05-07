@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -159,12 +160,12 @@
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);                 
+                    var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);
                     parameters.IsRescanPA = false;
                     isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanNormalCustIDs, parameters);
 
                     var rescanPACustIDs = result.CustomerInfo.Where(x => !x.IsCleanPA).Select(x => x.CustID);
-                    parameters.IsRescanPA = true;                    
+                    parameters.IsRescanPA = true;
                     isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanPACustIDs, parameters);
                 }
             }
@@ -200,7 +201,7 @@
                 var custIDs = result.Select(x => x.CustID);
 
                 parameters.IsRescanPA = true;
-                parameters.IsRescanPADangerous = true;
+                parameters.IsRescanPotentialPA = true;
                 isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 

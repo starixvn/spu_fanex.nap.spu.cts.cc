@@ -10,7 +10,7 @@
             IsWriteLog = false;
         }
 
-        public bool IsRescanPADangerous { get; set; }
+        public bool IsRescanPotentialPA { get; set; }
 
         public bool IsRescanPA { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
@@ -50,27 +51,31 @@
     public class RescanCustClassificationService : IRescanCustClassificationService
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
+        private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+
         private readonly ISentryClient sentryClient;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private IEnumerable<InsertProblemAccountEntity> problemAccounts;
         private IEnumerable<InsertRobotEntity> robotClassification;
         private List<InsertRobotEntity> robotUsers;
         private List<long> custIdsToRescanPA;
-        private List<long> custIdsToRescanPADangerous;
+        private List<long> custIdsToRescanPotentialPA;
         private List<long> custIdsToRemoveOldPA;
         private List<long> smaCustIds;
         private bool isSuccess;
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
+            ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService,
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
+            this.twInitialGBDataAccess = twInitialGBDataAccess;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
@@ -83,7 +88,7 @@
             this.robotUsers = new List<InsertRobotEntity>();
             this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
             this.custIdsToRescanPA = new List<long>();
-            this.custIdsToRescanPADangerous = new List<long>();
+            this.custIdsToRescanPotentialPA = new List<long>();
             this.custIdsToRemoveOldPA = new List<long>();
             this.smaCustIds = new List<long>();
             this.isSuccess = true;
@@ -108,9 +113,9 @@
                    .RemoveOldProblemAccount();
                 }
 
-                if (parameters.IsRescanPADangerous)
+                if (parameters.IsRescanPotentialPA)
                 {
-                    RescanPADangerous(custIds, parameters);
+                    RescanPotentialProblemAccount(custIds.ToList(), parameters);
                 }
 
                 GetAgentCusts(custIds)
@@ -288,7 +293,7 @@
             {
                 var custToRescanNormal = custIds.ToList();
                 custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
-                custToRescanNormal.RemoveAll(x => custIdsToRescanPADangerous.Distinct().Contains(x));
+                custToRescanNormal.RemoveAll(x => custIdsToRescanPotentialPA.Distinct().Contains(x));
                 custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
 
                 if (custToRescanNormal.Any())
@@ -322,44 +327,60 @@
             return this;
         }
 
-        public void RescanPADangerous(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        public void RescanPotentialProblemAccount(List<long> custIDs, RescanParametersEntity parameters)
         {
-            if (custIds.Any())
+            if (custIDs.Any())
             {
-                var custIDs = string.Join(",", custIds);
+                var custPaDangerous = RescanDangerousPA(string.Join(",", custIDs), parameters);
 
-                var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
+                custIDs.RemoveAll(x => custPaDangerous.Contains(x));
 
-                if (pasDangerous != null && pasDangerous.Any())
-                {
-                    var pas = pasDangerous.Select(x =>
-                    {
-                        return new InsertProblemAccountEntity
-                        {
-                            CustID = x.CustID,
-                            CTSCustID = x.CTSCustID,
-                            RoleID = x.RoleID,
-                            SubscriberID = x.SubscriberID,
-                            CategoryID = x.CategoryID,
-                            CategoryGroup = x.CategoryID,
-                            IsLicensee = x.IsLicensee,
-                            IsFromAI = true,
-                            IsDirectPA = null,
-                            IsFromCTS = false,
-                            IsFromTVS = false,
-                            IsFromTW = false,
-                            CreatedBy = Constants.StarixITId,
-                            Remark = $"Detection Date: { x.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Dangerous Score: {(x.ClassifiedScore * 100).ToString(FormatDecimalToString_2Places)}%"
-                        };
-                    });
+                custIdsToRescanPotentialPA.AddRange(custPaDangerous);
 
-                    var custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+                var custPaTWGB = RescanInitialTWGroupBettingPA(string.Join(",", custIDs), parameters);
 
-                    custIdsToRescanPADangerous.AddRange(custPaDangerous);
-
-                    custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
-                }
+                custIdsToRescanPotentialPA.AddRange(custPaTWGB);
             }
+        }
+
+        public IEnumerable<long> RescanDangerousPA(string custIDs, RescanParametersEntity parameters)
+        {
+            var custPaDangerous = Enumerable.Empty<long>();
+
+            var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
+
+            if (pasDangerous != null && pasDangerous.Any())
+            {
+                var pas = pasDangerous.Select(x => new InsertProblemAccountEntity(x));
+
+                custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+
+                custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
+            }
+
+            return custPaDangerous;
+        }
+
+        public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
+        {
+            var custPaTWGB = Enumerable.Empty<long>();
+            var rescanInitialTWGB = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(custIDs);
+
+            if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
+            {
+                var custInfos = twInitialGBDataAccess.GetCustInfos(custIDs);
+
+                var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
+                               (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
+
+                custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+
+                custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
+
+                custClassToMainDBService.PushExternalProblemAcountPackage(custPaTWGB.Distinct(), parameters.PushDataExternal);
+            }
+
+            return custPaTWGB;
         }
 
         public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)

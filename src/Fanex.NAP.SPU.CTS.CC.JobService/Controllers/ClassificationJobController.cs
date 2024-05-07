@@ -80,12 +80,6 @@
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
         }
 
-        [HttpPost("insertNormalAccount")]
-        public async Task<bool> InsertNormalAccount([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {
-            return await this.normalAccountInsertJobService.Execute(batchExternalSize, batchInternalSize);
-        }
-
         [HttpPost("scanningDailyNormalClassification")]
         public async Task<bool> DailyScanningNormalClassification()
         {
@@ -138,13 +132,6 @@
         {
             sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
             return await this.probationClassificationJobService.Execute(batchSize);
-        }
-
-        [HttpPost("scanningDailyNormalClassification")]
-        public async Task<bool> DailyScanningNormalClassification()
-        {
-            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
-            return await this.dailyNormalClassificationJobService.Execute();
         }
 
         [HttpPost("scanningDailyNormalTaggingClassification")]
@@ -226,36 +213,12 @@
         public async Task<bool> ClassifyMatchMonitor()
         {
             return await this.mmClassificationJobService.ClassifyMatchMonitor();
-<<<<<<< .mine
         }
 
         [HttpPost("scanningSecondlyTWInitialGBClassification")]
         public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
         {            
             return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
-        }
-
-        [HttpPost("updatewritelog")]
-        public async Task<bool> UpdateWriteLog([FromForm] string serviceName, [FromForm] bool isWriteLog)
-        {
-            return await this.normalAccountInsertJobService.UpdateWriteLogSetting(serviceName, isWriteLog);
-        }
-=======
-        }     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> .theirs
+        }      
     }
 }

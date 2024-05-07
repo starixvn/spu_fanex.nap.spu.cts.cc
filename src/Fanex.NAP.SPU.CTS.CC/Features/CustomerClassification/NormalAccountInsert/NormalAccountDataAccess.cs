@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,9 +12,7 @@
 
         IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList);
 
-        IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList);
-
-        IEnumerable<NewTWTaggedCustEntity> CheckNewGroupBetting(string custIdList);
+        IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList);     
 
         InsertNormalAccountResultEntity InsertNormalAccount(string custInfoList);
 
@@ -85,16 +83,6 @@
             };
 
             repository.Execute(criteria);
-        }
-
-        public IEnumerable<NewTWTaggedCustEntity> CheckNewGroupBetting(string custIdList)
-        {
-            var criteria = new CheckNewGroupBettingCriteria()
-            {
-                CustIdList = custIdList
-            };
-
-            return repository.Fetch<NewTWTaggedCustEntity>(criteria);
-        }
+        }      
     }
 }

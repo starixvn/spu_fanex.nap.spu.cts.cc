@@ -59,7 +59,7 @@
             var paramaters = new RescanParametersEntity()
             {
                 IsRescanPA = false,
-                IsRescanPADangerous = true,
+                IsRescanPotentialPA = true,
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
                 RescanNormalType = RescanNormalType.Auto_Customer,
@@ -79,12 +79,12 @@
             };
 
             var isSuccess = newCTSClassificationServices.Start()
-                                                        .GetCategoryForNewCTSCustomer()
-                                                        .InsertVVIPForNewCustomers(paramaters)
-                                                        .InsertPAForNewCustomers(paramaters)
-                                                        .ResanNormalForNewCustomers(paramaters)
-                                                        .ResanNormalBySportForNewCustomers()
-                                                        .UpdateComplete();
+                                                       .GetCategoryForNewCTSCustomer()
+                                                       .InsertVVIPForNewCustomers(paramaters)
+                                                       .InsertPAForNewCustomers(paramaters)
+                                                       .ResanNormalForNewCustomers(paramaters)
+                                                       .ResanNormalBySportForNewCustomers()
+                                                       .UpdateComplete();
             return isSuccess;
         }
     }
