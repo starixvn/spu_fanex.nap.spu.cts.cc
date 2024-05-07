@@ -2,8 +2,10 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.Renovate.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
@@ -37,18 +39,21 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private IEnumerable<long> scanningCustIDs;
         private IEnumerable<InsertPAProbationResult> problemAccounts;
+        private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
             IDailyProblemClassificationDataAccess dailyClassificationDataAccess,
             ISystemParameterServices systemParameterService,
             IProblemAccountServices problemAccountServices,
-            ICustClassToMainDBService custClassToMainDBService)
+            ICustClassToMainDBService custClassToMainDBService,
+            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess)
         {
             this.dailyClassificationDataAccess = dailyClassificationDataAccess;
             this.systemParameterService = systemParameterService;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
+            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
         }
 
         public IDailyProblemClassificationServices Start()
@@ -86,12 +91,40 @@
         {
             if (problemClassification != null && problemClassification.Any())
             {
-                var json = JsonConvert.SerializeObject(problemClassification);
+                var jsonDailPas = GetTWInitialGBs(problemClassification);
 
-                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(json);
+                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonDailPas);
             }
 
             return this;
+        }
+
+        private string GetTWInitialGBs(IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
+        {
+            if (problemClassification != null && problemClassification.Any())
+            {
+                var dicTWInitialGBs = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(string.Join(",", scanningCustIDs)).ToDictionary(x => x.CustID);
+
+                var dailyPas = problemClassification.Select(x =>
+                {
+                    var pa = new ProblemAccountLosingClassificationModel(x);
+
+                    var twGBCust = default(RealtimeTWInitialGroupBetting.TWInitialGBGetChangesEntity);
+
+                    dicTWInitialGBs.TryGetValue(x.CustId, out twGBCust);
+
+                    if (twGBCust != null)
+                    {
+                        pa.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
+                    }
+                    
+                    return pa;
+                });
+
+                return JsonConvert.SerializeObject(dailyPas);
+            }
+
+            return string.Empty;
         }
 
         public IDailyProblemClassificationServices InsertPALogic()
