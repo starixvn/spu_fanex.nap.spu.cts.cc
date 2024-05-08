@@ -37,7 +37,7 @@
         private readonly ISystemParameterServices systemParameterService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private IEnumerable<long> scanningCustIDs;
+        private PADailyScanFromQueueModel paDailyScanFromQueue;
         private IEnumerable<InsertPAProbationResult> problemAccounts;
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly string serviceName = "ProblemAccountProbationService";
@@ -58,7 +58,7 @@
 
         public IDailyProblemClassificationServices Start()
         {
-            scanningCustIDs = Enumerable.Empty<long>();
+            paDailyScanFromQueue = new PADailyScanFromQueueModel();
 
             return this;
         }
@@ -72,16 +72,16 @@
 
         public IDailyProblemClassificationServices GetPADailyScanFromQueue()
         {
-            scanningCustIDs = dailyClassificationDataAccess.GetPADailyScanFromQueue();
+            paDailyScanFromQueue = dailyClassificationDataAccess.GetPADailyScanFromQueue();
 
             return this;
         }
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId)
         {
-            if (scanningCustIDs != null && scanningCustIDs.Any())
+            if (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any())
             {
-                return problemAccountServices.GetProblemAccountLosingClassification(scanningCustIDs, funcId);
+                return problemAccountServices.GetProblemAccountLosingClassification(paDailyScanFromQueue.PADailyScanCustIDs.Select(x=>(long)x), funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
@@ -91,19 +91,19 @@
         {
             if (problemClassification != null && problemClassification.Any())
             {
-                var jsonDailPas = GetTWInitialGBs(problemClassification);
+                var jsonDailyPas = GetTWInitialGBs(problemClassification);
 
-                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonDailPas);
+                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonDailyPas);
             }
 
             return this;
         }
 
         private string GetTWInitialGBs(IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
-        {
-            if (problemClassification != null && problemClassification.Any())
+        {           
+            if (paDailyScanFromQueue.TWInitialGBCustIDs != null && paDailyScanFromQueue.TWInitialGBCustIDs.Any())
             {
-                var dicTWInitialGBs = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(string.Join(",", scanningCustIDs)).ToDictionary(x => x.CustID);
+                var dicTWInitialGBs = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(string.Join(",", paDailyScanFromQueue.TWInitialGBCustIDs)).ToDictionary(x => x.CustID);
 
                 var dailyPas = problemClassification.Select(x =>
                 {
@@ -124,7 +124,7 @@
                 return JsonConvert.SerializeObject(dailyPas);
             }
 
-            return string.Empty;
+            return JsonConvert.SerializeObject(problemClassification.Select(x => new ProblemAccountLosingClassificationModel(x)));
         }
 
         public IDailyProblemClassificationServices InsertPALogic()
@@ -157,14 +157,14 @@
         {
             string custIdToString = string.Empty;
 
-            if (scanningCustIDs != null && scanningCustIDs.Any())
+            if (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any())
             {
-                custIdToString = string.Join(",", scanningCustIDs.Distinct());
+                custIdToString = string.Join(",", paDailyScanFromQueue.PADailyScanCustIDs.Distinct());
             }
 
             dailyClassificationDataAccess.CompletePADailyScan(custIdToString);
 
-            return (scanningCustIDs != null && scanningCustIDs.Any());
+            return (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any());
         }
     }
 }

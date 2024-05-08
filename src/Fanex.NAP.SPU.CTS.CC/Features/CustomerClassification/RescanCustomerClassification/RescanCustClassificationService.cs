@@ -331,15 +331,20 @@
         {
             if (custIDs.Any())
             {
-                var custPaDangerous = RescanDangerousPA(string.Join(",", custIDs), parameters);
+                custIDs.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
 
-                custIDs.RemoveAll(x => custPaDangerous.Contains(x));
+                var rescanPotentialPA = string.Join(",", custIDs);
 
-                custIdsToRescanPotentialPA.AddRange(custPaDangerous);
+                if (rescanPotentialPA != string.Empty)
+                {
+                    var custPaDangerous = RescanDangerousPA(rescanPotentialPA, parameters);
 
-                var custPaTWGB = RescanInitialTWGroupBettingPA(string.Join(",", custIDs), parameters);
+                    custIdsToRescanPotentialPA.AddRange(custPaDangerous);
 
-                custIdsToRescanPotentialPA.AddRange(custPaTWGB);
+                    var custPaTWGB = RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
+
+                    custIdsToRescanPotentialPA.AddRange(custPaTWGB);
+                }                
             }
         }
 

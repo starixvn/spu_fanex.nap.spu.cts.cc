@@ -5,7 +5,7 @@
 
     public interface IDailyProblemClassificationDataAccess
     {
-        IEnumerable<long> GetPADailyScanFromQueue();
+        PADailyScanFromQueueModel GetPADailyScanFromQueue();
 
         void CompletePADailyScan(string custIDs);
 
@@ -21,11 +21,17 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<long> GetPADailyScanFromQueue()
+        public PADailyScanFromQueueModel GetPADailyScanFromQueue()
         {
             var criteria = new PADailyScanFromQueueGetCriteria();
 
-            return repository.Fetch<long>(criteria);
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<ulong, ulong>(criteria);
+
+            return new PADailyScanFromQueueModel
+            {
+                PADailyScanCustIDs = firstResultSet,
+                TWInitialGBCustIDs = secondResultSet,
+            };
         }
 
         public IEnumerable<InsertPAProbationResult> InsertProblemProbationClassification(string problemAccountJson)
