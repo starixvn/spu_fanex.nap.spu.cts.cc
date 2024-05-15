@@ -27,8 +27,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewTWGroupBettingClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;    
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
@@ -116,9 +115,7 @@
 
             RegisterDailyNormalBySport(services);
 
-            RegisterRescanBySport(services);
-
-            RegisterNewTWGroupBettingClassificationRenovate(services);
+            RegisterRescanBySport(services);        
 
             RegisterDetectUnauthorizedLoginCustomer(services);
 
@@ -133,14 +130,7 @@
             services.AddSingleton<IDetectUnauthorizedLoginCustomerService, DetectUnauthorizedLoginCustomerService>();
             services.AddSingleton<IDetectUnauthorizedLoginCustomerJobService, DetectUnauthorizedLoginCustomerJobService>();
         }
-
-        private static void RegisterNewTWGroupBettingClassificationRenovate(IServiceCollection services)
-        {
-            services.AddSingleton<ITWGBTaggingClassificationDataAccess, TWGBTaggingClassificationDataAccess>();
-            services.AddSingleton<ITWGBTaggingClassificationService, TWGBTaggingClassificationService>();
-            services.AddSingleton<ITWGBTaggingClassificationJobService, TWGBTaggingClassificationJobService>();
-        }
-
+        
         private static void RegisterTWGroupBetting(this IServiceCollection services)
         {
             services.AddSingleton<ITWGroupBettingDataAccess, TWGroupBettingDataAccess>();

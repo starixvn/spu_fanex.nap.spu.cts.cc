@@ -23,7 +23,6 @@
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService;
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
-        private readonly ITWGBTaggingClassificationJobService twGBTaggingJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
@@ -45,7 +44,6 @@
             INewCustomerClassificationJobService newCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService,
             INormalTaggingClassificationJobService normalTaggingClassificationJobService,
-            ITWGBTaggingClassificationJobService newGroupBettingClassificationJobService,
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
@@ -68,7 +66,6 @@
             this.newCustomerClassificationJobService = newCustomerClassificationJobService;
             this.affectedDownlineClassificationJobService = affectedDownlineClassificationJobService;
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
-            this.twGBTaggingJobService = newGroupBettingClassificationJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -152,13 +149,7 @@
         {
             return await this.affectedDownlineClassificationJobService.Execute(batchSize);
         }
-
-        [HttpPost("scanningTWGBTaggingClassification")]
-        public async Task<bool> TWGBTaggingClassification(int batchSize)
-        {
-            return await this.twGBTaggingJobService.Execute(batchSize);
-        }
-
+       
         #endregion Renovate
 
         [HttpPost("robotTWClassification")]
