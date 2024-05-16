@@ -11,9 +11,9 @@
 
     public interface ITWGroupBettingJobService
     {
-        Task<bool> DetectGroupBettingTicket(int batchSize);
+        Task<bool> ScanTWGBTicket(int batchSize);
 
-        Task<bool> CountTotalTicket();
+        Task<bool> UpdateTotalTWGBTicket();
     }
 
     public class TWGroupBettingJobService : ITWGroupBettingJobService
@@ -34,11 +34,12 @@
             this.serviceName = "TWGroupBetting";
         }
 
-        public Task<bool> DetectGroupBettingTicket(int batchSize)
+        public Task<bool> ScanTWGBTicket(int batchSize)
         {
             try
             {
                 var rules = twGroupBettingService.GetAllRules();
+
                 foreach (var item in rules.GroupBy(r => r.LimitSecond))
                 {
                     var lastTransId = twGroupBettingService.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
@@ -53,9 +54,9 @@
                         LastTransSec = lastTransSec,
                         SkipTransCount = skipTransCount
                     };
+
                     var outputParams = twGroupBettingService.ScanTicket(configs);
-                    
-                    twGroupBettingService.CountGroupBettingTicket();
+
                     if (outputParams.LastSequenceId_New > 0)
                     {
                         twGroupBettingService.UpdateConfig_Int64(outputParams.LastSequenceId_New, Main_SystemParameters.TWGroupBetting_ScanTicket_LastSequenceId);
@@ -74,7 +75,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> CountTotalTicket()
+        public Task<bool> UpdateTotalTWGBTicket()
         {
             try
             {
@@ -93,7 +94,7 @@
 
                         try
                         {
-                            nextSequenceId = twGroupBettingService.CountTotalTicket((int)batchSize, LastSequenceId);
+                            nextSequenceId = twGroupBettingService.UpdateTotalTWGBTicket((int)batchSize, LastSequenceId);
 
                             if (nextSequenceId > 0)
                             {
@@ -108,10 +109,10 @@
 
                             if (nextSequenceId != 0)
                             {
-                                message = $"CAUTION !!! To restart job, please monitor data, set SystemParamterID (137) = 0 and SystemParamterID (136) NextSequenceId = {nextSequenceId}\n";    
+                                message = $"CAUTION !!! To restart job, please monitor data, set SystemParamterID (137) = 0 and SystemParamterID (136) NextSequenceId = {nextSequenceId}\n";
                             }
                             else
-                            { 
+                            {
                                 twGroupBettingService.UpdateConfig_Int64(0, Main_SystemParameters.TWGroupBetting_CountTicket_Status);
                                 message = $"Job was retried, LastSequenceId = {LastSequenceId} \n";
                             }

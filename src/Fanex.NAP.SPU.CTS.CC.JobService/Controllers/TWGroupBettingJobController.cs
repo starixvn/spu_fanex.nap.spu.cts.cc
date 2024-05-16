@@ -19,16 +19,16 @@
             this.twGroupBettingJobService = twGroupBettingJobService;
         }
 
-        [HttpPost("scan-tw-group-betting")]
-        public async Task<bool> ScanTWGroupBetting([FromForm] int batchSize)
+        [HttpPost("ScanTWGBTicket")]
+        public async Task<bool> ScanTWGBTicket([FromForm] int batchSize)
         {
-            return await this.twGroupBettingJobService.DetectGroupBettingTicket(batchSize);
+            return await this.twGroupBettingJobService.ScanTWGBTicket(batchSize);
         }
 
-        [HttpPost("count-cust-total-ticket")]
-        public async Task<bool> CountCustomerTotalTicket()
+        [HttpPost("UpdateTotalTWGBTicket")]
+        public async Task<bool> UpdateTotalTWGBTicket()
         {
-            return await this.twGroupBettingJobService.CountTotalTicket();
+            return await this.twGroupBettingJobService.UpdateTotalTWGBTicket();
         }
     }
 }

@@ -4,22 +4,15 @@
 
     public class TWGroupBetting_UpdateTotalTicketCriteria : NonQueryCommand
     {
-        private bool IsBackUp;
-
-        public TWGroupBetting_UpdateTotalTicketCriteria(bool isBackUp)
-        {
-            IsBackUp = isBackUp;
-        }
-
         public int BatchSize { get; set; }
 
         public long LastSequenceId { get; set; }
-   
+
         public long LastSequenceId_New { get; set; }
 
         public override string GetSettingKey()
         {
-            return IsBackUp ? "CTS_TWGroupBetting_UpdateTotalTicket" : "CTS_TWGroupBetting_UpdateTotalTicketDB062";
+            return "CTS_TWGroupBetting_UpdateTotalTicket";
         }
 
         public override bool IsValid()

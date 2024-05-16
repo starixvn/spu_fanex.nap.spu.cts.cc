@@ -11,9 +11,7 @@
     {
         TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
-        void CountGroupBettingTicket();
-
-        long CountTotalTicket(int batchSize, long LastSequenceId);
+        long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
 
@@ -46,7 +44,7 @@
             Int64 defaultValue = 0;
             return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
         }
-        
+
         public int GetConfig_Int(Main_SystemParameters paraID)
         {
             var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
@@ -64,38 +62,20 @@
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
-        
+
         public void UpdateConfig_Int(int value, Main_SystemParameters paraID)
         {
             systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
         }
 
-        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria) 
+        public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria)
         {
             return twGroupBettingDataAccess.ScanTicket(criteria);
         }
 
-        public void CountGroupBettingTicket()
+        public long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId)
         {
-            try
-            {
-                twGroupBettingDataAccess.CountGroupBettingTicket();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            //finally 
-            //{
-            //    twGroupBettingDataAccess.CountGroupBettingTicketForDB062();
-            //}
-            
-        }
-
-        public long CountTotalTicket(int batchSize, long LastSequenceId) 
-        {
-            return twGroupBettingDataAccess.CountTotalTicket(batchSize, LastSequenceId);
-            //twGroupBettingDataAccess.CountTotalTicketDB062();
+            return twGroupBettingDataAccess.UpdateTotalTWGBTicket(batchSize, LastSequenceId);
         }
 
         public IEnumerable<TWGroupBettingRule> GetAllRules()
