@@ -24,8 +24,7 @@
 	<Function Name="DailyProblemClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
 		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
-		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />	
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_DailyScanPA_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="RealtimeClassification">
@@ -43,8 +42,7 @@
 	</Function>
 
 	<Function Name="RealtimeClassification">
-		<Setting Key="CTS_GeneralNormalClassification_RealTime_GetChanges" SpName="CTS_GeneralNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
-		<!--<Setting Key="CTS_DC_CustClassification_Realtime_GetCategory" SpName="CTS_DC_CustClassification_Realtime_GetCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />-->
+		<Setting Key="CTS_GeneralNormalClassification_RealTime_GetChanges" SpName="CTS_GeneralNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />		
 		<Setting Key="CTS_GeneralNormalClassification_Realtime_Preprocess" SpName="CTS_GeneralNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_RealTime_Complete" SpName="CTS_GeneralNormalClassification_RealTime_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
@@ -147,7 +145,6 @@
 		<Setting Key="CTS_TWGroupBetting_CountGBTicket" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_CountGBTicketDB062" SpName="CTS_TWGroupBetting_CountGBTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_TWGroupBetting_SyncDataGroupBettingTicket" SpName="CTS_TWGroupBetting_SyncDataGroupBettingTicket" DbName="DB062.WASAVerse.bodbSPUNet" />
-		<Setting Key="CTS_CustomerClassification_CheckNewGroupBetting" SpName="CTS_CustomerClassification_CheckNewGroupBetting" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
 	<Function Name="CustomerClassification">
@@ -160,8 +157,7 @@
 		<Setting Key="CTS_DC_CustClassification_PA_Remove" SpName="CTS_DC_CustClassification_PA_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_PA_ReScan" SpName="CTS_DC_CustClassification_PA_ReScan" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_InsertRobot" SpName="CTS_DC_CustClassification_PA_InsertRobot" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
-		<Setting Key="CTS_DC_CustClassification_PA_ClearOld" SpName="CTS_DC_CustClassification_PA_ClearOld" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_Get" SpName="CTS_DC_CustClassification_Get" DbName="MySQL.CTS_DataCenter.Reporter" />
+		<Setting Key="CTS_DC_CustClassification_PA_ClearOld" SpName="CTS_DC_CustClassification_PA_ClearOld" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />	
 		<Setting Key="CTS_DC_CustClassification_Normal_GetExisting" SpName="CTS_DC_CustClassification_Normal_GetExisting" DbName="MySQL.CTS_DataCenter.Reporter" />
 	</Function>
 
@@ -262,10 +258,11 @@
 		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
-	<Function Name="TWGBTaggingClassification">
+	<Function Name="TWInitialGBClassification">
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" SpName="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess" SpName="CTS_GeneralNormalClassification_TWGroupBetting_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" />		
+		<Setting Key="CTS_DC_CustClassification_InitialGB_GetCustInfo" SpName="CTS_DC_CustClassification_InitialGB_GetCustInfo" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_CustomerClassification_CheckNewGroupBetting" SpName="CTS_CustomerClassification_CheckNewGroupBetting" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
 	<Function Name="DailyDangerousScoreClassification">

@@ -95,18 +95,9 @@
                 return Enumerable.Empty<InsertNormalAccountModel>();
             }
 
-            var twGBTaggingNewCusts = default(IEnumerable<NewTWTaggedCustEntity>);
-            var twTaggingSRPCusts = default(IEnumerable<TWTaggedCustEntity>);
+            var twTaggingSRPCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
 
-            var tasks = new Task[]
-            {
-                Task.Run(() => twGBTaggingNewCusts = GetNewTWGroupBetting(custs.Where(x => x.ScanTaggingTWType == 2))),
-                Task.Run(() => twTaggingSRPCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1)))
-            };
-
-            Task.WhenAll(tasks).Wait();
-
-            var custAfterCheckTWTagged = MergeWithTWTaggedCustAndNewTWCust(custs, twTaggingSRPCusts, twGBTaggingNewCusts);
+            var custAfterCheckTWTagged = MergeWithTWTaggedCustAndNewTWCust(custs, twTaggingSRPCusts);
 
             var custIdAfterCheckTWTagged = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
 
@@ -117,18 +108,7 @@
             return finalNormalAcc;
         }
 
-        #region private method
-        private IEnumerable<NewTWTaggedCustEntity> GetNewTWGroupBetting(IEnumerable<GetNormalAccountEntity> custs)
-        {
-            if (custs != null && custs.Any())
-            {
-                var custIds = string.Join(",", custs.Select(x => x.CustId).Distinct());
-
-                return dataAccess.CheckNewGroupBetting(custIds);
-            }
-
-            return new List<NewTWTaggedCustEntity>();
-        }
+        #region private method      
 
         private IEnumerable<CTSTaggedCustEntity> GetCustomerAssociationProblemAccount(string custIdList)
         {
@@ -161,33 +141,25 @@
                                     (group, temp) => new NormalAccountAfterCheckTWDetectionModel(group.custClass, temp));
         }
 
-        private IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCustAndNewTWCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggingSRPCusts, IEnumerable<NewTWTaggedCustEntity> twGBTaggingNewCusts)
+        private IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCustAndNewTWCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggingSRPCusts)
         {
             var custsMapping = custs ?? new List<GetNormalAccountEntity>();
             var twTaggingSRPCustMapping = twTaggingSRPCusts ?? new List<TWTaggedCustEntity>();
-            var twGBTaggingNewCustMapping = twGBTaggingNewCusts ?? new List<NewTWTaggedCustEntity>();
-
+           
             var result = from cust in custsMapping
                          join srpCust in twTaggingSRPCustMapping on cust.CustId equals srpCust.CustID into srpCust_JoinTable
-                         from srpCustDefault in srpCust_JoinTable.DefaultIfEmpty()
-                         join newCust in twGBTaggingNewCustMapping on cust.CustId equals newCust.CustID into newCust_JoinTable
-                         from newCustDefault in newCust_JoinTable.DefaultIfEmpty()
-                         select MappingNormalAccountAfterCheckTWDetectionModel(cust, srpCustDefault, newCustDefault);
+                         from srpCustDefault in srpCust_JoinTable.DefaultIfEmpty()                         
+                         select MappingNormalAccountAfterCheckTWDetectionModel(cust, srpCustDefault);
 
             return result;
         }
 
-        private NormalAccountAfterCheckTWDetectionModel MappingNormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity twTaggingSRPCust, NewTWTaggedCustEntity twGBTaggingNewCust)
+        private NormalAccountAfterCheckTWDetectionModel MappingNormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity twTaggingSRPCust)
         {
             if (twTaggingSRPCust != null)
             {
                 return new NormalAccountAfterCheckTWDetectionModel(cust, twTaggingSRPCust);
-            }
-
-            if (twGBTaggingNewCust != null)
-            {
-                return new NormalAccountAfterCheckTWDetectionModel(cust, twGBTaggingNewCust);
-            }
+            }         
 
             return new NormalAccountAfterCheckTWDetectionModel(cust);
         }

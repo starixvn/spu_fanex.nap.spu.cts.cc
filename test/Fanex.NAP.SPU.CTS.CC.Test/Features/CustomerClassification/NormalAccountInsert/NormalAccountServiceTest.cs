@@ -67,27 +67,7 @@
 
             // Assert
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
-        }
-
-        [Fact]
-        public void GetNewTWGroupBetting_WhenSuccess()
-        {
-            // Arrange
-            var custs = new List<GetNormalAccountEntity>()
-            {
-                new GetNormalAccountEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
-                new GetNormalAccountEntity { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
-            };
-            var custIds = "1,2";
-
-            var getGetGroupBettingAndRejectCustomerMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.GetNewTWGroupBetting);
-
-            // Act
-            getGetGroupBettingAndRejectCustomerMethod.Invoke(normalAccountService, new object[] { custs });
-
-            // Assert
-            normalAccountDataAccess.Received(1).CheckNewGroupBetting(custIds);
-        }
+        }       
 
         [Fact]
         public void InsertNormalAccount_WhenSuccess_ReturnResult()
@@ -259,8 +239,6 @@
             var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
 
             // Act
-            normalAccountDataAccess.CheckNewGroupBetting(Arg.Any<string>()).Returns(twGBTaggingNewCusts);
-
             normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twTaggingSRPCusts);
 
             normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAReulst);
@@ -268,8 +246,6 @@
             var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(getnormalAccountList);
 
             // Assert
-            normalAccountDataAccess.Received(1).CheckNewGroupBetting(Arg.Any<string>());
-
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
 
             normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());

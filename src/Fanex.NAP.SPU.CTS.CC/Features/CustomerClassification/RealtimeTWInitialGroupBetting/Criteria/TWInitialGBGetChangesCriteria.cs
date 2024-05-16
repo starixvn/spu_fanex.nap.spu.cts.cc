@@ -1,13 +1,16 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewTWGroupBettingClassification.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
     using System;
 
-    public class TWGBTaggingCheckChangeCriteria : CriteriaBase
+    public class TWInitialGBGetChangesCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "NextScannedDateTime")]
         public DateTime NextScannedDateTime { get; set; }
+
+        [SpParam(SqlParamName = "NextScannedCustID")]
+        public long NextScannedCustID { get; set; }
 
         public override string GetSettingKey() => "CTS_GeneralNormalClassification_TWGroupBetting_GetChanges";
 

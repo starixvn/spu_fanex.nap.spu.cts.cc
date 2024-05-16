@@ -40,7 +40,9 @@
 
             rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
             rescanCustClassificationService = new RescanCustClassificationService(
-                rescanCustClassificationDataAccess, null,
+                rescanCustClassificationDataAccess, 
+                null,
+                null,
                 problemAccountServices,
                 custClassToMainDBService,
                 null);

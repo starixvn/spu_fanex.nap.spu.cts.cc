@@ -12,6 +12,7 @@
 
         public const string CONVERT_TO_SQL_DATE = "yyyy-MM-dd";
         public const string CONVERT_TO_DATETIME = "dd/MM/yyyy HH:mm:ss";
+        public const string CONVERT_TO_DATETIME_ddMMMyyyy = "dd MMM, yyyy";
         public const string CONVERT_TO_DATETIME_MMMddyyyy = "MMM dd, yyyy";
         public const string FormatDecimalToString_2Places = "0.00";
         public const string FormatDecimalToString_Thousands = "#,##0";
@@ -27,6 +28,7 @@
         public const string Telegram_GroupId_Local = "-869606030";
 
         public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
+        public const string TWInitialGBMissSport = "Soccer/Basketball";
 
         public enum MatchMonitorQueryTypes
         {
@@ -165,7 +167,8 @@
             ClassifyGBMatchMonitor = 54,
             NormalTaggingJob = 100,
             DetectUnauthorizedLoginCust = 101,
-            DailyDangerousClassification = 102
+            DailyDangerousClassification = 102,
+            TWInitialGBClassification = 103
         };
 
         public enum BySport_FunctionId

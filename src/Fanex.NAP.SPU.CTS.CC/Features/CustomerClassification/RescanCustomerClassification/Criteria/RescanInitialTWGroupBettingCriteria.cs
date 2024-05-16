@@ -1,12 +1,12 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class CheckNewGroupBettingCriteria : CriteriaBase
+    public class RescanInitialTWGroupBettingCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "custIdList")]
-        public string CustIdList { get; set; }
+        public string CustIDs { get; set; }
 
         public override string GetSettingKey() => "CTS_CustomerClassification_CheckNewGroupBetting";
 

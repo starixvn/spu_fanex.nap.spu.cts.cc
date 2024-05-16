@@ -10,6 +10,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using Fanex.NAP.Client.Configuration;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.RemotingRef;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -19,6 +20,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
     using Sentry;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -53,6 +55,8 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             RegisterLogging(appSettings);
 
             FanexDataConfig(appSettings);
+
+            RegisterRemotingRef(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -116,6 +120,17 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
                         Environment = "DEV"
                      })
                 });
+        }
+
+        private void RegisterRemotingRef(IServiceCollection services)
+        {
+            RefDataTypeContainer
+            .ConnectTo(new Uri(Configuration["Fanex.RemotingRef.Service.Url"]))
+            .FromApplication("CTS CC Services");
+                services.AddMvc();
+                services.Configure<IConfiguration>(Configuration);
+                services.AddSingleton<IRemotingRefService, RemotingRefService>();
+
         }
     }
 }

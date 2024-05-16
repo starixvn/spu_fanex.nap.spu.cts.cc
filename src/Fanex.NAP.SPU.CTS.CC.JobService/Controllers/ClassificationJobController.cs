@@ -23,7 +23,6 @@
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService;
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
-        private readonly ITWGBTaggingClassificationJobService twGBTaggingJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
@@ -32,6 +31,7 @@
         private readonly ITWRobotImpervaJobService robotImpervaJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
+        private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,           
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
@@ -44,7 +44,6 @@
             INewCustomerClassificationJobService newCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService,
             INormalTaggingClassificationJobService normalTaggingClassificationJobService,
-            ITWGBTaggingClassificationJobService newGroupBettingClassificationJobService,
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
@@ -52,7 +51,8 @@
             IMatchMonitorClassificationJobService mmClassificationJobService,
             ITWRobotImpervaJobService robotImpervaJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
-            IDailyDangerousClassificationJobService dailyDangerousClassificationJobService)
+            IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
+            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService)
         {
             this.sentryClient = sentryClient;           
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
@@ -66,7 +66,6 @@
             this.newCustomerClassificationJobService = newCustomerClassificationJobService;
             this.affectedDownlineClassificationJobService = affectedDownlineClassificationJobService;
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
-            this.twGBTaggingJobService = newGroupBettingClassificationJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
@@ -75,8 +74,16 @@
             this.robotImpervaJobService = robotImpervaJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
-        }       
-      
+            this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
+        }
+
+        [HttpPost("scanningDailyNormalClassification")]
+        public async Task<bool> DailyScanningNormalClassification()
+        {
+            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
+            return await this.dailyNormalClassificationJobService.Execute();
+        }
+
         [HttpPost("scanningDailyProblemClassification")]
         public async Task<bool> DailyScanningProblemClassification([FromForm] int batchSize)
         {
@@ -124,13 +131,6 @@
             return await this.probationClassificationJobService.Execute(batchSize);
         }
 
-        [HttpPost("scanningDailyNormalClassification")]
-        public async Task<bool> DailyScanningNormalClassification()
-        {
-            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
-            return await this.dailyNormalClassificationJobService.Execute();
-        }
-
         [HttpPost("scanningDailyNormalTaggingClassification")]
         public async Task<bool> DailyScanningNormalTaggingClassification([FromForm] int batchSize)
         {
@@ -149,13 +149,7 @@
         {
             return await this.affectedDownlineClassificationJobService.Execute(batchSize);
         }
-
-        [HttpPost("scanningTWGBTaggingClassification")]
-        public async Task<bool> TWGBTaggingClassification(int batchSize)
-        {
-            return await this.twGBTaggingJobService.Execute(batchSize);
-        }
-
+       
         #endregion Renovate
 
         [HttpPost("robotTWClassification")]
@@ -210,6 +204,12 @@
         public async Task<bool> ClassifyMatchMonitor()
         {
             return await this.mmClassificationJobService.ClassifyMatchMonitor();
-        }     
+        }
+
+        [HttpPost("scanningSecondlyTWInitialGBClassification")]
+        public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
+        {            
+            return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
+        }      
     }
 }

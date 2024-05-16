@@ -32,8 +32,7 @@
             if (twGBTaggingNewCust != null && twGBTaggingNewCust.TaggingID != 0)
             {
                 this.TaggingID = twGBTaggingNewCust.TaggingID;
-                this.TaggingType = twGBTaggingNewCust.TaggingType;
-                this.First5TWGBTicketCount = twGBTaggingNewCust.First5TWGBTicketCount;
+                this.TaggingType = twGBTaggingNewCust.TaggingType;              
                 this.SportType = twGBTaggingNewCust.SportType;
             }
         }
