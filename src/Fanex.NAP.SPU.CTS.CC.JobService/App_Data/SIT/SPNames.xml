@@ -36,14 +36,14 @@
 	</Function>
 
 	<Function Name="RealtimeCheckChangeClassification">
-		<Setting Key="CTS_NormalClassification_RealTime_CheckChanges" SpName="CTS_NormalClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_NormalClassification_RealTime_CheckChanges" SpName="CTS_NormalClassification_RealTime_CheckChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600" />
 		<Setting Key="CTS_NormalClassification_RealTime_UpdateNextScannedTime" SpName="CTS_NormalClassification_RealTime_UpdateNextScannedTime" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<!--<Setting Key="CTS_Arc_CustomerAssociation_LastTicketDate_Update" SpName="CTS_Arc_CustomerAssociation_LastTicketDate_Update" DbName="MySQL.CTS_Archive.ctsServiceAdmin" TimeOut="300" />-->
 	</Function>
 
 	<Function Name="RealtimeClassification">
 		<Setting Key="CTS_GeneralNormalClassification_RealTime_GetChanges" SpName="CTS_GeneralNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />	
-		<Setting Key="CTS_GeneralNormalClassification_Realtime_Preprocess" SpName="CTS_GeneralNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_Realtime_Preprocess" SpName="CTS_GeneralNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_DailyScanPA_InsertToQueue" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_RealTime_Complete" SpName="CTS_GeneralNormalClassification_RealTime_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
@@ -234,7 +234,7 @@
 
 	<Function Name="RealtimeClassificationBySport">
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600"/>
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
