@@ -4,16 +4,14 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyDangerousClassificationJobService
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute(int batchSize, bool isLicensee);
     }
 
     public class DailyDangerousClassificationJobService : IDailyDangerousClassificationJobService
@@ -36,11 +34,11 @@
             this.serviceName = "DailyDangerousClassificationJobService";
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute(int batchSize, bool isLicensee)
         {
             try
             {
-                JobRun(batchSize);
+                JobRun(batchSize, isLicensee);
             }
             catch (Exception ex)
             {
@@ -52,9 +50,8 @@
             return Task.FromResult(true);
         }
 
-        private void JobRun(int batchSize)
+        private void JobRun(int batchSize, bool isLicensee)
         {
-            var isLicensee = false;
             bool isContinue;
 
             var paras = new PushDataToExternalEntity
@@ -70,20 +67,18 @@
             do
             {
                 var dangerousCCs = dailyDangerousCCService.GetDangerousClassification(isLicensee);
-      
+
                 isContinue = dangerousCCs.DangerousCCLastScanned != null && dangerousCCs.DangerousCCLastScanned.LastCustID > 0;
 
                 if (isContinue)
                 {
                     dailyDangerousCCService.InsertDangerousClassification(dangerousCCs.DangerousCCs, isLicensee, paras);
 
-                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastCustID.ToString(), Constants.CTS_SystemParameters.DailyDangerousClassification_LastCustID);
+                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastCustID.ToString(), isLicensee ? CTS_SystemParameters.DangerousScoreClassification_Deposit_LastCustID : CTS_SystemParameters.DangerousScoreClassification_Credit_LastCustID);
 
-                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastScannedDate?.ToString(Constants.CONVERT_TO_SQL_DATETIME), Constants.CTS_SystemParameters.DailyDangerousClassification_LastScannedDate);
-                }                
-
+                    systemParameterService.UpdateTimingExecution(dangerousCCs.DangerousCCLastScanned.LastScannedDate?.ToString(CONVERT_TO_SQL_DATETIME), isLicensee ? CTS_SystemParameters.DangerousScoreClassification_Deposit_LastScannedDate : CTS_SystemParameters.DangerousScoreClassification_Credit_LastScannedDate);
+                }
             } while (isContinue);
         }
-
     }
 }

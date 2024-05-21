@@ -91,12 +91,20 @@
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
- 		[HttpPost("scanningDailyDangerousClassification")]
-        public async Task<bool> DailyScanningDangerousClassification([FromForm] int batchSize)
+ 		[HttpPost("scanningDailyDangerousDepositClassification")]
+        public async Task<bool> DailyScanningDangerousDepositClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Dangerous classification Service is running at {DateTime.Now}");
+            sentryClient.CaptureMessage($"Daily Deposit Dangerous Score Classification Service is running at {DateTime.Now}");
 
-            return await this.dailyDangerousClassificationJobService.Execute(batchSize);
+            return await this.dailyDangerousClassificationJobService.Execute(batchSize, true);
+        }
+
+        [HttpPost("scanningDailyDangerousCreditClassification")]
+        public async Task<bool> DailyScanningDangerousCreditClassification([FromForm] int batchSize)
+        {
+            sentryClient.CaptureMessage($"Daily Credit Dangerous Score Classification Service is running at {DateTime.Now}");
+
+            return await this.dailyDangerousClassificationJobService.Execute(batchSize, false);
         }
 
         #region Renovate
