@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class RescanPADangerousEntity
+    public class RescanDangerousScorePAEntity
     {
         public long CustID { get; set; }
 

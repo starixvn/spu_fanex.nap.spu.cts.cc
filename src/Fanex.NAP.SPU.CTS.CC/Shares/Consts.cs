@@ -82,7 +82,9 @@
             DangerousScoreClassification_Credit_LastScannedDate = 153,
             DangerousScoreClassification_Credit_LastCustID = 154,
             DangerousScoreClassification_Deposit_LastScannedDate = 156,
-            DangerousScoreClassification_Deposit_LastCustID = 157
+            DangerousScoreClassification_Deposit_LastCustID = 157,
+            TWInitialSmartClassification_LastCustID = 159,
+            TWInitialSmartClassification_LastScanDate = 160
         };
 
         public enum Main_SystemParameters
@@ -170,7 +172,8 @@
             NormalTaggingJob = 100,
             DetectUnauthorizedLoginCust = 101,
             DailyDangerousClassification = 102,
-            TWInitialGBClassification = 103
+            TWInitialGBClassification = 103,
+            TWInitialSmartClassification = 104
         };
 
         public enum BySport_FunctionId

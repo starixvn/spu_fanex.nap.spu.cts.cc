@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class RescanPADangerousCriteria : CriteriaBase
+    public class RescanDangerousScorePACriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_CustIDs")]
         public string CustIDs { get; set; }

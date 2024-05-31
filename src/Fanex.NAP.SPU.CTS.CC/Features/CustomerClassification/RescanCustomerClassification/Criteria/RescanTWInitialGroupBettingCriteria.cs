@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class RescanInitialTWGroupBettingCriteria : CriteriaBase
+    public class RescanTWInitialGroupBettingCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "custIdList")]
         public string CustIDs { get; set; }

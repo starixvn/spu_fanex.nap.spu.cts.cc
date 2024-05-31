@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWEarlyBlockService;
 
     public class InsertProblemAccountEntity
     {
@@ -48,7 +49,7 @@
             this.IsDirectPA = true;
         }
 
-        public InsertProblemAccountEntity(RescanPADangerousEntity rescanPADangerous)
+        public InsertProblemAccountEntity(RescanDangerousScorePAEntity rescanPADangerous)
         {
             this.CustID = rescanPADangerous.CustID;
             this.CTSCustID = rescanPADangerous.CTSCustID;
@@ -82,6 +83,24 @@
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;           
             this.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
+        }
+
+        public InsertProblemAccountEntity(TWInitialSmartEntity tWInitialSmartCust)
+        {
+            this.CustID = tWInitialSmartCust.CustID;
+            this.CTSCustID = tWInitialSmartCust.CTSCustID;
+            this.RoleID = tWInitialSmartCust.RoleID;
+            this.SubscriberID = tWInitialSmartCust.SubscriberID;
+            this.CategoryID = tWInitialSmartCust.CategoryID;
+            this.CategoryGroup = tWInitialSmartCust.CategoryGroup;
+            this.IsLicensee = tWInitialSmartCust.IsLicensee;
+            this.IsFromAI = false;
+            this.IsDirectPA = null;
+            this.IsFromCTS = false;
+            this.IsFromTVS = false;
+            this.IsFromTW = true;
+            this.CreatedBy = Constants.StarixITId;
+            this.Remark = $"Detection Date: {tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Probability: {tWInitialSmartCust.Probability}";
         }
 
         public Int64 CustID { get; set; }
