@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
 
     public interface IRescanCustClassificationService
     {
@@ -52,6 +53,7 @@
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
+        private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
@@ -68,6 +70,7 @@
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
+            IPAPotentialClassificationDataAccess paPotentialDataAccess,
             ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
@@ -75,6 +78,7 @@
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
+            this.paPotentialDataAccess = paPotentialDataAccess;
             this.twInitialGBDataAccess = twInitialGBDataAccess;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
@@ -370,7 +374,7 @@
         {
             var custPaInitialSmart = Enumerable.Empty<long>();
 
-            var rescanInitialSmart = rescanCustClassificationDataAccess.RescanInitialSmartPA(custIDs);
+            var rescanInitialSmart = paPotentialDataAccess.CheckExistInitialSmartPA(custIDs);
 
             if (rescanInitialSmart != null && rescanInitialSmart.Any())
             {
@@ -389,7 +393,8 @@
         public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
         {
             var custPaTWGB = Enumerable.Empty<long>();
-            var rescanInitialTWGB = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(custIDs);
+
+            var rescanInitialTWGB = paPotentialDataAccess.GetInitialTWGroupBetting(custIDs);
 
             if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
             {

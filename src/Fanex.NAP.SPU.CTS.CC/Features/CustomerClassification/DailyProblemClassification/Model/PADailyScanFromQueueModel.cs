@@ -6,6 +6,6 @@
     {
         public IEnumerable<ulong> PADailyScanCustIDs { get; set; }
 
-        public IEnumerable<ulong> TWInitialGBCustIDs { get; set; }
+        public IEnumerable<CustToBuildRemarkEntity> PAPotentialScanCustIDs { get; set; }
     }
 }

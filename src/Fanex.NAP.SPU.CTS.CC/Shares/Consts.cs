@@ -274,5 +274,11 @@
             Exist = 1,
             ExistOnly = 2,
         };
+
+        public enum CustToBuildRemark
+        {
+            TWInitialSmart = 1,
+            TWInitialGB = 2            
+        };
     }
 }

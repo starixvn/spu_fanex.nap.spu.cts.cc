@@ -49,6 +49,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWEarlyBlockService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
 
     public static class InitService
     {
@@ -170,8 +171,12 @@
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
         {
+            services.AddSingleton<IPAPotentialClassificationDataAccess, PAPotentialClassificationDataAccess>();
+            services.AddSingleton<IPAPotentialClassificationService, PAPotentialClassificationService>();
+
             services.AddSingleton<IDailyProblemClassificationDataAccess, DailyProblemClassificationDataAccess>();
             services.AddSingleton<IDailyProblemClassificationServices, DailyProblemClassificationServices>();
+            
             services.AddSingleton<IDailyProblemClassificationJobService, DailyProblemClassificationJobService>();
         }     
 

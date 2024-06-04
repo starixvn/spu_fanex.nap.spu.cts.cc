@@ -63,10 +63,27 @@
             {
                 var custIdsToString = string.Join(",", custIds);
 
-                return problemAccountDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+                //return problemAccountDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+
+                return GenerateDataTest_GetProblemAccountLosingClassification(custIds);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
+        }
+
+        private IEnumerable<ProblemAccountLosingClassificationEntity> GenerateDataTest_GetProblemAccountLosingClassification(IEnumerable<long> custIds)
+        {
+            var listPA = custIds.Select(x => new ProblemAccountLosingClassificationEntity
+            {
+                CustId = x,
+                ActiveDays = 1,
+                BetCount = 1,
+                TurnoverRM = 1,
+                WinlossRM = 1,
+                WinlossStatus = 1
+            });
+
+            return listPA;
         }
 
         public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName)

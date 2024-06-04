@@ -15,10 +15,7 @@
         void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type);
 
         IEnumerable<RescanDangerousScorePAEntity> RescanDangerousScorePA(string custIDs);
-
-        IEnumerable<RescanTWInitialSmartPAEntity> RescanInitialSmartPA(string custIDs);
-
-        IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs);
+        
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -71,24 +68,7 @@
             };
 
             return repository.Fetch<RescanDangerousScorePAEntity>(criteria);
-        }
-
-        public IEnumerable<RescanTWInitialSmartPAEntity> RescanInitialSmartPA(string custIDs)
-        {
-            var criteria = new RescanTWInitialSmartPACriteria
-            {
-                CustIDs = custIDs
-            };
-
-            return repository.Fetch<RescanTWInitialSmartPAEntity>(criteria);
-        }
-
-        public IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs)
-        {
-            var criteria = new RescanTWInitialGroupBettingCriteria() { CustIDs = custIDs };
-
-            return repository.Fetch<TWInitialGBGetChangesEntity>(criteria);
-        }
-
+        }       
+       
     }
 }
