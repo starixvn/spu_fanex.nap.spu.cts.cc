@@ -2,18 +2,16 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
-    using System;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public interface IPAPotentialClassificationDataAccess
     {
+        IEnumerable<RescanDangerousScorePAEntity> GetDangerousScorePA(string custIDs);
+
         IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs);
 
-        IEnumerable<RescanTWInitialSmartPAEntity> CheckExistInitialSmartPA(string custIDs);
+        IEnumerable<TWInitialSmartEntity> GetInitialSmartPA(string custIDs);
     }
 
     public class PAPotentialClassificationDataAccess : IPAPotentialClassificationDataAccess
@@ -25,6 +23,16 @@
             repository = new DynamicRepository();
         }
 
+        public IEnumerable<RescanDangerousScorePAEntity> GetDangerousScorePA(string custIDs)
+        {
+            var criteria = new RescanDangerousScorePACriteria
+            {
+                CustIDs = custIDs
+            };
+
+            return repository.Fetch<RescanDangerousScorePAEntity>(criteria);
+        }
+
         public IEnumerable<TWInitialGBGetChangesEntity> GetInitialTWGroupBetting(string custIDs)
         {
             var criteria = new RescanTWInitialGroupBettingCriteria() { CustIDs = custIDs };
@@ -32,14 +40,14 @@
             return repository.Fetch<TWInitialGBGetChangesEntity>(criteria);
         }
 
-        public IEnumerable<RescanTWInitialSmartPAEntity> CheckExistInitialSmartPA(string custIDs)
+        public IEnumerable<TWInitialSmartEntity> GetInitialSmartPA(string custIDs)
         {
-            var criteria = new RescanTWInitialSmartPACriteria
+            var criteria = new CheckExistTWInitialSmartPACriteria
             {
                 CustIDs = custIDs
             };
 
-            return repository.Fetch<RescanTWInitialSmartPAEntity>(criteria);
+            return repository.Fetch<TWInitialSmartEntity>(criteria);
         }
     }
 }

@@ -28,7 +28,10 @@
         public const string Telegram_GroupId_Local = "-869606030";
 
         public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
+        public const string DangerousScoreRemark = "Detection Date: {0} - Dangerous Score: {1}%";
         public const string TWInitialGBMissSport = "Soccer/Basketball";
+        public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
+        public const string TWTWInitialGBRemark = "Detection Date: {0} - GB Bet Count: {1} - Sport: {2}";
 
         public enum MatchMonitorQueryTypes
         {

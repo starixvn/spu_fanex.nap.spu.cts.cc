@@ -13,9 +13,7 @@
         IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds);
 
         void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type);
-
-        IEnumerable<RescanDangerousScorePAEntity> RescanDangerousScorePA(string custIDs);
-        
+       
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -59,16 +57,6 @@
 
             repository.Execute(criteria);
         }
-
-        public IEnumerable<RescanDangerousScorePAEntity> RescanDangerousScorePA(string custIDs)
-        {
-            var criteria = new RescanDangerousScorePACriteria
-            {
-                CustIDs = custIDs
-            };
-
-            return repository.Fetch<RescanDangerousScorePAEntity>(criteria);
-        }       
        
     }
 }

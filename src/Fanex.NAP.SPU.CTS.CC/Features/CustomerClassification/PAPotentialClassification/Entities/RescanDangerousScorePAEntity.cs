@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification
 {
     using System;
 
@@ -23,6 +23,5 @@
         public DateTime ClassifiedDate { get; set; }
 
         public decimal ClassifiedScore { get; set; }
-
     }
 }

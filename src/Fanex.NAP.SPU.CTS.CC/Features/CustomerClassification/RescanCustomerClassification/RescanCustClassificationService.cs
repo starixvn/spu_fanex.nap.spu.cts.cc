@@ -354,7 +354,7 @@
         {
             var custPaDangerous = Enumerable.Empty<long>();
 
-            var pasDangerous = rescanCustClassificationDataAccess.RescanDangerousScorePA(custIDs);
+            var pasDangerous = paPotentialDataAccess.GetDangerousScorePA(custIDs);
 
             if (pasDangerous != null && pasDangerous.Any())
             {
@@ -374,7 +374,7 @@
         {
             var custPaInitialSmart = Enumerable.Empty<long>();
 
-            var rescanInitialSmart = paPotentialDataAccess.CheckExistInitialSmartPA(custIDs);
+            var rescanInitialSmart = paPotentialDataAccess.GetInitialSmartPA(custIDs);
 
             if (rescanInitialSmart != null && rescanInitialSmart.Any())
             {

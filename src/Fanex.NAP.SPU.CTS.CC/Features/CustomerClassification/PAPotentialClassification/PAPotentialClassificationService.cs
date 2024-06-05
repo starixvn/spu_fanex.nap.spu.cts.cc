@@ -8,7 +8,7 @@
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
 
     public interface IPAPotentialClassificationService
     {
@@ -28,41 +28,45 @@
             this.paPotentialDataAccess = paPotentialDataAccess;
         }
 
-        private Dictionary<long, RescanTWInitialSmartPAEntity> DicTWInitialSmarts { get; set; }
+        private Dictionary<long, TWInitialSmartEntity> DicTWInitialSmarts { get; set; }
 
         private Dictionary<long, TWInitialGBGetChangesEntity> DicTWInitialGBs { get; set; }        
 
-        private IEnumerable<CustToBuildRemarkEntity> custTWInitialSmarts { get; set; }
-
         public void SetTWInitialSmartSmarts(PADailyScanFromQueueModel paDailyScanFromQueue)
         {
-            var custTWInitialSmarts = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialSmart);
+            if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
+                return;
 
-            if (custTWInitialSmarts.Any())
+            var custTWInitialSmartCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialSmart).Select(x => x.CustID);
+
+            if (custTWInitialSmartCustIDs.Any())
             {
-                this.DicTWInitialSmarts = paPotentialDataAccess.CheckExistInitialSmartPA(string.Join(",", this.custTWInitialSmarts)).ToDictionary(x => x.CustID);
+                this.DicTWInitialSmarts = paPotentialDataAccess.GetInitialSmartPA(string.Join(",", custTWInitialSmartCustIDs)).ToDictionary(x => x.CustID);
             }            
         }
 
         public void SetTWInitialGBs(PADailyScanFromQueueModel paDailyScanFromQueue)
-        {           
-            var custTWInitialGBs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialGB);
+        {
+            if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
+                return;
 
-            if (custTWInitialGBs.Any())
+            var custTWInitialGBCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialGB).Select(x => x.CustID);
+
+            if (custTWInitialGBCustIDs.Any())
             {
-                this.DicTWInitialGBs = paPotentialDataAccess.GetInitialTWGroupBetting(string.Join(",", custTWInitialGBs)).ToDictionary(x => x.CustID);
-            }            
+                this.DicTWInitialGBs = paPotentialDataAccess.GetInitialTWGroupBetting(string.Join(",", custTWInitialGBCustIDs)).ToDictionary(x => x.CustID);
+            }
         }
 
         private string BuildRemarkTWInitialSmart(ProblemAccountLosingClassificationEntity pa)
         {
             if (this.DicTWInitialSmarts != null)
             {
-                this.DicTWInitialSmarts.TryGetValue(pa.CustId, out RescanTWInitialSmartPAEntity twInitialSmartCust);
+                this.DicTWInitialSmarts.TryGetValue(pa.CustId, out TWInitialSmartEntity twInitialSmartCust);
 
                 if (twInitialSmartCust != null)
                 {
-                    return $"Detection Date: {twInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Probability: {twInitialSmartCust.Probability}";
+                    return string.Format(Constants.TWInitialSmartRemark, twInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twInitialSmartCust.Probability);                    
                 }
             }
             
@@ -77,7 +81,7 @@
 
                 if (twGBCust != null)
                 {
-                    return $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
+                    return string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);                    
                 }
             }
             

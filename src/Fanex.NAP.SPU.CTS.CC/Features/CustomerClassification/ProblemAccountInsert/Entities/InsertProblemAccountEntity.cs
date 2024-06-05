@@ -5,7 +5,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWEarlyBlockService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
 
     public class InsertProblemAccountEntity
     {
@@ -64,7 +65,7 @@
             this.IsFromTVS = false;
             this.IsFromTW = false;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = $"Detection Date: { rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Dangerous Score: {(rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places)}%";
+            this.Remark = string.Format(Constants.DangerousScoreRemark, rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), (rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places));           
         }
 
         public InsertProblemAccountEntity(TWInitialGBGetChangesEntity twGBCust, PotentialPACustInfoEntity ctsCust)
@@ -81,8 +82,8 @@
             this.IsFromCTS = false;
             this.IsFromTVS = false;
             this.IsFromTW = true;
-            this.CreatedBy = Constants.StarixITId;           
-            this.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
+            this.CreatedBy = Constants.StarixITId;
+            this.Remark = string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);           
         }
 
         public InsertProblemAccountEntity(TWInitialSmartEntity tWInitialSmartCust)
@@ -100,7 +101,7 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = $"Detection Date: {tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - Probability: {tWInitialSmartCust.Probability}";
+            this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);           
         }
 
         public Int64 CustID { get; set; }
