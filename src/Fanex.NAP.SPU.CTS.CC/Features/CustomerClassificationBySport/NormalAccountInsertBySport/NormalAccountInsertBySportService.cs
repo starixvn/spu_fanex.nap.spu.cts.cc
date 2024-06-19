@@ -44,7 +44,7 @@
 
                 if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount By Sport Renovate throws Exception", custInfosJson, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertNormalAccount By Sport throws Exception", custInfosJson, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
 

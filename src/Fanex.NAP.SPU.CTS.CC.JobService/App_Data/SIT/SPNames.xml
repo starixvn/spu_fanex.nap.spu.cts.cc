@@ -51,7 +51,7 @@
 	<Function Name="NormalAccountClassification">
 		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Get" SpName="CTS_GeneralNormalClassification_NormalPool_Get_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_DC_CustClassification_Normal_GetCurrentCategory" SpName="CTS_DC_CustClassification_Normal_GetCurrentCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
-		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Clear" SpName="CTS_GeneralNormalClassification_NormalPool_Clear" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
@@ -133,7 +133,7 @@
 		<Setting Key="CTS_DC_ArchiveCustomer_Reactive_InsertLog" SpName="CTS_DC_ArchiveCustomer_Reactive_InsertLog" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="InactivateNewCustomer">
-		<Setting Key="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" SpName="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" SpName="CTS_DC_CustClassification_DailyScan_GetInactiveNewMember" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function Name="TWGroupBetting">

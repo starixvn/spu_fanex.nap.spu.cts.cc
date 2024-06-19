@@ -34,7 +34,7 @@
             this.appSettings = appSettings;
             this.normalAccountInsertService = normalAccountInsertService;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.serviceName = "InsertNormalAccountBySportRenovate";
+            this.serviceName = "InsertNormalAccountBySport";
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)

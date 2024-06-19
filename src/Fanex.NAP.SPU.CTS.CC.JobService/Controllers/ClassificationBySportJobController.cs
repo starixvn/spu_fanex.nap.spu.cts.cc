@@ -32,7 +32,6 @@
             this.dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
         }
 
-        #region Renovate
         [HttpPost("NormalAccountClassificationBySport")]
         public async Task<bool> NormalAccountClassificationBySport([FromForm] int batchInternalSize)
         {
@@ -62,8 +61,6 @@
         {
             return await this.dailyNormalClassificationBySportJobService.Execute();
         }
-
-        #endregion Renovate
 
     }
 }
