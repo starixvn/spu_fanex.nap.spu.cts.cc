@@ -40,7 +40,7 @@
         private void MappingGetNormalAccount(GetNormalAccountEntity cust)
         {
             this.CustId = cust.CustId;
-            this.SportGroupId = cust.SportGroupId;
+            //this.SportGroupId = cust.SportGroupId;
             this.CategoryId = cust.CategoryId;
             this.CreatedTime = cust.CreatedTime;
             this.TurnoverRM = cust.TurnoverRM;
