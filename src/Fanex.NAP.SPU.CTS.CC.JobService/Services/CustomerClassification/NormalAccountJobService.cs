@@ -48,7 +48,7 @@
 
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
-
+                
                 do
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
@@ -96,7 +96,7 @@
             {
                 Parallel.Invoke(() =>
                 {
-                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIDs, new PushDataToExternalEntity
                     {
                         ExternalBatchSize = batchExternalSize,
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -113,7 +113,7 @@
                 },
                 () =>
                 {
-                    antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                    antiFraudCenterServices.DeleteAFCAccounts(result.CustIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
                 });
             }
         }

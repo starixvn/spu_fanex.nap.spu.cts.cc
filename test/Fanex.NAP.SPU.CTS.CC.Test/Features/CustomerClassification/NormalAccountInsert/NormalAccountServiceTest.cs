@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using Newtonsoft.Json;
@@ -14,12 +15,14 @@
     public class NormalAccountServiceTest
     {
         private readonly INormalAccountDataAccess normalAccountDataAccess;
+        private readonly IWrapperCustomerClassificationDataAccess wrapperCCDataAccess;
         private readonly INormalAccountService normalAccountService;
 
         public NormalAccountServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountDataAccess>();
-            normalAccountService = new NormalAccountService(normalAccountDataAccess, null);
+            wrapperCCDataAccess = Substitute.For<IWrapperCustomerClassificationDataAccess>();
+            normalAccountService = new NormalAccountService(normalAccountDataAccess, wrapperCCDataAccess, null);
         }
 
         [Fact]

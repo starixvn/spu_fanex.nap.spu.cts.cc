@@ -1,4 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.Shares
+﻿using System.ComponentModel;
+
+namespace Fanex.NAP.SPU.CTS.Shares
 {
     public static class Constants
     {
@@ -283,5 +285,25 @@
             TWInitialSmart = 1,
             TWInitialGB = 2            
         };
+
+        public enum CCInsertInputFlow
+        {
+            [Description("VVIP")]
+            VVIP = 1,
+            [Description("SpecialCC")]
+            SpecialCC = 2,
+            [Description("LicVIP")]
+            LicVIP = 3,
+            [Description("LicBA")]
+            LicBA = 4,
+            [Description("PA")]
+            PA = 5,
+            [Description("Potential")]
+            Potential = 6,
+            [Description("Robot")]
+            Robot = 7,
+            [Description("Normal")]
+            Normal = 8
+        }
     }
 }

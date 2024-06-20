@@ -7,8 +7,9 @@
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust)
         {
             this.CustId = cust.CustId;
-            this.SportGroupId = cust.SportGroupId;
+            //this.SportGroupId = cust.SportGroupId;
             this.CategoryId = cust.CategoryId;
+            this.CategoryGroupId = cust.CategoryGroupId;
             this.CreatedTime = cust.CreatedTime;
             this.TurnoverRM = cust.TurnoverRM;
             this.WinlossRM = cust.WinlossRM;
@@ -17,19 +18,20 @@
             this.PerformanceTime = cust.PerformanceTime;
             this.TaggingID = cust.TaggingID;
             this.TaggingType = cust.TaggingType;
-            this.TWBetCount = cust.TWBetCount;        
+            this.TWBetCount = cust.TWBetCount;
             this.TWDesktopUsageRate = cust.TWDesktopUsageRate;
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
             this.ScanTaggingType = cust.ScanTaggingType;
-            this.SportType = cust.SportType;
+            //this.SportType = cust.SportType;
         }
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
         {
             this.CustId = cust.CustId;
-            this.SportGroupId = cust.SportGroupId;
+            //this.SportGroupId = cust.SportGroupId;
             this.CategoryId = cust.CategoryId;
+            this.CategoryGroupId = cust.CategoryGroupId;
             this.CreatedTime = cust.CreatedTime;
             this.TurnoverRM = cust.TurnoverRM;
             this.WinlossRM = cust.WinlossRM;
@@ -46,7 +48,7 @@
             {
                 this.TaggingID = cust.TaggingID;
                 this.TaggingType = cust.TaggingType;
-                this.SportType = cust.SportType;
+                //this.SportType = cust.SportType;
             }
 
             this.TWBetCount = cust.TWBetCount;            
@@ -60,9 +62,11 @@
 
         public int SportGroupId { get; set; }
 
-        public int? SportType { get; set; }
+        //public int? SportType { get; set; }
 
         public int CategoryId { get; set; }
+
+        public int CategoryGroupId { get; set; }
 
         public DateTime CreatedTime { get; set; }
 

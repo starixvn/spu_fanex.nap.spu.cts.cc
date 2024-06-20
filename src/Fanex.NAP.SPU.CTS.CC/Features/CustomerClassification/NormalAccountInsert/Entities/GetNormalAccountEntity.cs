@@ -8,6 +8,8 @@
 
         public int CategoryId { get; set; }
 
+        public int CategoryGroupId { get; set; }
+
         public DateTime CreatedTime { get; set; }
 
         public decimal TurnoverRM { get; set; }

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -13,7 +14,7 @@
     {
         GetNormalAccountModel GetNormalAccounts();
 
-        InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
+        ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
@@ -26,11 +27,15 @@
     public class NormalAccountService : INormalAccountService
     {
         private readonly INormalAccountDataAccess dataAccess;
+        private readonly IWrapperCustomerClassificationDataAccess wrapperCCDataAccess;
         private readonly ISentryClient sentryClient;
 
-        public NormalAccountService(INormalAccountDataAccess dataAccess, ISentryClient sentryClient)
+        public NormalAccountService(INormalAccountDataAccess dataAccess
+            , IWrapperCustomerClassificationDataAccess wrapperCCDataAccess
+            , ISentryClient sentryClient)
         {
             this.dataAccess = dataAccess;
+            this.wrapperCCDataAccess = wrapperCCDataAccess;
             this.sentryClient = sentryClient;
         }
 
@@ -39,24 +44,27 @@
             return dataAccess.GetNormalAccount();
         }
 
-        public InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
+        public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
         {
-            var result = new InsertNormalAccountResultEntity();
-
-            var custsJson = custs != null && custs.Any() ? JsonConvert.SerializeObject(custs) : string.Empty;
-
-            if (!string.IsNullOrEmpty(custsJson))
+            var result = new ResultInsertCustomerClassificationModel();
+                      
+            if (custs != null && custs.Any())
             {
-                result = dataAccess.InsertNormalAccount(custsJson);
+                var modelInsert = new InsertCustomerClassificationModel()
+                {                    
+                    CustClassificationJson = JsonConvert.SerializeObject(custs)
+                };
 
-                Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", custsJson, isWriteLog, sentryClient);
+                result = wrapperCCDataAccess.InsertNormalCustomerClassification(modelInsert);
+
+                Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", modelInsert, isWriteLog, sentryClient);
 
                 if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount throws Exception", custsJson, new Exception(result.ErrorMessage), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InsertNormalAccount throw Exception", modelInsert, new Exception(result.ErrorMessage), sentryClient);
                 }
             }
-
+            
             return result;
         }
 

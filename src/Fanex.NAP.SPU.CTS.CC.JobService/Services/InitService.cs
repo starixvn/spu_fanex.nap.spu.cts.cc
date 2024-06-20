@@ -50,6 +50,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification;
 
     public static class InitService
     {
@@ -126,6 +127,14 @@
             RegisterTWInitialGroupBetting(services);
 
             RegisterTWInitialSmartClassification(services);
+
+            RegisterWrapperCustomerClassificaton(services);
+        }
+
+        private static void RegisterWrapperCustomerClassificaton(IServiceCollection services)
+        {
+            services.AddSingleton<IWrapperCustomerClassificationDataAccess, WrapperCustomerClassificationDataAccess>();
+            services.AddSingleton<IWrapperCustomerClassificationService, WrapperCustomerClassificationService>();
         }
 
         private static void RegisterTWInitialSmartClassification(IServiceCollection services)
