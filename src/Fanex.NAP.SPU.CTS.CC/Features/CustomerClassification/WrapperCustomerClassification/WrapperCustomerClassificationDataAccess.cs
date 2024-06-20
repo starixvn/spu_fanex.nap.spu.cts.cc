@@ -11,7 +11,7 @@
 
     public interface IWrapperCustomerClassificationDataAccess
     {
-        ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model);
+        public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInsertInputFlow inputFlow, InsertCustomerClassificationModel model);
     }
 
     public class WrapperCustomerClassificationDataAccess : IWrapperCustomerClassificationDataAccess
@@ -22,13 +22,28 @@
         {
             repository = new DynamicRepository();
         }
-        
-        public ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model)
-        {
-            return InsertCustomerClassification(CCInsertInputFlow.Normal, model);
-        }
 
-        private ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInsertInputFlow inputFlow, InsertCustomerClassificationModel model)
+        //public ResultInsertCustomerClassificationModel InsertVVIPCustomerClassification(InsertCustomerClassificationModel model)
+        //{
+        //    return InsertCustomerClassification(CCInsertInputFlow.VVIP, model);
+        //}
+
+        //public ResultInsertCustomerClassificationModel InsertPACustomerClassification(InsertCustomerClassificationModel model)
+        //{
+        //    return InsertCustomerClassification(CCInsertInputFlow.PA, model);
+        //}
+
+        //public ResultInsertCustomerClassificationModel InsertPotentialCustomerClassification(InsertCustomerClassificationModel model)
+        //{
+        //    return InsertCustomerClassification(CCInsertInputFlow.Potential, model);
+        //}
+
+        //public ResultInsertCustomerClassificationModel InsertRobotCustomerClassification(InsertCustomerClassificationModel model)
+        //{
+        //    return InsertCustomerClassification(CCInsertInputFlow.Robot, model);
+        //}
+
+        public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInsertInputFlow inputFlow, InsertCustomerClassificationModel model)
         {
             var criteria = new InsertCustomerClassificationCriteria
             {

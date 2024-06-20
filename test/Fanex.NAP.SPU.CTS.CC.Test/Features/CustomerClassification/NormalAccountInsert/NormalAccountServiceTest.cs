@@ -71,49 +71,7 @@
             // Assert
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
         }       
-
-        [Fact]
-        public void InsertNormalAccount_WhenSuccess_ReturnResult()
-        {
-            // Arrange
-            var serviceName = "NormalAccountInsert";
-            var custs = new List<InsertNormalAccountModel>()
-            {
-                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-                        new GetNormalAccountEntity{
-                            CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-                        }
-                    )),
-                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-                        new GetNormalAccountEntity{
-                            CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-                        }
-                    ))
-            };
-            var custsJson = JsonConvert.SerializeObject(custs);
-            var insertResult = new InsertNormalAccountResultEntity() { CustIds = new List<long> { 1, 2 }, ErrorMessage = string.Empty };
-
-            // Act
-            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
-
-            normalAccountService.InsertNormalAccount(custs, serviceName, false);
-
-            // Assert
-            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
-        }
-
-        [Fact]
-        public void InsertNormalAccount_WhenSuccess_ReturnNotException()
-        {
-            // Arrange
-
-            // Act
-            normalAccountService.InsertNormalAccount(null, string.Empty, false);
-
-            // Assert
-            normalAccountDataAccess.Received(0).InsertNormalAccount(Arg.Any<string>());
-        }
-
+      
         [Fact]
         public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
         {

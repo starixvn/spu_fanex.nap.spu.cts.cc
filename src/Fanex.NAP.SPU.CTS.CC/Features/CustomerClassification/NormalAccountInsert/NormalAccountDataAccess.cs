@@ -3,8 +3,10 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountDataAccess
     {
@@ -12,14 +14,14 @@
 
         IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList);
 
-        IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList);     
-
-        InsertNormalAccountResultEntity InsertNormalAccount(string custInfoList);
+        IEnumerable<TWTaggedCustEntity> CheckGroupBettingAndRejectCustomer(string custIdList);      
 
         void CompleteNormalAccountInsert(long scannedMaxId);
+
+        ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model);
     }
 
-    public class NormalAccountDataAccess : INormalAccountDataAccess
+    public class NormalAccountDataAccess : WrapperCustomerClassificationDataAccess, INormalAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 
@@ -60,20 +62,7 @@
             };
 
             return repository.Fetch<TWTaggedCustEntity>(criteria);
-        }
-
-
-        public InsertNormalAccountResultEntity InsertNormalAccount(string custIdList)
-        {
-            var criteria = new InsertNormalAccountCriteria
-            {
-                NewClassification = custIdList
-            };
-
-            var custIds = repository.Fetch<long>(criteria);
-
-            return new InsertNormalAccountResultEntity { CustIds = custIds, ErrorMessage = criteria.ErrorMessage };
-        }
+        }      
 
         public void CompleteNormalAccountInsert(long scannedMaxId)
         {
@@ -83,6 +72,12 @@
             };
 
             repository.Execute(criteria);
-        }      
+        }
+
+        public ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model)
+        {
+            return base.InsertCustomerClassification(CCInsertInputFlow.Normal, model);
+        }
+       
     }
 }

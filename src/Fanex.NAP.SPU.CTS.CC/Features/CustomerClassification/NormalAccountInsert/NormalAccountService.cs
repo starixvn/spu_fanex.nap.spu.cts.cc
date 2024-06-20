@@ -14,6 +14,8 @@
     {
         GetNormalAccountModel GetNormalAccounts();
 
+        GetNormalAccountModel GetNormalAccounts_Test();
+
         ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
@@ -26,22 +28,33 @@
 
     public class NormalAccountService : INormalAccountService
     {
-        private readonly INormalAccountDataAccess dataAccess;
-        private readonly IWrapperCustomerClassificationDataAccess wrapperCCDataAccess;
+        private readonly INormalAccountDataAccess dataAccess;       
         private readonly ISentryClient sentryClient;
 
-        public NormalAccountService(INormalAccountDataAccess dataAccess
-            , IWrapperCustomerClassificationDataAccess wrapperCCDataAccess
-            , ISentryClient sentryClient)
+        public NormalAccountService(INormalAccountDataAccess dataAccess, ISentryClient sentryClient)
         {
-            this.dataAccess = dataAccess;
-            this.wrapperCCDataAccess = wrapperCCDataAccess;
+            this.dataAccess = dataAccess;           
             this.sentryClient = sentryClient;
         }
 
         public GetNormalAccountModel GetNormalAccounts()
         {
             return dataAccess.GetNormalAccount();
+        }
+
+        public GetNormalAccountModel GetNormalAccounts_Test()
+        {
+            return new GetNormalAccountModel()
+            {
+                NormalAccount = new List<GetNormalAccountEntity>() { new GetNormalAccountEntity {
+                     CustId = 1, ActiveDays = 1,
+                      BetCount = 1, CategoryId = 201, CategoryGroupId = 201,
+                       TurnoverRM = 100,
+                        WinlossRM = 100
+                } },
+                ScannedMaxId = 123456,
+                IsContinute = true
+            };
         }
 
         public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
@@ -55,7 +68,7 @@
                     CustClassificationJson = JsonConvert.SerializeObject(custs)
                 };
 
-                result = wrapperCCDataAccess.InsertNormalCustomerClassification(modelInsert);
+                result = dataAccess.InsertNormalCustomerClassification(modelInsert);
 
                 Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", modelInsert, isWriteLog, sentryClient);
 
