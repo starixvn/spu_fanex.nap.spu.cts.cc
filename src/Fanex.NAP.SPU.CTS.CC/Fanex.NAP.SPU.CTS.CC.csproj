@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\CustomerClassification\WrapperCustomerClassification\Entities\" />
+    <Folder Include="Features\CustomerClassification\BaseCustomerClassification\Entities\" />
   </ItemGroup>
 
 </Project>

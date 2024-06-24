@@ -1,9 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -21,7 +19,7 @@
         ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model);
     }
 
-    public class NormalAccountDataAccess : WrapperCustomerClassificationDataAccess, INormalAccountDataAccess
+    public class NormalAccountDataAccess : BaseCustomerClassificationDataAccess, INormalAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 

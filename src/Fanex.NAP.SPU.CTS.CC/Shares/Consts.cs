@@ -296,8 +296,8 @@ namespace Fanex.NAP.SPU.CTS.Shares
             LicVIP = 3,
             [Description("LicBA")]
             LicBA = 4,
-            [Description("PA")]
-            PA = 5,
+            [Description("ProblemAccount")]
+            ProblemAccount = 5,
             [Description("Potential")]
             Potential = 6,
             [Description("Robot")]

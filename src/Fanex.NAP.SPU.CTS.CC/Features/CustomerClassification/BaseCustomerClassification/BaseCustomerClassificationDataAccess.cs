@@ -1,24 +1,18 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.WrapperCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
-    public interface IWrapperCustomerClassificationDataAccess
+    public interface IBaseCustomerClassificationDataAccess
     {
         public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInsertInputFlow inputFlow, InsertCustomerClassificationModel model);
     }
 
-    public class WrapperCustomerClassificationDataAccess : IWrapperCustomerClassificationDataAccess
+    public class BaseCustomerClassificationDataAccess : IBaseCustomerClassificationDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public WrapperCustomerClassificationDataAccess()
+        public BaseCustomerClassificationDataAccess()
         {
             repository = new DynamicRepository();
         }

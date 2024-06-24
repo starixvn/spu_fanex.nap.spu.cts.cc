@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using System.Collections.Generic;
@@ -14,7 +15,7 @@
         IEnumerable<TWInitialSmartEntity> GetInitialSmartPA(string custIDs);
     }
 
-    public class PAPotentialClassificationDataAccess : IPAPotentialClassificationDataAccess
+    public class PAPotentialClassificationDataAccess : BaseCustomerClassificationDataAccess, IPAPotentialClassificationDataAccess
     {
         private readonly IDynamicRepository repository;
 

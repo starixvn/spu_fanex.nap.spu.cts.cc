@@ -2,6 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
@@ -33,7 +34,7 @@
         IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds);
     }
 
-    public class ProblemAccountDataAccess : IProblemAccountDataAccess
+    public class ProblemAccountDataAccess : BaseCustomerClassificationDataAccess, IProblemAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 
