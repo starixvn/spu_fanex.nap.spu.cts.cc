@@ -92,13 +92,15 @@
         {            
             var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
-            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);
+            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);            
 
             if (string.IsNullOrEmpty(result.ErrorMessage))
             {
+                var custIDs = result.CustInfos.Select(x => x.CustID).Distinct();
+
                 Parallel.Invoke(() =>
                 {
-                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIDs, new PushDataToExternalEntity
+                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(custIDs, new PushDataToExternalEntity
                     {
                         ExternalBatchSize = batchExternalSize,
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -115,7 +117,7 @@
                 },
                 () =>
                 {
-                    antiFraudCenterServices.DeleteAFCAccounts(result.CustIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                    antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
                 });
             }
         }

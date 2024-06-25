@@ -6,5 +6,7 @@
     public class InsertCustomerClassificationModel
     {      
         public string CustClassificationJson { get; set; }
+
+        public bool IsToQueue { get; set; }
     }
 }

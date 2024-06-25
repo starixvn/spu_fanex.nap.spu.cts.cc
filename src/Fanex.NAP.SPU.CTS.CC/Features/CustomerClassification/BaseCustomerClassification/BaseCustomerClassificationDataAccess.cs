@@ -15,27 +15,7 @@
         public BaseCustomerClassificationDataAccess()
         {
             repository = new DynamicRepository();
-        }
-
-        //public ResultInsertCustomerClassificationModel InsertVVIPCustomerClassification(InsertCustomerClassificationModel model)
-        //{
-        //    return InsertCustomerClassification(CCInsertInputFlow.VVIP, model);
-        //}
-
-        //public ResultInsertCustomerClassificationModel InsertPACustomerClassification(InsertCustomerClassificationModel model)
-        //{
-        //    return InsertCustomerClassification(CCInsertInputFlow.PA, model);
-        //}
-
-        //public ResultInsertCustomerClassificationModel InsertPotentialCustomerClassification(InsertCustomerClassificationModel model)
-        //{
-        //    return InsertCustomerClassification(CCInsertInputFlow.Potential, model);
-        //}
-
-        //public ResultInsertCustomerClassificationModel InsertRobotCustomerClassification(InsertCustomerClassificationModel model)
-        //{
-        //    return InsertCustomerClassification(CCInsertInputFlow.Robot, model);
-        //}
+        }      
 
         public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInsertInputFlow inputFlow, InsertCustomerClassificationModel model)
         {
@@ -45,9 +25,9 @@
                 CustClassificationJson = model.CustClassificationJson
             };
 
-            var custIDs = repository.Fetch<long>(criteria);
+            var custInfos = repository.Fetch<CustInfoClassificationModel>(criteria);
 
-            return new ResultInsertCustomerClassificationModel { CustIDs = custIDs, ErrorMessage = criteria.ErrorMessage };
+            return new ResultInsertCustomerClassificationModel { CustInfos = custInfos, ErrorMessage = criteria.ErrorMessage };
         }
     }
 }

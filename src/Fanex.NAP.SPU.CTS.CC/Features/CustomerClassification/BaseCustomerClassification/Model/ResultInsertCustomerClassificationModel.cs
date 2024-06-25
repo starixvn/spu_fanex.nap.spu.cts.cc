@@ -4,7 +4,7 @@
 
     public class ResultInsertCustomerClassificationModel
     {
-        public IEnumerable<long> CustIDs { get; set; }
+        public IEnumerable<CustInfoClassificationModel> CustInfos { get; set; }
 
         public string ErrorMessage { get; set; }
     }
