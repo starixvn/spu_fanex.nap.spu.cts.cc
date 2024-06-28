@@ -7,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountService
     {
@@ -24,16 +25,16 @@
 
     }
 
-    public class NormalAccountService : INormalAccountService
+    public class NormalAccountService : BaseCustomerClassificationService, INormalAccountService
     {
-        private readonly INormalAccountDataAccess dataAccess;       
+        private readonly INormalAccountDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
 
-        public NormalAccountService(INormalAccountDataAccess dataAccess, ISentryClient sentryClient)
+        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess) 
         {
-            this.dataAccess = dataAccess;           
+            this.dataAccess = dataAccess;
             this.sentryClient = sentryClient;
-        }
+        }       
 
         public GetNormalAccountModel GetNormalAccounts()
         {
@@ -66,7 +67,7 @@
                     CustClassificationJson = JsonConvert.SerializeObject(custs)
                 };
 
-                result = dataAccess.InsertNormalCustomerClassification(modelInsert);
+                result = base.InsertCustomerClassification(CCInputFlow.Normal, modelInsert);
 
                 Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", modelInsert, isWriteLog, sentryClient);
 

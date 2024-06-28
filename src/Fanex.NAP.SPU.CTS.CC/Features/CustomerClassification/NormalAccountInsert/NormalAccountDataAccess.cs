@@ -16,10 +16,9 @@
 
         void CompleteNormalAccountInsert(long scannedMaxId);
 
-        ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model);
     }
 
-    public class NormalAccountDataAccess : BaseCustomerClassificationDataAccess, INormalAccountDataAccess
+    public class NormalAccountDataAccess : INormalAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 
@@ -70,12 +69,7 @@
             };
 
             repository.Execute(criteria);
-        }
-
-        public ResultInsertCustomerClassificationModel InsertNormalCustomerClassification(InsertCustomerClassificationModel model)
-        {
-            return base.InsertCustomerClassification(CCInsertInputFlow.Normal, model);
-        }
+        }        
        
     }
 }
