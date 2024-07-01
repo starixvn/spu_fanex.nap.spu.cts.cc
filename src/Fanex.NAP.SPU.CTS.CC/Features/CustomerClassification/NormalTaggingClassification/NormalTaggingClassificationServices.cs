@@ -97,7 +97,7 @@
 
                 var checkChangesNormalTaggingMapping = finalNormalAcc.Select(x => new CheckChangesNormalTaggingScanningModel
                 {
-                    CustID = x.CustId,
+                    CustID = x.CustID,
                     TaggingID = x.TaggingID,
                     TaggingType = x.TaggingType
                 });

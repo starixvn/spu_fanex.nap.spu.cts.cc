@@ -6,10 +6,9 @@
     {
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust)
         {
-            this.CustId = cust.CustId;
-            //this.SportGroupId = cust.SportGroupId;
-            this.CategoryId = cust.CategoryId;
-            this.CategoryGroupId = cust.CategoryGroupId;
+            this.CustID = cust.CustId;         
+            this.CategoryID = cust.CategoryId;
+            this.CategoryGroupID = cust.CategoryGroupId;
             this.CreatedTime = cust.CreatedTime;
             this.TurnoverRM = cust.TurnoverRM;
             this.WinlossRM = cust.WinlossRM;
@@ -27,10 +26,9 @@
 
         public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
         {
-            this.CustId = cust.CustId;
-            //this.SportGroupId = cust.SportGroupId;
-            this.CategoryId = cust.CategoryId;
-            this.CategoryGroupId = cust.CategoryGroupId;
+            this.CustID = cust.CustId;        
+            this.CategoryID = cust.CategoryId;
+            this.CategoryGroupID = cust.CategoryGroupId;
             this.CreatedTime = cust.CreatedTime;
             this.TurnoverRM = cust.TurnoverRM;
             this.WinlossRM = cust.WinlossRM;
@@ -56,13 +54,11 @@
             this.ScanTaggingType = cust.ScanTaggingType;
         }
 
-        public long CustId { get; set; }
+        public long CustID { get; set; }     
 
-        public int SportGroupId { get; set; }
+        public int CategoryID { get; set; }
 
-        public int CategoryId { get; set; }
-
-        public int CategoryGroupId { get; set; }
+        public int CategoryGroupID { get; set; }
 
         public DateTime CreatedTime { get; set; }
 

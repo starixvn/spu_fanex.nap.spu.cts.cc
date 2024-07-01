@@ -24,16 +24,7 @@
         public bool IsToQueue { get; set; }
 
         [SpParam(SqlParamName = "ip_CustInfo")]
-        public string CustClassificationJson { get; set; }
-
-        //[SpParam(SqlParamName = "ip_CustomerClass")]
-        //public int CustomerClass { get; set; }
-
-        //[SpParam(SqlParamName = "ip_Remark")]
-        //public string Remark { get; set; }
-
-        //[SpParam(SqlParamName = "ip_CreatedBy")]
-        //public int CreatedBy { get; set; }
+        public string CustClassificationJson { get; set; }     
 
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }
