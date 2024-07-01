@@ -68,9 +68,7 @@
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var normalAccountModel = normalAccountService.GetNormalAccounts();
-
-            //var normalAccountModel = normalAccountService.GetNormalAccounts_Test();
-
+           
             if (normalAccountModel.IsContinute)
             {
                 var failedThreads = new ConcurrentBag<bool>();

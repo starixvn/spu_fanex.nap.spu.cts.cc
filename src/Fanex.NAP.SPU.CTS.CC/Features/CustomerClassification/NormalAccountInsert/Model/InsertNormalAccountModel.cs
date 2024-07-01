@@ -56,9 +56,9 @@
 
         public long CustID { get; set; }     
 
-        public int CategoryID { get; set; }
+        public int? CategoryID { get; set; }
 
-        public int CategoryGroupID { get; set; }
+        public int? CategoryGroupID { get; set; }
 
         public DateTime CreatedTime { get; set; }
 
@@ -71,10 +71,6 @@
         public int ActiveDays { get; set; }
 
         public DateTime PerformanceTime { get; set; }
-
-        public decimal LastXDaysMargin { get; set; }
-
-        public decimal ProbationPeriodWinloss { get; set; }
 
         public int TaggingID { get; set; }
 

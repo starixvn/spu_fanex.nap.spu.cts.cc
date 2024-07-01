@@ -12,9 +12,7 @@
     public interface INormalAccountService
     {
         GetNormalAccountModel GetNormalAccounts();
-
-        GetNormalAccountModel GetNormalAccounts_Test();
-
+     
         ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
 
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
@@ -39,22 +37,7 @@
         public GetNormalAccountModel GetNormalAccounts()
         {
             return dataAccess.GetNormalAccount();
-        }
-
-        public GetNormalAccountModel GetNormalAccounts_Test()
-        {
-            return new GetNormalAccountModel()
-            {
-                NormalAccount = new List<GetNormalAccountEntity>() { new GetNormalAccountEntity {
-                     CustId = 1, ActiveDays = 1,
-                      BetCount = 1, CategoryId = 201, CategoryGroupId = 201,
-                       TurnoverRM = 100,
-                        WinlossRM = 100
-                } },
-                ScannedMaxId = 123456,
-                IsContinute = true
-            };
-        }
+        }      
 
         public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
         {

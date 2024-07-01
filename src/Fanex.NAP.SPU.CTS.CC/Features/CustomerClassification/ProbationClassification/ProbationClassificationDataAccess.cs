@@ -1,15 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification
 {
     using Fanex.Data.Repository;
-    using System.Collections.Generic;
 
     public interface IProbationClassificationDataAccess
     {
-        IEnumerable<ProbationEntity> GetProbationCustForScanning(int numberOfRecord);
+        ProbationModel GetProbationCustForScanning(int numberOfRecord);
 
         void ClassifyProbation(string custList);
-
-        void UpdateLastScanDate(string custSport);
     }
 
     public class ProbationClassificationDataAccess : IProbationClassificationDataAccess
@@ -21,14 +18,21 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProbationEntity> GetProbationCustForScanning(int numberOfRecord)
+        public ProbationModel GetProbationCustForScanning(int numberOfRecord)
         {
             var criteria = new ProbationScanningGetCriteria
             {
                 NumberOfRecord = numberOfRecord
             };
 
-            return repository.Fetch<ProbationEntity>(criteria);
+            var data = repository.Fetch<ProbationEntity>(criteria);
+
+            return new ProbationModel
+            {
+                 CustProbations = data,
+                 LastCustID = criteria.LastCustID,
+                 LastCategoryID = criteria.LastCategoryID
+            };
         }
 
         public void ClassifyProbation(string custList)
@@ -40,15 +44,6 @@
 
             repository.Execute(criteria);
         }
-
-        public void UpdateLastScanDate(string custSport)
-        {
-            var criteria = new ProbationScanningCompleteCriteria
-            {
-                CustSportJson = custSport
-            };
-
-            repository.Execute(criteria);
-        }
+     
     }
 }

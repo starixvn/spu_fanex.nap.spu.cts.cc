@@ -40,7 +40,6 @@
         private void MappingGetNormalAccount(GetNormalAccountEntity cust)
         {
             this.CustId = cust.CustId;
-            //this.SportGroupId = cust.SportGroupId;
             this.CategoryId = cust.CategoryId;
             this.CategoryGroupId = cust.CategoryGroupId;
             this.CreatedTime = cust.CreatedTime;
@@ -54,13 +53,11 @@
 
         public long CustId { get; set; }
 
-        public int SportGroupId { get; set; }
-
         public int? SportType { get; set; }
 
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
-        public int CategoryGroupId { get; set; }
+        public int? CategoryGroupId { get; set; }
 
         public DateTime CreatedTime { get; set; }
 

@@ -66,8 +66,7 @@
 	</Function>
 
 	<Function Name="ProbationClassification">
-		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
-		<Setting Key="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" SpName="CTS_DC_CustClassification_ProbationScan_UpdateScanDate" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_ProbationScan_Get" SpName="CTS_DC_CustClassification_ProbationScan_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />		
 		<Setting Key="CTS_GeneralNormalClassification_Probation_Preprocess" SpName="CTS_GeneralNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
@@ -106,7 +105,7 @@
 		<Setting Key="CTS_DC_CustInfo_GetLastInsertCust" SpName="CTS_DC_CustInfo_GetLastInsertCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_InsertComplete" SpName="CTS_DC_CustInfo_InsertComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -166,7 +165,7 @@
 		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 
-		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 

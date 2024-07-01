@@ -89,7 +89,9 @@ namespace Fanex.NAP.SPU.CTS.Shares
             DangerousScoreClassification_Deposit_LastScannedDate = 156,
             DangerousScoreClassification_Deposit_LastCustID = 157,
             TWInitialSmartClassification_LastCustID = 159,
-            TWInitialSmartClassification_LastScanDate = 160
+            TWInitialSmartClassification_LastScanDate = 160,
+            DailyProbation_LastCustID = 161,
+            DailyProbation_LastCategoryID = 162
         };
 
         public enum Main_SystemParameters
