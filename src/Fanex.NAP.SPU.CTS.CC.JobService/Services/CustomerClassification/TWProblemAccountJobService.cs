@@ -54,9 +54,11 @@
             {
                 uint lastCustID;
                 var scanningCust = twProblemAccService.ScanSystemFormulaBetMonitor(out lastCustID);
+
                 while (scanningCust != null && scanningCust.Any())
                 {
                     var perfCust = twProblemAccService.GetCustomerPerformance(string.Join(",", scanningCust.Select(c => c.CustID)));
+
                     var fullData = (from sCust in scanningCust
                                     join pCust in perfCust on sCust.CustID equals pCust.CustID into temp
                                     from pCust in temp.DefaultIfEmpty()
@@ -79,13 +81,13 @@
                                     }).ToList();
 
                     var markPAList = fullData.Where(c => c.Winloss >= 0 && !c.IsMonitorCategoryGroup);
+
                     var markPAListGroupByInsertTime = markPAList.GroupBy(c => c.InsertTime);
+
                     foreach (var paList in markPAListGroupByInsertTime)
                     {
                         if (paList.Any())
                         {
-                            var firtItem = paList.FirstOrDefault();
-                            
                             var pas = paList.Select(x => new InsertProblemAccountEntity
                             {
                                 CustID = x.CustID,

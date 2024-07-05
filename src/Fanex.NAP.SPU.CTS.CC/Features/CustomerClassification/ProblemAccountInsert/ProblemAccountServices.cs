@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -32,14 +33,14 @@
         bool CheckPAToUnflagBetlimit(IEnumerable<long> ctsCustIds, string serviceName);
     }
 
-    public class ProblemAccountServices : IProblemAccountServices
+    public class ProblemAccountServices : BaseCustomerClassificationService, IProblemAccountServices
     {
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ISentryClient sentryClient;
 
-        public ProblemAccountServices(
+        public ProblemAccountServices(IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient)
+            ISentryClient sentryClient) : base(baseDataAccess)
         {
             this.problemAccountDataAccess = problemAccountDataAccess;
             this.sentryClient = sentryClient;
@@ -77,13 +78,19 @@
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                var custInfo = InsertProblemAccount(paClassification, insertByType, isToQueue);
+                var insertPaResult = InsertProblemAccount(paClassification, funcId, insertByType, isToQueue);
 
-                if (custInfo != null && custInfo.Any())
+                if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
                 {
-                    InsertPALogics(custInfo, serviceName);
+                    var custIds = insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
 
-                    return custInfo.Select(c => c.CustID).Distinct();
+                    //InsertPALogics(custIds, serviceName);
+
+                    problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(JsonConvert.SerializeObject(insertPaResult.CustInfos));
+
+                    UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+
+                    return custIds;
                 }
             }
 
@@ -180,14 +187,26 @@
 
         #region Private Methods
 
-        private IEnumerable<CustInfoEntity> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, InsertPA_ByType insertByType, bool isToQueue)
+        private ResultInsertCustomerClassificationModel InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue)
         {
-            if (problemAccounts != null && problemAccounts.Any())
-            {
-                return problemAccountDataAccess.InsertProblemAccount(JsonConvert.SerializeObject(problemAccounts), Enum.GetName(typeof(InsertPA_ByType), insertByType), isToQueue);
-            }
+            var paClassification = CombinePAWithLosingPerformace(problemAccounts, funcId);
 
-            return Enumerable.Empty<CustInfoEntity>();
+            var modelInsert = new InsertCustomerClassificationModel()
+            {
+                CustClassificationJson = JsonConvert.SerializeObject(paClassification),
+                IsToQueue = isToQueue
+            };
+
+            return base.InsertCustomerClassification(CCInputFlow.InsertProblemAccount, modelInsert);            
+        }
+
+        public IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
+        {
+            var custIds = problemAccounts.Select(c => c.CustID)?.Distinct();
+
+            var paLosing = GetProblemAccountLosingClassification(custIds, funcId);
+
+            return MergePALosingClassification(problemAccounts, paLosing);
         }
 
         private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)

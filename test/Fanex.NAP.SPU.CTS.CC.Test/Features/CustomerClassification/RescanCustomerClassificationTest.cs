@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -32,9 +33,9 @@
         private readonly IFeedSoon88Services feedSoon88Services;
 
         public RescanCustomerClassificationTest()
-        {
+        {   
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
+            problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
 
             paPotentialDataAccess = Substitute.For<IPAPotentialClassificationDataAccess>();
             paPotentialServices = new PAPotentialClassificationService(paPotentialDataAccess);

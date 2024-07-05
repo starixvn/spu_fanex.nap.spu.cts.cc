@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.DailyDangerousClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -25,8 +26,8 @@
 
         public DailyDangerousClassificationServiceTest()
         {
-            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
+            problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
 
             feedSoon88DataAccess = Substitute.For<IFeedSoon88DataAccess>();
             feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
