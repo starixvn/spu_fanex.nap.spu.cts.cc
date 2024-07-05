@@ -61,27 +61,11 @@
         }
 
         public bool UpdateLastScanDate()
-        {
-            //if (probationModel != null && probationModel.CustProbations != null && probationModel.CustProbations.Any())
-            //{
-            //    var custJson = JsonConvert.SerializeObject(custProbation);
-
-            //    probationClassificationDataAccess.UpdateLastScanDate(custJson);
-
-            //    return true;
-            //}
-
-            //return false;
-
-            if (probationModel != null && probationModel.CustProbations != null && probationModel.CustProbations.Any())
-            {
-                systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_LastCustID);
-                systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCategoryID.ToString(), CTS_SystemParameters.DailyProbation_LastCategoryID);
-
-                return true;
-            }
-
-            return false;
+        {                      
+            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_LastCustID);
+            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCategoryID.ToString(), CTS_SystemParameters.DailyProbation_LastCategoryID);
+            
+            return probationModel.CustProbations != null && probationModel.CustProbations.Any();            
         }
 
         public IEnumerable<ProbationEntity> Customers => probationModel.CustProbations;
