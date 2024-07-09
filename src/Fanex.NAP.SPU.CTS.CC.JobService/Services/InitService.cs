@@ -27,7 +27,6 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;    
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
@@ -85,8 +84,6 @@
             RegisterClassificationJobMonitor(services);
 
             RegisterCustomerJobMonitor(services);
-
-            RegisterRobotImperva(services);
 
             RegisterRealtimeClassification(services);
 
@@ -275,14 +272,7 @@
             services.AddSingleton<ICustomerJobMonitorService, CustomerJobMonitorService>();
             services.AddSingleton<ICustomerJobMonitorDataAccess, CustomerJobMonitorDataAccess>();
         }
-
-        private static void RegisterRobotImperva(this IServiceCollection services)
-        {
-            services.AddSingleton<ITWRobotImpervaJobService, TWRobotImpervaJobService>();
-            services.AddSingleton<ITWRobotImpervaService, TWRobotImpervaService>();
-            services.AddSingleton<ITWRobotImpervaDataAccess, TWRobotImpervaDataAccess>();
-        }
-
+       
         private static void RegisterRealtimeClassification(this IServiceCollection services)
         {
             services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();

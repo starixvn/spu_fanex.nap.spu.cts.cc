@@ -27,8 +27,7 @@
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
-        private readonly ITWRobotImpervaJobService robotImpervaJobService;
+        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;       
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
         private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
@@ -49,8 +48,7 @@
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            IMatchMonitorClassificationJobService mmClassificationJobService,
-            ITWRobotImpervaJobService robotImpervaJobService,
+            IMatchMonitorClassificationJobService mmClassificationJobService,            
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
@@ -72,8 +70,7 @@
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.twProblemAccountJobService = twProblemAccountJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
-            this.mmClassificationJobService = mmClassificationJobService;
-            this.robotImpervaJobService = robotImpervaJobService;
+            this.mmClassificationJobService = mmClassificationJobService;          
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
@@ -176,13 +173,7 @@
         public async Task<bool> ScanTWSystemFormulaBetCustomer()
         {
             return await twProblemAccountJobService.Execute();
-        }
-
-        [HttpPost("robotImpervaGet")]
-        public async Task<bool> RobotImpervaGet([FromForm] int batchSize)
-        {           
-            return await this.robotImpervaJobService.Execute(batchSize);
-        }
+        }       
 
         [HttpPost("tvsProblemAccountInsert")]
         public async Task<bool> TVSProblemAccountInsert([FromForm] int batchSize)

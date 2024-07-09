@@ -1,12 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+{   
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IBaseCustomerClassificationService
     {
+        GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs);
+
         ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model);
     }
 
@@ -17,6 +16,11 @@
         public BaseCustomerClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess)
         {
             this.baseDataAccess = baseDataAccess;
+        }
+
+        public GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs)
+        {
+            return this.baseDataAccess.GetRescanCustomerClassification(custIDs);
         }
 
         public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model)

@@ -9,6 +9,9 @@
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Sentry;
 
     public interface IPAPotentialClassificationService
     {
@@ -19,11 +22,14 @@
         string BuildPAPotentialInfo(IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification);
     }
 
-    public class PAPotentialClassificationService : IPAPotentialClassificationService
+    public class PAPotentialClassificationService : ProblemAccountServices, IPAPotentialClassificationService
     {
         private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;        
 
-        public PAPotentialClassificationService(IPAPotentialClassificationDataAccess paPotentialDataAccess)
+        public PAPotentialClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,
+            IPAPotentialClassificationDataAccess paPotentialDataAccess,
+            ISentryClient sentryClient): base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
             this.paPotentialDataAccess = paPotentialDataAccess;
         }

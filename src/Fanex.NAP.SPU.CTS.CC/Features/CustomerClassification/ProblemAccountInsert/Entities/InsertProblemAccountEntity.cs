@@ -2,11 +2,11 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
 
     public class InsertProblemAccountEntity
     {
@@ -50,23 +50,23 @@
             this.IsDirectPA = true;
         }
 
-        public InsertProblemAccountEntity(RescanDangerousScorePAEntity rescanPADangerous)
-        {
-            this.CustID = rescanPADangerous.CustID;
-            this.CTSCustID = rescanPADangerous.CTSCustID;
-            this.RoleID = rescanPADangerous.RoleID;
-            this.SubscriberID = rescanPADangerous.SubscriberID;
-            this.CategoryID = rescanPADangerous.CategoryID;
-            this.CategoryGroup = rescanPADangerous.CategoryID;
-            this.IsLicensee = rescanPADangerous.IsLicensee;
-            this.IsFromAI = true;
-            this.IsDirectPA = null;
-            this.IsFromCTS = false;
-            this.IsFromTVS = false;
-            this.IsFromTW = false;
-            this.CreatedBy = Constants.StarixITId;
-            this.Remark = string.Format(Constants.DangerousScoreRemark, rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), (rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places));           
-        }
+        //public InsertProblemAccountEntity(RescanDangerousScorePAEntity rescanPADangerous)
+        //{
+        //    this.CustID = rescanPADangerous.CustID;
+        //    this.CTSCustID = rescanPADangerous.CTSCustID;
+        //    this.RoleID = rescanPADangerous.RoleID;
+        //    this.SubscriberID = rescanPADangerous.SubscriberID;
+        //    this.CategoryID = rescanPADangerous.CategoryID;
+        //    this.CategoryGroup = rescanPADangerous.CategoryID;
+        //    this.IsLicensee = rescanPADangerous.IsLicensee;
+        //    this.IsFromAI = true;
+        //    this.IsDirectPA = null;
+        //    this.IsFromCTS = false;
+        //    this.IsFromTVS = false;
+        //    this.IsFromTW = false;
+        //    this.CreatedBy = Constants.StarixITId;
+        //    this.Remark = string.Format(Constants.DangerousScoreRemark, rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), (rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places));           
+        //}
 
         public InsertProblemAccountEntity(TWInitialGBGetChangesEntity twGBCust, PotentialPACustInfoEntity ctsCust)
         {
@@ -75,7 +75,7 @@
             this.RoleID = ctsCust.RoleID;
             this.SubscriberID = ctsCust.SubscriberID;
             this.CategoryID = ctsCust.CategoryID;
-            this.CategoryGroup = ctsCust.CategoryGroup;
+            //this.CategoryGroup = ctsCust.CategoryGroup;
             this.IsLicensee = ctsCust.IsLicensee;
             this.IsFromAI = false;
             this.IsDirectPA = null;
@@ -83,7 +83,8 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);           
+            this.SportType = twGBCust.SportType;
+            //this.Remark = string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);           
         }
 
         public InsertProblemAccountEntity(TWInitialSmartEntity tWInitialSmartCust)
@@ -101,7 +102,27 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);           
+            this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);
+        }
+
+        public InsertProblemAccountEntity(GetRescanCustomerClassificationEntity data)
+        {
+            CTSCustID = data.CTSCustID;
+            CustID = data.CustID;
+            CategoryID = data.CategoryID;
+            ReasonID = data.TVSReasonID;
+            RoleID = data.RoleID;
+            SubscriberID = data.SubscriberID;
+            IsLicensee = data.IsLicensee;
+            Remark = data.Remark;
+            CreatedBy = data.CreatedBy;
+            IsDirectPA = data.IsMarkedDirectly;
+            IsFromTVS = data.IsFromTVS;
+            IsFromTW = data.IsFromTW;
+            IsFromCTS = data.IsFromCTS;
+            IsFromAI = data.IsFromAI;
+            IsFromImperva = data.IsFromImperva;
+            LastModifiedDate = data.LastModifiedDate;
         }
 
         public Int64 CustID { get; set; }
@@ -154,9 +175,14 @@
 
         public bool IsFromTW { get; set; }
 
+        public bool IsFromImperva { get; set; }
+
         //True if only removing SpecialCC
         public bool IsDataChanged { get; set; }
 
         public int? MatchID { get; set; }
+
+        public DateTime? PerformanceTime { get; set; }
+
     }
 }

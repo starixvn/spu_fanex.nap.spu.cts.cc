@@ -11,6 +11,7 @@
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
 
     public interface IRescanCustClassificationService
     {
@@ -18,17 +19,17 @@
 
         bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
 
-        IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
+        //IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue, FunctionId functionId);
+        //IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue, FunctionId functionId);
 
-        IRescanCustClassificationService RemoveOldProblemAccount();
+        //IRescanCustClassificationService RemoveOldProblemAccount();
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
         IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
-        IRescanCustClassificationService InsertRobot();
+        //IRescanCustClassificationService InsertRobot();
 
         IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity paras);
 
@@ -49,12 +50,11 @@
         IEnumerable<InsertRobotEntity> TWRobots { get; }
     }
 
-    public class RescanCustClassificationService : IRescanCustClassificationService
+    public class RescanCustClassificationService : ProblemAccountServices, IRescanCustClassificationService
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
-        private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
-        private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
+        //private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
+        //private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;       
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         private readonly ISentryClient sentryClient;
@@ -68,23 +68,33 @@
         private List<long> smaCustIds;
         private bool isSuccess;
 
-        public RescanCustClassificationService(
-            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
-            IPAPotentialClassificationDataAccess paPotentialDataAccess,
-            ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
-            ISentryClient sentryClient,
-            IProblemAccountServices problemAccountServices,
-            ICustClassToMainDBService custClassToMainDBService,
-            IDataLogTrackingServices dataLogTrackingServices)
+        public RescanCustClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
+            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,           
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ICustClassToMainDBService custClassToMainDBService, ISentryClient sentryClient) : base (baseDataAccess, problemAccountDataAccess, sentryClient)
         {
-            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
-            this.paPotentialDataAccess = paPotentialDataAccess;
-            this.twInitialGBDataAccess = twInitialGBDataAccess;
-            this.problemAccountServices = problemAccountServices;
+            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;           
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
-            this.dataLogTrackingServices = dataLogTrackingServices;
-        }
+        }      
+
+        //public RescanCustClassificationService(
+        //    IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
+        //    IPAPotentialClassificationDataAccess paPotentialDataAccess,
+        //    ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
+        //    ISentryClient sentryClient,
+        //    IProblemAccountServices problemAccountServices,
+        //    ICustClassToMainDBService custClassToMainDBService,
+        //    IDataLogTrackingServices dataLogTrackingServices)
+        //{
+        //    this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
+        //    this.paPotentialDataAccess = paPotentialDataAccess;
+        //    this.twInitialGBDataAccess = twInitialGBDataAccess;
+        //    this.problemAccountServices = problemAccountServices;
+        //    this.custClassToMainDBService = custClassToMainDBService;
+        //    this.sentryClient = sentryClient;
+        //    this.dataLogTrackingServices = dataLogTrackingServices;
+        //}
 
         public IRescanCustClassificationService Start()
         {
@@ -100,116 +110,166 @@
             return this;
         }
 
-        public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        #region Delete
+
+        //public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
+        //{
+        //    if (custIds != null && custIds.Any())
+        //    {
+        //        Start();
+
+        //        if (parameters.IsRescanPA)
+        //        {
+        //            GetExistedProblemAccounts(custIds)
+        //           .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
+        //           .GetTWRobotUsers(custIds)
+        //           .LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
+        //           .InsertRobot()
+        //           .PushExternalProblemAccounts(parameters.PushDataExternal)
+        //           .RemoveOldProblemAccount();
+        //        }
+
+        //        if (parameters.IsRescanPotentialPA)
+        //        {
+        //            RescanPotentialProblemAccount(custIds.ToList(), parameters);
+        //        }
+
+        //        GetAgentCusts(custIds)
+        //       .RescanNormalAccount(custIds, parameters)
+        //       .RemovePAForSMA(parameters.PushDataExternal);
+        //    }
+
+        //    return isSuccess;
+        //}
+
+        #endregion
+
+        public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            if (custIds != null && custIds.Any())
+            var custRescanToPush = new List<long>();
+
+            var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));
+
+            if (custRescans.CustInfos != null && custRescans.CustInfos.Any())
             {
-                Start();
+                var groupingCustRescans = custRescans.CustInfos.GroupBy(x => x.InputFlowID)
+                    .Select(g => new { InputFlowID = g.Key, CustRescans = g.Select(x => x) });
 
-                if (parameters.IsRescanPA)
+                foreach (var group in groupingCustRescans)
                 {
-                    GetExistedProblemAccounts(custIds)
-                   .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
-                   .GetTWRobotUsers(custIds)
-                   .LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
-                   .InsertRobot()
-                   .PushExternalProblemAccounts(parameters.PushDataExternal)
-                   .RemoveOldProblemAccount();
+                    switch ((CCInputFlow)group.InputFlowID)
+                    {
+                        case CCInputFlow.RescanPACategory:
+                        case CCInputFlow.RescanPAReason:
+                        case CCInputFlow.RescanRobot:
+                            var custRescanResults = RescanCustomerClassification(group.CustRescans, paras.FunctionId, (CCInputFlow)group.InputFlowID, paras.IsToQueue, paras.ServiceName);
+                            custRescanToPush.AddRange(custRescanResults);
+
+                            break;
+                        case CCInputFlow.RescanPotential:
+                            RescanCustomerClassification(group.CustRescans, paras.FunctionId, (CCInputFlow)group.InputFlowID, paras.IsToQueue, paras.ServiceName);
+                            
+                            break;
+                        case CCInputFlow.RescanNormal:
+                            var custIDToString = string.Join(",", group.CustRescans.Select(x => x.CustID));
+
+                            rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, paras.FunctionId, paras.RescanNormalType);
+                            break;
+                            
+                        default:
+                            break;
+                    }
                 }
 
-                if (parameters.IsRescanPotentialPA)
+                if (custRescanToPush.Any())
                 {
-                    RescanPotentialProblemAccount(custIds.ToList(), parameters);
+                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custRescanToPush.Distinct(), paras.PushDataExternal);
                 }
-
-                GetAgentCusts(custIds)
-               .RescanNormalAccount(custIds, parameters)
-               .RemovePAForSMA(parameters.PushDataExternal);
             }
 
             return isSuccess;
-        }
+        }        
 
-        public IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                var result = problemAccountServices.GetExistedProblemAccounts(custIds);
+        //public IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds)
+        //{
+        //    if (custIds != null && custIds.Any())
+        //    {
+        //        var result = problemAccountServices.GetExistedProblemAccounts(custIds);
 
-                if (result.Any())
-                {
-                    problemAccounts = result.Where(c => !c.IsRobot).Select(c => new InsertProblemAccountEntity
-                    {
-                        CustID = c.CustID,
-                        CTSCustID = c.CTSCustID,
-                        RoleID = c.RoleID,
-                        SubscriberID = c.SubscriberID,
-                        CategoryID = c.CategoryID,
-                        CategoryGroup = c.CategoryGroup,
-                        IsLicensee = c.IsLicensee,
-                        Remark = c.Remark,
-                        IsDirectPA = c.IsDirect,
-                        IsFromCTS = c.IsFromCTS,
-                        IsFromTVS = c.IsFromTVS,
-                        TVSRequestID = c.TVSRequestID,
-                        IsParlay = c.IsParlay,
-                        SportType = c.SportType,
-                        IssueTypeID = c.IssueTypeID,
-                        IsFromTW = c.IsFromTW,
-                        IsDataChanged = false,
-                        LastModifiedDate = c.LastModifiedDate,
-                        CreatedBy = StarixITId
-                    });
+        //        if (result.Any())
+        //        {
+        //            problemAccounts = result.Where(c => !c.IsRobot).Select(c => new InsertProblemAccountEntity
+        //            {
+        //                CustID = c.CustID,
+        //                CTSCustID = c.CTSCustID,
+        //                RoleID = c.RoleID,
+        //                SubscriberID = c.SubscriberID,
+        //                CategoryID = c.CategoryID,
+        //                CategoryGroup = c.CategoryGroup,
+        //                IsLicensee = c.IsLicensee,
+        //                Remark = c.Remark,
+        //                IsDirectPA = c.IsDirect,
+        //                IsFromCTS = c.IsFromCTS,
+        //                IsFromTVS = c.IsFromTVS,
+        //                TVSRequestID = c.TVSRequestID,
+        //                IsParlay = c.IsParlay,
+        //                SportType = c.SportType,
+        //                IssueTypeID = c.IssueTypeID,
+        //                IsFromTW = c.IsFromTW,
+        //                IsDataChanged = false,
+        //                LastModifiedDate = c.LastModifiedDate,
+        //                CreatedBy = StarixITId
+        //            });
 
-                    robotClassification = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
-                    {
-                        CustID = c.CustID,
-                        CategoryID = c.CategoryID,
-                        IsDirect = c.IsDirect,
-                        IsFromCTS = c.IsFromCTS,
-                        IsFromTW = c.IsFromTW,
-                        IsFromAI = c.IsFromAI,
-                        IsFromImperva = c.IsFromImperva,
-                        IsFromTVS = c.IsFromTVS,
-                        TVSRequestID = c.TVSRequestID,
-                        IsParlay = c.IsParlay,
-                        SportType = c.SportType,
-                        IssueTypeID = c.IssueTypeID,
-                        CreatedBy = StarixITId,
-                        Remark = c.Remark
-                    });
-                }
-            }
+        //            robotClassification = result.Where(c => c.IsRobot).Select(c => new InsertRobotEntity
+        //            {
+        //                CustID = c.CustID,
+        //                CategoryID = c.CategoryID,
+        //                IsDirect = c.IsDirect,
+        //                IsFromCTS = c.IsFromCTS,
+        //                IsFromTW = c.IsFromTW,
+        //                IsFromAI = c.IsFromAI,
+        //                IsFromImperva = c.IsFromImperva,
+        //                IsFromTVS = c.IsFromTVS,
+        //                TVSRequestID = c.TVSRequestID,
+        //                IsParlay = c.IsParlay,
+        //                SportType = c.SportType,
+        //                IssueTypeID = c.IssueTypeID,
+        //                CreatedBy = StarixITId,
+        //                Remark = c.Remark
+        //            });
+        //        }
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isToQueue, FunctionId functionId)
-        {
-            if (problemAccounts.Any())
-            {
-                var custIds = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isToQueue, serviceName);
+        //public IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isToQueue, FunctionId functionId)
+        //{
+        //    if (problemAccounts.Any())
+        //    {
+        //        var custIds = problemAccountServices.InsertProblemAccountPackage(problemAccounts, functionId, InsertPA_ByType.Category, isToQueue, serviceName);
 
-                if (custIds != null && custIds.Any())
-                {
-                    custIdsToRemoveOldPA.AddRange(custIds.Distinct());
+        //        if (custIds != null && custIds.Any())
+        //        {
+        //            custIdsToRemoveOldPA.AddRange(custIds.Distinct());
 
-                    custIdsToRescanPA.AddRange(custIds.Distinct());
-                }
-            }
+        //            custIdsToRescanPA.AddRange(custIds.Distinct());
+        //        }
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public IRescanCustClassificationService RemoveOldProblemAccount()
-        {
-            if (isSuccess && custIdsToRemoveOldPA != null && custIdsToRemoveOldPA.Any())
-            {
-                problemAccountServices.RemoveOldProblemAccount(custIdsToRemoveOldPA);
-            }
+        //public IRescanCustClassificationService RemoveOldProblemAccount()
+        //{
+        //    if (isSuccess && custIdsToRemoveOldPA != null && custIdsToRemoveOldPA.Any())
+        //    {
+        //        problemAccountServices.RemoveOldProblemAccount(custIdsToRemoveOldPA);
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
         public IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds)
         {
@@ -236,33 +296,33 @@
             return this;
         }
 
-        public IRescanCustClassificationService InsertRobot()
-        {
-            var robotToInsert = new List<InsertRobotEntity>();
+        //public IRescanCustClassificationService InsertRobot()
+        //{
+        //    var robotToInsert = new List<InsertRobotEntity>();
 
-            if (robotUsers.Any())
-            {
-                robotToInsert.AddRange(robotUsers);
-            }
+        //    if (robotUsers.Any())
+        //    {
+        //        robotToInsert.AddRange(robotUsers);
+        //    }
 
-            if (robotClassification.Any())
-            {
-                robotToInsert.AddRange(robotClassification);
-            }
+        //    if (robotClassification.Any())
+        //    {
+        //        robotToInsert.AddRange(robotClassification);
+        //    }
 
-            var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, true);
+        //    var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, true);
 
-            if (isSuccess && customerInfo.Any())
-            {
-                var custIds = customerInfo.Select(c => c.CustID).Distinct();
+        //    if (isSuccess && customerInfo.Any())
+        //    {
+        //        var custIds = customerInfo.Select(c => c.CustID).Distinct();
 
-                custIdsToRemoveOldPA.AddRange(custIds);
+        //        custIdsToRemoveOldPA.AddRange(custIds);
 
-                custIdsToRescanPA.AddRange(custIds);
-            }
+        //        custIdsToRescanPA.AddRange(custIds);
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
         public IRescanCustClassificationService PushExternalProblemAccounts(PushDataToExternalEntity parameters)
         {
@@ -308,7 +368,7 @@
                     {
                         var custIdToString = string.Join(",", batchCustIds);
 
-                        rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
+                        //rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
                     }
                 }
             }
@@ -331,87 +391,87 @@
             return this;
         }
 
-        public void RescanPotentialProblemAccount(List<long> custIDs, RescanParametersEntity parameters)
-        {
-            if (custIDs.Any())
-            {
-                custIDs.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+        //public void RescanPotentialProblemAccount(List<long> custIDs, RescanParametersEntity parameters)
+        //{
+        //    if (custIDs.Any())
+        //    {
+        //        custIDs.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
 
-                var rescanPotentialPA = string.Join(",", custIDs);
+        //        var rescanPotentialPA = string.Join(",", custIDs);
 
-                if (rescanPotentialPA != string.Empty)
-                {
-                    RescanDangerousScorePA(rescanPotentialPA, parameters);
-                   
-                    RescanInitialSmartPA(rescanPotentialPA, parameters);
+        //        if (rescanPotentialPA != string.Empty)
+        //        {
+        //            RescanDangerousScorePA(rescanPotentialPA, parameters);
 
-                    RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
-                }
-            }
-        }
+        //            RescanInitialSmartPA(rescanPotentialPA, parameters);
 
-        public IEnumerable<long> RescanDangerousScorePA(string custIDs, RescanParametersEntity parameters)
-        {
-            var custPaDangerous = Enumerable.Empty<long>();
+        //            RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
+        //        }
+        //    }
+        //}
 
-            var pasDangerous = paPotentialDataAccess.GetDangerousScorePA(custIDs);
+        //public IEnumerable<long> RescanDangerousScorePA(string custIDs, RescanParametersEntity parameters)
+        //{
+        //    var custPaDangerous = Enumerable.Empty<long>();
 
-            if (pasDangerous != null && pasDangerous.Any())
-            {
-                var pas = pasDangerous.Select(x => new InsertProblemAccountEntity(x));
+        //    var pasDangerous = paPotentialDataAccess.GetDangerousScorePA(custIDs);
 
-                custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+        //    if (pasDangerous != null && pasDangerous.Any())
+        //    {
+        //        var pas = pasDangerous.Select(x => new InsertProblemAccountEntity(x));
 
-                custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
+        //        custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
 
-                custIdsToRescanPotentialPA.AddRange(custPaDangerous.Distinct());
-            }
+        //        custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
 
-            return custPaDangerous;
-        }
+        //        custIdsToRescanPotentialPA.AddRange(custPaDangerous.Distinct());
+        //    }
 
-        public IEnumerable<long> RescanInitialSmartPA(string custIDs, RescanParametersEntity parameters)
-        {
-            var custPaInitialSmart = Enumerable.Empty<long>();
+        //    return custPaDangerous;
+        //}
 
-            var rescanInitialSmart = paPotentialDataAccess.GetInitialSmartPA(custIDs);
+        //public IEnumerable<long> RescanInitialSmartPA(string custIDs, RescanParametersEntity parameters)
+        //{
+        //    var custPaInitialSmart = Enumerable.Empty<long>();
 
-            if (rescanInitialSmart != null && rescanInitialSmart.Any())
-            {
-                var pasInitialSmart = rescanInitialSmart.Select(x => new InsertProblemAccountEntity(x));
+        //    var rescanInitialSmart = paPotentialDataAccess.GetInitialSmartPA(custIDs);
 
-                custPaInitialSmart = problemAccountServices.InsertProblemAccountPackage(pasInitialSmart, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+        //    if (rescanInitialSmart != null && rescanInitialSmart.Any())
+        //    {
+        //        var pasInitialSmart = rescanInitialSmart.Select(x => new InsertProblemAccountEntity(x));
+
+        //        custPaInitialSmart = problemAccountServices.InsertProblemAccountPackage(pasInitialSmart, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
                 
-                custClassToMainDBService.PushExternalProblemAcountPackage(custPaInitialSmart.Distinct(), parameters.PushDataExternal);
+        //        custClassToMainDBService.PushExternalProblemAcountPackage(custPaInitialSmart.Distinct(), parameters.PushDataExternal);
 
-                custIdsToRescanPotentialPA.AddRange(custPaInitialSmart.Distinct());
-            }
+        //        custIdsToRescanPotentialPA.AddRange(custPaInitialSmart.Distinct());
+        //    }
 
-            return custPaInitialSmart;
-        }
+        //    return custPaInitialSmart;
+        //}
 
-        public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
-        {
-            var custPaTWGB = Enumerable.Empty<long>();
+        //public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
+        //{
+        //    var custPaTWGB = Enumerable.Empty<long>();
 
-            var rescanInitialTWGB = paPotentialDataAccess.GetInitialTWGroupBetting(custIDs);
+        //    var rescanInitialTWGB = paPotentialDataAccess.GetInitialTWGroupBetting(custIDs);
 
-            if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
-            {
-                var custInfos = twInitialGBDataAccess.GetCustInfos(custIDs);
+        //    if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
+        //    {
+        //        var custInfos = twInitialGBDataAccess.GetCustInfos(custIDs);
 
-                var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
-                               (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
+        //        var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
+        //                       (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
 
-                custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);                
+        //        custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);                
 
-                custClassToMainDBService.PushExternalProblemAcountPackage(custPaTWGB.Distinct(), parameters.PushDataExternal);
+        //        custClassToMainDBService.PushExternalProblemAcountPackage(custPaTWGB.Distinct(), parameters.PushDataExternal);
 
-                custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
-            }
+        //        custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
+        //    }
 
-            return custPaTWGB;
-        }
+        //    return custPaTWGB;
+        //}
 
         public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)
         {

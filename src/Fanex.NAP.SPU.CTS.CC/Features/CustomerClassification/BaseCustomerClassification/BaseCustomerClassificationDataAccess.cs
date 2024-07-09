@@ -5,7 +5,9 @@
 
     public interface IBaseCustomerClassificationDataAccess
     {
-        public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model);
+        GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs);
+
+        ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model);
 
         ResultRemoveCustomerClassificationModel RemoveCustomerClassification(CCInputFlow inputFlow, RemoveCustomerClassificationModel model);
     }
@@ -18,6 +20,18 @@
         {
             repository = new DynamicRepository();
         }      
+
+        public GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs)
+        {
+            var criteria = new GetRescanCustomerClassificationCriteria
+            {
+                CustIDs = custIDs
+            };
+
+            var custInfos = repository.Fetch<GetRescanCustomerClassificationEntity>(criteria);
+
+            return new GetRescanCustomerClassificationModel { CustInfos = custInfos };
+        } 
 
         public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model)
         {

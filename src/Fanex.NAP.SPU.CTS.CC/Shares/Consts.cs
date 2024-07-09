@@ -298,18 +298,30 @@ namespace Fanex.NAP.SPU.CTS.Shares
             LicVIP = 3,
             [Description("LicBA")]
             LicBA = 4,
-            [Description("InsertProblemAccount")]
-            InsertProblemAccount = 5,
+            [Description("InsertPACategory")]
+            InsertPACategory = 50,
+            [Description("InsertPAReason")]
+            InsertPAReason = 51,
             [Description("Potential")]
             Potential = 6,
-            [Description("Robot")]
-            Robot = 7,
+            [Description("InsertRobot")]
+            InsertRobot = 7,
             [Description("Normal")]
             Normal = 8,
             [Description("RemoveVVIP")]
             RemoveVVIP = 9,
             [Description("RemoveProblemAccount")]
-            RemoveProblemAccount = 10
+            RemoveProblemAccount = 10,
+            [Description("RescanPACategory")]
+            RescanPACategory = 150,
+            [Description("RescanPAReason")]
+            RescanPAReason = 151,
+            [Description("RescanPotential")]
+            RescanPotential = 16,
+            [Description("RescanRobot")]
+            RescanRobot = 17,
+            [Description("RescanNormal")]
+            RescanNormal = 8
         }
     }
 }

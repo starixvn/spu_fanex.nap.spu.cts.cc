@@ -10,8 +10,8 @@
         IEnumerable<RoleCustomerEntity> GetRoleCustomer(string custIds);
 
         IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds);
-
-        void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type);
+        
+        int PreNormalClassification(string custList, FunctionId functionId, RescanNormalType type);
        
     }
 
@@ -42,9 +42,9 @@
             };
 
             return repository.Fetch<TWRobotUserEntity>(criteria);
-        }
+        }       
 
-        public void ClassifyNormalCategory(string custList, FunctionId functionId, RescanNormalType type)
+        public int PreNormalClassification(string custList, FunctionId functionId, RescanNormalType type)
         {
             var criteria = new NormalClassificationRescanCriteria
             {
@@ -54,8 +54,8 @@
 
             };
 
-            repository.Execute(criteria);
+            return repository.Execute(criteria);
         }
-       
+
     }
 }

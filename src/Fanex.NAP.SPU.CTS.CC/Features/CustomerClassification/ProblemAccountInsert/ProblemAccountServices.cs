@@ -16,6 +16,10 @@
 
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
+        IEnumerable<long> RescanCustomerClassification(IEnumerable<GetRescanCustomerClassificationEntity> custRescans, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName);
+
+        IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName);
+
         IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName);
 
         RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
@@ -70,6 +74,42 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }      
 
+        public IEnumerable<long> RescanCustomerClassification(IEnumerable<GetRescanCustomerClassificationEntity> custRescans, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName)
+        {
+            var pas = custRescans.Select(x => new InsertProblemAccountEntity(x));
+
+            return InsertProblemAccountPackage(pas, funcId, ccInputFlow, isToQueue, serviceName);
+        }
+
+        public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName)
+        {
+            if (problemAccounts != null && problemAccounts.Any())
+            {
+                var paClassification = CombinePAWithLosingPerformace(problemAccounts, funcId);
+
+                var modelInsert = new InsertCustomerClassificationModel()
+                {
+                    CustClassificationJson = JsonConvert.SerializeObject(paClassification),
+                    IsToQueue = isToQueue
+                };
+
+                var insertPaResult = base.InsertCustomerClassification(ccInputFlow, modelInsert);
+
+                if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
+                {
+                    var custIds = insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
+
+                    problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(JsonConvert.SerializeObject(insertPaResult.CustInfos));
+
+                    UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+
+                    return custIds;
+                }
+            }
+
+            return Enumerable.Empty<long>();
+        }
+
         public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName)
         {
             if (problemAccounts != null && problemAccounts.Any())
@@ -78,7 +118,7 @@
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                var insertPaResult = InsertProblemAccount(paClassification, funcId, insertByType, isToQueue);
+                var insertPaResult = InsertProblemAccount(paClassification, funcId, isToQueue);
 
                 if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
                 {
@@ -187,7 +227,7 @@
 
         #region Private Methods
 
-        private ResultInsertCustomerClassificationModel InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue)
+        private ResultInsertCustomerClassificationModel InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, bool isToQueue)
         {
             var paClassification = CombinePAWithLosingPerformace(problemAccounts, funcId);
 
@@ -197,7 +237,7 @@
                 IsToQueue = isToQueue
             };
 
-            return base.InsertCustomerClassification(CCInputFlow.InsertProblemAccount, modelInsert);            
+            return base.InsertCustomerClassification(CCInputFlow.InsertPACategory, modelInsert);            
         }
 
         public IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
@@ -312,8 +352,7 @@
                                                             CustID = group.pa.CustID,
                                                             RoleID = group.pa.RoleID,
                                                             SubscriberID = group.pa.SubscriberID,
-                                                            CategoryID = group.pa.CategoryID,
-                                                            CategoryGroup = group.pa.CategoryGroup,
+                                                            CategoryID = group.pa.CategoryID,                                                           
                                                             IsLicensee = group.pa.IsLicensee,
                                                             CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
@@ -336,7 +375,8 @@
                                                             ActiveDays = temp?.ActiveDays,
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,                                                          
-                                                            WinlossStatus = temp?.WinlossStatus                                                              
+                                                            WinlossStatus = temp?.WinlossStatus,
+                                                            PerformanceTime = temp?.PerformanceTime
                                                         });
             }
 
@@ -377,6 +417,7 @@
                                                             TurnoverRM = temp?.TurnoverRM,
                                                             WinlossRM = temp?.WinlossRM,
                                                             WinlossStatus = temp?.WinlossStatus,
+                                                            PerformanceTime = temp?.PerformanceTime
                                                         });
             }
 

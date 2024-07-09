@@ -2,11 +2,13 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -29,7 +31,7 @@
         IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
     }
 
-    public class AffectedDownlineCustomerClassificationService : IAffectedDownlineCustomerClassificationService
+    public class AffectedDownlineCustomerClassificationService : ProblemAccountServices, IAffectedDownlineCustomerClassificationService
     {
         private readonly IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
@@ -41,13 +43,16 @@
 
         public AffectedDownlineCustomerClassificationService(
             IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess,
-            IProblemAccountServices problemAccountServices,
+            IBaseCustomerClassificationDataAccess baseDataAccess,
+           ///IProblemAccountServices problemAccountServices,
+            IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
             IAntiFraudCenterServices antiFraudCenterServices,
-            IRescanCustClassificationService rescanCustClassificationService)
+            IRescanCustClassificationService rescanCustClassificationService,
+            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
             this.affectedCustClassificationDataAccess = affectedCustClassificationDataAccess;
-            this.problemAccountServices = problemAccountServices;
+            //this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
@@ -128,7 +133,7 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var insertResult = problemAccountServices.InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, InsertPA_ByType.Category, parameters.IsToQueue, parameters.ServiceName);
+                var insertResult = InsertProblemAccountPackage(probAccounts, FunctionId.DownlineCustomerClassification, CCInputFlow.InsertPACategory, parameters.IsToQueue, parameters.ServiceName);
 
                 return custClassToMainDBService.PushExternalProblemAcountPackage(insertResult, parameters.PushDataExternal);
             }
@@ -154,7 +159,21 @@
                     CreatedBy = c.CreatedBy
                 });
 
-                var result = problemAccountServices.RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
+                //var result = problemAccountServices.RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
+
+                var result = new RemovePAResultEntity
+                {
+                    ErrorCode = 0,
+                    CustomerInfo = new List<CustRemovePAEntity>()
+                    {
+                        new CustRemovePAEntity()
+                        {
+                            CustID = 1,
+                            CTSCustID = 1,
+                            IsCleanPA = false
+                        }
+                    }
+                };
 
                 isSuccess = result.ErrorCode == 0;
 

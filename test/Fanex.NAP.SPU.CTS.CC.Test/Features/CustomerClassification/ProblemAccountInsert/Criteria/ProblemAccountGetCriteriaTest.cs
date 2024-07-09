@@ -15,7 +15,7 @@
         [Fact]
         public void GetSettingKey_Any_ReturnRightSPName()
         {
-            var expected = "CTS_DC_CustClassification_PA_ReScan";
+            var expected = "CTS_DC_CustClassification_ReScan_Get";
 
             var spName = criteria.GetSettingKey();
 

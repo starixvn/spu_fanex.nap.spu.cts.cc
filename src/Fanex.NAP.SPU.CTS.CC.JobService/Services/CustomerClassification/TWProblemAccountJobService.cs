@@ -98,7 +98,7 @@
                                 CreatedBy = x.UserId
                             });
 
-                            var custIds = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, InsertPA_ByType.Reason, true, ServiceName);
+                            var custIds = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, CCInputFlow.InsertPAReason, true, ServiceName);
 
                             if (custIds != null && custIds.Any())
                             {

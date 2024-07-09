@@ -17,7 +17,7 @@
         public PAPotentialClassificationServiceTest()
         {
             paPotentialDataAccess = Substitute.For<IPAPotentialClassificationDataAccess>();
-            paPotentialService = new PAPotentialClassificationService(paPotentialDataAccess);
+            //paPotentialService = new PAPotentialClassificationService(paPotentialDataAccess);
         }
 
         [Fact]
