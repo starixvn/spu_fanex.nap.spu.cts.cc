@@ -124,12 +124,11 @@
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,
-                        CreatedBy = Constants.StarixITId,
-                        Remark = JsonConvert.SerializeObject(new RemarkDetectUnauthorizedModel(x))
+                        CreatedBy = Constants.StarixITId
                     };
                 });
-
-                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DetectUnauthorizedLoginCust, InsertPA_ByType.Category, false, serviceName);
+             
+                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DetectUnauthorizedLoginCust, CCInputFlow.InsertPACategory, false, serviceName);
 
                 var paras = new PushDataToExternalEntity
                 {

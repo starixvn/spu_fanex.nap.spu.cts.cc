@@ -93,15 +93,14 @@
                             break;
                         }
                     case (int)DownlineClassification_ActionType.InsertPA:
-                        {
-                            IsSuccess = InsertPAForDownlinePackage(parameters, custClassificationFromQueue);
-                            break;
-                        }
-                    case (int)DownlineClassification_ActionType.RemovePA:
-                        {
+                        //{
+                        //    IsSuccess = InsertPAForDownlinePackage(parameters, custClassificationFromQueue);
+                        //    break;
+                        //}
+                    case (int)DownlineClassification_ActionType.RemovePA:                        
                             IsSuccess = RemovePAForDownlinePackage(parameters, custClassificationFromQueue);
                             break;
-                        }
+                        
                 }
             }
 
@@ -161,27 +160,15 @@
 
                 //var result = problemAccountServices.RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
 
-                var result = new RemovePAResultEntity
-                {
-                    ErrorCode = 0,
-                    CustomerInfo = new List<CustRemovePAEntity>()
-                    {
-                        new CustRemovePAEntity()
-                        {
-                            CustID = 1,
-                            CTSCustID = 1,
-                            IsCleanPA = false
-                        }
-                    }
-                };
+                var result = RemoveProblemAccountPackage_Test();
 
                 isSuccess = result.ErrorCode == 0;
 
                 if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
                 {
-                    var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);
-                    parameters.IsRescanPA = false;
-                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanNormalCustIDs, parameters);
+                    //var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);
+                    //parameters.IsRescanPA = false;
+                    //isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanNormalCustIDs, parameters);
 
                     var rescanPACustIDs = result.CustomerInfo.Where(x => !x.IsCleanPA).Select(x => x.CustID);
                     parameters.IsRescanPA = true;
@@ -190,6 +177,25 @@
             }
 
             return isSuccess;
+        }
+
+        private RemovePAResultEntity RemoveProblemAccountPackage_Test()
+        {
+            var result = new RemovePAResultEntity
+            {
+                ErrorCode = 0,
+                CustomerInfo = new List<CustRemovePAEntity>()
+                    {
+                        new CustRemovePAEntity()
+                        {
+                            CustID = 23639430,
+                            CTSCustID = 1,
+                            IsCleanPA = false
+                        }
+                    }
+            };
+
+            return result;
         }
 
         public bool InsertVVIPForDownlinePackage(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo)
@@ -276,5 +282,6 @@
                 })
             };
         }
+    
     }
 }

@@ -11,6 +11,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAssociatedGroupMonitorJobService
     {
@@ -73,12 +74,12 @@
                     });
 
                     if (custSyncPAs.Any())
-                    {                        
+                    {
                         var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs
-                           , Shares.Constants.FunctionId.ScanAssociatedAccount
-                           , Shares.Constants.InsertPA_ByType.Category
-                           , false
-                           , serviceName);
+                          , FunctionId.ScanAssociatedAccount
+                          , CCInputFlow.InsertPACategory
+                          , false
+                          , serviceName);
 
                         custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult, new PushDataToExternalEntity
                         {

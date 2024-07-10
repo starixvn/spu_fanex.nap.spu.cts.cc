@@ -38,6 +38,7 @@
             var criteria = new InsertCustomerClassificationCriteria
             {
                 InputFlowID = (int)inputFlow,
+                IsToQueue = model.IsToQueue,
                 CustClassificationJson = model.CustClassificationJson
             };
 
