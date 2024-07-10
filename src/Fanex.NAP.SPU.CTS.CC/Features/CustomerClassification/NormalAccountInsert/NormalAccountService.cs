@@ -13,13 +13,13 @@
     {
         GetNormalAccountModel GetNormalAccounts();
      
-        ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
+        ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog);
 
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
-        IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
+        IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
 
-        IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs);
+        IEnumerable<InsertNormalAccountEntity> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs);
 
     }
 
@@ -39,7 +39,7 @@
             return dataAccess.GetNormalAccount();
         }      
 
-        public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
+        public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog)
         {
             var result = new ResultInsertCustomerClassificationModel();
                       
@@ -71,11 +71,11 @@
             }
         }
 
-        public IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs)
+        public IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs)
         {
             if (custs == null || !custs.Any())
             {
-                return Enumerable.Empty<InsertNormalAccountModel>();
+                return Enumerable.Empty<InsertNormalAccountEntity>();
             }
 
             var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
@@ -91,11 +91,11 @@
             return finalNormalAcc;
         }
 
-        public IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
+        public IEnumerable<InsertNormalAccountEntity> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
         {
             if (custs == null || !custs.Any())
             {
-                return Enumerable.Empty<InsertNormalAccountModel>();
+                return Enumerable.Empty<InsertNormalAccountEntity>();
             }
 
             var twTaggingSRPCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
@@ -167,7 +167,7 @@
             return new NormalAccountAfterCheckTWDetectionModel(cust);
         }
 
-        private IEnumerable<InsertNormalAccountModel> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
+        private IEnumerable<InsertNormalAccountEntity> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
         {
             var custsMapping = custs ?? new List<NormalAccountAfterCheckTWDetectionModel>();
             var ctsTaggedCustMapping = ctsTaggedCust ?? new List<CTSTaggedCustEntity>();
@@ -178,7 +178,7 @@
                                (custClass, taggedCusts) => new { custClass, taggedCusts })
                                .SelectMany(
                                     group => group.taggedCusts.DefaultIfEmpty(),
-                                    (group, temp) => new InsertNormalAccountModel(group.custClass, temp));
+                                    (group, temp) => new InsertNormalAccountEntity(group.custClass, temp));
         }
 
         #endregion

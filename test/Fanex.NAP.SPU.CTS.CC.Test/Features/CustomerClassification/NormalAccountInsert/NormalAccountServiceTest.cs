@@ -119,7 +119,7 @@
             // Arrange
             var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
             var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
-            var compareResult = new List<InsertNormalAccountModel> { new InsertNormalAccountModel(cust[0], twTaggedCust[0]) };
+            var compareResult = new List<InsertNormalAccountEntity> { new InsertNormalAccountEntity(cust[0], twTaggedCust[0]) };
 
             var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
 

@@ -1,10 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using System;
 
-    public class InsertNormalAccountModel
+    public class InsertNormalAccountEntity : InsertCustomerClassificationEntity
     {
-        public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust)
+        public InsertNormalAccountEntity(NormalAccountAfterCheckTWDetectionModel cust)
         {
             this.CustID = cust.CustId;         
             this.CategoryID = cust.CategoryId;
@@ -24,7 +25,7 @@
             this.ScanTaggingType = cust.ScanTaggingType;         
         }
 
-        public InsertNormalAccountModel(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
+        public InsertNormalAccountEntity(NormalAccountAfterCheckTWDetectionModel cust, CTSTaggedCustEntity ctsTaggedCust)
         {
             this.CustID = cust.CustId;        
             this.CategoryID = cust.CategoryId;
@@ -52,25 +53,9 @@
             this.TWGroupBettingRate = cust.TWGroupBettingRate;
             this.TWTicketRejectRate = cust.TWTicketRejectRate;
             this.ScanTaggingType = cust.ScanTaggingType;
-        }
+        }       
 
-        public long CustID { get; set; }     
-
-        public int? CategoryID { get; set; }
-
-        public int? CategoryGroupID { get; set; }
-
-        public DateTime CreatedTime { get; set; }
-
-        public decimal TurnoverRM { get; set; }
-
-        public decimal WinlossRM { get; set; }
-
-        public Int64 BetCount { get; set; }
-
-        public int ActiveDays { get; set; }
-
-        public DateTime PerformanceTime { get; set; }
+        public DateTime CreatedTime { get; set; }       
 
         public int TaggingID { get; set; }
 

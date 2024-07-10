@@ -63,7 +63,7 @@
                         RoleID = x.RoleID,
                         SubscriberID = x.SubscriberID,
                         CategoryID = custInfo.PACategoryID,
-                        CategoryGroup = custInfo.PACategoryID,
+                        CategoryGroupID = custInfo.PACategoryID,
                         IsLicensee = x.IsLicensee,
                         IsDirectPA = true,                       
                         IsFromCTS = true,

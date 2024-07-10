@@ -8,7 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
 
-    public class InsertProblemAccountEntity
+    public class InsertProblemAccountEntity : InsertCustomerClassificationEntity
     {
         public InsertProblemAccountEntity()
         {
@@ -25,7 +25,7 @@
             this.RoleID = gbMMCust.RoleID;
             this.SubscriberID = gbMMCust.SubscriberID;
             this.CategoryID = gbMMCust.CategoryID;
-            this.CategoryGroup = gbMMCust.CategoryGroup;
+            this.CategoryGroupID = gbMMCust.CategoryGroup;
             this.IsLicensee = gbMMCust.IsLicensee;
             this.MatchID = gbMMCust.MatchID;
             this.CreatedBy = Constants.StarixITId;
@@ -49,25 +49,7 @@
             this.IsFromTVS = true;
             this.IsDirectPA = true;
         }
-
-        //public InsertProblemAccountEntity(RescanDangerousScorePAEntity rescanPADangerous)
-        //{
-        //    this.CustID = rescanPADangerous.CustID;
-        //    this.CTSCustID = rescanPADangerous.CTSCustID;
-        //    this.RoleID = rescanPADangerous.RoleID;
-        //    this.SubscriberID = rescanPADangerous.SubscriberID;
-        //    this.CategoryID = rescanPADangerous.CategoryID;
-        //    this.CategoryGroup = rescanPADangerous.CategoryID;
-        //    this.IsLicensee = rescanPADangerous.IsLicensee;
-        //    this.IsFromAI = true;
-        //    this.IsDirectPA = null;
-        //    this.IsFromCTS = false;
-        //    this.IsFromTVS = false;
-        //    this.IsFromTW = false;
-        //    this.CreatedBy = Constants.StarixITId;
-        //    this.Remark = string.Format(Constants.DangerousScoreRemark, rescanPADangerous.ClassifiedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), (rescanPADangerous.ClassifiedScore * 100).ToString(Constants.FormatDecimalToString_2Places));           
-        //}
-
+   
         public InsertProblemAccountEntity(TWInitialGBGetChangesEntity twGBCust, PotentialPACustInfoEntity ctsCust)
         {
             this.CustID = twGBCust.CustID;
@@ -94,7 +76,7 @@
             this.RoleID = tWInitialSmartCust.RoleID;
             this.SubscriberID = tWInitialSmartCust.SubscriberID;
             this.CategoryID = tWInitialSmartCust.CategoryID;
-            this.CategoryGroup = tWInitialSmartCust.CategoryGroup;
+            this.CategoryGroupID = tWInitialSmartCust.CategoryGroup;
             this.IsLicensee = tWInitialSmartCust.IsLicensee;
             this.IsFromAI = false;
             this.IsDirectPA = null;
@@ -123,19 +105,13 @@
             IsFromAI = data.IsFromAI;
             IsFromImperva = data.IsFromImperva;
             LastModifiedDate = data.LastModifiedDate;
-        }
-
-        public Int64 CustID { get; set; }
+        }     
 
         public Int64 CTSCustID { get; set; }
 
         public int RoleID { get; set; }
 
-        public int SubscriberID { get; set; }
-
-        public int? CategoryID { get; set; }
-
-        public int CategoryGroup { get; set; }
+        public int SubscriberID { get; set; }       
 
         public int? ReasonID { get; set; }
 
@@ -149,15 +125,7 @@
 
         public bool? IsDirectPA { get; set; }
 
-        public int? WinlossStatus { get; set; }
-
-        public decimal? TurnoverRM { get; set; }
-
-        public decimal? WinlossRM { get; set; }
-
-        public Int64? BetCount { get; set; }
-
-        public int? ActiveDays { get; set; }
+        public int? WinlossStatus { get; set; }       
 
         public bool IsFromCTS { get; set; }
 
@@ -181,8 +149,6 @@
         public bool IsDataChanged { get; set; }
 
         public int? MatchID { get; set; }
-
-        public DateTime? PerformanceTime { get; set; }
-
+       
     }
 }

@@ -40,75 +40,75 @@
 
         public void SetTWInitialSmartSmarts(PADailyScanFromQueueModel paDailyScanFromQueue)
         {
-            if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
-                return;
+            //if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
+            //    return;
 
-            var custTWInitialSmartCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialSmart).Select(x => x.CustID);
+            //var custTWInitialSmartCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialSmart).Select(x => x.CustID);
 
-            if (custTWInitialSmartCustIDs.Any())
-            {
-                this.DicTWInitialSmarts = paPotentialDataAccess.GetInitialSmartPA(string.Join(",", custTWInitialSmartCustIDs)).ToDictionary(x => x.CustID);
-            }            
+            //if (custTWInitialSmartCustIDs.Any())
+            //{
+            //    this.DicTWInitialSmarts = paPotentialDataAccess.GetInitialSmartPA(string.Join(",", custTWInitialSmartCustIDs)).ToDictionary(x => x.CustID);
+            //}            
         }
 
         public void SetTWInitialGBs(PADailyScanFromQueueModel paDailyScanFromQueue)
         {
-            if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
-                return;
+            //if (paDailyScanFromQueue.PAPotentialScanCustIDs == null)
+            //    return;
 
-            var custTWInitialGBCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialGB).Select(x => x.CustID);
+            //var custTWInitialGBCustIDs = paDailyScanFromQueue.PAPotentialScanCustIDs.Where(x => x.RemarkSourceType == (int)CustToBuildRemark.TWInitialGB).Select(x => x.CustID);
 
-            if (custTWInitialGBCustIDs.Any())
-            {
-                this.DicTWInitialGBs = paPotentialDataAccess.GetInitialTWGroupBetting(string.Join(",", custTWInitialGBCustIDs)).ToDictionary(x => x.CustID);
-            }
+            //if (custTWInitialGBCustIDs.Any())
+            //{
+            //    this.DicTWInitialGBs = paPotentialDataAccess.GetInitialTWGroupBetting(string.Join(",", custTWInitialGBCustIDs)).ToDictionary(x => x.CustID);
+            //}
         }
 
         private string BuildRemarkTWInitialSmart(ProblemAccountLosingClassificationEntity pa)
         {
-            if (this.DicTWInitialSmarts != null)
-            {
-                this.DicTWInitialSmarts.TryGetValue(pa.CustId, out TWInitialSmartEntity twInitialSmartCust);
+            //if (this.DicTWInitialSmarts != null)
+            //{
+            //    this.DicTWInitialSmarts.TryGetValue(pa.CustId, out TWInitialSmartEntity twInitialSmartCust);
 
-                if (twInitialSmartCust != null)
-                {
-                    return string.Format(Constants.TWInitialSmartRemark, twInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twInitialSmartCust.Probability);                    
-                }
-            }
+            //    if (twInitialSmartCust != null)
+            //    {
+            //        return string.Format(Constants.TWInitialSmartRemark, twInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twInitialSmartCust.Probability);                    
+            //    }
+            //}
             
             return null;
         }
 
         private string BuildRemarkTWInitialGB(ProblemAccountLosingClassificationEntity pa)
         {
-            if (this.DicTWInitialGBs != null)
-            {
-                this.DicTWInitialGBs.TryGetValue(pa.CustId, out TWInitialGBGetChangesEntity twGBCust);
+            //if (this.DicTWInitialGBs != null)
+            //{
+            //    this.DicTWInitialGBs.TryGetValue(pa.CustId, out TWInitialGBGetChangesEntity twGBCust);
 
-                if (twGBCust != null)
-                {
-                    return string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);                    
-                }
-            }
+            //    if (twGBCust != null)
+            //    {
+            //        return string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);                    
+            //    }
+            //}
             
             return null;
         }
 
         public string BuildPAPotentialInfo(IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
         {
-            if (problemClassification != null && problemClassification.Any())
-            {               
-                var dailyPas = problemClassification.Select(x =>
-                {
-                    var pa = new ProblemAccountLosingClassificationModel(x);
+            //if (problemClassification != null && problemClassification.Any())
+            //{               
+            //    var dailyPas = problemClassification.Select(x =>
+            //    {
+            //        var pa = new ProblemAccountLosingClassificationModel(x);
                     
-                    pa.Remark = BuildRemarkTWInitialSmart(x) ?? BuildRemarkTWInitialGB(x);
+            //        pa.Remark = BuildRemarkTWInitialSmart(x) ?? BuildRemarkTWInitialGB(x);
                    
-                    return pa;
-                });
+            //        return pa;
+            //    });
 
-                return JsonConvert.SerializeObject(dailyPas);
-            }
+            //    return JsonConvert.SerializeObject(dailyPas);
+            //}
 
             return JsonConvert.SerializeObject(problemClassification.Select(x => new ProblemAccountLosingClassificationModel(x)));
         }  

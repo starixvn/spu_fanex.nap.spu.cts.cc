@@ -4,8 +4,6 @@
 
     public class PADailyScanFromQueueModel
     {
-        public IEnumerable<ulong> PADailyScanCustIDs { get; set; }
-
-        public IEnumerable<CustToBuildRemarkEntity> PAPotentialScanCustIDs { get; set; }
+        public IEnumerable<long> PADailyScanCustIDs { get; set; }
     }
 }

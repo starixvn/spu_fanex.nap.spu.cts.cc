@@ -9,6 +9,7 @@
     using System;    
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IMatchMonitorClassificationJobService
     {
@@ -81,8 +82,8 @@
                     var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
 
                     var custIdsResult = problemAccountServices.InsertProblemAccountPackage(problemAccounts
-                        , Shares.Constants.FunctionId.ClassifyGBMatchMonitor
-                        , Shares.Constants.InsertPA_ByType.Category
+                        , FunctionId.ClassifyGBMatchMonitor
+                        , CCInputFlow.InsertPACategory
                         , false
                         , serviceName);
 

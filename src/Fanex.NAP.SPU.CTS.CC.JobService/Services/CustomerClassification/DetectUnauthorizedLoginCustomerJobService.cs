@@ -118,7 +118,7 @@
                         RoleID = x.RoleID,
                         SubscriberID = x.SubscriberID,
                         CategoryID = x.CategoryID,
-                        CategoryGroup = x.CategoryID,
+                        CategoryGroupID = x.CategoryID,
                         IsLicensee = x.IsLicensee,
                         IsDirectPA = true,
                         IsFromCTS = true,

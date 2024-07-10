@@ -120,7 +120,7 @@
                     RoleID = c.RoleID,
                     SubscriberID = c.SubscriberID,
                     CategoryID = c.CategoryID,
-                    CategoryGroup = c.CategoryGroup,
+                    CategoryGroupID = c.CategoryGroup,
                     IsLicensee = c.IsLicensee,
                     Remark = c.Remark,
                     IsDirectPA = false,

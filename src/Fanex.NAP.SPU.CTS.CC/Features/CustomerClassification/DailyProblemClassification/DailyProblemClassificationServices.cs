@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -86,13 +87,15 @@
         {
             if (problemClassification != null && problemClassification.Any())
             {
-                this.paPotentialClassificationService.SetTWInitialGBs(paDailyScanFromQueue);
+                //this.paPotentialClassificationService.SetTWInitialGBs(paDailyScanFromQueue);
 
-                this.paPotentialClassificationService.SetTWInitialSmartSmarts(paDailyScanFromQueue);
+                //this.paPotentialClassificationService.SetTWInitialSmartSmarts(paDailyScanFromQueue);
 
-                var jsonPas = this.paPotentialClassificationService.BuildPAPotentialInfo(problemClassification);
+                //var jsonPas = this.paPotentialClassificationService.BuildPAPotentialInfo(problemClassification);
 
-                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonPas);
+                var pasJson = JsonConvert.SerializeObject(problemClassification);
+
+                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(pasJson);
             }
 
             return this;

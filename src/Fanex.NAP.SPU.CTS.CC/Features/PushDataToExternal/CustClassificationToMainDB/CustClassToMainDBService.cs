@@ -65,7 +65,7 @@
 
             return isSuccess;
         }
-
+       
         public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             if (custIds == null || !custIds.Any())
@@ -76,7 +76,7 @@
             var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
-            {
+            {                
                 var lastestClassifications = GetLatestCCAndDangerLevel(custids);
 
                 if (lastestClassifications != null && lastestClassifications.Any())

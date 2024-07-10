@@ -58,7 +58,7 @@
             {
                 new InsertProblemAccountEntity
                 {  
-                    CustID =1, CTSCustID =1, CategoryID = 158, CategoryGroup = 158
+                    CustID =1, CTSCustID =1, CategoryID = 158, CategoryGroupID = 158
                 } 
             };
 
