@@ -17,6 +17,8 @@
     {
         IRescanCustClassificationService Start();
 
+        IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
+
         bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
 
         //IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
@@ -24,8 +26,6 @@
         //IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue, FunctionId functionId);
 
         //IRescanCustClassificationService RemoveOldProblemAccount();
-
-        IEnumerable<long> GetAgentCusts(IEnumerable<long> custIds);
 
         IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
@@ -69,14 +69,14 @@
         private bool isSuccess;
 
         public RescanCustClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
-            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,           
+            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ICustClassToMainDBService custClassToMainDBService, ISentryClient sentryClient) : base (baseDataAccess, problemAccountDataAccess, sentryClient)
+            ICustClassToMainDBService custClassToMainDBService, ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
-            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;           
+            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
-        }      
+        }
 
         //public RescanCustClassificationService(
         //    IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -98,13 +98,15 @@
 
         public IRescanCustClassificationService Start()
         {
-            this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
-            this.robotUsers = new List<InsertRobotEntity>();
-            this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
-            this.custIdsToRescanPA = new List<long>();
-            this.custIdsToRescanPotentialPA = new List<long>();
-            this.custIdsToRemoveOldPA = new List<long>();
+            //this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
+            //this.robotUsers = new List<InsertRobotEntity>();
+            //this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
+            //this.custIdsToRescanPA = new List<long>();
+            //this.custIdsToRescanPotentialPA = new List<long>();
+            //this.custIdsToRemoveOldPA = new List<long>();
+
             this.smaCustIds = new List<long>();
+
             this.isSuccess = true;
 
             return this;
@@ -146,48 +148,50 @@
 
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            var custRescanToPush = new List<long>();
-            var custAgents = GetAgentCusts(custIds);
-            var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));            
-          
+            Start().GetAgentCusts(custIds);
+
+            var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));
+
             if (custRescans.CustInfos != null && custRescans.CustInfos.Any())
             {
-                var groupingCustRescans = custRescans.CustInfos.GroupBy(x => x.InputFlowID)
-                    .Select(g => new { InputFlowID = g.Key, CustRescans = g.Select(x => x) });
-               
-                //foreach (var group in groupingCustRescans)
-                //{
-                //    switch ((CCInputFlow)group.InputFlowID)
-                //    {
-                //        case CCInputFlow.RescanPACategory:
-                //        case CCInputFlow.RescanPAReason:
-                //        case CCInputFlow.RescanRobot:
-                //        case CCInputFlow.RescanPotential:
-                //            var resultCustRescans = RescanCustomerClassification(group.CustRescans, paras.FunctionId, (CCInputFlow)group.InputFlowID, paras.IsToQueue, paras.ServiceName);                            
-                //            PushExternalProblemAccounts(resultCustRescans, paras.PushDataExternal);
-                //            custIds.Except(resultCustRescans);
+                var groupingCustRescans = custRescans.CustInfos.GroupBy(x => x.InputFlowID).Select(g => new { InputFlowID = g.Key, CustRescans = g.Select(x => x) });
 
-                //            break;
-                //        case CCInputFlow.RescanNormal:
-                //            var custIDToString = string.Join(",", group.CustRescans.Select(x => x.CustID));
+                foreach (var group in groupingCustRescans)
+                {
+                    if ((CCInputFlow)group.InputFlowID == CCInputFlow.RescanNormal)
+                    {
+                        PreNormalClassification(group.CustRescans.Select(x => x.CustID), paras);
+                    }
+                    else
+                    {
+                        RescanProblemAccount(group.CustRescans, paras, (CCInputFlow)group.InputFlowID);
+                    }
+                }
 
-                //            rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, paras.FunctionId, paras.RescanNormalType);
-                //            break;
-                            
-                //        default:
-                //            //
-                //            break;
-                //    }
-                //}
-
-                //if (custRescanToPush.Any())
-                //{
-                //    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custRescanToPush.Distinct(), paras.PushDataExternal);
-                //}
+                if (smaCustIds.Any())
+                {
+                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
+                }
             }
 
             return isSuccess;
-        }       
+        }
+
+        private void RescanProblemAccount(IEnumerable<GetRescanCustomerClassificationEntity> custNormals, RescanParametersEntity paras, CCInputFlow ccInputFlow)
+        {
+            var resultCustRescans = base.RescanCustomerClassification(custNormals, paras.FunctionId, ccInputFlow, paras.IsToQueue, paras.ServiceName);
+
+            PushExternalProblemAccounts(resultCustRescans, paras.PushDataExternal);
+
+            smaCustIds.Except(resultCustRescans);
+        }
+
+        private void PreNormalClassification(IEnumerable<long> custNormals, RescanParametersEntity paras)
+        {
+            var custIDToString = string.Join(",", custNormals);
+
+            rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, paras.FunctionId, paras.RescanNormalType);
+        }
 
         //public IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds)
         //{
@@ -333,18 +337,19 @@
             return true;
         }
 
-        public IEnumerable<long> GetAgentCusts(IEnumerable<long> custIds)
+        public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
         {
             var data = rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds));
 
             if (data != null && data.Any())
             {
-                return data.Where(c => c.RoleID == (int)CustomerRole.Agent
+                smaCustIds = data.Where(c => c.RoleID == (int)CustomerRole.Agent
                                           || c.RoleID == (int)CustomerRole.Master
                                           || c.RoleID == (int)CustomerRole.Super).Select(c => c.CustID)?.ToList();
+
             }
 
-            return Enumerable.Empty<long>();
+            return this;
         }
 
         public IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras)
@@ -373,7 +378,7 @@
         }
 
         public IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters)
-        {            
+        {
             if (isSuccess && smaCustIds != null && smaCustIds.Any())
             {
                 var custToRemovePA = smaCustIds.Distinct().Except(custIdsToRescanPA);
@@ -437,7 +442,7 @@
         //        var pasInitialSmart = rescanInitialSmart.Select(x => new InsertProblemAccountEntity(x));
 
         //        custPaInitialSmart = problemAccountServices.InsertProblemAccountPackage(pasInitialSmart, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
-                
+
         //        custClassToMainDBService.PushExternalProblemAcountPackage(custPaInitialSmart.Distinct(), parameters.PushDataExternal);
 
         //        custIdsToRescanPotentialPA.AddRange(custPaInitialSmart.Distinct());
