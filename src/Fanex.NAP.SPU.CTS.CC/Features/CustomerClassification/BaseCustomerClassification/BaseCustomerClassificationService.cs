@@ -7,6 +7,8 @@
         GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs);
 
         ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model);
+
+        ResultRemoveCustomerClassificationModel RemoveCustomerClassification(CCInputFlow inputFlow, RemoveCustomerClassificationModel model);
     }
 
     public class BaseCustomerClassificationService : IBaseCustomerClassificationService
@@ -26,6 +28,11 @@
         public ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model)
         {
             return this.baseDataAccess.InsertCustomerClassification(inputFlow, model);
+        }
+
+        public ResultRemoveCustomerClassificationModel RemoveCustomerClassification(CCInputFlow inputFlow, RemoveCustomerClassificationModel model)
+        {
+            return this.baseDataAccess.RemoveCustomerClassification(inputFlow, model);
         }
 
     }

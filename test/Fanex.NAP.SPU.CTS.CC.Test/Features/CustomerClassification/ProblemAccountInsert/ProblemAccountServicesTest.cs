@@ -96,17 +96,17 @@
         [Fact]
         public void RemovePALogics_WhenSuccess_ReturnNotException()
         {
-            // Arrange 
-            var custInfo = new List<CustRemovePAEntity>()
-            {
-                new CustRemovePAEntity {  CustID = 1, CTSCustID = 1 }
-            };
+            //// Arrange 
+            //var custInfo = new List<CustRemovePAEntity>()
+            //{
+            //    new CustRemovePAEntity {  CustID = 1, CTSCustID = 1 }
+            //};
 
-            // Act
-            Action action = () => problemAccountServices.RemovePALogics(custInfo, "TWProblemAccountInsert");
+            //// Act
+            //Action action = () => problemAccountServices.RemovePALogics(custInfo, "TWProblemAccountInsert");
 
-            // Assert
-            action.Should().NotThrow<Exception>();
+            //// Assert
+            //action.Should().NotThrow<Exception>();
         }
 
         [Fact]

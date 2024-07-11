@@ -38,6 +38,10 @@
             var criteria = new InsertCustomerClassificationCriteria
             {
                 InputFlowID = (int)inputFlow,
+                FromAction = model.FromAction,
+                UplineRoleID = model.UplineRoleID,
+                QueueID = model.QueueID,
+                AffectDownline = model.AffectDownline,
                 IsToQueue = model.IsToQueue,
                 CustClassificationJson = model.CustClassificationJson
             };
@@ -52,12 +56,17 @@
             var criteria = new RemoveCustomerClassificationCriteria
             {
                 InputFlowID = (int)inputFlow,
-                CustClassificationJson = model.CustClassificationJson,               
+                FromAction = model.FromAction,
+                UplineRoleID = model.UplineRoleID,
+                QueueID = model.QueueID,
+                AffectDownline = model.AffectDownline,
+                IsFromQueue = model.IsFromQueue,
+                CustClassificationJson = model.CustClassificationJson
             };
 
-            var custInfos = repository.Fetch<CustInfoClassificationEntity>(criteria);
+            var custInfos = repository.Fetch<ResultRemoveCustomerClassificationEntity>(criteria);
 
-            return new ResultRemoveCustomerClassificationModel { CustInfos = custInfos };
+            return new ResultRemoveCustomerClassificationModel { CustInfos = custInfos, ErrorMessage = criteria.ErrorMessage };
         }
     }
 }

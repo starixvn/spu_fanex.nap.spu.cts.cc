@@ -4,6 +4,8 @@
 
     public class ResultRemoveCustomerClassificationModel
     {
-        public IEnumerable<CustInfoClassificationEntity> CustInfos { get; set; }
+        public IEnumerable<ResultRemoveCustomerClassificationEntity> CustInfos { get; set; }
+
+        public string ErrorMessage { get; set; }
     }
 }

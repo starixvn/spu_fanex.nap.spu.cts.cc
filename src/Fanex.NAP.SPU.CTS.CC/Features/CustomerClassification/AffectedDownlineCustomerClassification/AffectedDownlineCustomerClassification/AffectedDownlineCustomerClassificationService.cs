@@ -29,7 +29,7 @@
 
         IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
 
-        IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
+        ResultRemoveCustomerClassificationModel RemoveVVIPCategory(VVIPCustomerInsertEntity model);
     }
 
     public class AffectedDownlineCustomerClassificationService : ProblemAccountServices, IAffectedDownlineCustomerClassificationService
@@ -155,23 +155,21 @@
                     IsExceptDirectDownline = c.IsExceptDirectDownline,
                     CreatedBy = c.CreatedBy
                 });
+                
+                var result = RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
 
-                //var result = problemAccountServices.RemoveProblemAccountPackage(probAccounts, true, parameters.ServiceName);
+                //isSuccess = result.ErrorCode == 0;
 
-                var result = RemoveProblemAccountPackage_Test();
+                //if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
+                //{
+                //    //var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);
+                //    //parameters.IsRescanPA = false;
+                //    //isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanNormalCustIDs, parameters);
 
-                isSuccess = result.ErrorCode == 0;
-
-                if (isSuccess && result.CustomerInfo != null && result.CustomerInfo.Any())
-                {
-                    //var rescanNormalCustIDs = result.CustomerInfo.Where(x => x.IsCleanPA).Select(x => x.CustID);
-                    //parameters.IsRescanPA = false;
-                    //isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanNormalCustIDs, parameters);
-
-                    var rescanPACustIDs = result.CustomerInfo.Where(x => !x.IsCleanPA).Select(x => x.CustID);
-                    parameters.IsRescanPA = true;
-                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanPACustIDs, parameters);
-                }
+                //    var rescanPACustIDs = result.CustomerInfo.Where(x => !x.IsCleanPA).Select(x => x.CustID);
+                //    parameters.IsRescanPA = true;
+                //    isSuccess = rescanCustClassificationService.RescanCustomerClassification(rescanPACustIDs, parameters);
+                //}
             }
 
             return isSuccess;
@@ -230,11 +228,14 @@
             {
                 var result = RemoveVVIPCategory(custInfo);
 
-                var custIDs = result.Select(x => x.CustID);
+                if (result.CustInfos != null && result.CustInfos.Any())
+                {
+                    var custIDs = result.CustInfos.Select(x => x.CustID);
 
-                parameters.IsRescanPA = true;
-                parameters.IsRescanPotentialPA = true;
-                isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
+                    parameters.IsRescanPA = true;
+                    parameters.IsRescanPotentialPA = true;
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
+                }
             }
 
             return isSuccess;
@@ -260,14 +261,17 @@
             return Enumerable.Empty<LatestClassificationEntity>();
         }
 
-        public IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity custInfo)
-        {
-            if (custInfo != null && custInfo.CustInfo != null && custInfo.CustInfo.Any())
+        public ResultRemoveCustomerClassificationModel RemoveVVIPCategory(VVIPCustomerInsertEntity custInfo)
+        {           
+            var removeModel = new RemoveCustomerClassificationModel
             {
-                return affectedCustClassificationDataAccess.RemoveVVIPCategory(custInfo);
-            }
+                FromAction = (int)VVIP_FromAction.Service,
+                AffectDownline = true,
+                QueueID = custInfo.QueueID,
+                CustClassificationJson = JsonConvert.SerializeObject(custInfo.CustInfo)
+            };
 
-            return Enumerable.Empty<VVIPCustomerRemoveResultEntity>();
+            return base.RemoveCustomerClassification(CCInputFlow.RemoveVVIP, removeModel);
         }
 
         public static VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)

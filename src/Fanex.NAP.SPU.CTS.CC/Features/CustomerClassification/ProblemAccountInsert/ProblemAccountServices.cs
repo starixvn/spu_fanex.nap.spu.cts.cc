@@ -22,7 +22,9 @@
 
         IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName);
 
-        RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
+        ResultRemoveCustomerClassificationModel RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
+
+        //RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
 
         void RemoveOldProblemAccount(IEnumerable<long> custIds);
 
@@ -30,7 +32,7 @@
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
 
-        void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName);
+        void RemovePALogics(IEnumerable<ResultRemoveCustomerClassificationEntity> customerInfo, string serviceName);
 
         void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);
 
@@ -137,17 +139,17 @@
             return Enumerable.Empty<long>();
         }
 
-        public RemovePAResultEntity RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        public ResultRemoveCustomerClassificationModel RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
-            var result = new RemovePAResultEntity();
+            var result = new ResultRemoveCustomerClassificationModel();
 
             if (problemAccounts != null && problemAccounts.Any())
             {
                 result = RemoveProblemAccount(problemAccounts, isFromQueue, serviceName);
 
-                if (result.ErrorCode == 0)
+                if (string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    RemovePALogics(result.CustomerInfo, serviceName);
+                    RemovePALogics(result.CustInfos, serviceName);
                 }
             }
 
@@ -166,7 +168,7 @@
             }
         }
 
-        public void RemovePALogics(IEnumerable<CustRemovePAEntity> customerInfo, string serviceName)
+        public void RemovePALogics(IEnumerable<ResultRemoveCustomerClassificationEntity> customerInfo, string serviceName)
         {
             if (customerInfo != null && customerInfo.Any())
             {
@@ -249,22 +251,40 @@
             return MergePALosingClassification(problemAccounts, paLosing);
         }
 
-        private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        private ResultRemoveCustomerClassificationModel RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
-            if (problemAccounts != null && problemAccounts.Any())
+            var modelRemove = new RemoveCustomerClassificationModel()
             {
-                var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);               
+                CustClassificationJson = JsonConvert.SerializeObject(problemAccounts),
+                IsFromQueue = isFromQueue
+            };
 
-                if (result.ErrorCode != 0)
-                {
-                    Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
-                }
+            var resultRemove = base.RemoveCustomerClassification(CCInputFlow.RemovePACategory, modelRemove);
 
-                return result;
+            if (!string.IsNullOrEmpty(resultRemove.ErrorMessage))
+            {
+                Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(resultRemove.ErrorMessage), sentryClient);
             }
 
-            return new RemovePAResultEntity();
+            return resultRemove;
         }
+
+        //private RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
+        //{
+        //    if (problemAccounts != null && problemAccounts.Any())
+        //    {
+        //        var result = problemAccountDataAccess.RemoveProblemAccount(problemAccounts, isFromQueue);               
+
+        //        if (result.ErrorCode != 0)
+        //        {
+        //            Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(result.ErrorMessage), sentryClient);
+        //        }
+
+        //        return result;
+        //    }
+
+        //    return new RemovePAResultEntity();
+        //}
 
         private IEnumerable<CustInfoEntity> InsertRobotAccount(IEnumerable<InsertRobotEntity> robotAccounts, bool isRescan)
         {
