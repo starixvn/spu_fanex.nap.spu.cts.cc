@@ -84,8 +84,6 @@
             {
                 var paramaters = new PushDataToExternalEntity()
                 {
-                    IsPushCCToSoon88 = true,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,

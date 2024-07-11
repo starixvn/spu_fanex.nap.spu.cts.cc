@@ -101,8 +101,6 @@
                     var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId((IEnumerable<long>)custIDs, (PushDataToExternalEntity)new PushDataToExternalEntity
                     {
                         ExternalBatchSize = batchExternalSize,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
                         IsUpdateDangerToMainDB = true,
                         IsWriteLog = appSettings.NormalAccountIsWriteLog,
                         ServiceName = serviceName

@@ -78,12 +78,12 @@
                 {
                     CustInfo = newCustomerClassification.VVIPClassification,
                     FromAction = VVIP_FromAction.ServiceInsertNew,
-                    IsAffectDownline = true,
+                    IsAffectDownline = false,
                     QueueID = null,
                     UplineRoleID = null
                 };
 
-                IsSuccess = affectedCustomerClassificationService.InsertVVIPForDownlinePackage(parameters, custInfo);
+                IsSuccess = affectedCustomerClassificationService.InsertVVIP(parameters, custInfo);
             }
 
             return this;

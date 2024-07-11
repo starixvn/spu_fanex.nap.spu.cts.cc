@@ -93,7 +93,7 @@
                                 CustID = x.CustID,
                                 ReasonID = x.ReasonId,
                                 Remark = x.Comment,
-                                IsDirectPA = true,
+                                IsMarkedDirectly = true,
                                 IsFromTW = true,
                                 CreatedBy = x.UserId
                             });
@@ -105,8 +105,6 @@
                                 custClassToMainDBService.PushExternalPackageByCustId(custIds.Distinct(), new PushDataToExternalEntity
                                 {
                                     ExternalBatchSize = batchSize,
-                                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                    IsPushCCToSoon88 = true,
                                     IsUpdateDangerToMainDB = true,
                                     IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                                     ServiceName = ServiceName

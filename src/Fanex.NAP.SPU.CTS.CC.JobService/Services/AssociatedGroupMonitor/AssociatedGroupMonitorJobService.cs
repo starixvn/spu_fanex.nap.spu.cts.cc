@@ -65,7 +65,7 @@
                         CategoryID = custInfo.PACategoryID,
                         CategoryGroupID = custInfo.PACategoryID,
                         IsLicensee = x.IsLicensee,
-                        IsDirectPA = true,                       
+                        IsMarkedDirectly = true,                       
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,
@@ -84,8 +84,6 @@
                         custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchSize,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName

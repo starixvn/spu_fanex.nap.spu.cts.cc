@@ -90,7 +90,6 @@
                 {
                     ExternalBatchSize = 1,
                     ServiceName = "robotAIClassServiceName",
-                    IsPushCCToSoon88 = true,
                     IsWriteLog = false,
                     IsSyncAFCData = false,
                 }

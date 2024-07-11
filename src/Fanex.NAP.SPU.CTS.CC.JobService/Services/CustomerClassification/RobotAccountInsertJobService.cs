@@ -106,8 +106,6 @@
                                                           PushDataExternal = new PushDataToExternalEntity
                                                           {
                                                               IsUpdateDangerToMainDB = true,
-                                                              IsPushCCToSoon88 = true,
-                                                              FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                                               ServiceName = robotAccountServiceName,
                                                               ExternalBatchSize = batchExternalSize,
                                                               IsWriteLog = appSettings.RobotAccountIsWriteLog,
@@ -139,8 +137,6 @@
                                                      PushDataExternal = new PushDataToExternalEntity
                                                      {
                                                          IsUpdateDangerToMainDB = true,
-                                                         IsPushCCToSoon88 = true,
-                                                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                                          ServiceName = robotDetectionServiceName,
                                                          ExternalBatchSize = batchExternalSize,
                                                          IsWriteLog = appSettings.RobotAccountIsWriteLog,

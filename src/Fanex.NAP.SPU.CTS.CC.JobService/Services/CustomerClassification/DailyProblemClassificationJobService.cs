@@ -77,8 +77,6 @@
                                         .PushCCToExternal(new PushDataToExternalEntity
                                         {
                                             ExternalBatchSize = batchSize,
-                                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                            IsPushCCToSoon88 = true,
                                             IsUpdateDangerToMainDB = true,
                                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                                             ServiceName = serviceName

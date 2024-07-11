@@ -74,7 +74,6 @@
                 {
                     ExternalBatchSize = 1,
                     ServiceName = "robotDetectionServiceName",
-                    IsPushCCToSoon88 = true,
                     IsWriteLog = false,
                     IsSyncAFCData = false,
                 }

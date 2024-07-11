@@ -7,7 +7,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using FluentAssertions;
     using NSubstitute;
     using System;
@@ -28,9 +27,6 @@
 
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-
-        private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
-        private readonly IFeedSoon88Services feedSoon88Services;
 
         public RescanCustomerClassificationTest()
         {   
@@ -257,7 +253,7 @@
                 CategoryID = 0,
                 LastModifiedDate = DateTime.MinValue,
                 CreatedBy = StarixITId,
-                IsDirectPA = false
+                IsMarkedDirectly = false
             };
 
             return data;

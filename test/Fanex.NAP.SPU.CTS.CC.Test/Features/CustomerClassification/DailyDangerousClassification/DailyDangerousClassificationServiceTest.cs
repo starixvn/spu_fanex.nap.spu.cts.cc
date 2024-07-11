@@ -3,8 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;   
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;  
     using FluentAssertions;
     using NSubstitute;
     using System.Collections.Generic;
@@ -14,9 +13,6 @@
     {        
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
-
-        private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
-        private readonly IFeedSoon88Services feedSoon88Services;
 
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
@@ -29,11 +25,9 @@
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
             problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
 
-            feedSoon88DataAccess = Substitute.For<IFeedSoon88DataAccess>();
-            feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             dangerousCCDataAccess = Substitute.For<IDailyDangerousClassificationDataAccess>();
             dailyDangerousCCService = new DailyDangerousClassificationService(problemAccountServices, dangerousCCDataAccess, custClassToMainDBService);
@@ -68,8 +62,6 @@
             var paras = new PushDataToExternalEntity
             {
                 ExternalBatchSize = 500,
-                FeedSoon88API = "",
-                IsPushCCToSoon88 = true,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = false,
                 ServiceName = "DailyDangerousClassificationServiceTest"

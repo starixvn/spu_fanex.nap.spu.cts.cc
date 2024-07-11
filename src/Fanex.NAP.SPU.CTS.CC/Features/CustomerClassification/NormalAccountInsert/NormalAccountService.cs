@@ -28,7 +28,7 @@
         private readonly INormalAccountDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
 
-        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess) 
+        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient) 
         {
             this.dataAccess = dataAccess;
             this.sentryClient = sentryClient;
@@ -47,17 +47,10 @@
             {
                 var modelInsert = new InsertCustomerClassificationModel()
                 {                    
-                    CustClassificationJson = JsonConvert.SerializeObject(custs)
+                    CustInfoJson = JsonConvert.SerializeObject(custs)
                 };
 
-                result = base.InsertCustomerClassification(CCInputFlow.Normal, modelInsert);
-
-                Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", modelInsert, isWriteLog, sentryClient);
-
-                if (!string.IsNullOrEmpty(result.ErrorMessage))
-                {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount throw Exception", modelInsert, new Exception(result.ErrorMessage), sentryClient);
-                }
+                result = base.InsertCustomerClassification(CCInputFlow.Normal, modelInsert, serviceName);
             }
             
             return result;

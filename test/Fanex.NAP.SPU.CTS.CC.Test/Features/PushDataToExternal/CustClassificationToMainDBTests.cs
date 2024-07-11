@@ -1,31 +1,18 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.PushDataToExternal
 {
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
-    using Fanex.NAP.SPU.CTS.Shares.Models;
-    using FluentAssertions;
-    using Newtonsoft.Json;
     using NSubstitute;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Xunit;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class CustClassificationToMainDBTests
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
-        private readonly IFeedSoon88Services feedSoon88Services;
 
         public CustClassificationToMainDBTests()
         {
-            feedSoon88DataAccess = Substitute.For<IFeedSoon88DataAccess>();
-            feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
         }
 
         //[Fact]

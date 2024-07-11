@@ -46,7 +46,7 @@
 
         public ProblemAccountServices(IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient) : base(baseDataAccess)
+            ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
         {
             this.problemAccountDataAccess = problemAccountDataAccess;
             this.sentryClient = sentryClient;
@@ -91,11 +91,11 @@
 
                 var modelInsert = new InsertCustomerClassificationModel()
                 {
-                    CustClassificationJson = JsonConvert.SerializeObject(paClassification),
+                    CustInfoJson = JsonConvert.SerializeObject(paClassification),
                     IsToQueue = isToQueue
                 };
 
-                var insertPaResult = base.InsertCustomerClassification(ccInputFlow, modelInsert);
+                var insertPaResult = base.InsertCustomerClassification(ccInputFlow, modelInsert, serviceName);
 
                 if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
                 {
@@ -120,7 +120,7 @@
 
                 var paClassification = MergePALosingClassification(problemAccounts, paLosing);
 
-                var insertPaResult = InsertProblemAccount(paClassification, funcId, isToQueue);
+                var insertPaResult = InsertProblemAccount(paClassification, funcId, isToQueue, serviceName);
 
                 if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
                 {
@@ -229,17 +229,17 @@
 
         #region Private Methods
 
-        private ResultInsertCustomerClassificationModel InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, bool isToQueue)
+        private ResultInsertCustomerClassificationModel InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, bool isToQueue, string serviceName)
         {
             var paClassification = CombinePAWithLosingPerformace(problemAccounts, funcId);
 
             var modelInsert = new InsertCustomerClassificationModel()
             {
-                CustClassificationJson = JsonConvert.SerializeObject(paClassification),
+                CustInfoJson = JsonConvert.SerializeObject(paClassification),
                 IsToQueue = isToQueue
             };
 
-            return base.InsertCustomerClassification(CCInputFlow.InsertPACategory, modelInsert);            
+            return base.InsertCustomerClassification(CCInputFlow.InsertPACategory, modelInsert, serviceName);            
         }
 
         public IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
@@ -253,18 +253,13 @@
 
         private ResultRemoveCustomerClassificationModel RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
-            var modelRemove = new RemoveCustomerClassificationModel()
+            var removedModel = new RemoveCustomerClassificationModel()
             {
-                CustClassificationJson = JsonConvert.SerializeObject(problemAccounts),
+                CustInfoJson = JsonConvert.SerializeObject(problemAccounts),
                 IsFromQueue = isFromQueue
             };
 
-            var resultRemove = base.RemoveCustomerClassification(CCInputFlow.RemovePACategory, modelRemove);
-
-            if (!string.IsNullOrEmpty(resultRemove.ErrorMessage))
-            {
-                Utilities.LogSentryError(serviceName, "RemoveProblemAccount", problemAccounts, new Exception(resultRemove.ErrorMessage), sentryClient);
-            }
+            var resultRemove = base.RemoveCustomerClassification(CCInputFlow.RemovePACategory, removedModel, serviceName);
 
             return resultRemove;
         }
@@ -379,17 +374,16 @@
                                                             Remark = group.pa.Remark,
                                                             MatchID = group.pa.MatchID,
                                                            
-                                                            IsDirectPA = group.pa.IsDirectPA,
+                                                            IsMarkedDirectly = group.pa.IsMarkedDirectly,
                                                             IsFromAI = group.pa.IsFromAI,
                                                             IsFromCTS = group.pa.IsFromCTS,
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             TVSRequestID = group.pa.TVSRequestID,
                                                             IsFromTW = group.pa.IsFromTW,
-                                                            IsDataChanged = group.pa.IsDataChanged,
                                                             ReasonID = group.pa.ReasonID,
                                                             SportType = group.pa.SportType,
-                                                            IsParlay = group.pa.IsParlay,
-                                                            IssueTypeID = group.pa.IssueTypeID,
+                                                            IsTVSParlay = group.pa.IsTVSParlay,
+                                                            TVSIssueTypeID = group.pa.TVSIssueTypeID,
 
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,

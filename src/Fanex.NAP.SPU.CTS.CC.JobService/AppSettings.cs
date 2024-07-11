@@ -12,8 +12,6 @@
 
         string SPName { get; }
 
-        string Soon88FeedDataAPI { get; }
-
         string AFCInsertAccountURL { get; }
 
         string AFCDeleteAccountURL { get; }
@@ -75,7 +73,6 @@
             environment = GetValue<string>(nameof(Environment));
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
-            soon88FeedDataAPI = GetValue<string>(nameof(Soon88FeedDataAPI));
             afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
             afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
@@ -107,8 +104,6 @@
         public string EvironmentName => evironmentName;
 
         public string SPName => spName;
-
-        public string Soon88FeedDataAPI => soon88FeedDataAPI;
 
         public string AFCInsertAccountURL => afcInsertAccountURL;
 

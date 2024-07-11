@@ -10,7 +10,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
@@ -211,9 +210,6 @@
 
             services.AddSingleton<ICustClassToMainDBDataAccess, CustClassToMainDBDataAccess>();
             services.AddSingleton<ICustClassToMainDBService, CustClassToMainDBService>();
-
-            services.AddSingleton<IFeedSoon88DataAccess, FeedSoon88DataAccess>();
-            services.AddSingleton<IFeedSoon88Services, FeedSoon88Services>();
 
             services.AddSingleton<IRescanCustClassificationDataAccess, RescanCustClassificationDataAccess>();
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();

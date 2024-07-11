@@ -58,8 +58,6 @@
         {
             var paramaters = new RescanParametersEntity()
             {
-                IsRescanPA = false,
-                IsRescanPotentialPA = true,
                 IsToQueue = false,
                 FunctionId = FunctionId.DownlineCustomerClassification,
                 RescanNormalType = RescanNormalType.Auto_AfftectedDownline,
@@ -67,8 +65,6 @@
                 ServiceName = serviceName,
                 PushDataExternal = new PushDataToExternalEntity
                 {
-                    IsPushCCToSoon88 = true,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,

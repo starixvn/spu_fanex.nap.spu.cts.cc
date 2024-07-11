@@ -19,7 +19,5 @@
         public int? ActiveDays { get; set; }
 
         public DateTime? PerformanceTime { get; set; }
-
-
     }
 }

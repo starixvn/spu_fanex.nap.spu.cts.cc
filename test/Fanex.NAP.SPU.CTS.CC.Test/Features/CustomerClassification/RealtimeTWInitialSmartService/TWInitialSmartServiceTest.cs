@@ -27,7 +27,7 @@
             problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             twInitialSmartDataAccess = Substitute.For<ITWInitialSmartDataAccess>();
             twInitialSmartService = new TWInitialSmartService(problemAccountServices, custClassToMainDBService, twInitialSmartDataAccess);

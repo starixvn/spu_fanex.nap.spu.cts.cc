@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -33,18 +32,15 @@
     public class CustClassToMainDBService : ICustClassToMainDBService
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
-        private readonly IFeedSoon88Services feedSoon88Services;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
             ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
             ISentryClient sentryClient,
-            IFeedSoon88Services feedSoon88Services,
             IAntiFraudCenterServices antiFraudCenterServices)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
-            this.feedSoon88Services = feedSoon88Services;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.sentryClient = sentryClient;
         }
@@ -232,11 +228,6 @@
             if (lastestClassifications != null && lastestClassifications.Any())
             {
                 isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName);
-
-                if (paras.IsPushCCToSoon88)
-                {
-                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName);
-                }
 
                 if (paras.IsUpdateDangerToMainDB && isSuccess)
                 {

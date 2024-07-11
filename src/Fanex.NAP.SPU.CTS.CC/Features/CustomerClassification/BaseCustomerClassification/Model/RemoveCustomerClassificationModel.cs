@@ -2,11 +2,11 @@
 {
     public class RemoveCustomerClassificationModel
     {
-        public string CustClassificationJson { get; set; }
+        public string CustInfoJson { get; set; }
 
         public int FromAction { get; set; }
 
-        public int UplineRoleID { get; set; }
+        public int? UplineRoleID { get; set; }
 
         public long? QueueID { get; set; }
 

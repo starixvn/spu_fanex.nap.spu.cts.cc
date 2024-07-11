@@ -12,10 +12,6 @@
     {
         CustClassificationFromQueueResultEntity GetCustomerCategoryFromQueue();
 
-        IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo);
-
-        IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model);
-
         void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId);
     }
 
@@ -41,41 +37,6 @@
             queueResult.LastDownlineCTSCustID = criteria.LastDownlineCTSCustID;
 
             return queueResult;
-        }
-
-        public IEnumerable<LatestClassificationEntity> InsertVVIPCategory(VVIPCustomerInsertEntity custInfo)
-        {
-            var criteria = new VVIPCategoryInsertCriteria
-            {
-                FromAction = (int)custInfo.FromAction,
-                QueueID = custInfo.QueueID,
-                IsAffectDownline = custInfo.IsAffectDownline,
-                UplineRoleID = custInfo.UplineRoleID,
-                CustJson = JsonConvert.SerializeObject(custInfo.CustInfo)
-            };
-
-            return repository.Fetch<LatestClassificationEntity>(criteria) ?? Enumerable.Empty<LatestClassificationEntity>();
-        }
-
-        public IEnumerable<VVIPCustomerRemoveResultEntity> RemoveVVIPCategory(VVIPCustomerInsertEntity model)
-        {
-            var custInfo = model.CustInfo.Select(x => new
-            {
-                CustID = x.CustID,
-                CTSCustID = x.CTSCustID,
-                CreatedBy = x.CreatedBy
-            });
-
-            var criteria = new VVIPCategoryRemoveCriteria
-            {
-                FromAction = (int)VVIP_FromAction.Service,
-                UplineRoleID = model.UplineRoleID,
-                QueueID = model.QueueID,
-                AffectDownline = true,
-                CustJson = JsonConvert.SerializeObject(custInfo)
-            };
-
-            return repository.Fetch<VVIPCustomerRemoveResultEntity>(criteria);
         }
 
         public void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId)

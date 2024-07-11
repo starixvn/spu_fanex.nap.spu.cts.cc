@@ -120,7 +120,7 @@
                         CategoryID = x.CategoryID,
                         CategoryGroupID = x.CategoryID,
                         IsLicensee = x.IsLicensee,
-                        IsDirectPA = true,
+                        IsMarkedDirectly = true,
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,
@@ -133,8 +133,6 @@
                 var paras = new PushDataToExternalEntity
                 {
                     ExternalBatchSize = batchExternalSize,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                    IsPushCCToSoon88 = true,
                     IsUpdateDangerToMainDB = true,
                     IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                     ServiceName = serviceName

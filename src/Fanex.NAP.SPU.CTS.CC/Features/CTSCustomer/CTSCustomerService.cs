@@ -123,7 +123,6 @@
                         var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
                         {
                             ExternalBatchSize = paras.ExternalBatchSize,
-                            IsPushCCToSoon88 = false,
                             IsUpdateDangerToMainDB = false,
                             IsWriteLog = false,
                             ServiceName = serviceName

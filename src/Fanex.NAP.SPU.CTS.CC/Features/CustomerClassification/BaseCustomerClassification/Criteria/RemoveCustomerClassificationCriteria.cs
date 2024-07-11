@@ -12,7 +12,7 @@
         public int FromAction { get; set; }
 
         [SpParam(SqlParamName = "ip_UplineRoleID")]
-        public int UplineRoleID { get; set; }
+        public int? UplineRoleID { get; set; }
 
         [SpParam(SqlParamName = "ip_QueueID")]
         public long? QueueID { get; set; }
@@ -24,7 +24,7 @@
         public bool IsFromQueue { get; set; }
 
         [SpParam(SqlParamName = "ip_CustInfo")]
-        public string CustClassificationJson { get; set; }
+        public string CustInfoJson { get; set; }
 
         [SpParam(SqlParamName = "op_ErrorMessage")]
         public string ErrorMessage { get; set; }

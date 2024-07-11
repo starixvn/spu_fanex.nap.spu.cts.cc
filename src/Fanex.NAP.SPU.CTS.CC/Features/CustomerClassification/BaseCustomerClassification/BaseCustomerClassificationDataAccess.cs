@@ -41,9 +41,9 @@
                 FromAction = model.FromAction,
                 UplineRoleID = model.UplineRoleID,
                 QueueID = model.QueueID,
-                AffectDownline = model.AffectDownline,
+                AffectDownline = model.IsAffectDownline,
                 IsToQueue = model.IsToQueue,
-                CustClassificationJson = model.CustClassificationJson
+                CustInfoJson = model.CustInfoJson
             };
 
             var custInfos = repository.Fetch<CustInfoClassificationEntity>(criteria);
@@ -61,7 +61,7 @@
                 QueueID = model.QueueID,
                 AffectDownline = model.AffectDownline,
                 IsFromQueue = model.IsFromQueue,
-                CustClassificationJson = model.CustClassificationJson
+                CustInfoJson = model.CustInfoJson
             };
 
             var custInfos = repository.Fetch<ResultRemoveCustomerClassificationEntity>(criteria);

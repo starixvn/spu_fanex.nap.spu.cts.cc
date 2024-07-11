@@ -57,7 +57,7 @@
                         CategoryGroupID = x.CategoryID,
                         IsLicensee = isLicensee,
                         IsFromAI = true,
-                        IsDirectPA = null,
+                        IsMarkedDirectly = null,
                         IsFromCTS = false,
                         IsFromTVS = false,
                         IsFromTW = false,                        
