@@ -120,7 +120,7 @@
 
                     if (customers != null && customers.Any())
                     {
-                        var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
+                        var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
                         {
                             ExternalBatchSize = paras.ExternalBatchSize,
                             IsPushCCToSoon88 = false,

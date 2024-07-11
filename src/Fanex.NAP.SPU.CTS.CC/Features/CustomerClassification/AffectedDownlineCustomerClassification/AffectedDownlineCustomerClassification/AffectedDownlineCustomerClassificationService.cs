@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -34,7 +35,6 @@
     public class AffectedDownlineCustomerClassificationService : ProblemAccountServices, IAffectedDownlineCustomerClassificationService
     {
         private readonly IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
@@ -44,7 +44,6 @@
         public AffectedDownlineCustomerClassificationService(
             IAffectedDownlineCustomerClassificationDataAccess affectedCustClassificationDataAccess,
             IBaseCustomerClassificationDataAccess baseDataAccess,
-           ///IProblemAccountServices problemAccountServices,
             IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
             IAntiFraudCenterServices antiFraudCenterServices,
@@ -52,7 +51,6 @@
             ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
             this.affectedCustClassificationDataAccess = affectedCustClassificationDataAccess;
-            //this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
@@ -93,14 +91,14 @@
                             break;
                         }
                     case (int)DownlineClassification_ActionType.InsertPA:
-                        //{
-                        //    IsSuccess = InsertPAForDownlinePackage(parameters, custClassificationFromQueue);
-                        //    break;
-                        //}
-                    case (int)DownlineClassification_ActionType.RemovePA:                        
-                            IsSuccess = RemovePAForDownlinePackage(parameters, custClassificationFromQueue);
-                            break;
-                        
+                    //{
+                    //    IsSuccess = InsertPAForDownlinePackage(parameters, custClassificationFromQueue);
+                    //    break;
+                    //}
+                    case (int)DownlineClassification_ActionType.RemovePA:
+                        IsSuccess = RemovePAForDownlinePackage(parameters, custClassificationFromQueue);
+                        break;
+
                 }
             }
 
@@ -204,9 +202,18 @@
 
             if (custInfo != null && custInfo.CustInfo.Any())
             {
+                var modelInsert = new InsertCustomerClassificationModel()
+                {
+                    CustClassificationJson = JsonConvert.SerializeObject(custInfo),
+                    IsToQueue = false
+                };
+
+                var insertPaResult = base.InsertCustomerClassification(CCInputFlow.VVIP, modelInsert);
+
+
                 var result = InsertVVIPCategory(custInfo);
 
-                isSuccess = custClassToMainDBService.RetryPushCCToMainDB(result, RetryPushCCToExternal, parameters.ServiceName);
+                isSuccess = custClassToMainDBService.PushCustomerClassification(result, RetryPushCCToExternal, parameters.ServiceName);
 
                 var custIds = result.Select(c => c.CustId).Distinct();
                 antiFraudCenterServices.DeleteAFCAccounts(custIds, FromFlow.CTSServices, parameters.PushDataExternal.IsSyncAFCData, parameters.PushDataExternal.AFCDeleteAccountURL);
@@ -282,6 +289,6 @@
                 })
             };
         }
-    
+
     }
 }

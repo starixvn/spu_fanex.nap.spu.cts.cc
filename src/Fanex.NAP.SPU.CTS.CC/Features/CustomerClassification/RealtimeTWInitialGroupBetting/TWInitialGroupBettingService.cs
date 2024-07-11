@@ -61,7 +61,7 @@
             {                
                 var paCustIDs = InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialGBClassification, CCInputFlow.InsertPACategory, false, serviceName);
 
-                custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }
 
             return true;

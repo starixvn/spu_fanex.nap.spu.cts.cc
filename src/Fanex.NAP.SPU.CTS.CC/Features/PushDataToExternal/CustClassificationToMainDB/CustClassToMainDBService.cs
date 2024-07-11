@@ -12,25 +12,22 @@
 
     public interface ICustClassToMainDBService
     {
+        #region General
+
+        bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+
         bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters);
 
-        IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
+        bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName);
 
-        bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName);
+        #endregion
 
-        bool RetryPushCCToMainDB(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName);
-
-        bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName);
-
-        bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName);
-
-        bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity paras);
-
+        #region BySport
         bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize);
 
-        IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
+        bool RetryPushCCBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName);
 
-        bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName);
+        #endregion
     }
 
     public class CustClassToMainDBService : ICustClassToMainDBService
@@ -52,21 +49,23 @@
             this.sentryClient = sentryClient;
         }
 
+        #region Public methods - General
+
         public bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             var isSuccess = true;
 
             if (custIds != null && custIds.Any())
             {
-                isSuccess = PushDataToExternal(custIds.Distinct(), parameters);
+                isSuccess = PushExternalPackageByCustId(custIds.Distinct(), parameters);
 
                 antiFraudCenterServices.InsertAFCAccounts(custIds.Distinct(), FromFlow.CTSServices, parameters.IsSyncAFCData, parameters.AFCInsertAccountURL);
             }
 
             return isSuccess;
         }
-       
-        public bool PushDataToExternal(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
+
+        public bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
         {
             if (custIds == null || !custIds.Any())
             {
@@ -76,7 +75,7 @@
             var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
-            {                
+            {
                 var lastestClassifications = GetLatestCCAndDangerLevel(custids);
 
                 if (lastestClassifications != null && lastestClassifications.Any())
@@ -93,85 +92,7 @@
             return true;
         }
 
-        public bool IsPushExternalSuccess(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, PushDataToExternalEntity paras)
-        {
-            bool isSuccess = true;
-
-            if (lastestClassifications != null && lastestClassifications.Any())
-            {
-                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName);
-
-                if (paras.IsPushCCToSoon88)
-                {
-                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName);
-                }
-
-                if (paras.IsUpdateDangerToMainDB && isSuccess)
-                {
-                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
-                }
-            }
-
-            return isSuccess;
-        }
-
-        public bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
-        {
-            if (lastestClassifications != null && lastestClassifications.Any())
-            {
-                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity()
-                {
-                    CustId = c.CustID,
-                    Category = c.CategoryID,
-                    CustomerClass = c.CustomerClass
-                });
-
-                return RetryPushCCToMainDB(custClassification, Constants.RetryPushCCToExternal, serviceName);
-            }
-
-            return true;
-        }
-
-        public IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                return custClassToMainDBDataAccess.GetLatestCCAndDangerLevel(custIds.Distinct());
-            }
-
-            return Enumerable.Empty<LatestCCDangerLevelEntity>();
-        }
-
-        public bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
-        {
-            if (lastestClassifications != null && lastestClassifications.Any())
-            {
-                var groupDangerType = lastestClassifications.Where(c=>c.DangerLevel != null).GroupBy(c => c.DangerLevelType);
-
-                if (groupDangerType != null && groupDangerType.Any())
-                {
-                    foreach (var dangerBatch in groupDangerType)
-                    {
-                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity()
-                        {
-                            CustId = c.CustID,
-                            DangerLevel = c.DangerLevel.Value
-                        });
-
-                        var isUpdateSuccessful = RetryUpdateDangerLevelToMainDB(updateDangerLevel, dangerBatch.Key.Value, Constants.RetryPushCCToExternal, serviceName);
-
-                        if (!isUpdateSuccessful)
-                        {
-                            return isUpdateSuccessful;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        public bool RetryPushCCToMainDB(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName)
+        public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName)
         {
             if (customerClassifications == null || !customerClassifications.Any())
             {
@@ -182,7 +103,7 @@
             {
                 try
                 {
-                    var result = custClassToMainDBDataAccess.UpdateCustomerGeneralClassificationtoMainDB(customerClassifications);
+                    var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications);
 
                     if (result.ErrorCode != 0 && retryTime == 0)
                     {
@@ -213,7 +134,159 @@
             return true;
         }
 
-        public bool RetryUpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName)
+        #endregion
+
+        #region Public methods - BySport
+
+        public bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize)
+        {
+            var custInfoChunks = custInfos.Chunk(batchExternalSize).ToList();
+
+            foreach (var custs in custInfoChunks)
+            {
+                var ccBySports = this.GetCustomerClassificationBySports(custs);
+
+                var isSuccess = this.RetryPushCCBySportToMainDB(ccBySports, Constants.InternalRetry, serviceName);
+
+                if (!isSuccess)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool RetryPushCCBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
+        {
+            if (classificationBySports != null && classificationBySports.Any())
+            {
+                var custClassification = classificationBySports.Select(x => new CustomerClassificationUpdateBySportToMainDBEntity
+                {
+                    CustID = x.CustID,
+                    SportID = x.SportID,
+                    CustomerClass = x.CustomerClass
+                });
+
+                while (retryTime >= 0)
+                {
+                    try
+                    {
+                        var result = custClassToMainDBDataAccess.UpdateCustomerClassificationBySport(custClassification);
+
+                        if (result.ErrorCode != 0 && retryTime == 0)
+                        {
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB failed", custClassification, new Exception(result.ErrorMsg), sentryClient);
+                            return false;
+                        }
+                        else if (result.ErrorCode != 0)
+                        {
+                            retryTime--;
+                        }
+                        else
+                        {
+                            retryTime = -1;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (retryTime == 0)
+                        {
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB thrown exception", custClassification, ex, sentryClient);
+                            return false;
+                        }
+
+                        retryTime--;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
+        {
+            if (lastestClassifications != null && lastestClassifications.Any())
+            {
+                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity()
+                {
+                    CustId = c.CustID,
+                    Category = c.CategoryID,
+                    CustomerClass = c.CustomerClass
+                });
+
+                return PushCustomerClassification(custClassification, Constants.RetryPushCCToExternal, serviceName);
+            }
+
+            return true;
+        }
+
+        private bool IsPushExternalSuccess(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, PushDataToExternalEntity paras)
+        {
+            bool isSuccess = true;
+
+            if (lastestClassifications != null && lastestClassifications.Any())
+            {
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName);
+
+                if (paras.IsPushCCToSoon88)
+                {
+                    feedSoon88Services.FeedCCToSoon88(lastestClassifications, paras.FeedSoon88API, paras.ServiceName);
+                }
+
+                if (paras.IsUpdateDangerToMainDB && isSuccess)
+                {
+                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
+                }
+            }
+
+            return isSuccess;
+        }
+
+        private IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds)
+        {
+            if (custIds != null && custIds.Any())
+            {
+                return custClassToMainDBDataAccess.GetLatestCCAndDangerLevel(custIds.Distinct());
+            }
+
+            return Enumerable.Empty<LatestCCDangerLevelEntity>();
+        }
+
+        private bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
+        {
+            if (lastestClassifications != null && lastestClassifications.Any())
+            {
+                var groupDangerType = lastestClassifications.Where(c => c.DangerLevel != null).GroupBy(c => c.DangerLevelType);
+
+                if (groupDangerType != null && groupDangerType.Any())
+                {
+                    foreach (var dangerBatch in groupDangerType)
+                    {
+                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity()
+                        {
+                            CustId = c.CustID,
+                            DangerLevel = c.DangerLevel.Value
+                        });
+
+                        var isUpdateSuccessful = PushDangerLevel(updateDangerLevel, dangerBatch.Key.Value, Constants.RetryPushCCToExternal, serviceName);
+
+                        if (!isUpdateSuccessful)
+                        {
+                            return isUpdateSuccessful;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool PushDangerLevel(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName)
         {
             if (dangerLevels == null || !dangerLevels.Any())
             {
@@ -255,26 +328,7 @@
             return true;
         }
 
-        public bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize)
-        {
-            var custInfoChunks = custInfos.Chunk(batchExternalSize).ToList();
-
-            foreach (var custs in custInfoChunks)
-            {
-                var ccBySports = this.GetCustomerClassificationBySports(custs);
-
-                var isSuccess = this.RetryPushCustClassificationBySportToMainDB(ccBySports, Constants.InternalRetry, serviceName);
-
-                if (!isSuccess)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
+        private IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
         {
             if (custInfos != null && custInfos.Any())
             {
@@ -284,52 +338,6 @@
             return Enumerable.Empty<GetCustomerClassificationBySportEntity>();
         }
 
-        public bool RetryPushCustClassificationBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
-        {
-            if (classificationBySports != null && classificationBySports.Any())
-            {
-                var custClassification = classificationBySports.Select(x => new CustomerClassificationUpdateBySportToMainDBEntity
-                {
-                    CustID = x.CustID,
-                    SportID = x.SportID,
-                    CustomerClass = x.CustomerClass
-                });
-
-                while (retryTime >= 0)
-                {
-                    try
-                    {
-                        var result = custClassToMainDBDataAccess.UpdateCustomerClassificationBySportToMainDB(custClassification);
-
-                        if (result.ErrorCode != 0 && retryTime == 0)
-                        {
-                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB failed", custClassification, new Exception(result.ErrorMsg), sentryClient);
-                            return false;
-                        }
-                        else if (result.ErrorCode != 0)
-                        {
-                            retryTime--;
-                        }
-                        else
-                        {
-                            retryTime = -1;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (retryTime == 0)
-                        {
-                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB thrown exception", custClassification, ex, sentryClient);
-                            return false;
-                        }
-
-                        retryTime--;
-                    }
-                }
-            }
-
-            return true;
-        }
-        
+        #endregion
     }
 }

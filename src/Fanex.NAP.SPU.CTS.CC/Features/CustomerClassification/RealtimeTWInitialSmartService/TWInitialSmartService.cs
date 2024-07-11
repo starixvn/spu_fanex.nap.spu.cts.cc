@@ -48,7 +48,7 @@
             {
                 var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, serviceName);
 
-                custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }
 
             return true;

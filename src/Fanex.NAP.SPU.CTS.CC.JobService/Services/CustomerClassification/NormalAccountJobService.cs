@@ -96,9 +96,9 @@
             {
                 var custIDs = result.CustInfos.Select(x => x.CustID).Distinct();
 
-                Parallel.Invoke(() =>
+                Parallel.Invoke((() =>
                 {
-                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(custIDs, new PushDataToExternalEntity
+                    var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId((IEnumerable<long>)custIDs, (PushDataToExternalEntity)new PushDataToExternalEntity
                     {
                         ExternalBatchSize = batchExternalSize,
                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
@@ -112,7 +112,7 @@
                     {
                         failedThreads.Add(false);
                     }
-                },
+                }),
                 () =>
                 {
                     antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);

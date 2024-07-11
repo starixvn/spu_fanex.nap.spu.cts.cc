@@ -121,7 +121,7 @@
             {
                 var custIds = problemAccounts.Select(c => c.CustID).Distinct();
 
-                return custClassToMainDBService.PushDataToExternal(custIds, paras);
+                return custClassToMainDBService.PushExternalPackageByCustId(custIds, paras);
             }
 
             return true;

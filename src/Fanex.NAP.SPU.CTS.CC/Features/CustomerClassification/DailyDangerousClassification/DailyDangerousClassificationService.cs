@@ -72,7 +72,7 @@
                 {
                     var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, serviceName);                   
 
-                    custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                    custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
                 }                
             }
 

@@ -140,7 +140,7 @@
                     ServiceName = serviceName
                 };
 
-                custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }                                 
 
             return true;

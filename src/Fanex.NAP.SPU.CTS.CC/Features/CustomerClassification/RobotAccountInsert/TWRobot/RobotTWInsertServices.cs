@@ -94,7 +94,7 @@
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, paras.PushDataExternal);
+                        var isSuccess = custClassToMainDBService.PushExternalPackageByCustId(custIds, paras.PushDataExternal);
 
                         if (!isSuccess)
                         {

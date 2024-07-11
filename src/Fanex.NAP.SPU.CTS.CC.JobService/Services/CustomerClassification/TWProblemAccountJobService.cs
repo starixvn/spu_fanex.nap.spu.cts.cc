@@ -102,7 +102,7 @@
 
                             if (custIds != null && custIds.Any())
                             {
-                                custClassToMainDBService.PushDataToExternal(custIds.Distinct(), new PushDataToExternalEntity
+                                custClassToMainDBService.PushExternalPackageByCustId(custIds.Distinct(), new PushDataToExternalEntity
                                 {
                                     ExternalBatchSize = batchSize,
                                     FeedSoon88API = appSettings.Soon88FeedDataAPI,

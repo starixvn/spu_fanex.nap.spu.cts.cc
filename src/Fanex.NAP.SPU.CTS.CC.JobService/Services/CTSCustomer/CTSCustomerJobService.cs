@@ -311,7 +311,7 @@
 
         private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
         {
-            return custClassToMainDBService.PushDataToExternal(custIDs.Distinct(), new PushDataToExternalEntity
+            return custClassToMainDBService.PushExternalPackageByCustId(custIDs.Distinct(), new PushDataToExternalEntity
             {
                 ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
                 FeedSoon88API = appSettings.Soon88FeedDataAPI,
