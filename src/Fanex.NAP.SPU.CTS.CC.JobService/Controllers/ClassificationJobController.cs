@@ -25,7 +25,6 @@
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
-        private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;       
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
@@ -46,7 +45,6 @@
             INormalTaggingClassificationJobService normalTaggingClassificationJobService,
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
-            ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
             IMatchMonitorClassificationJobService mmClassificationJobService,            
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
@@ -68,7 +66,6 @@
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
-            this.twProblemAccountJobService = twProblemAccountJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
             this.mmClassificationJobService = mmClassificationJobService;          
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
@@ -168,12 +165,6 @@
         {           
             return await this.robotAccountInsertJobService.ScanningAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
         }
-
-        [HttpPost("scan-tw-problem-account-customer")]
-        public async Task<bool> ScanTWSystemFormulaBetCustomer()
-        {
-            return await twProblemAccountJobService.Execute();
-        }       
 
         [HttpPost("tvsProblemAccountInsert")]
         public async Task<bool> TVSProblemAccountInsert([FromForm] int batchSize)

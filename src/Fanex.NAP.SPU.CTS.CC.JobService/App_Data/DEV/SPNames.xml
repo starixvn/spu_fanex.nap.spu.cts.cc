@@ -143,6 +143,7 @@
 	</Function>
 
 	<Function Name="CustomerClassification">
+		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Complete" SpName="CTS_DC_CustClassification_Queue_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_Remove" SpName="CTS_DC_CustClassification_PA_Remove_UAT1" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -153,16 +154,6 @@
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_ReScan_Get" SpName="CTS_DC_CustClassification_ReScan_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
-	</Function>
-
-	<Function name="TWProblemAccountInsert">
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Remove" SpName="CTS_DC_TWProblemDetectionMonitor_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Insert" SpName="CTS_DC_TWProblemDetectionMonitor_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan" SpName="CTS_DC_TWProblemDetectionMonitor_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" SpName="CTS_DC_TWProblemDetectionMonitor_Scan_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_CustomerClassification_GetPerformance" SpName="CTS_CustomerClassification_GetPerformance" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-
-		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
