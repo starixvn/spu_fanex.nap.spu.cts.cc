@@ -1,12 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Newtonsoft.Json;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAffectedDownlineCustomerClassificationDataAccess
     {

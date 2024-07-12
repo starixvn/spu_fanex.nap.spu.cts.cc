@@ -10,7 +10,6 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -160,14 +159,14 @@
                     IsExceptDirectDownline = c.IsExceptDirectDownline,
                     CreatedBy = c.CreatedBy
                 });
-                
+
                 var result = RemoveProblemAccountPackage(probAccounts, true, rescanConfig.ServiceName);
 
                 isSuccess = string.IsNullOrEmpty(result.ErrorMessage);
 
                 if (string.IsNullOrEmpty(result.ErrorMessage) && result.CustInfos != null && result.CustInfos.Any())
                 {
-                   isSuccess = rescanCustClassificationService.RescanCustomerClassification(result.CustInfos.Select(c => c.CustID).Distinct(), rescanConfig);
+                    isSuccess = rescanCustClassificationService.RescanCustomerClassification(result.CustInfos.Select(c => c.CustID).Distinct(), rescanConfig);
                 }
             }
 
@@ -183,7 +182,7 @@
                 var modelInsert = new InsertCustomerClassificationModel()
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo),
-                    FromAction = (int) custInfo.FromAction,
+                    FromAction = (int)custInfo.FromAction,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
                     IsAffectDownline = custInfo.IsAffectDownline,
@@ -207,7 +206,7 @@
                     });
 
                     antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, parameters.PushDataExternal.IsSyncAFCData, parameters.PushDataExternal.AFCDeleteAccountURL);
-                }    
+                }
             }
 
             return isSuccess;
@@ -222,11 +221,11 @@
                 var modelInsert = new RemoveCustomerClassificationModel()
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo.Select(c => new RemoveCustomerClassificationEntity
-                                    {
-                                        CustID = c.CustID,
-                                        CTSCustID = c.CTSCustID,
-                                        CreatedBy = c.CreatedBy
-                                    })),
+                    {
+                        CustID = c.CustID,
+                        CTSCustID = c.CTSCustID,
+                        CreatedBy = c.CreatedBy
+                    })),
                     FromAction = (int)custInfo.FromAction,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
@@ -247,8 +246,6 @@
             return isSuccess;
         }
 
-
-
         private static VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
         {
             return new VVIPCustomerInsertEntity
@@ -268,6 +265,5 @@
                 })
             };
         }
-
     }
 }
