@@ -91,14 +91,14 @@
                             var pas = paList.Select(x => new InsertProblemAccountEntity
                             {
                                 CustID = x.CustID,
-                                ReasonID = x.ReasonId,
+                                TVSReasonID = x.ReasonId,
                                 Remark = x.Comment,
                                 IsMarkedDirectly = true,
                                 IsFromTW = true,
                                 CreatedBy = x.UserId
                             });
 
-                            var custIds = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, CCInputFlow.InsertPAReason, true, ServiceName);
+                            var custIds = paServices.InsertProblemAccountPackage(pas, FunctionId.TWProblemAccountInsert, CCInputFlow.InsertPAReason, false, ServiceName);
 
                             if (custIds != null && custIds.Any())
                             {

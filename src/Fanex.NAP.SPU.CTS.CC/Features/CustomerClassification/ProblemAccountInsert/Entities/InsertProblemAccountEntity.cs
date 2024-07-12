@@ -38,7 +38,7 @@
         public InsertProblemAccountEntity(TVSProblemAccountEntity tvsPACust)
         {
             this.CustID = tvsPACust.CustID;
-            this.ReasonID = tvsPACust.ReasonID;
+            this.TVSReasonID = tvsPACust.ReasonID;
             this.CreatedBy = tvsPACust.CreatedBy;
             this.TVSRequestID = tvsPACust.RequestID;
             this.IsTVSParlay = tvsPACust.IsParlay;
@@ -89,8 +89,8 @@
         {
             CTSCustID = data.CTSCustID;
             CustID = data.CustID;
+            TVSReasonID = data.TVSReasonID;
             CategoryID = data.CategoryID;
-            ReasonID = data.TVSReasonID;
             RoleID = data.RoleID;
             SubscriberID = data.SubscriberID;
             IsLicensee = data.IsLicensee;
@@ -111,7 +111,7 @@
 
         public int SubscriberID { get; set; }
 
-        public int? ReasonID { get; set; }
+        public int? TVSReasonID { get; set; }
 
         public bool IsLicensee { get; set; }
 

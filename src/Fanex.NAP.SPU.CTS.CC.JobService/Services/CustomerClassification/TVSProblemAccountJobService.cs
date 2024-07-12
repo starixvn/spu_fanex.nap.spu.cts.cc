@@ -93,12 +93,6 @@
                 };
 
                 isSuccess = tvsProblemAccountServices.InsertTVSProblemAccounts(tvsProblemAccounts.ProblemAccounts, paramaters);
-
-                if (isSuccess)
-                {
-                    paramaters.IsSyncAFCData = false;
-                    isSuccess = tvsProblemAccountServices.InsertTVSRobot(tvsProblemAccounts.ProblemAccounts, paramaters);
-                }
             }
 
             if (isSuccess)

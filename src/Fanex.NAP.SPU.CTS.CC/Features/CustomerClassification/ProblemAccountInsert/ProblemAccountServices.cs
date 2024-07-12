@@ -380,7 +380,7 @@
                                                             IsFromTVS = group.pa.IsFromTVS,
                                                             TVSRequestID = group.pa.TVSRequestID,
                                                             IsFromTW = group.pa.IsFromTW,
-                                                            ReasonID = group.pa.ReasonID,
+                                                            TVSReasonID = group.pa.TVSReasonID,
                                                             SportType = group.pa.SportType,
                                                             IsTVSParlay = group.pa.IsTVSParlay,
                                                             TVSIssueTypeID = group.pa.TVSIssueTypeID,

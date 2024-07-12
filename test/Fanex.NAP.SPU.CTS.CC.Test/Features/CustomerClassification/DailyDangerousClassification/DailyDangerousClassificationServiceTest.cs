@@ -6,13 +6,13 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;  
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System.Collections.Generic;
     using Xunit;
 
     public class DailyDangerousClassificationServiceTest
     {        
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
 
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
@@ -20,17 +20,21 @@
         private readonly IDailyDangerousClassificationDataAccess dangerousCCDataAccess;
         private readonly IDailyDangerousClassificationService dailyDangerousCCService;
 
+        private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
+        private readonly ISentryClient sentryClient;
+
         public DailyDangerousClassificationServiceTest()
         {
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
-            problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
-
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             dangerousCCDataAccess = Substitute.For<IDailyDangerousClassificationDataAccess>();
-            dailyDangerousCCService = new DailyDangerousClassificationService(problemAccountServices, dangerousCCDataAccess, custClassToMainDBService);
+            baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            sentryClient = Substitute.For<ISentryClient>();
+
+            dailyDangerousCCService = new DailyDangerousClassificationService(dangerousCCDataAccess, problemAccountDataAccess, baseCustomerClassificationDataAccess, custClassToMainDBService, sentryClient);
         }
 
         [Fact]
