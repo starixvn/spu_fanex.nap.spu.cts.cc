@@ -8,9 +8,6 @@
         [SpParam(SqlParamName = "ip_RobotDetectionLastID")]
         public long LastRobotAIID { get; set; }
 
-        [SpParam(SqlParamName = "ip_RobotImpervaLastLogID")]
-        public long LastRobotImpervaID { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_DC_RobotDetection_GetLatest";

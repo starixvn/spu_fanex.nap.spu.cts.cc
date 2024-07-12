@@ -103,7 +103,10 @@
 
                     problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(JsonConvert.SerializeObject(insertPaResult.CustInfos));
 
-                    UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+                    if (ccInputFlow == CCInputFlow.InsertPACategory || ccInputFlow == CCInputFlow.InsertPAReason)
+                    {
+                        UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
+                    }
 
                     return custIds;
                 }

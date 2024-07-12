@@ -37,7 +37,7 @@
 
         IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
-        IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
+        //IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
 
         IEnumerable<long> CustIdsToRescanPA { get; }
 
@@ -474,12 +474,12 @@
         //    return custPaTWGB;
         //}
 
-        public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)
-        {
-            dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
+        //public IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName)
+        //{
+        //    dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotUsers }, funcId, stageName);
 
-            return this;
-        }
+        //    return this;
+        //}
 
         public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 

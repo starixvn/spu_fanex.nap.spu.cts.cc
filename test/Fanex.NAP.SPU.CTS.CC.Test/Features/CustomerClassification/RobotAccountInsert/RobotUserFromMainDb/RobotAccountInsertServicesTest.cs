@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
@@ -8,6 +9,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -22,6 +24,9 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
+        private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly ISentryClient sentryClient;
 
         public RobotAccountInsertServicesTest()
         {
@@ -30,11 +35,17 @@
             problemAccountServices = Substitute.For<IProblemAccountServices>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
-            robotTWInsertServices = new RobotTWInsertServices(robotAccountInsertDataAccess
+            sentryClient = Substitute.For<ISentryClient>();
+            baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            robotTWInsertServices = new RobotTWInsertServices(
+                  robotAccountInsertDataAccess
                 , systemParameterServices
                 , custClassToMainDBService
-                , problemAccountServices
-                , dataLogTrackingServices);
+                , dataLogTrackingServices
+                , baseDataAccess
+                , problemAccountDataAccess
+                , sentryClient);
         }
 
         [Fact]
@@ -63,36 +74,26 @@
         {
             // Arrange
             var robotTWs = new List<TWRobotUserEntity> { };
-            var paras = new InsertRobotParaEntity();
+
             var expectedResult = new List<long>();
 
             // Act
-            var result = robotTWInsertServices.InsertTWRobot(robotTWs, paras);
+            var result = robotTWInsertServices.InsertTWRobotPackage(1, null);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expectedResult);
+            result.Should().BeTrue();
         }
 
         [Fact]
         public void InsertTWRobotPackage_WhenSuccess_ReturnTrue()
         {
             // Arrange
-            var paras = new InsertRobotParaEntity 
+            var paras = new PushDataToExternalEntity
             {
-                BatchInternalSize = 1,
-                IsFromTW = true,
-                IsFromCTS = false,
-                IsDirect = true,
-                IsFromAI = false,
-                IsFromTVS = false,
-                PushDataExternal = new PushDataToExternalEntity
-                {
-                    ExternalBatchSize = 1,
-                    ServiceName = "robotAIClassServiceName",
-                    IsWriteLog = false,
-                    IsSyncAFCData = false,
-                }
+                ExternalBatchSize = 1,
+                ServiceName = "robotAIClassServiceName",
+                IsWriteLog = false,
+                IsSyncAFCData = false,
             };
 
             long expectedLastTimespan = 1;
@@ -113,29 +114,10 @@
 
             robotTWInsertServices.GetTWRobotUser();
 
-            var result = robotTWInsertServices.InsertTWRobotPackage(paras);
+            var result = robotTWInsertServices.InsertTWRobotPackage(1, paras);
 
             // Assert
             result.Should().BeTrue();
-        }
-
-        [Fact]
-        public void MappingRobotCategory_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var robotTW = new List<TWRobotUserEntity> { new TWRobotUserEntity { CustId = 0, Counter = 0 } };
-            var paras = new InsertRobotParaEntity();
-            var expectedResult = new List<InsertRobotEntity>()
-            {
-                CreateSampleRobotModel()
-            };
-
-            // Act
-            var result = robotTWInsertServices.MappingRobotCategory(robotTW, paras);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expectedResult);
         }
 
         private InsertRobotEntity CreateSampleRobotModel()

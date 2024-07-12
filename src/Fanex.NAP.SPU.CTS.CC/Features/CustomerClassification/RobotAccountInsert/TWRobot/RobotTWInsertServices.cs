@@ -1,11 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -19,23 +21,18 @@
 
         IRobotTWInsertServices GetTWRobotUser();
 
-        bool InsertTWRobotPackage(InsertRobotParaEntity paras);
-
-        IEnumerable<long> InsertTWRobot(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras);
-
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras);
+        bool InsertTWRobotPackage(int internalSize, PushDataToExternalEntity pushConfig);
 
         void UpdateLastTimespan();
 
         TWRobotUserViewEntity RobotUserInfo { get; }
     }
 
-    public class RobotTWInsertServices : IRobotTWInsertServices
+    public class RobotTWInsertServices : ProblemAccountServices, IRobotTWInsertServices
     {
         private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IProblemAccountServices problemAccountServices;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
         private long lastScannedTimespan;
         private TWRobotUserViewEntity robotInfo;
@@ -44,14 +41,15 @@
             IRobotTWInsertDataAccess robotAccountInsertDataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IProblemAccountServices problemAccountServices,
-            IDataLogTrackingServices dataLogTrackingServices)
+            IDataLogTrackingServices dataLogTrackingServices,
+            IBaseCustomerClassificationDataAccess baseDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
 
         {
             this.robotAccountInsertDataAccess = robotAccountInsertDataAccess;
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.problemAccountServices = problemAccountServices;
             this.dataLogTrackingServices = dataLogTrackingServices;
         }
 
@@ -82,19 +80,23 @@
             return this;
         }
 
-        public bool InsertTWRobotPackage(InsertRobotParaEntity paras)
+        public bool InsertTWRobotPackage(int internalSize, PushDataToExternalEntity pushConfig)
         {
             if (robotInfo != null && robotInfo.RobotUsers != null && robotInfo.RobotUsers.Any())
             {
-                var robotUsersChunks = robotInfo.RobotUsers.Chunk(paras.BatchInternalSize).ToList();
+                var robotUsersChunks = robotInfo.RobotUsers.Chunk(internalSize).ToList();
 
                 foreach (var robotBatch in robotUsersChunks)
                 {
-                    var custIds = InsertTWRobot(robotBatch, paras);
+                    dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotBatch }, FunctionId.RobotUserJob, pushConfig.ServiceName);
+
+                    var insertedPA = robotBatch.ToList().Select(c => new InsertProblemAccountEntity(c));
+
+                    var custIds = InsertProblemAccountPackage(insertedPA, FunctionId.RobotUserJob, CCInputFlow.InsertRobot, false, pushConfig.ServiceName);
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushExternalPackageByCustId(custIds, paras.PushDataExternal);
+                        var isSuccess = custClassToMainDBService.PushExternalPackageByCustId(custIds, pushConfig);
 
                         if (!isSuccess)
                         {
@@ -107,47 +109,6 @@
             }
 
             return true;
-        }
-
-        public IEnumerable<long> InsertTWRobot(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras)
-        {
-            if (robotUsers != null && robotUsers.Any())
-            {
-                var robotToInsert = MappingRobotCategory(robotUsers, paras);
-
-                dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotToInsert }, FunctionId.RobotUserJob, paras.PushDataExternal.ServiceName);
-
-                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, false);
-
-                if (customerInfo != null && customerInfo.Any())
-                {
-                    return customerInfo.Select(x => x.CustID).Distinct();
-                }
-            }
-
-            return Enumerable.Empty<long>();
-        }
-
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<TWRobotUserEntity> robotUsers, InsertRobotParaEntity paras)
-        {
-            var custCategory = new List<InsertRobotEntity>();
-
-            if (robotUsers != null && robotUsers.Any())
-            {
-                custCategory = robotUsers.Select(c => new InsertRobotEntity
-                {
-                    CustID = c.CustId,
-                    IsFromTW = paras.IsFromTW,
-                    IsFromCTS = paras.IsFromCTS,
-                    IsDirect = paras.IsDirect,
-                    IsFromAI = paras.IsFromAI,
-                    IsFromTVS = paras.IsFromTVS,
-                    RobotCounter = c.Counter,
-                    CreatedBy = StarixITId
-                }).ToList();
-            }
-
-            return custCategory;
         }
 
         public void UpdateLastTimespan()

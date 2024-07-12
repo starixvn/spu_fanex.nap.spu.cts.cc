@@ -8,8 +8,7 @@
 
     public interface IRobotAIDetectionDataAccess
     {
-        (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(long lastRobotAIID, long lastRobotImpervaID);
-
+        IEnumerable<RobotAIEntity> GetRobotDetections(long lastRobotAIID);
     }
 
     public class RobotAIDetectionDataAccess : BaseCustomerClassificationDataAccess, IRobotAIDetectionDataAccess
@@ -21,14 +20,12 @@
             repository = new DynamicRepository();
         }
 
-        public (IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva) GetRobotDetections(long lastRobotAIID, long lastRobotImpervaID)
+        public IEnumerable<RobotAIEntity> GetRobotDetections(long lastRobotAIID)
         {
-            return repository.FetchMultiple<RobotAIEntity, RobotImpervaEntity>(new RobotDetectionGetLatestCriteria
+            return repository.Fetch<RobotAIEntity>(new RobotDetectionGetLatestCriteria
             {
-                LastRobotAIID = lastRobotAIID,
-                LastRobotImpervaID = lastRobotImpervaID
+                LastRobotAIID = lastRobotAIID
             });
         }
-       
     }
 }

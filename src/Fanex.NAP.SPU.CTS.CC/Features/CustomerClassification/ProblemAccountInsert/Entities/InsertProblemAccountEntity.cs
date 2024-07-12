@@ -5,6 +5,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
 
@@ -45,6 +47,25 @@
             this.SportType = tvsPACust.Sporttype;
             this.TVSIssueTypeID = tvsPACust.IssueTypeId;
             this.IsFromTVS = true;
+            this.IsMarkedDirectly = true;
+        }
+
+        public InsertProblemAccountEntity(TWRobotUserEntity robotUser)
+        {
+            this.CustID = robotUser.CustId;
+            this.TWRobotCounter = robotUser.Counter;
+            this.CreatedBy = Constants.StarixITId;
+            this.IsFromTW = true;
+            this.IsMarkedDirectly = true;
+        }    
+        
+        public InsertProblemAccountEntity(RobotAIEntity robotAI)
+        {
+            this.CustID = robotAI.CustID;
+            this.CategoryID = robotAI.CategoryID;
+            this.LastModifiedDate = robotAI.LastModifiedDate;
+            this.CreatedBy = Constants.StarixITId;
+            this.IsFromAI = true;
             this.IsMarkedDirectly = true;
         }
 
@@ -144,5 +165,7 @@
         public int TVSIssueTypeID { get; set; }
 
         public int? MatchID { get; set; }
+
+        public int? TWRobotCounter { get; set; }
     }
 }

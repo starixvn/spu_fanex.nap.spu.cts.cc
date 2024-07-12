@@ -86,8 +86,8 @@
                 {
                     logInputData.Add(new LogInputDataEntity
                     {
-                        CustId = c.CustID,
-                        InputValue = new { c.RobotCounter }.ToString()
+                        CustId = c.CustId,
+                        InputValue = new { c.Counter }.ToString()
                     });
                 });
             }
