@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using System;
 
-    public class InsertNormalAccountEntity : InsertCustomerClassificationEntity
+    public class InsertNormalAccountEntity : CustomerClassificationEntity
     {
         public InsertNormalAccountEntity(NormalAccountAfterCheckTWDetectionModel cust)
         {

@@ -70,6 +70,7 @@
                         IsFromTVS = false,
                         IsFromTW = false,
                         CreatedBy = Constants.StarixITId,
+                        GroupName = custInfo.GroupName,
                         Remark = MarkPA_AssociatedGroup + " - " + custInfo.GroupName                       
                     });
 

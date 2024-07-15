@@ -10,7 +10,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
 
-    public class InsertProblemAccountEntity : InsertCustomerClassificationEntity
+    public class InsertProblemAccountEntity : CustomerClassificationEntity
     {
         public InsertProblemAccountEntity()
         {
@@ -76,7 +76,6 @@
             this.RoleID = ctsCust.RoleID;
             this.SubscriberID = ctsCust.SubscriberID;
             this.CategoryID = ctsCust.CategoryID;
-            //this.CategoryGroup = ctsCust.CategoryGroup;
             this.IsLicensee = ctsCust.IsLicensee;
             this.IsFromAI = false;
             this.IsMarkedDirectly = null;
@@ -84,8 +83,7 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.SportType = twGBCust.SportType;
-            //this.Remark = string.Format(Constants.TWTWInitialGBRemark, twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), twGBCust.GBTicketCount, twGBCust.SportName);
+            this.SportType = twGBCust.SportType;           
         }
 
         public InsertProblemAccountEntity(TWInitialSmartEntity tWInitialSmartCust)
@@ -103,7 +101,7 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);
+            //this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);
         }
 
         public InsertProblemAccountEntity(GetRescanCustomerClassificationEntity data)
@@ -167,5 +165,8 @@
         public int? MatchID { get; set; }
 
         public int? TWRobotCounter { get; set; }
+
+        public string GroupName { get; set; }
+
     }
 }

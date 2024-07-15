@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class InsertCustomerClassificationEntity
+    public class CustomerClassificationEntity
     {
         public long CustID { get; set; }
 
