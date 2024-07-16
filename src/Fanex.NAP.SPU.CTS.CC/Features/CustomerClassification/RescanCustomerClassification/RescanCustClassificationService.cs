@@ -343,7 +343,8 @@
                 {
                     RescanDangerousScorePA(rescanPotentialPA, parameters);
 
-                    RescanInitialSmartPA(rescanPotentialPA, parameters);
+                    // will uncomment after test API done
+                    //RescanInitialSmartPA(rescanPotentialPA, parameters);
 
                     RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
                 }

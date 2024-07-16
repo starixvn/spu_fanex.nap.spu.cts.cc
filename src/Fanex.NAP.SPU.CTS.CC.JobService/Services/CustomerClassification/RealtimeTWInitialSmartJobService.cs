@@ -39,7 +39,8 @@
         {
             try
             {
-                JobRun(batchSize);
+                // will uncomment after test API done
+                // JobRun(batchSize);
             }
             catch (Exception ex)
             {
