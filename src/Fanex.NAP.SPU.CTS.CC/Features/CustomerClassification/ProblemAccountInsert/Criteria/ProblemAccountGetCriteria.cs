@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_ReScan_Get";
+            return "CTS_DC_CustClassification_Rescan_Get";
         }
 
         public override bool IsValid()
