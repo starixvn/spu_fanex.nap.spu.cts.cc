@@ -12,7 +12,7 @@
     {
         Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningAIRobotClassification(int batchExternalSize, int batchInternalSize);
     }
 
     public class RobotAccountInsertJobService : IRobotAccountInsertJobService
@@ -63,7 +63,7 @@
             return Task.FromResult(response);
         }
 
-        public Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningAIRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -71,7 +71,7 @@
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    response = InsertAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
+                    response = InsertAIRobotClassification(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -114,7 +114,7 @@
             return isSuccess;
         }
 
-        public bool InsertAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
+        public bool InsertAIRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
                                                  .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID)
