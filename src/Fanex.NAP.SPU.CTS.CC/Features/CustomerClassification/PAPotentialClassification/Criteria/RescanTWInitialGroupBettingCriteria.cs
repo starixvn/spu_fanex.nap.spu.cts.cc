@@ -1,9 +1,9 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class RescanInitialTWGroupBettingCriteria : CriteriaBase
+    public class RescanTWInitialGroupBettingCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "custIdList")]
         public string CustIDs { get; set; }

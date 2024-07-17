@@ -189,20 +189,17 @@
         {
             // Arrange
             var cust = new List<GetNormalAccountEntity> {
-                new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, 
-                new GetNormalAccountEntity { CustId = 124, ActiveDays = 321 }
+                new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }                
             };
-            var twTaggingSRPCusts = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
-            var twGBTaggingNewCusts = new List<NewTWTaggedCustEntity> { new NewTWTaggedCustEntity { CustID = 124, TaggingID = 1000, TaggingType = 124, SportType = 333 } };
+            var twTaggingSRPCusts = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };            
             var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> {
-                new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggingSRPCusts[0]),
-                new NormalAccountAfterCheckTWDetectionModel(cust[1], twGBTaggingNewCusts[0])
+                new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggingSRPCusts[0])               
             };
 
             var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCustAndNewTWCust);
 
             // Act
-            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggingSRPCusts, twGBTaggingNewCusts });
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggingSRPCusts });
 
             // Assert
             Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
@@ -212,11 +209,10 @@
         public void MergeWithTWTaggedCustAndNewTWCust_WhenSuccess_ReturnNotNull()
         {
             // Arrange
-
             var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCustAndNewTWCust);
 
             // Act
-            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null, null});
+            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null });
 
             // Assert
             Assert.NotNull(result);

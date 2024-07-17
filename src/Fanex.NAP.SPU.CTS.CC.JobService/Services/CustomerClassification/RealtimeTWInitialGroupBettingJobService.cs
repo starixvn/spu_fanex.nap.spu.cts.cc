@@ -26,7 +26,7 @@
             this.sentryClient = sentryClient;
             this.twInitialGBService = twInitialGBService;        
             this.appSettings = appSettings;
-            this.serviceName = "Daily TW Initial Group Betting JobService";
+            this.serviceName = "Realtime TW Initial Group Betting JobService";
         }
 
         public Task<bool> Execute(int batchSize)

@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
 
     public interface IRescanCustClassificationService
     {
@@ -52,6 +53,7 @@
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
+        private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
@@ -68,6 +70,7 @@
 
         public RescanCustClassificationService(
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
+            IPAPotentialClassificationDataAccess paPotentialDataAccess,
             ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
             ISentryClient sentryClient,
             IProblemAccountServices problemAccountServices,
@@ -75,6 +78,7 @@
             IDataLogTrackingServices dataLogTrackingServices)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
+            this.paPotentialDataAccess = paPotentialDataAccess;
             this.twInitialGBDataAccess = twInitialGBDataAccess;
             this.problemAccountServices = problemAccountServices;
             this.custClassToMainDBService = custClassToMainDBService;
@@ -337,22 +341,21 @@
 
                 if (rescanPotentialPA != string.Empty)
                 {
-                    var custPaDangerous = RescanDangerousPA(rescanPotentialPA, parameters);
+                    RescanDangerousScorePA(rescanPotentialPA, parameters);
 
-                    custIdsToRescanPotentialPA.AddRange(custPaDangerous);
+                    // will uncomment after test API done
+                    //RescanInitialSmartPA(rescanPotentialPA, parameters);
 
-                    var custPaTWGB = RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
-
-                    custIdsToRescanPotentialPA.AddRange(custPaTWGB);
-                }                
+                    RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
+                }
             }
         }
 
-        public IEnumerable<long> RescanDangerousPA(string custIDs, RescanParametersEntity parameters)
+        public IEnumerable<long> RescanDangerousScorePA(string custIDs, RescanParametersEntity parameters)
         {
             var custPaDangerous = Enumerable.Empty<long>();
 
-            var pasDangerous = rescanCustClassificationDataAccess.RescanPADangerous(custIDs);
+            var pasDangerous = paPotentialDataAccess.GetDangerousScorePA(custIDs);
 
             if (pasDangerous != null && pasDangerous.Any())
             {
@@ -361,15 +364,38 @@
                 custPaDangerous = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DailyDangerousClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
 
                 custClassToMainDBService.PushExternalProblemAcountPackage(custPaDangerous.Distinct(), parameters.PushDataExternal);
+
+                custIdsToRescanPotentialPA.AddRange(custPaDangerous.Distinct());
             }
 
             return custPaDangerous;
         }
 
+        public IEnumerable<long> RescanInitialSmartPA(string custIDs, RescanParametersEntity parameters)
+        {
+            var custPaInitialSmart = Enumerable.Empty<long>();
+
+            var rescanInitialSmart = paPotentialDataAccess.GetInitialSmartPA(custIDs);
+
+            if (rescanInitialSmart != null && rescanInitialSmart.Any())
+            {
+                var pasInitialSmart = rescanInitialSmart.Select(x => new InsertProblemAccountEntity(x));
+
+                custPaInitialSmart = problemAccountServices.InsertProblemAccountPackage(pasInitialSmart, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
+                
+                custClassToMainDBService.PushExternalProblemAcountPackage(custPaInitialSmart.Distinct(), parameters.PushDataExternal);
+
+                custIdsToRescanPotentialPA.AddRange(custPaInitialSmart.Distinct());
+            }
+
+            return custPaInitialSmart;
+        }
+
         public IEnumerable<long> RescanInitialTWGroupBettingPA(string custIDs, RescanParametersEntity parameters)
         {
             var custPaTWGB = Enumerable.Empty<long>();
-            var rescanInitialTWGB = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(custIDs);
+
+            var rescanInitialTWGB = paPotentialDataAccess.GetInitialTWGroupBetting(custIDs);
 
             if (rescanInitialTWGB != null && rescanInitialTWGB.Any())
             {
@@ -378,11 +404,11 @@
                 var paTWGBs = rescanInitialTWGB.Join(custInfos, twGBCust => twGBCust.CustID, ctsCust => ctsCust.CustID,
                                (twGBCust, ctsCust) => new InsertProblemAccountEntity(twGBCust, ctsCust));
 
-                custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);
-
-                custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
+                custPaTWGB = problemAccountServices.InsertProblemAccountPackage(paTWGBs, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, parameters.ServiceName);                
 
                 custClassToMainDBService.PushExternalProblemAcountPackage(custPaTWGB.Distinct(), parameters.PushDataExternal);
+
+                custIdsToRescanPotentialPA.AddRange(custPaTWGB.Distinct());
             }
 
             return custPaTWGB;

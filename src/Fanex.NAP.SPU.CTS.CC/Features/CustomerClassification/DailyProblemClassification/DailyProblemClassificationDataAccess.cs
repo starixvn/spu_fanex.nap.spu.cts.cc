@@ -25,12 +25,12 @@
         {
             var criteria = new PADailyScanFromQueueGetCriteria();
 
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<ulong, ulong>(criteria);
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<ulong, CustToBuildRemarkEntity>(criteria);
 
             return new PADailyScanFromQueueModel
             {
                 PADailyScanCustIDs = firstResultSet,
-                TWInitialGBCustIDs = secondResultSet,
+                PAPotentialScanCustIDs = secondResultSet
             };
         }
 

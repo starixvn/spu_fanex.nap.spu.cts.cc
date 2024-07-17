@@ -48,6 +48,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
 
     public static class InitService
     {
@@ -122,6 +124,15 @@
             RegisterDailyDangerousClassification(services);
 
             RegisterTWInitialGroupBetting(services);
+
+            RegisterTWInitialSmartClassification(services);
+        }
+
+        private static void RegisterTWInitialSmartClassification(IServiceCollection services)
+        {
+            services.AddSingleton<ITWInitialSmartDataAccess, TWInitialSmartDataAccess>();
+            services.AddSingleton<ITWInitialSmartService, TWInitialSmartService>();
+            services.AddSingleton<IRealtimeTWInitialSmartJobService, RealtimeTWInitialSmartJobService>();
         }
       
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
@@ -160,8 +171,12 @@
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
         {
+            services.AddSingleton<IPAPotentialClassificationDataAccess, PAPotentialClassificationDataAccess>();
+            services.AddSingleton<IPAPotentialClassificationService, PAPotentialClassificationService>();
+
             services.AddSingleton<IDailyProblemClassificationDataAccess, DailyProblemClassificationDataAccess>();
             services.AddSingleton<IDailyProblemClassificationServices, DailyProblemClassificationServices>();
+            
             services.AddSingleton<IDailyProblemClassificationJobService, DailyProblemClassificationJobService>();
         }     
 

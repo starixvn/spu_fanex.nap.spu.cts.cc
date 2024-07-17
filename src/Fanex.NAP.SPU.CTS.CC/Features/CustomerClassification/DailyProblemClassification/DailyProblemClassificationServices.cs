@@ -1,13 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -33,27 +31,24 @@
 
     public class DailyProblemClassificationServices : IDailyProblemClassificationServices
     {
-        private readonly IDailyProblemClassificationDataAccess dailyClassificationDataAccess;
-        private readonly ISystemParameterServices systemParameterService;
+        private readonly IDailyProblemClassificationDataAccess dailyClassificationDataAccess;       
         private readonly IProblemAccountServices problemAccountServices;
+        private readonly IPAPotentialClassificationService paPotentialClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private PADailyScanFromQueueModel paDailyScanFromQueue;
         private IEnumerable<InsertPAProbationResult> problemAccounts;
-        private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
         private readonly string serviceName = "ProblemAccountProbationService";
 
         public DailyProblemClassificationServices(
-            IDailyProblemClassificationDataAccess dailyClassificationDataAccess,
-            ISystemParameterServices systemParameterService,
+            IDailyProblemClassificationDataAccess dailyClassificationDataAccess,            
             IProblemAccountServices problemAccountServices,
-            ICustClassToMainDBService custClassToMainDBService,
-            IRescanCustClassificationDataAccess rescanCustClassificationDataAccess)
+            IPAPotentialClassificationService paPotentialClassificationService,
+            ICustClassToMainDBService custClassToMainDBService)
         {
             this.dailyClassificationDataAccess = dailyClassificationDataAccess;
-            this.systemParameterService = systemParameterService;
             this.problemAccountServices = problemAccountServices;
+            this.paPotentialClassificationService = paPotentialClassificationService;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
         }
 
         public IDailyProblemClassificationServices Start()
@@ -91,41 +86,17 @@
         {
             if (problemClassification != null && problemClassification.Any())
             {
-                var jsonDailyPas = GetTWInitialGBs(problemClassification);
+                this.paPotentialClassificationService.SetTWInitialGBs(paDailyScanFromQueue);
 
-                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonDailyPas);
+                this.paPotentialClassificationService.SetTWInitialSmartSmarts(paDailyScanFromQueue);
+
+                var jsonPas = this.paPotentialClassificationService.BuildPAPotentialInfo(problemClassification);
+
+                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonPas);
             }
 
             return this;
-        }
-
-        private string GetTWInitialGBs(IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
-        {           
-            if (paDailyScanFromQueue.TWInitialGBCustIDs != null && paDailyScanFromQueue.TWInitialGBCustIDs.Any())
-            {
-                var dicTWInitialGBs = rescanCustClassificationDataAccess.GetInitialTWGroupBetting(string.Join(",", paDailyScanFromQueue.TWInitialGBCustIDs)).ToDictionary(x => x.CustID);
-
-                var dailyPas = problemClassification.Select(x =>
-                {
-                    var pa = new ProblemAccountLosingClassificationModel(x);
-
-                    var twGBCust = default(RealtimeTWInitialGroupBetting.TWInitialGBGetChangesEntity);
-
-                    dicTWInitialGBs.TryGetValue(x.CustId, out twGBCust);
-
-                    if (twGBCust != null)
-                    {
-                        pa.Remark = $"Detection Date: { twGBCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy)} - GB Bet Count: {twGBCust.GBTicketCount} - Sport: { twGBCust.SportName }";
-                    }
-                    
-                    return pa;
-                });
-
-                return JsonConvert.SerializeObject(dailyPas);
-            }
-
-            return JsonConvert.SerializeObject(problemClassification.Select(x => new ProblemAccountLosingClassificationModel(x)));
-        }
+        }       
 
         public IDailyProblemClassificationServices InsertPALogic()
         {

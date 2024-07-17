@@ -28,7 +28,10 @@
         public const string Telegram_GroupId_Local = "-869606030";
 
         public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
+        public const string DangerousScoreRemark = "Detection Date: {0} - Dangerous Score: {1}%";
         public const string TWInitialGBMissSport = "Soccer/Basketball";
+        public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
+        public const string TWTWInitialGBRemark = "Detection Date: {0} - GB Bet Count: {1} - Sport: {2}";
 
         public enum MatchMonitorQueryTypes
         {
@@ -82,7 +85,9 @@
             DangerousScoreClassification_Credit_LastScannedDate = 153,
             DangerousScoreClassification_Credit_LastCustID = 154,
             DangerousScoreClassification_Deposit_LastScannedDate = 156,
-            DangerousScoreClassification_Deposit_LastCustID = 157
+            DangerousScoreClassification_Deposit_LastCustID = 157,
+            TWInitialSmartClassification_LastCustID = 159,
+            TWInitialSmartClassification_LastScanDate = 160
         };
 
         public enum Main_SystemParameters
@@ -170,7 +175,8 @@
             NormalTaggingJob = 100,
             DetectUnauthorizedLoginCust = 101,
             DailyDangerousClassification = 102,
-            TWInitialGBClassification = 103
+            TWInitialGBClassification = 103,
+            TWInitialSmartClassification = 104
         };
 
         public enum BySport_FunctionId
@@ -270,6 +276,12 @@
             NotExist = 0,
             Exist = 1,
             ExistOnly = 2,
+        };
+
+        public enum CustToBuildRemark
+        {
+            TWInitialSmart = 1,
+            TWInitialGB = 2            
         };
     }
 }

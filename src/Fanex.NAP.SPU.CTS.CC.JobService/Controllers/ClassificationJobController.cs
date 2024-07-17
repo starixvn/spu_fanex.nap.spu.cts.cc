@@ -32,6 +32,7 @@
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
         private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
+        private readonly IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService;
 
         public ClassificationJobController(ISentryClient sentryClient,           
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
@@ -52,7 +53,8 @@
             ITWRobotImpervaJobService robotImpervaJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
-            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService)
+            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
+            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService)
         {
             this.sentryClient = sentryClient;           
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
@@ -75,6 +77,7 @@
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
+            this.realtimeTWInitialSmartJobService = realtimeTWInitialSmartJobService;
         }
 
         [HttpPost("scanningDailyNormalClassification")]
@@ -106,8 +109,7 @@
 
             return await this.dailyDangerousClassificationJobService.Execute(batchSize, false);
         }
-
-        #region Renovate
+      
         [HttpPost("realtimeCheckChanges")]
         public async Task<bool> RealtimeCheckChanges([FromForm] int batchSize)
         {
@@ -156,9 +158,7 @@
         public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
         {
             return await this.affectedDownlineClassificationJobService.Execute(batchSize);
-        }
-       
-        #endregion Renovate
+        }      
 
         [HttpPost("robotTWClassification")]
         public async Task<bool> RobotTWClassication([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
@@ -218,6 +218,12 @@
         public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
         {            
             return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
-        }      
+        }
+
+        [HttpPost("scanningMinutelyTWInitialSmartClassification")]
+        public async Task<bool> RealtimeTWInitialSmartClassification([FromForm] int batchSize)
+        {
+            return await this.realtimeTWInitialSmartJobService.Execute(batchSize);
+        }
     }
 }

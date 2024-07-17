@@ -1,5 +1,5 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
-{   
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification
+{
     public class PotentialPACustInfoEntity
     {
         public long CustID { get; set; }

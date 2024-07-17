@@ -67,7 +67,7 @@
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
-        }
+        }      
 
         public IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, InsertPA_ByType insertByType, bool isToQueue, string serviceName)
         {
