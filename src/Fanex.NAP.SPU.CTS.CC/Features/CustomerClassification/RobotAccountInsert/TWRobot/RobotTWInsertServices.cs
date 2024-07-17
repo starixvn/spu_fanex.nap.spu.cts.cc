@@ -98,10 +98,6 @@
                 {
                     Utilities.LogSentryError(serviceName, "Get Invalid RobotUser CategoryID (null value)", robotCategoryId, null, sentryClient);
                 }
-                else
-                {
-                    robotInfo.SetRobotUserCategory(robotCategoryId);
-                }
             }
 
             return this;
@@ -120,7 +116,7 @@
                 {
                     dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotBatch }, FunctionId.RobotUserJob, pushConfig.ServiceName);
 
-                    var insertedPA = robotBatch.ToList().Select(c => new InsertProblemAccountEntity(c));
+                    var insertedPA = robotBatch.ToList().Select(c => new InsertProblemAccountEntity(c, robotCategoryId));
 
                     var custIds = InsertProblemAccountPackage(insertedPA, FunctionId.RobotUserJob, CCInputFlow.InsertRobot, false, pushConfig.ServiceName);
 

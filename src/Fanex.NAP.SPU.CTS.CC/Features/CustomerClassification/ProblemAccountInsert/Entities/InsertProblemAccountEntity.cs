@@ -50,10 +50,10 @@
             this.IsMarkedDirectly = true;
         }
 
-        public InsertProblemAccountEntity(TWRobotUserEntity robotUser)
+        public InsertProblemAccountEntity(TWRobotUserEntity robotUser, int? robotUserCategoryID)
         {
             this.CustID = robotUser.CustId;
-            this.CategoryID = robotUser.CategoryID;
+            this.CategoryID = robotUserCategoryID;
             this.TWRobotCounter = robotUser.Counter;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromTW = true;
