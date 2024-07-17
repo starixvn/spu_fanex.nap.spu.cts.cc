@@ -79,7 +79,7 @@
             this.CategoryID = ctsCust.CategoryID;
             this.IsLicensee = ctsCust.IsLicensee;
             this.IsFromAI = false;
-            this.IsMarkedDirectly = null;
+            this.IsMarkedDirectly = false;
             this.IsFromCTS = false;
             this.IsFromTVS = false;
             this.IsFromTW = true;
@@ -97,12 +97,11 @@
             this.CategoryGroupID = tWInitialSmartCust.CategoryGroup;
             this.IsLicensee = tWInitialSmartCust.IsLicensee;
             this.IsFromAI = false;
-            this.IsMarkedDirectly = null;
+            this.IsMarkedDirectly = false;
             this.IsFromCTS = false;
             this.IsFromTVS = false;
             this.IsFromTW = true;
-            this.CreatedBy = Constants.StarixITId;
-            //this.Remark = string.Format(Constants.TWInitialSmartRemark, tWInitialSmartCust.DetectedDate.ToString(Constants.CONVERT_TO_DATETIME_MMMddyyyy), tWInitialSmartCust.Probability);
+            this.CreatedBy = Constants.StarixITId;           
         }
 
         public InsertProblemAccountEntity(GetRescanCustomerClassificationEntity data)
