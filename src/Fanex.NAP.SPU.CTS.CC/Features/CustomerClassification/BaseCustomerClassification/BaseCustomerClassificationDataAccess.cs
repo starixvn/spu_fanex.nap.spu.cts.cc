@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification
 {
     using Fanex.Data.Repository;
+    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IBaseCustomerClassificationDataAccess
@@ -10,6 +11,8 @@
         ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model);
 
         ResultRemoveCustomerClassificationModel RemoveCustomerClassification(CCInputFlow inputFlow, RemoveCustomerClassificationModel model);
+
+        int? GetCategoryByCategoryTypeName(string categoryTypeName);
     }
 
     public class BaseCustomerClassificationDataAccess : IBaseCustomerClassificationDataAccess
@@ -67,6 +70,18 @@
             var custInfos = repository.Fetch<ResultRemoveCustomerClassificationEntity>(criteria);
 
             return new ResultRemoveCustomerClassificationModel { CustInfos = custInfos, ErrorMessage = criteria.ErrorMessage };
+        }
+
+        public int? GetCategoryByCategoryTypeName( string categoryTypeName)
+        {
+            var criteria = new GetCategoryByCategoryTypeNameCriteria
+            {
+                CategoryTypeName = categoryTypeName
+            };
+
+            var result = repository.Fetch<int>(criteria);
+
+            return result != null ? result.FirstOrDefault() : null;
         }
     }
 }

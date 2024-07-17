@@ -5,5 +5,7 @@
         public long CustId { get; set; }
 
         public int Counter { get; set; }
+
+        public int? CategoryID { get; set; }
     }
 }

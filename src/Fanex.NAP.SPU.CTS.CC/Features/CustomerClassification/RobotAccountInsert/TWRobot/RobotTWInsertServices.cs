@@ -21,6 +21,8 @@
 
         IRobotTWInsertServices GetTWRobotUser();
 
+        IRobotTWInsertServices GetRobotUserCategoryId(string serviceName);
+
         bool InsertTWRobotPackage(int internalSize, PushDataToExternalEntity pushConfig);
 
         void UpdateLastTimespan();
@@ -34,8 +36,11 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IDataLogTrackingServices dataLogTrackingServices;
+        private readonly ISentryClient sentryClient;
         private long lastScannedTimespan;
         private TWRobotUserViewEntity robotInfo;
+        private int? robotCategoryId;
+
 
         public RobotTWInsertServices(
             IRobotTWInsertDataAccess robotAccountInsertDataAccess,
@@ -51,6 +56,7 @@
             this.systemParameterServices = systemParameterServices;
             this.custClassToMainDBService = custClassToMainDBService;
             this.dataLogTrackingServices = dataLogTrackingServices;
+            this.sentryClient = sentryClient;
         }
 
         public IRobotTWInsertServices Start()
@@ -80,9 +86,33 @@
             return this;
         }
 
+        public IRobotTWInsertServices GetRobotUserCategoryId(string serviceName)
+        {
+            if (robotInfo != null
+                && robotInfo.RobotUsers != null
+                && robotInfo.RobotUsers.Any())
+            {
+                robotCategoryId = GetCategoryByCategoryTypeName(Constants.CATEGORYTYPEPARENT_CATEID_ROBOTUSER);
+
+                if (robotCategoryId == null)
+                {
+                    Utilities.LogSentryError(serviceName, "Get Invalid RobotUser CategoryID (null value)", robotCategoryId, null, sentryClient);
+                }
+                else
+                {
+                    robotInfo.SetRobotUserCategory(robotCategoryId);
+                }
+            }
+
+            return this;
+        }
+
         public bool InsertTWRobotPackage(int internalSize, PushDataToExternalEntity pushConfig)
         {
-            if (robotInfo != null && robotInfo.RobotUsers != null && robotInfo.RobotUsers.Any())
+            if (robotInfo != null 
+                && robotInfo.RobotUsers != null 
+                && robotInfo.RobotUsers.Any()
+                && robotCategoryId != null)
             {
                 var robotUsersChunks = robotInfo.RobotUsers.Chunk(internalSize).ToList();
 
@@ -115,7 +145,8 @@
         {
             if (robotInfo != null
                 && robotInfo.RobotUsers != null
-                && robotInfo.RobotUsers.Any())
+                && robotInfo.RobotUsers.Any()
+                && robotCategoryId != null)
             {
                 string lastTimespan = robotInfo.MaxTimestamp.ToString();
 

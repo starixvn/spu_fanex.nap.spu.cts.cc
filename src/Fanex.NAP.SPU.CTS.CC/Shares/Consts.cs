@@ -35,6 +35,8 @@ namespace Fanex.NAP.SPU.CTS.Shares
         public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
         public const string TWTWInitialGBRemark = "Detection Date: {0} - GB Bet Count: {1} - Sport: {2}";
 
+        public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
+
         public enum MatchMonitorQueryTypes
         {
             Service = 1,

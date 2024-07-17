@@ -12,6 +12,8 @@
         ResultRemoveCustomerClassificationModel RemoveCustomerClassification(CCInputFlow inputFlow, RemoveCustomerClassificationModel model, string serviceName);
 
         ResultInsertCustomerClassificationModel InsertCustomerClassification(CCInputFlow inputFlow, InsertCustomerClassificationModel model, string serviceName);
+
+        int? GetCategoryByCategoryTypeName(string categoryTypeName);
     }
 
     public class BaseCustomerClassificationService : IBaseCustomerClassificationService
@@ -52,6 +54,11 @@
             }
 
             return result;
+        }
+
+        public int? GetCategoryByCategoryTypeName(string categoryTypeName)
+        {
+            return this.baseDataAccess.GetCategoryByCategoryTypeName(categoryTypeName);
         }
     }
 }

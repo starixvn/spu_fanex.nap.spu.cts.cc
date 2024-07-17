@@ -53,6 +53,7 @@
         public InsertProblemAccountEntity(TWRobotUserEntity robotUser)
         {
             this.CustID = robotUser.CustId;
+            this.CategoryID = robotUser.CategoryID;
             this.TWRobotCounter = robotUser.Counter;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromTW = true;

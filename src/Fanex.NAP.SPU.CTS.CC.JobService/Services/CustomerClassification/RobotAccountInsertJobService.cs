@@ -95,6 +95,7 @@
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
                                                       .GetTWRobotUser()
+                                                      .GetRobotUserCategoryId(robotAccountServiceName)
                                                       .InsertTWRobotPackage(batchInternalSize, new PushDataToExternalEntity
                                                           {
                                                               IsUpdateDangerToMainDB = true,
