@@ -75,7 +75,7 @@
 	</Function>
 
 	<Function Name="MatchMonitorClassification">
-		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify_UAT1" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Completed" SpName="CTS_DC_CustClassification_MatchMonitor_Completed" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Get" SpName="CTS_DC_CustClassification_MatchMonitor_Get" DbName="MySQL.CTS_DataCenter.ctsService"></Setting>
 		<Setting Key="CTS_MatchInfo_Get" SpName="CTS_MatchInfo_Get" DbName="SQL.bodb02.bodbSPUNet"></Setting>
@@ -240,12 +240,12 @@
 	<Function Name="TWInitialGBClassification">
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" SpName="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustClassification_InitialGB_GetCustInfo" SpName="CTS_DC_CustClassification_InitialGB_GetCustInfo" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_InitialGB_GetCustInfo" SpName="CTS_DC_CustClassification_InitialGB_GetCustInfo_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_CustomerClassification_CheckNewGroupBetting" SpName="CTS_CustomerClassification_CheckNewGroupBetting_UAT4" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
 	<Function Name="DailyDangerousScoreClassification">
-		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_PA_Dangerous_ReScan" SpName="CTS_DC_CustClassification_PA_Dangerous_ReScan_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
