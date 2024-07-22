@@ -387,6 +387,7 @@
                                                             SportType = group.pa.SportType,
                                                             IsTVSParlay = group.pa.IsTVSParlay,
                                                             TVSIssueTypeID = group.pa.TVSIssueTypeID,
+                                                            GroupName = group.pa.GroupName,
 
                                                             BetCount = temp?.BetCount,
                                                             ActiveDays = temp?.ActiveDays,

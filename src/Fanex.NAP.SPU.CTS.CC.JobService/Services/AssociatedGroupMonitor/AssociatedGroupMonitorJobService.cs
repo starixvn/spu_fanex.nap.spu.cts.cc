@@ -9,6 +9,7 @@
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -53,7 +54,7 @@
                 var dbResult = new DBResult { ErrorCode = 0 };
 
                 var custInfo = this.associatedGroupService.ScanAssociatedAccount();
-
+              
                 if (custInfo.ScanAssociatedAccountList != null && custInfo.ScanAssociatedAccountList.Any())
                 {                    
                     var custSyncPAs = custInfo.ScanAssociatedAccountList.Where(x => x.IsSyncPA).Select(x => new InsertProblemAccountEntity
@@ -140,6 +141,6 @@
             }
 
             return Task.FromResult(true);
-        }
+        }     
     }
 }

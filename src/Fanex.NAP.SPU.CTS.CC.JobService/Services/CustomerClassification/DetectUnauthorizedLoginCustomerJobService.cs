@@ -74,12 +74,13 @@
                 return false;
 
             var custFirstBetDates = detectUnauthorizedLoginCustService.GetCustWithFirstBetDate(param, processDate);
-            
+           
             if (custFirstBetDates.Any())
             {
                 custFirstBetDates.Chunk(batchInternalSize).AsParallel().WithDegreeOfParallelism(4).ForAll(cust =>
                 {
-                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust, processDate);
+                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust, processDate);                  
+
                     InsertProblemAccount(unauthorizedCustResult, batchExternalSize);
                 });            
 
@@ -92,7 +93,7 @@
             }
             return true;
         }
-
+       
         private IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLoginCust(IEnumerable<CustFirstBetDateEntity> custFirstBetDates, DateTime processDate)
         {            
             if (custFirstBetDates.Any())
@@ -109,23 +110,20 @@
         {
             if (unauthorizedCustResult.Any())
             {
-                var pas = unauthorizedCustResult.Select(x =>
+                var pas = unauthorizedCustResult.Select(x => new InsertProblemAccountEntity 
                 {
-                    return new InsertProblemAccountEntity
-                    {
-                        CustID = x.CustID,
-                        CTSCustID = x.CTSCustID,
-                        RoleID = x.RoleID,
-                        SubscriberID = x.SubscriberID,
-                        CategoryID = x.CategoryID,
-                        CategoryGroupID = x.CategoryID,
-                        IsLicensee = x.IsLicensee,
-                        IsMarkedDirectly = true,
-                        IsFromCTS = true,
-                        IsFromTVS = false,
-                        IsFromTW = false,
-                        CreatedBy = Constants.StarixITId
-                    };
+                    CustID = x.CustID,
+                    CTSCustID = x.CTSCustID,
+                    RoleID = x.RoleID,
+                    SubscriberID = x.SubscriberID,
+                    CategoryID = x.CategoryID,
+                    CategoryGroupID = x.CategoryID,
+                    IsLicensee = x.IsLicensee,
+                    IsMarkedDirectly = true,
+                    IsFromCTS = true,
+                    IsFromTVS = false,
+                    IsFromTW = false,
+                    CreatedBy = Constants.StarixITId
                 });
              
                 var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DetectUnauthorizedLoginCust, CCInputFlow.InsertPACategory, false, serviceName);
