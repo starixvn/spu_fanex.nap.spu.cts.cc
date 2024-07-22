@@ -38,9 +38,8 @@
         public Task<bool> Execute(int batchSize)
         {
             try
-            {
-                // will uncomment after test API done
-                // JobRun(batchSize);
+            {                
+                JobRun(batchSize);
             }
             catch (Exception ex)
             {
