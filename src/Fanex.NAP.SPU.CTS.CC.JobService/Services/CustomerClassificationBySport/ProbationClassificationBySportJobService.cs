@@ -4,13 +4,12 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     public interface IProbationClassificationBySportJobService
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute();
     }
 
     public class ProbationClassificationBySportJobService : IProbationClassificationBySportJobService
@@ -27,18 +26,15 @@
             this.serviceName = "ProbationClassificationBySport";
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute()
         {
             try
             {
                 var isContinue = true;
 
-                if (batchSize <= 0)
-                    batchSize = 500;
-
                 do
                 {
-                    isContinue = JobRun(batchSize);
+                    isContinue = JobRun();
 
                 } while (isContinue);
             }
@@ -52,13 +48,13 @@
             return Task.FromResult(true);
         }
 
-        private bool JobRun(int batchSize)
+        private bool JobRun()
         {
             probationClassificationServices
                 .Start()
-                .GetProbationScanClassificationBySport(batchSize)
+                .GetProbationScanClassificationBySport()
                 .PreprocessProbationClassificationBySport()
-                .UpdateScanDateProbationClassificationBySport();
+                .UpdateCompleteProbationScanBySport();
 
             return (probationClassificationServices.ProbationClassification != null &&
                probationClassificationServices.ProbationClassification.Any());

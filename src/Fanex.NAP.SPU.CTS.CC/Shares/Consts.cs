@@ -93,7 +93,9 @@ namespace Fanex.NAP.SPU.CTS.Shares
             TWInitialSmartClassification_LastCustID = 159,
             TWInitialSmartClassification_LastScanDate = 160,            
             DailyProbation_LastCategoryID = 166,
-            DailyProbation_LastCustID = 167
+            DailyProbation_LastCustID = 167,
+            DailyProbation_BySport_LastCategoryID = 169,
+            DailyProbation_BySport_LastCustID = 170
         };
 
         public enum Main_SystemParameters
