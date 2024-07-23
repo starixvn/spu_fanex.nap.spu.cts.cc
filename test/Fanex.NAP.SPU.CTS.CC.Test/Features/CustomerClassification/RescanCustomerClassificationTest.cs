@@ -53,33 +53,33 @@
             //    null);
         }
 
-        [Fact]
-        public void GetRoleCustomer_WhenSuccess_ReturnCustList()
-        {
-            var roleCusts = new List<RoleCustomerEntity>
-            {
-                new RoleCustomerEntity
-                {
-                   CustID = 1,
-                   RoleID = 1
-                },
-                  new RoleCustomerEntity
-                {
-                   CustID = 2,
-                   RoleID = 3
-                },
-            };
+        //[Fact]
+        //public void GetRoleCustomer_WhenSuccess_ReturnCustList()
+        //{
+        //    var roleCusts = new List<RoleCustomerEntity>
+        //    {
+        //        new RoleCustomerEntity
+        //        {
+        //           CustID = 1,
+        //           RoleID = 1
+        //        },
+        //          new RoleCustomerEntity
+        //        {
+        //           CustID = 2,
+        //           RoleID = 3
+        //        },
+        //    };
 
-            var custIds = new List<long> { 1, 2, 3 };
+        //    var custIds = new List<long> { 1, 2, 3 };
 
-            rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds)).Returns(roleCusts);
+        //    rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds)).Returns(roleCusts);
 
-            rescanCustClassificationService.Start().GetAgentCusts(custIds);
+        //    rescanCustClassificationService.Start().GetAgentCusts(custIds);
 
-            var result = rescanCustClassificationService.CustIdsToRescanPA;
+        //    var result = rescanCustClassificationService.CustIdsToRescanPA;
 
-            Assert.IsAssignableFrom<IEnumerable<long>>(result);
-        }
+        //    Assert.IsAssignableFrom<IEnumerable<long>>(result);
+        //}
 
         [Fact]
         public void GetExistedProblemAccounts_WhenSuccess_ReturnData()
@@ -124,31 +124,31 @@
         }
 
 
-        [Fact]
-        public void GetTWRobots_WhenSuccess_ReturnData()
-        {
-            var expectData = new List<InsertRobotEntity>
-            {
-                CreateSampleTWRobotModel()
-            };
+        //[Fact]
+        //public void GetTWRobots_WhenSuccess_ReturnData()
+        //{
+        //    var expectData = new List<InsertRobotEntity>
+        //    {
+        //        CreateSampleTWRobotModel()
+        //    };
 
-            var inputData = new List<TWRobotUserEntity>
-            {
-                new TWRobotUserEntity { CustId = 0, Counter = 0}
-            };
+        //    var inputData = new List<TWRobotUserEntity>
+        //    {
+        //        new TWRobotUserEntity { CustId = 0, Counter = 0}
+        //    };
 
-            var custIds = new List<long> { 1, 2, 3 };
+        //    var custIds = new List<long> { 1, 2, 3 };
 
-            rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
+        //    rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
 
-            rescanCustClassificationService
-                                    .Start()
-                                    .GetTWRobotUsers(custIds);
+        //    rescanCustClassificationService
+        //                            .Start()
+        //                            .GetTWRobotUsers(custIds);
 
-            var robots = rescanCustClassificationService.TWRobots;
+        //    var robots = rescanCustClassificationService.TWRobots;
 
-            robots.Should().BeEquivalentTo(expectData);
-        }
+        //    robots.Should().BeEquivalentTo(expectData);
+        //}
 
         [Fact]
         public void InsertRobots_WhenSuccess_ReturnData()

@@ -23,7 +23,7 @@
 
         bool CompleteCustomerClassificationFromQueue();
 
-        public bool InsertVVIP(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo);
+        bool InsertVVIP(RescanParametersEntity parameters, VVIPCustomerInsertEntity custInfo);
     }
 
     public class AffectedDownlineCustomerClassificationService : ProblemAccountServices, IAffectedDownlineCustomerClassificationService
@@ -186,7 +186,7 @@
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
                     IsAffectDownline = custInfo.IsAffectDownline,
-                    IsToQueue = false
+                    IsToQueue = parameters.IsToQueue
                 };
 
                 var result = base.InsertCustomerClassification(CCInputFlow.VVIP, modelInsert, parameters.ServiceName);

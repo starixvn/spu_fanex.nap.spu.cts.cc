@@ -93,7 +93,11 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, parameters.IsToQueue, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification,
+                    FunctionId.InsertNewCustJob,
+                    CCInputFlow.InsertPACategory,
+                    parameters.IsToQueue, parameters.ServiceName);
+               
                 IsSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters.PushDataExternal);
             }
 
@@ -104,9 +108,9 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {                
-                var cusIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
+                var custIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
 
-                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(cusIDs, parameters);
+                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 
             return this;

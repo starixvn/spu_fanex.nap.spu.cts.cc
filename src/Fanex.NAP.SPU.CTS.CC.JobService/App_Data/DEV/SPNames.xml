@@ -154,7 +154,7 @@
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Category_GetByCategoryTypeName" SpName="CTS_DC_Category_GetByCategoryTypeName_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
@@ -164,7 +164,7 @@
 	</Function>
 
 	<Function name="DetectUnauthorizedLoginCustomer">
-		<Setting Key="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" SpName="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" SpName="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="Acc_Rpt_GetCustWithFirstbetdate" SpName="Acc_Rpt_GetCustWithFirstbetdate" DbName="DBDW.bodb_dwrs.bodbSPUNet" />
 	</Function>
 

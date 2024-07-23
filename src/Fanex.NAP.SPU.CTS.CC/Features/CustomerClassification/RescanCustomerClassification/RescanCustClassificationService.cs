@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
@@ -10,7 +9,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
 
     public interface IRescanCustClassificationService
@@ -19,52 +17,40 @@
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
-        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
+        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);      
 
-        //IRescanCustClassificationService GetExistedProblemAccounts(IEnumerable<long> custIds);
-
-        //IRescanCustClassificationService InsertProblemAccountLogics(string serviceName, bool isRescanPAFromQueue, FunctionId functionId);
-
-        //IRescanCustClassificationService RemoveOldProblemAccount();
-
-        IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
-
-        //IRescanCustClassificationService InsertRobot();
+        //IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
 
         bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);
 
-        IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras);
-
-        IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
+        //IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
 
         //IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
 
-        IEnumerable<long> CustIdsToRescanPA { get; }
+        //IEnumerable<long> CustIdsToRescanPA { get; }
 
-        IEnumerable<InsertRobotEntity> RobotUsers { get; }
+        //IEnumerable<InsertRobotEntity> RobotUsers { get; }
 
-        IEnumerable<InsertProblemAccountEntity> ExistedPA { get; }
+        //IEnumerable<InsertProblemAccountEntity> ExistedPA { get; }
 
-        IEnumerable<InsertRobotEntity> ExistedRobot { get; }
+        //IEnumerable<InsertRobotEntity> ExistedRobot { get; }
 
-        IEnumerable<InsertRobotEntity> TWRobots { get; }
+        //IEnumerable<InsertRobotEntity> TWRobots { get; }
     }
 
     public class RescanCustClassificationService : ProblemAccountServices, IRescanCustClassificationService
     {
         private readonly IRescanCustClassificationDataAccess rescanCustClassificationDataAccess;
-        //private readonly ITWInitialGroupBettingDataAccess twInitialGBDataAccess;
-        //private readonly IPAPotentialClassificationDataAccess paPotentialDataAccess;       
+      
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         private readonly ISentryClient sentryClient;
-        private readonly IDataLogTrackingServices dataLogTrackingServices;
-        private IEnumerable<InsertProblemAccountEntity> problemAccounts;
-        private IEnumerable<InsertRobotEntity> robotClassification;
-        private List<InsertRobotEntity> robotUsers;
-        private List<long> custIdsToRescanPA;
-        private List<long> custIdsToRescanPotentialPA;
-        private List<long> custIdsToRemoveOldPA;
+        //private readonly IDataLogTrackingServices dataLogTrackingServices;
+        //private IEnumerable<InsertProblemAccountEntity> problemAccounts;
+        //private IEnumerable<InsertRobotEntity> robotClassification;
+        //private List<InsertRobotEntity> robotUsers;
+        //private List<long> custIdsToRescanPA;
+        //private List<long> custIdsToRescanPotentialPA;
         private List<long> smaCustIds;
         private bool isSuccess;
 
@@ -77,37 +63,12 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
         }
-
-        //public RescanCustClassificationService(
-        //    IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
-        //    IPAPotentialClassificationDataAccess paPotentialDataAccess,
-        //    ITWInitialGroupBettingDataAccess twInitialGBDataAccess,
-        //    ISentryClient sentryClient,
-        //    IProblemAccountServices problemAccountServices,
-        //    ICustClassToMainDBService custClassToMainDBService,
-        //    IDataLogTrackingServices dataLogTrackingServices)
-        //{
-        //    this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
-        //    this.paPotentialDataAccess = paPotentialDataAccess;
-        //    this.twInitialGBDataAccess = twInitialGBDataAccess;
-        //    this.problemAccountServices = problemAccountServices;
-        //    this.custClassToMainDBService = custClassToMainDBService;
-        //    this.sentryClient = sentryClient;
-        //    this.dataLogTrackingServices = dataLogTrackingServices;
-        //}
-
+      
         public IRescanCustClassificationService Start()
-        {
-            //this.problemAccounts = Enumerable.Empty<InsertProblemAccountEntity>();
-            //this.robotUsers = new List<InsertRobotEntity>();
-            //this.robotClassification = Enumerable.Empty<InsertRobotEntity>();
-            //this.custIdsToRescanPA = new List<long>();
-            //this.custIdsToRescanPotentialPA = new List<long>();
-            //this.custIdsToRemoveOldPA = new List<long>();
+        {           
+            smaCustIds = new List<long>();
 
-            this.smaCustIds = new List<long>();
-
-            this.isSuccess = true;
+            isSuccess = true;
 
             return this;
         }
@@ -274,30 +235,30 @@
         //    return this;
         //}
 
-        public IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds)
-        {
-            if (isSuccess && custIds != null && custIds.Any())
-            {
-                var robots = rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds));
+        //public IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds)
+        //{
+        //    if (isSuccess && custIds != null && custIds.Any())
+        //    {
+        //        var robots = rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds));
 
-                if (robots != null && robots.Any())
-                {
-                    robots.ToList().ForEach(c =>
-                    {
-                        robotUsers.Add(new InsertRobotEntity
-                        {
-                            CustID = c.CustId,
-                            RobotCounter = c.Counter,
-                            IsFromTW = true,
-                            IsDirect = true,
-                            CreatedBy = StarixITId
-                        });
-                    });
-                }
-            }
+        //        if (robots != null && robots.Any())
+        //        {
+        //            robots.ToList().ForEach(c =>
+        //            {
+        //                robotUsers.Add(new InsertRobotEntity
+        //                {
+        //                    CustID = c.CustId,
+        //                    RobotCounter = c.Counter,
+        //                    IsFromTW = true,
+        //                    IsDirect = true,
+        //                    CreatedBy = StarixITId
+        //                });
+        //            });
+        //        }
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
         //public IRescanCustClassificationService InsertRobot()
         //{
@@ -352,45 +313,45 @@
             return this;
         }
 
-        public IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras)
-        {
-            if (isSuccess && custIds != null && custIds.Any())
-            {
-                var custToRescanNormal = custIds.ToList();
-                custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
-                custToRescanNormal.RemoveAll(x => custIdsToRescanPotentialPA.Distinct().Contains(x));
-                custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
+        //public IRescanCustClassificationService RescanNormalAccount(IEnumerable<long> custIds, RescanParametersEntity paras)
+        //{
+        //    if (isSuccess && custIds != null && custIds.Any())
+        //    {
+        //        var custToRescanNormal = custIds.ToList();
+        //        custToRescanNormal.RemoveAll(x => custIdsToRescanPA.Distinct().Contains(x));
+        //        custToRescanNormal.RemoveAll(x => custIdsToRescanPotentialPA.Distinct().Contains(x));
+        //        custToRescanNormal.RemoveAll(x => smaCustIds.Distinct().Contains(x));
 
-                if (custToRescanNormal.Any())
-                {
-                    var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
+        //        if (custToRescanNormal.Any())
+        //        {
+        //            var custIdsChunk = custToRescanNormal.Chunk(paras.InternalBatchSize);
 
-                    foreach (var batchCustIds in custIdsChunk)
-                    {
-                        var custIdToString = string.Join(",", batchCustIds);
+        //            foreach (var batchCustIds in custIdsChunk)
+        //            {
+        //                var custIdToString = string.Join(",", batchCustIds);
 
-                        //rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
-                    }
-                }
-            }
+        //                //rescanCustClassificationDataAccess.ClassifyNormalCategory(custIdToString, paras.FunctionId, paras.RescanNormalType);
+        //            }
+        //        }
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters)
-        {
-            if (isSuccess && smaCustIds != null && smaCustIds.Any())
-            {
-                var custToRemovePA = smaCustIds.Distinct().Except(custIdsToRescanPA);
+        //public IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters)
+        //{
+        //    if (isSuccess && smaCustIds != null && smaCustIds.Any())
+        //    {
+        //        var custToRemovePA = smaCustIds.Distinct().Except(custIdsToRescanPA);
 
-                if (custToRemovePA.Any())
-                {
-                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
-                }
-            }
+        //        if (custToRemovePA.Any())
+        //        {
+        //            isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(custToRemovePA?.Distinct(), parameters);
+        //        }
+        //    }
 
-            return this;
-        }
+        //    return this;
+        //}
 
         //public void RescanPotentialProblemAccount(List<long> custIDs, RescanParametersEntity parameters)
         //{
@@ -481,14 +442,14 @@
         //    return this;
         //}
 
-        public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
+        //public IEnumerable<long> CustIdsToRescanPA => custIdsToRescanPA;
 
-        public IEnumerable<InsertRobotEntity> RobotUsers => robotUsers;
+        //public IEnumerable<InsertRobotEntity> RobotUsers => robotUsers;
 
-        public IEnumerable<InsertProblemAccountEntity> ExistedPA => problemAccounts;
+        //public IEnumerable<InsertProblemAccountEntity> ExistedPA => problemAccounts;
 
-        public IEnumerable<InsertRobotEntity> ExistedRobot => robotClassification;
+        //public IEnumerable<InsertRobotEntity> ExistedRobot => robotClassification;
 
-        public IEnumerable<InsertRobotEntity> TWRobots => robotUsers;
+        //public IEnumerable<InsertRobotEntity> TWRobots => robotUsers;
     }
 }
