@@ -250,7 +250,7 @@
         {
             return new VVIPCustomerInsertEntity
             {
-                FromAction = VVIP_FromAction.Service,
+                FromAction = FromAction.Service,
                 IsAffectDownline = false,
                 QueueID = Convert.ToInt64(custInfo.QueueID),
                 UplineRoleID = custInfo.UplineRoleID,

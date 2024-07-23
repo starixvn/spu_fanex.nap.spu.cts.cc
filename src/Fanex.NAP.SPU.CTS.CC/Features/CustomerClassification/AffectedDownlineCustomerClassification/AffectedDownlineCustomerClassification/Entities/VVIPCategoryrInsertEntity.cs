@@ -6,7 +6,7 @@
 
     public class VVIPCustomerInsertEntity
     {
-        public VVIP_FromAction FromAction { get; set; }
+        public FromAction FromAction { get; set; }
 
         public int? UplineRoleID { get; set; }
 

@@ -121,24 +121,5 @@
             // Assert
             action.Should().NotThrow<Exception>();
         }
-
-        [Fact]
-        public void InsertRobotAccount_WhenSuccess_ReturnData()
-        {
-            // Arrange            
-            var robot = new List<InsertRobotEntity>()
-            {
-                new InsertRobotEntity
-                {
-                    CustID = 1, RobotCounter = 1
-                }
-            };
-
-            // Act
-            var result = problemAccountServices.InsertRobotAccountPackage(robot, false);
-
-            // Assert
-            Assert.IsAssignableFrom<IEnumerable<CustInfoEntity>>(result);
-        }
     }
 }

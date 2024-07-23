@@ -231,7 +231,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             GetByCustId = 2
         };
 
-        public enum VVIP_FromAction
+        public enum FromAction
         {
             WebSite = 1,
             Service = 2,

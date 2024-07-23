@@ -45,7 +45,7 @@
             this.TVSRequestID = tvsPACust.RequestID;
             this.IsTVSParlay = tvsPACust.IsParlay;
             this.SportType = tvsPACust.Sporttype;
-            this.TVSIssueTypeID = tvsPACust.IssueTypeId;
+            this.IssueTypeID = tvsPACust.IssueTypeId;
             this.IsFromTVS = true;
             this.IsMarkedDirectly = true;
         }
@@ -54,7 +54,7 @@
         {
             this.CustID = robotUser.CustId;
             this.CategoryID = robotUserCategoryID;
-            this.TWRobotCounter = robotUser.Counter;
+            this.RobotCounter = robotUser.Counter;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromTW = true;
             this.IsMarkedDirectly = true;
@@ -165,11 +165,11 @@
 
         public string SportName { get; set; }
 
-        public int TVSIssueTypeID { get; set; }
+        public int? IssueTypeID { get; set; }
 
         public int? MatchID { get; set; }
 
-        public int? TWRobotCounter { get; set; }
+        public int? RobotCounter { get; set; }
 
         public string GroupName { get; set; }
 
