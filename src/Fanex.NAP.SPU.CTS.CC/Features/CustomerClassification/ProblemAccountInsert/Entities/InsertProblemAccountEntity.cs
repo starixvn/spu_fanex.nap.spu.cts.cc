@@ -163,7 +163,7 @@
 
         public int? SportType { get; set; }
 
-        public string? SportName { get; set; }
+        public string SportName { get; set; }
 
         public int TVSIssueTypeID { get; set; }
 
