@@ -342,9 +342,8 @@
                 if (rescanPotentialPA != string.Empty)
                 {
                     RescanDangerousScorePA(rescanPotentialPA, parameters);
-
-                    // will uncomment after test API done
-                    //RescanInitialSmartPA(rescanPotentialPA, parameters);
+                   
+                    RescanInitialSmartPA(rescanPotentialPA, parameters);
 
                     RescanInitialTWGroupBettingPA(rescanPotentialPA, parameters);
                 }
