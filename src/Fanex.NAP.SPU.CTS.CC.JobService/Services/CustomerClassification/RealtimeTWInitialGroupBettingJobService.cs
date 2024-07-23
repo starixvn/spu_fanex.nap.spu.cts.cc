@@ -61,6 +61,10 @@
             {
                 var twInitialGB = twInitialGBService.GetChanges();
 
+                // TODO Test
+                twInitialGB = GetChanges_Test();
+                // TODO Test
+
                 isContinue = twInitialGB.CustInfos != null && twInitialGB.CustInfos.Any();
 
                 if (isContinue)
@@ -72,6 +76,24 @@
 
             } while (isContinue);
 
+        }
+
+        private TWInitialGBGetChangesModel GetChanges_Test()
+        {
+            return new TWInitialGBGetChangesModel()
+            {
+                CustInfos = new List<TWInitialGBGetChangesEntity>()
+                {
+                    new TWInitialGBGetChangesEntity {
+                    CustID = 43054421,
+                    SportType = 1,
+                    DetectedDate = DateTime.Now,
+                    GBTicketCount = 5
+                    }
+                },
+                NextScannedCustID = 43054421,
+                NextScannedDateTime = DateTime.Now
+            };
         }
 
     }

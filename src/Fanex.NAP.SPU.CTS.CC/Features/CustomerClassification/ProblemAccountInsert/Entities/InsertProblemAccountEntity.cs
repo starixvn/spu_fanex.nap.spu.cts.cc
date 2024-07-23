@@ -84,7 +84,10 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
-            this.SportType = twGBCust.SportType;           
+            this.SportType = twGBCust.SportType;
+            this.SportName = twGBCust.SportName;
+            this.GBTicketCount = twGBCust.GBTicketCount;
+            this.DetectedDate = twGBCust.DetectedDate;
         }
 
         public InsertProblemAccountEntity(TWInitialSmartEntity tWInitialSmartCust)
@@ -160,6 +163,8 @@
 
         public int? SportType { get; set; }
 
+        public string? SportName { get; set; }
+
         public int TVSIssueTypeID { get; set; }
 
         public int? MatchID { get; set; }
@@ -167,6 +172,10 @@
         public int? TWRobotCounter { get; set; }
 
         public string GroupName { get; set; }
+
+        public int? GBTicketCount { get; set; }
+
+        public DateTime? DetectedDate { get; set; }
 
     }
 }

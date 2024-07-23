@@ -59,7 +59,7 @@
 
             foreach (var pasChunk in pasChunks)
             {                
-                var paCustIDs = InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialGBClassification, CCInputFlow.InsertPACategory, false, serviceName);
+                var paCustIDs = InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialGBClassification, CCInputFlow.Potential, false, serviceName);
 
                 custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }
