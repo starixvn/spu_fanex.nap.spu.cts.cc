@@ -8,7 +8,7 @@
 
         public long CustID { get; set; }
 
-        public int TargetCC { get; set; }
+        public int CustomerClass { get; set; }
 
         public int SportID { get; set; }
 
