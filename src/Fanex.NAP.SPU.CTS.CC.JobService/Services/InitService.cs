@@ -17,8 +17,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;   
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
@@ -165,10 +164,7 @@
         }      
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
-        {
-            services.AddSingleton<IPAPotentialClassificationDataAccess, PAPotentialClassificationDataAccess>();
-            services.AddSingleton<IPAPotentialClassificationService, PAPotentialClassificationService>();
-
+        {          
             services.AddSingleton<IDailyProblemClassificationDataAccess, DailyProblemClassificationDataAccess>();
             services.AddSingleton<IDailyProblemClassificationServices, DailyProblemClassificationServices>();
             

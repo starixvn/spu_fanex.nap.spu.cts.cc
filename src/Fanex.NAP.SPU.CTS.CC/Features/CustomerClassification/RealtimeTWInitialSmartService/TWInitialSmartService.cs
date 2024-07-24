@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -16,19 +18,19 @@
         bool InsertTWInitialSmartClassification(IEnumerable<TWInitialSmartEntity> tWInitialSmartCusts, PushDataToExternalEntity paras);
     }
 
-    public class TWInitialSmartService : ITWInitialSmartService
+    public class TWInitialSmartService : ProblemAccountServices, ITWInitialSmartService
     {
-        private readonly ITWInitialSmartDataAccess dataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
+        private readonly ITWInitialSmartDataAccess dataAccess;      
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly string serviceName;
 
-        public TWInitialSmartService(IProblemAccountServices problemAccountServices,
+        public TWInitialSmartService(IBaseCustomerClassificationDataAccess baseDataAccess, 
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ISentryClient sentryClient,        
             ICustClassToMainDBService custClassToMainDBService,
-            ITWInitialSmartDataAccess dataAccess)
+            ITWInitialSmartDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
-            this.dataAccess = dataAccess;
-            this.problemAccountServices = problemAccountServices;
+            this.dataAccess = dataAccess;        
             this.custClassToMainDBService = custClassToMainDBService;
             this.serviceName = "Realtime TW Initial Smart JobService";
         }
@@ -46,7 +48,7 @@
 
             foreach (var pasChunk in pasChunks)
             {
-                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialSmartClassification, InsertPA_ByType.Category, false, serviceName);
+                var paCustIDs = InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialSmartClassification, CCInputFlow.Potential, false, serviceName);
 
                 custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }
