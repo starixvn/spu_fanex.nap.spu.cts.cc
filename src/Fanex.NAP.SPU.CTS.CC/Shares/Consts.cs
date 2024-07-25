@@ -285,13 +285,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Exist = 1,
             ExistOnly = 2,
         };
-
-        public enum CustToBuildRemark
-        {
-            TWInitialSmart = 1,
-            TWInitialGB = 2            
-        };
-
+       
         public enum CCInputFlow
         {
             [Description("VVIP")]

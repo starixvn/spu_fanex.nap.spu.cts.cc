@@ -6,6 +6,6 @@
 
         public long CTSCustID { get; set; }
 
-        public int CategoryType { get; set; } // 1: PA, 2: PA Dangerous
+        public bool IsPA { get; set; }
     }
 }

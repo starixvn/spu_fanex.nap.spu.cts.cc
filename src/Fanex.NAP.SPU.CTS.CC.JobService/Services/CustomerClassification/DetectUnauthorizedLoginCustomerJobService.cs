@@ -33,7 +33,7 @@
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService)
         {
-            this.serviceName = "DetectUnauthorizedLoginCustomer";
+            this.serviceName = "Detect Unauthorized Login Customer";
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.detectUnauthorizedLoginCustService = detectUnauthorizedLoginCustService;
@@ -125,8 +125,6 @@
                     IsFromTW = false,
                     CreatedBy = Constants.StarixITId
                 });
-             
-                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DetectUnauthorizedLoginCust, CCInputFlow.InsertPACategory, false, serviceName);
 
                 var paras = new PushDataToExternalEntity
                 {
@@ -136,7 +134,7 @@
                     ServiceName = serviceName
                 };
 
-                custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
+                return detectUnauthorizedLoginCustService.InsertProblemAccount(pas, paras);               
             }                                 
 
             return true;

@@ -119,30 +119,6 @@
             // Assert
             result.Should().BeTrue();
         }
-
-        private InsertRobotEntity CreateSampleRobotModel()
-        {
-            var rd = new Random();
-            var data = new InsertRobotEntity
-            {
-                CustID = 0,
-                IsFromTW = false,
-                IsFromCTS = false,
-                IsDirect = false,
-                IsFromAI = false,
-                IsFromTVS = false,
-                RobotCounter = 0,
-                CreatedBy = StarixITId,
-                Remark = null,
-                BetCount = null,
-                TVSRequestID = null,
-                ActiveDays = null,
-                TurnoverRM = null,
-                WinlossRM = null,
-                WinlossStatus = null
-            };
-
-            return data;
-        }
+ 
     }
 }

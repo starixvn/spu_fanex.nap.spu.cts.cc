@@ -23,27 +23,21 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
-        private const string serviceName = "ArchiveAssociationCustomer";
+        private const string serviceName = "Associated Group Monitor";
         private const string MarkPA_AssociatedGroup = "Associated Group";
         private const int DangerLevelABIOri = 2;
         private const int batchSize = 500;
-        private readonly IAssociatedGroupMonitorService associatedGroupService;
-        private readonly IProblemAccountServices problemAccountServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAssociatedGroupMonitorService associatedGroupService;       
         private readonly ISystemParameterServices systemParameterServices;
 
         public AssociatedGroupMonitorJobService(ISentryClient sentryClient
             , IAppSettings appSettings
-            , IAssociatedGroupMonitorService associatedGroupService
-            , IProblemAccountServices problemAccountServices
-            , ICustClassToMainDBService custClassToMainDBService
+            , IAssociatedGroupMonitorService associatedGroupService        
             , ISystemParameterServices systemParameterServices)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
-            this.associatedGroupService = associatedGroupService;
-            this.problemAccountServices = problemAccountServices;
-            this.custClassToMainDBService = custClassToMainDBService;
+            this.associatedGroupService = associatedGroupService;      
             this.systemParameterServices = systemParameterServices;
         }
 
@@ -77,13 +71,7 @@
 
                     if (custSyncPAs.Any())
                     {
-                        var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs
-                          , FunctionId.ScanAssociatedAccount
-                          , CCInputFlow.InsertPACategory
-                          , false
-                          , serviceName);
-
-                        custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult, new PushDataToExternalEntity
+                        var custIdsResult = this.associatedGroupService.InsertProblemAccount(custSyncPAs, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchSize,
                             IsUpdateDangerToMainDB = true,
@@ -98,7 +86,7 @@
 
                         var custUpdateGroupABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custGroupABIPAs), DangerLevelABIOri);
                         dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateGroupABI, custInfo.ABI);
-                    }                   
+                    }
                     
                     var ctsCustIDs = string.Join(",", custInfo.ScanAssociatedAccountList.Select(x => x.CTSCustID).Distinct());
 

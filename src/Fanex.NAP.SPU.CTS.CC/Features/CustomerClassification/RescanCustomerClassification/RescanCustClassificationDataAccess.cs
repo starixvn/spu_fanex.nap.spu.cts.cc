@@ -1,18 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.Data.Repository;   
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IRescanCustClassificationDataAccess
     {
         IEnumerable<RoleCustomerEntity> GetRoleCustomer(string custIds);
-
-        IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds);
-        
-        int PreNormalClassification(string custList, FunctionId functionId, RescanNormalType type);
        
+        int PreNormalClassification(string custList, FunctionId functionId, RescanNormalType type);       
     }
 
     public class RescanCustClassificationDataAccess : IRescanCustClassificationDataAccess
@@ -32,17 +28,7 @@
             };
 
             return repository.Fetch<RoleCustomerEntity>(criteria);
-        }
-
-        public IEnumerable<TWRobotUserEntity> GetExistedTWRobotUser(string custIds)
-        {
-            var criteria = new ExistedTWRobotUserGetCriteria
-            {
-                CustIds = custIds
-            };
-
-            return repository.Fetch<TWRobotUserEntity>(criteria);
-        }       
+        }        
 
         public int PreNormalClassification(string custList, FunctionId functionId, RescanNormalType type)
         {

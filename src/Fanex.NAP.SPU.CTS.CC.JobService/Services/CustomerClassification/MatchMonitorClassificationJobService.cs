@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -20,9 +19,7 @@
 
     public class MatchMonitorClassificationJobService : IMatchMonitorClassificationJobService
     {
-        private readonly IMatchMonitorClassificationService mmClassificationService;
-        private readonly IProblemAccountServices problemAccountServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IMatchMonitorClassificationService mmClassificationService;     
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly string serviceName;
@@ -30,16 +27,12 @@
 
         public MatchMonitorClassificationJobService(ISentryClient sentryClient
             , IAppSettings appSettings
-            , IMatchMonitorClassificationService mmClassificationService
-            , IProblemAccountServices problemAccountServices
-            , ICustClassToMainDBService custClassToMainDBService)
+            , IMatchMonitorClassificationService mmClassificationService)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
-            this.serviceName = "MatchMonitorClassicationStatus";
-            this.mmClassificationService = mmClassificationService;
-            this.problemAccountServices = problemAccountServices;
-            this.custClassToMainDBService = custClassToMainDBService;
+            this.serviceName = "Match Monitor Classication";
+            this.mmClassificationService = mmClassificationService;         
         }
 
         public Task<bool> UpdateStatusMatchMonitor()
@@ -81,19 +74,14 @@
                 {    
                     var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
 
-                    var custIdsResult = problemAccountServices.InsertProblemAccountPackage(problemAccounts
-                        , FunctionId.ClassifyGBMatchMonitor
-                        , CCInputFlow.InsertPACategory
-                        , false
-                        , serviceName);
-
-                    custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult.Distinct(), new PushDataToExternalEntity
-                    {
-                        ExternalBatchSize = batchSize,
-                        IsUpdateDangerToMainDB = true,
-                        IsWriteLog = appSettings.ProblemAccountIsWriteLog,
-                        ServiceName = serviceName
-                    });                   
+                    mmClassificationService.InsertProblemAccount(problemAccounts,
+                        new PushDataToExternalEntity
+                        {
+                            ExternalBatchSize = batchSize,
+                            IsUpdateDangerToMainDB = true,
+                            IsWriteLog = appSettings.ProblemAccountIsWriteLog,
+                            ServiceName = serviceName
+                        });                               
                 }
 
                 mmClassificationService.ClassifyMatchMonitorCompleted(classifyMMModel);
