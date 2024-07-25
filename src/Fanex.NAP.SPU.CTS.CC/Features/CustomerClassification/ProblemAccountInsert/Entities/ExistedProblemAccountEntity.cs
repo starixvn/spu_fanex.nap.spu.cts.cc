@@ -30,7 +30,7 @@
 
         public int? SportType { get; set; }
 
-        public int IssueTypeID { get; set; }
+        public int? IssueTypeID { get; set; }
 
         public bool IsFromTW { get; set; }
 
