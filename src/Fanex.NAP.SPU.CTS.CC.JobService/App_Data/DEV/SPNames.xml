@@ -67,8 +67,7 @@
 		<Setting Key="CTS_GeneralNormalClassification_Probation_Preprocess" SpName="CTS_GeneralNormalClassification_Probation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
-	<Function Name="DailyNormalClassification">
-		<Setting Key="CTS_DC_CustClassification_DailyScan_Get" SpName="CTS_DC_CustClassification_DailyScan_Get" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
+	<Function Name="DailyNormalClassification">	
 		<Setting Key="CTS_GeneralNormalClassification_Daily_Preprocess" SpName="CTS_GeneralNormalClassification_Daily_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="1200" />
 	</Function>
 
