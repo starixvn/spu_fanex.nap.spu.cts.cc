@@ -222,23 +222,15 @@ namespace Fanex.NAP.SPU.CTS.Shares
         {
             CTSWEB = 1,
             CTSAPI = 2,
-            CTSServices = 3,
-            AFCSerivce = 4,
-            ManualTrigger = 5
+            CTSServices = 3,           
+            ManualTrigger = 4
         };
 
         public enum QueryType
         {
             GetByRange = 1,
             GetByCustId = 2
-        };
-
-        public enum FromAction
-        {
-            WebSite = 1,
-            Service = 2,
-            ServiceInsertNew = 3
-        }
+        };       
 
         public enum DownlineClassification_ActionType
         {
@@ -247,12 +239,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
             InsertPA = 3,
             RemovePA = 4,
         }
-
-        public enum InsertPA_ByType
-        {
-            Category = 1,
-            Reason = 2,
-        };
 
         public enum JobMonitor_IssueType
         {

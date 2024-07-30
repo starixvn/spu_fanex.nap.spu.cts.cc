@@ -182,7 +182,7 @@
                 var modelInsert = new InsertCustomerClassificationModel()
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo),
-                    FromAction = (int)custInfo.FromAction,
+                    FromAction = (int)custInfo.FromFlow,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
                     IsAffectDownline = custInfo.IsAffectDownline,
@@ -226,7 +226,7 @@
                         CTSCustID = c.CTSCustID,
                         CreatedBy = c.CreatedBy
                     })),
-                    FromAction = (int)custInfo.FromAction,
+                    FromAction = (int)custInfo.FromFlow,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
                     AffectDownline = custInfo.IsAffectDownline,
@@ -250,7 +250,7 @@
         {
             return new VVIPCustomerInsertEntity
             {
-                FromAction = FromAction.Service,
+                FromFlow = FromFlow.CTSServices,
                 IsAffectDownline = false,
                 QueueID = Convert.ToInt64(custInfo.QueueID),
                 UplineRoleID = custInfo.UplineRoleID,

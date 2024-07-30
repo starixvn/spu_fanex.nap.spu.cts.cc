@@ -67,7 +67,7 @@
                 {
                     CustInfoJson = JsonConvert.SerializeObject(paClassification),
                     IsToQueue = isToQueue,
-                    FromAction = (int)FromAction.Service
+                    FromAction = (int)FromFlow.CTSServices
                 };
 
                 var insertPaResult = base.InsertCustomerClassification(ccInputFlow, modelInsert, serviceName);
@@ -153,7 +153,8 @@
             var removedModel = new RemoveCustomerClassificationModel()
             {
                 CustInfoJson = JsonConvert.SerializeObject(problemAccounts),
-                IsFromQueue = isFromQueue
+                IsFromQueue = isFromQueue,
+                FromAction = (int)FromFlow.CTSServices
             };
 
             var resultRemove = base.RemoveCustomerClassification(CCInputFlow.RemovePACategory, removedModel, serviceName);
@@ -243,7 +244,7 @@
                                                             SportName = group.pa.SportName,
                                                             GBTicketCount = group.pa.GBTicketCount,
                                                             DetectedDate = group.pa.DetectedDate,
-                                                            IsTVSParlay = group.pa.IsTVSParlay,
+                                                            IsParlay = group.pa.IsParlay,
                                                             IssueTypeID = group.pa.IssueTypeID,
                                                             RobotCounter = group.pa.RobotCounter,
                                                             GroupName = group.pa.GroupName,

@@ -42,7 +42,7 @@
             this.TVSReasonID = tvsPACust.ReasonID;
             this.CreatedBy = tvsPACust.CreatedBy;
             this.TVSRequestID = tvsPACust.RequestID;
-            this.IsTVSParlay = tvsPACust.IsParlay;
+            this.IsParlay = tvsPACust.IsParlay;
             this.SportType = tvsPACust.Sporttype;
             this.IssueTypeID = tvsPACust.IssueTypeId;
             this.IsFromTVS = true;
@@ -158,7 +158,7 @@
 
         public int? TVSRequestID { get; set; }
 
-        public bool? IsTVSParlay { get; set; }
+        public bool? IsParlay { get; set; }
 
         public int? SportType { get; set; }
 

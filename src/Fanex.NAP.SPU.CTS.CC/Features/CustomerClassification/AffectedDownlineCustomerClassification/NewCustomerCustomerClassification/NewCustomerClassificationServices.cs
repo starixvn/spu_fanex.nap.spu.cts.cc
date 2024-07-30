@@ -77,7 +77,7 @@
                 var custInfo = new VVIPCustomerInsertEntity
                 {
                     CustInfo = newCustomerClassification.VVIPClassification,
-                    FromAction = FromAction.ServiceInsertNew,
+                    FromFlow = FromFlow.CTSServices,
                     IsAffectDownline = false,
                     QueueID = null,
                     UplineRoleID = null

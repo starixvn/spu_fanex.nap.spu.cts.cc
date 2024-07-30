@@ -46,7 +46,8 @@
             if (custs != null && custs.Any())
             {
                 var modelInsert = new InsertCustomerClassificationModel()
-                {                    
+                {                
+                    FromAction = (int)FromFlow.CTSServices,
                     CustInfoJson = JsonConvert.SerializeObject(custs)
                 };
 
