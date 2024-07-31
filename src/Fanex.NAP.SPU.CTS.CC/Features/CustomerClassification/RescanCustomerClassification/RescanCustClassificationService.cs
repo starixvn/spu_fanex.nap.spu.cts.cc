@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;    
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -17,25 +15,9 @@
 
         IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
 
-        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);      
+        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);             
 
-        //IRescanCustClassificationService GetTWRobotUsers(IEnumerable<long> custIds);
-
-        bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);
-
-        //IRescanCustClassificationService RemovePAForSMA(PushDataToExternalEntity parameters);
-
-        //IRescanCustClassificationService LogRescanPAData(IEnumerable<InsertRobotEntity> robotUsers, FunctionId funcId, string stageName);
-
-        //IEnumerable<long> CustIdsToRescanPA { get; }
-
-        //IEnumerable<InsertRobotEntity> RobotUsers { get; }
-
-        //IEnumerable<InsertProblemAccountEntity> ExistedPA { get; }
-
-        //IEnumerable<InsertRobotEntity> ExistedRobot { get; }
-
-        //IEnumerable<InsertRobotEntity> TWRobots { get; }
+        bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);       
     }
 
     public class RescanCustClassificationService : ProblemAccountServices, IRescanCustClassificationService
@@ -44,13 +26,7 @@
       
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private readonly ISentryClient sentryClient;
-        //private readonly IDataLogTrackingServices dataLogTrackingServices;
-        //private IEnumerable<InsertProblemAccountEntity> problemAccounts;
-        //private IEnumerable<InsertRobotEntity> robotClassification;
-        //private List<InsertRobotEntity> robotUsers;
-        //private List<long> custIdsToRescanPA;
-        //private List<long> custIdsToRescanPotentialPA;
+        private readonly ISentryClient sentryClient;       
         private List<long> smaCustIds;
         private bool isSuccess;
 
@@ -71,41 +47,7 @@
             isSuccess = true;
 
             return this;
-        }
-
-        #region Delete
-
-        //public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity parameters)
-        //{
-        //    if (custIds != null && custIds.Any())
-        //    {
-        //        Start();
-
-        //        if (parameters.IsRescanPA)
-        //        {
-        //            GetExistedProblemAccounts(custIds)
-        //           .InsertProblemAccountLogics(parameters.ServiceName, parameters.IsToQueue, parameters.FunctionId)
-        //           .GetTWRobotUsers(custIds)
-        //           .LogRescanPAData(robotUsers, parameters.FuncId_CheckRobotUser, parameters.ServiceName)
-        //           .InsertRobot()
-        //           .PushExternalProblemAccounts(parameters.PushDataExternal)
-        //           .RemoveOldProblemAccount();
-        //        }
-
-        //        if (parameters.IsRescanPotentialPA)
-        //        {
-        //            RescanPotentialProblemAccount(custIds.ToList(), parameters);
-        //        }
-
-        //        GetAgentCusts(custIds)
-        //       .RescanNormalAccount(custIds, parameters)
-        //       .RemovePAForSMA(parameters.PushDataExternal);
-        //    }
-
-        //    return isSuccess;
-        //}
-
-        #endregion
+        }  
 
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {

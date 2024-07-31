@@ -140,8 +140,7 @@
 	<Function Name="CustomerClassification">
 		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Complete" SpName="CTS_DC_CustClassification_Queue_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />						
-		<Setting Key="CTS_DC_CustClassification_Normal_GetExisting" SpName="CTS_DC_CustClassification_Normal_GetExisting" DbName="MySQL.CTS_DataCenter.Reporter" />
+		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />								
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove_UAT4" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -226,13 +225,13 @@
 	</Function>
 
 	<Function Name="RescanClassificationBySport">
-		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	</Function>
 
 	<Function Name="TWGBTaggingClassification">
-		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" SpName="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" SpName="CTS_GeneralNormalClassification_TWGroupBetting_GetChanges" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime" SpName="CTS_GeneralNormalClassification_TWGroupBetting_UpdateNextScannedTime_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustClassification_InitialGB_GetCustInfo" SpName="CTS_DC_CustClassification_InitialGB_GetCustInfo" DbName="MySQL.CTS_DataCenter.ctsService" />		
+		<Setting Key="CTS_DC_CustClassification_InitialGB_GetCustInfo" SpName="CTS_DC_CustClassification_InitialGB_GetCustInfo_UAT4" DbName="MySQL.CTS_DataCenter.ctsService" />		
 	</Function>
 
 	<Function Name="DailyDangerousScoreClassification">

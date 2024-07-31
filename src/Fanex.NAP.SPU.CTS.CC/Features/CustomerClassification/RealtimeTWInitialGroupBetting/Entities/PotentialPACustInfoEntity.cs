@@ -12,8 +12,6 @@
 
         public int? CategoryID { get; set; }
 
-        public int CategoryGroup { get; set; }
-
         public bool IsLicensee { get; set; }
     }
 }
