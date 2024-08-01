@@ -6,8 +6,6 @@
 
         public int CategoryID { get; set; }
 
-        public int Ext_CategoryGroupID { get; set; }
-
         public int CustomerClass { get; set; }
 
         public int? DangerLevel { get; set; }
