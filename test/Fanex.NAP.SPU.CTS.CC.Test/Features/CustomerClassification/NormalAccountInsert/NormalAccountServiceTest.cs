@@ -189,8 +189,6 @@
 
             var twTaggingSRPCusts = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
 
-            var twGBTaggingNewCusts = new List<NewTWTaggedCustEntity>() { new NewTWTaggedCustEntity { CustID = 3, TaggingID = 456 } };
-
             var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
 
             // Act
