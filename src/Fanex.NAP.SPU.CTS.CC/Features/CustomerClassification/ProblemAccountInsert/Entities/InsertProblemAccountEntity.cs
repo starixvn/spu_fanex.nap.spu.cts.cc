@@ -30,7 +30,7 @@
             this.MatchID = gbMMCust.MatchID;
             this.CreatedBy = Constants.StarixITId;
             this.Remark = gbMMCust.MatchID.ToString();
-            this.IsDirectPA = true;
+            this.IsMarkedDirectly = true;
             this.IsFromCTS = true;
             this.IsFromTVS = false;
             this.IsFromTW = false;
@@ -39,14 +39,14 @@
         public InsertProblemAccountEntity(TVSProblemAccountEntity tvsPACust)
         {
             this.CustID = tvsPACust.CustID;
-            this.ReasonID = tvsPACust.ReasonID;
+            this.TVSReasonID = tvsPACust.ReasonID;
             this.CreatedBy = tvsPACust.CreatedBy;
             this.TVSRequestID = tvsPACust.RequestID;
             this.IsParlay = tvsPACust.IsParlay;
             this.SportType = tvsPACust.Sporttype;
             this.IssueTypeID = tvsPACust.IssueTypeId;
             this.IsFromTVS = true;
-            this.IsDirectPA = true;
+            this.IsMarkedDirectly = true;
         }
 
         public InsertProblemAccountEntity(TWRobotUserEntity robotUser, int? robotUserCategoryID)
@@ -56,7 +56,7 @@
             this.RobotCounter = robotUser.Counter;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromTW = true;
-            this.IsDirectPA = true;
+            this.IsMarkedDirectly = true;
         }    
         
         public InsertProblemAccountEntity(RobotAIEntity robotAI)
@@ -66,7 +66,7 @@
             this.LastModifiedDate = robotAI.LastModifiedDate;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromAI = true;
-            this.IsDirectPA = true;
+            this.IsMarkedDirectly = true;
         }
 
         public InsertProblemAccountEntity(TWInitialGBGetChangesEntity twGBCust, PotentialPACustInfoEntity ctsCust)
@@ -78,7 +78,7 @@
             this.CategoryID = ctsCust.CategoryID;
             this.IsLicensee = ctsCust.IsLicensee;
             this.IsFromAI = false;
-            this.IsDirectPA = false;
+            this.IsMarkedDirectly = false;
             this.IsFromCTS = false;
             this.IsFromTVS = false;
             this.IsFromTW = true;
@@ -99,7 +99,7 @@
             this.CategoryGroupID = tWInitialSmartCust.CategoryGroup;
             this.IsLicensee = tWInitialSmartCust.IsLicensee;
             this.IsFromAI = false;
-            this.IsDirectPA = false;
+            this.IsMarkedDirectly = false;
             this.IsFromCTS = false;
             this.IsFromTVS = false;
             this.IsFromTW = true;
@@ -110,14 +110,14 @@
         {
             CTSCustID = data.CTSCustID;
             CustID = data.CustID;
-            ReasonID = data.TVSReasonID;
+            TVSReasonID = data.TVSReasonID;
             CategoryID = data.CategoryID;
             RoleID = data.RoleID;
             SubscriberID = data.SubscriberID;
             IsLicensee = data.IsLicensee;
             Remark = data.Remark;
             CreatedBy = data.CreatedBy;
-            IsDirectPA = data.IsMarkedDirectly;
+            IsMarkedDirectly = data.IsMarkedDirectly;
             IsFromTVS = data.IsFromTVS;
             IsFromTW = data.IsFromTW;
             IsFromCTS = data.IsFromCTS;
@@ -132,7 +132,7 @@
 
         public int SubscriberID { get; set; }
 
-        public int? ReasonID { get; set; }
+        public int? TVSReasonID { get; set; }
 
         public bool IsLicensee { get; set; }
 
@@ -142,7 +142,7 @@
 
         public string Remark { get; set; }
 
-        public bool? IsDirectPA { get; set; }
+        public bool? IsMarkedDirectly { get; set; }
 
         public int? WinlossStatus { get; set; }
 

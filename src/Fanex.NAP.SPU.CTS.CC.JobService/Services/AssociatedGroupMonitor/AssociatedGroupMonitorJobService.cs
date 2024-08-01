@@ -60,7 +60,7 @@
                         CategoryID = custInfo.PACategoryID,
                         CategoryGroupID = custInfo.PACategoryID,
                         IsLicensee = x.IsLicensee,
-                        IsDirectPA = true,                       
+                        IsMarkedDirectly = true,                       
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,

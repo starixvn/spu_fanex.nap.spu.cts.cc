@@ -126,7 +126,7 @@
                     CategoryGroupID = c.CategoryGroup,
                     IsLicensee = c.IsLicensee,
                     Remark = c.Remark,
-                    IsDirectPA = false,
+                    IsMarkedDirectly = false,
                     IsFromCTS = c.IsFromCTS,
                     IsFromTVS = c.IsFromTVS,
                     IsFromTW = c.IsFromTW,
