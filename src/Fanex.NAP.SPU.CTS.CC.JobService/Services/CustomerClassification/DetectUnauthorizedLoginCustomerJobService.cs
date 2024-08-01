@@ -119,7 +119,7 @@
                     CategoryID = x.CategoryID,
                     CategoryGroupID = x.CategoryID,
                     IsLicensee = x.IsLicensee,
-                    IsMarkedDirectly = true,
+                    IsDirectPA = true,
                     IsFromCTS = true,
                     IsFromTVS = false,
                     IsFromTW = false,

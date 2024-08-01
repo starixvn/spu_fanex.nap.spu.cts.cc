@@ -57,7 +57,7 @@
                         IsLicensee = isLicensee,
                         CreatedBy = StarixITId,
                         Remark = string.Empty,
-                        IsMarkedDirectly = null,
+                        IsDirectPA = null,
                         IsFromAI = true,
                         IsFromCTS = false,
                         IsFromTVS = false,
