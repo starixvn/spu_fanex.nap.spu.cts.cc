@@ -36,7 +36,7 @@
         {
             var result = this.baseDataAccess.InsertCustomerClassification(inputFlow, model);
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
                 Utilities.LogSentryError(serviceName, "InsertCustomerClassification throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
             }
@@ -48,7 +48,7 @@
         {
             var result = this.baseDataAccess.RemoveCustomerClassification(inputFlow, model);
 
-            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
                 Utilities.LogSentryError(serviceName, "RemoveCustomerClassification throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
             }

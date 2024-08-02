@@ -246,7 +246,7 @@
             return isSuccess;
         }
 
-        private static VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
+        private VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
         {
             return new VVIPCustomerInsertEntity
             {
