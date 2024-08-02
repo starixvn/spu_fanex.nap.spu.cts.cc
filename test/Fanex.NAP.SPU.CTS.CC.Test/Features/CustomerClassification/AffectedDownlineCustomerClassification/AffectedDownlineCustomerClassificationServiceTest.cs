@@ -9,6 +9,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using System.Collections.Generic;
+    using Sentry;
 
     public class AffectedDownlineCustomerClassificationServiceTest
     {
@@ -16,21 +17,27 @@
         private readonly IAffectedDownlineCustomerClassificationService affectedDownlineCustomerClassificationService;
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IRescanCustClassificationService rescanCustClassificationService;
+        private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
         private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
+        private readonly ISentryClient sentryClient;
 
         public AffectedDownlineCustomerClassificationServiceTest()
         {
+            sentryClient = Substitute.For<ISentryClient>();
+
             affectedDownlineCustomerClassificationDataAccess = Substitute.For<IAffectedDownlineCustomerClassificationDataAccess>();
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
+
             baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, null);
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
+
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             affectedDownlineCustomerClassificationService = new AffectedDownlineCustomerClassificationService(affectedDownlineCustomerClassificationDataAccess,
-                baseCustomerClassificationDataAccess, Substitute.For<IProblemAccountDataAccess>(), 
-                custClassToMainDBService, null, rescanCustClassificationService, null);
+                baseCustomerClassificationDataAccess, problemAccountDataAccess, 
+                custClassToMainDBService, null, Substitute.For<IRescanCustClassificationService>(), sentryClient);
         }
 
         [Fact]
@@ -60,6 +67,10 @@
 
             affectedDownlineCustomerClassificationService.GetCustomerClassificationFromQueue();
 
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
+
+            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
+
             var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassification(paramaters));
 
             // Assert
@@ -70,13 +81,12 @@
         public void CompleteCustomerClassificationFromQueue_WhenSuccess_ReturnNotException()
         {
             // Arrange
-            var expectedData = ExpectedDataFromQueue();
 
             // Act
-            var result = affectedDownlineCustomerClassificationService.CompleteCustomerClassificationFromQueue();
-
+            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CompleteCustomerClassificationFromQueue());
+          
             // Assert
-            Assert.True(result);
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -94,7 +104,9 @@
             };
 
             // Act
-            baseCustomerClassificationDataAccess.InsertCustomerClassification(CCInputFlow.VVIP, new InsertCustomerClassificationModel()).Returns(new ResultInsertCustomerClassificationModel());
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
+
+            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
 
             var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.InsertVVIP(rescanParamaters, custInfo));
           

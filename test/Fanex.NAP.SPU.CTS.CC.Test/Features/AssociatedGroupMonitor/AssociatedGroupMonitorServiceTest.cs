@@ -7,9 +7,11 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class AssociatedGroupMonitorServiceTest
     {
@@ -17,15 +19,24 @@
         private readonly IAssociatedGroupMonitorService associatedGroupMonitorService;
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
+        private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
+        private readonly ISentryClient sentryClient;
 
         public AssociatedGroupMonitorServiceTest()
         {
-            associatedGroupMonitorDataAccess = Substitute.For<IAssociatedGroupMonitorDataAccess>();
+            sentryClient = Substitute.For<ISentryClient>();
+
+            baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
+            
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();           
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
-            associatedGroupMonitorService = new AssociatedGroupMonitorService(Substitute.For<IBaseCustomerClassificationDataAccess>(),
-                Substitute.For<IProblemAccountDataAccess>(), null, custClassToMainDBService, associatedGroupMonitorDataAccess);
 
+            associatedGroupMonitorDataAccess = Substitute.For<IAssociatedGroupMonitorDataAccess>();
+            associatedGroupMonitorService = new AssociatedGroupMonitorService(baseCustomerClassificationDataAccess,
+                Substitute.For<IProblemAccountDataAccess>(), null, custClassToMainDBService, associatedGroupMonitorDataAccess);
+           
         }
 
         [Fact]
@@ -166,6 +177,10 @@
             };
 
             // Act
+
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.InsertPACategory, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
+
+            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.InsertPACategory, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
 
             var result = associatedGroupMonitorService.InsertProblemAccount(pas, pushDataParams);
 

@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -12,7 +12,7 @@
     using System.Collections.Generic;
     using Xunit;
 
-    public class MonitorInserNewCustomerServiceTests
+    public class InsertNewCTSCustomerServiceTest
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
@@ -20,24 +20,12 @@
         private readonly ISentryClient sentryClient;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
-        public MonitorInserNewCustomerServiceTests()
+        public InsertNewCTSCustomerServiceTest()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
             ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService, systemParameterDataAccess);
         }
-
-        //[Fact] TODO
-        //public void TransformCustomerFromMainDB_WhenDataHasPropertyNull1_RunSuccessfully()
-        //{
-        //    var expectedResult = new InsertNewCustomerResultViewModel();
-
-        //    var inputData = new List<CustomerMainDBModel>();
-        //    dataAccess.InsertNewCTSCustomer(string.Empty).Returns(expectedResult);
-        //    var result = ctsCustomerService.InsertNewCTSCustomer(inputData);
-
-        //    result.Should().BeNull();
-        //}
 
         [Fact]
         public void GetCustSubFromMainDb_WhenSuccess_ReturnData()
