@@ -44,7 +44,7 @@
                 FromAction = model.FromAction,
                 UplineRoleID = model.UplineRoleID,
                 QueueID = model.QueueID,
-                AffectDownline = model.IsAffectDownline,
+                IsAffectDownline = model.IsAffectDownline,
                 IsToQueue = model.IsToQueue,
                 CustInfoJson = model.CustInfoJson
             };
@@ -62,7 +62,7 @@
                 FromAction = model.FromAction,
                 UplineRoleID = model.UplineRoleID,
                 QueueID = model.QueueID,
-                AffectDownline = model.AffectDownline,
+                IsAffectDownline = model.IsAffectDownline,
                 IsFromQueue = model.IsFromQueue,
                 CustInfoJson = model.CustInfoJson
             };

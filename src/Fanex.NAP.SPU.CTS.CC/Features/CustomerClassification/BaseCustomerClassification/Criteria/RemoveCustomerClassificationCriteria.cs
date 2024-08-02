@@ -18,7 +18,7 @@
         public long? QueueID { get; set; }
 
         [SpParam(SqlParamName = "ip_IsAffectDownline")]
-        public bool? AffectDownline { get; set; }
+        public bool? IsAffectDownline { get; set; }
 
         [SpParam(SqlParamName = "ip_IsFromQueue")]
         public bool IsFromQueue { get; set; }

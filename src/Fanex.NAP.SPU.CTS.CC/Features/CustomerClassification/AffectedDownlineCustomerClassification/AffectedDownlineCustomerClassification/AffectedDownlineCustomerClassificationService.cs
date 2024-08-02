@@ -229,7 +229,7 @@
                     FromAction = (int)custInfo.FromFlow,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
-                    AffectDownline = custInfo.IsAffectDownline,
+                    IsAffectDownline = custInfo.IsAffectDownline,
                     IsFromQueue = false
                 };
 

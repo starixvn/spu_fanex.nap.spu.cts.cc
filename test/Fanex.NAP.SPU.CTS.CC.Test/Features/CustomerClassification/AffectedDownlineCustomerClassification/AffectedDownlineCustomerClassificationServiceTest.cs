@@ -17,16 +17,20 @@
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
+        private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
+        private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
 
         public AffectedDownlineCustomerClassificationServiceTest()
         {
             affectedDownlineCustomerClassificationDataAccess = Substitute.For<IAffectedDownlineCustomerClassificationDataAccess>();
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
+            baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, null);
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             affectedDownlineCustomerClassificationService = new AffectedDownlineCustomerClassificationService(affectedDownlineCustomerClassificationDataAccess,
-                Substitute.For<IBaseCustomerClassificationDataAccess>(),
-               Substitute.For<IProblemAccountDataAccess>(), custClassToMainDBService, null, rescanCustClassificationService, null);
+                baseCustomerClassificationDataAccess, Substitute.For<IProblemAccountDataAccess>(), 
+                custClassToMainDBService, null, rescanCustClassificationService, null);
         }
 
         [Fact]
@@ -47,23 +51,8 @@
         public void CustomerClassification_WhenSuccess_DoesNotThrowException()
         {
             // Arrange
-            var paramaters = new RescanParametersEntity()
-            {
-                IsToQueue = false,
-                FunctionId = FunctionId.DownlineCustomerClassification,
-                RescanNormalType = RescanNormalType.Auto_AfftectedDownline,
-                InternalBatchSize = 50,
-                ServiceName = "AffectedDownlineCustomerClassification",
-                PushDataExternal = new PushDataToExternalEntity
-                {
-                    IsUpdateDangerToMainDB = true,
-                    ExternalBatchSize = 50,
-                    ServiceName = "",
-                    IsSyncAFCData = false,
-                    AFCInsertAccountURL = string.Empty,
-                    AFCDeleteAccountURL = string.Empty
-                }
-            };
+            var paramaters = ExpectedRescanParameters();
+
             var expectedData = ExpectedDataFromQueue();
 
             // Act
@@ -87,20 +76,30 @@
             var result = affectedDownlineCustomerClassificationService.CompleteCustomerClassificationFromQueue();
 
             // Assert
-
+            Assert.True(result);
         }
 
         [Fact]
-        public void InsertVVIP_WhenSuccess_ReturnNotException()
+        public void InsertVVIP_WhenSuccess_DoesNotThrowException()
         {
             // Arrange
-
+            var rescanParamaters = ExpectedRescanParameters();
+            var custInfo = new VVIPCustomerInsertEntity
+            {
+                CustInfo = new List<VVIPCategoryEntity>() { new VVIPCategoryEntity {  CustID = 1, CTSCustID = 1, RoleID = 1, SubscriberID = 6, CreatedBy = 8} },
+                FromFlow = FromFlow.CTSServices,
+                IsAffectDownline = false,
+                QueueID = null,
+                UplineRoleID = null
+            };
 
             // Act
+            baseCustomerClassificationDataAccess.InsertCustomerClassification(CCInputFlow.VVIP, new InsertCustomerClassificationModel()).Returns(new ResultInsertCustomerClassificationModel());
 
-
+            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.InsertVVIP(rescanParamaters, custInfo));
+          
             // Assert
-
+            Assert.Null(exception);
         }
 
         private CustClassificationFromQueueResultEntity ExpectedDataFromQueue()
@@ -117,6 +116,27 @@
                 },
                 LastDownlineCTSCustID = 1,
                 UplineRoleID = 1
+            };
+        }
+
+        private RescanParametersEntity ExpectedRescanParameters()
+        {
+            return new RescanParametersEntity()
+            {
+                IsToQueue = false,
+                FunctionId = FunctionId.DownlineCustomerClassification,
+                RescanNormalType = RescanNormalType.Auto_AfftectedDownline,
+                InternalBatchSize = 50,
+                ServiceName = "Affected Downline Customer Classification",
+                PushDataExternal = new PushDataToExternalEntity
+                {
+                    IsUpdateDangerToMainDB = true,
+                    ExternalBatchSize = 50,
+                    ServiceName = "Affected Downline Customer Classification",
+                    IsSyncAFCData = false,
+                    AFCInsertAccountURL = string.Empty,
+                    AFCDeleteAccountURL = string.Empty
+                }
             };
         }
     }
