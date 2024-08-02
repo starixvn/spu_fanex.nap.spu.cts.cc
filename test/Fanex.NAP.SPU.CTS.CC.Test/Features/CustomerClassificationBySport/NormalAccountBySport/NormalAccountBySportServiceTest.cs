@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountBySport
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using Fanex.NAP.SPU.CTS.Shares;
-    using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
     using System;
@@ -54,19 +52,18 @@
             normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
         }
 
-        //[Fact]
-        //public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
-        //{
-        //    // Arrange                        
-        //    long scannedMaxId = 7;
+        [Fact]
+        public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
+        {
+            // Arrange                        
+            long scannedMaxId = 7;
 
-        //    // Act
-        //    normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
+            // Act
+            normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
-        //}
-
+            // Assert
+            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
+        }
     }
 }
 
