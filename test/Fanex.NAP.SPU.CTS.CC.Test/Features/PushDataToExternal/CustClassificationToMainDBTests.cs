@@ -1,228 +1,123 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.PushDataToExternal
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using FluentAssertions;
     using NSubstitute;
+    using Sentry;
+    using System.Collections.Generic;
+    using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class CustClassificationToMainDBTests
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly ISentryClient sentryClient;
 
         public CustClassificationToMainDBTests()
         {
+            sentryClient= Substitute.For<ISentryClient>();
+
+            antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
 
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, sentryClient, antiFraudCenterServices);            
         }
 
-        //[Fact]
-        //public void GetLastestCustomerClassification_WhenSuccess_ReturnLastestCC()
-        //{
-        //    var lastestCustomerClassification = new List<LatestClassificationEntity> {
-        //        new LatestClassificationEntity
-        //        {
-        //            CustId = 1,
-        //            Category = 1,
-        //            CustomerClass = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new LatestClassificationEntity {
-        //            CustId = 2,
-        //            Category = 2,
-        //            CustomerClass = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //         }
-        //    };
+        [Fact]
+        public void PushExternalPackageByCustId_WhenSuccess_DoesNotThrowException()
+        {
+            // Arrange
+            var custIDs = new List<long>() { 1, 2, 3 };
+            var parameter = new PushDataToExternalEntity
+            {
+                ExternalBatchSize = 50,
+                IsUpdateDangerToMainDB = true,
+                IsWriteLog = false,
+                ServiceName = "Test"
+            };
 
-        //    var custIds = new List<long> { 1, 2, 3, 4 };
+            // Act
+            var exception = Record.Exception(() => custClassToMainDBService.PushExternalPackageByCustId(custIDs, parameter));
 
-        //    custClassToMainDBDataAccess.GetLatestClassificationDangerLevel("1,2,3,4").Returns(lastestCustomerClassification);
+            // Assert
+            Assert.Null(exception);
+        }
 
-        //    var result = custClassToMainDBService.GetLatestClassification(custIds, "Push CC To MainDB - Get Lastest CC", false);
+        [Fact]
+        public void PushExternalProblemAcountPackage_WhenSuccess_DoesNotThrowException()
+        {
+            // Arrange
+            var custIDs = new List<long>() { 1, 2, 3 };
+            var parameter = new PushDataToExternalEntity
+            {
+                ExternalBatchSize = 50,
+                IsUpdateDangerToMainDB = true,
+                IsWriteLog = false,
+                ServiceName = "Test"
+            };
 
-        //    result.Should().BeEquivalentTo(lastestCustomerClassification);
-        //}
+            // Act           
+            var exception = Record.Exception(() => custClassToMainDBService.PushExternalProblemAcountPackage(custIDs, parameter));
 
-        //[Fact]
-        //public void UpdateAppliedCustClassification_WhenSuccess_ReturnTrue()
-        //{
-        //    var lastestCustomerClassification = new List<LatestClassificationEntity> {
-        //        new LatestClassificationEntity
-        //        {
-        //            CustId = 1,
-        //            Category = 1,
-        //            CustomerClass = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new LatestClassificationEntity {
-        //            CustId = 2,
-        //            Category = 2,
-        //            CustomerClass = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //         }
-        //    };
+            // Assert
+            Assert.Null(exception);
+        }
 
-        //    var dataResult = new DBResult
-        //    {
-        //        ErrorMsg = string.Empty,
-        //        ErrorCode = 3
-        //    };
+        [Fact]
+        public void PushCustomerClassification_WhenSuccess_DoesNotThrowException()
+        {
+            // Arrange
+            var customerClass = new List<LatestClassificationEntity>()
+            {
+                new LatestClassificationEntity { CustId = 1, Category = 20200, CustomerClass = 10 }
+            };
 
-        //    var jsonData = JsonConvert.SerializeObject(lastestCustomerClassification);
-        //    custClassToMainDBDataAccess.UpdateAppliedCustomerClassification(jsonData).Returns(dataResult);
+            // Act   
+            custClassToMainDBDataAccess.UpdateCustomerClassification(customerClass).Returns(new Shares.Models.DBResult());
 
-        //    var result = custClassToMainDBService.UpdateAppliedCustClassification(lastestCustomerClassification, "Push CC To MainDB - IsApplied Lastest CC");
+            var exception = Record.Exception(() => custClassToMainDBService.PushCustomerClassification(customerClass, 1, "Test"));
 
-        //    result.Should().BeTrue();
-        //}
+            // Assert
+            Assert.Null(exception);
+        }
 
-        //[Fact]
-        //public void RetryPushCustClassification_WhenSuccess_ReturnTrue()
-        //{
-        //    var lastestCustomerClassification = new List<LatestClassificationEntity> {
-        //        new LatestClassificationEntity
-        //        {
-        //            CustId = 1,
-        //            Category = 1,
-        //            CustomerClass = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new LatestClassificationEntity {
-        //            CustId = 2,
-        //            Category = 2,
-        //            CustomerClass = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //         }
-        //    };
+        [Fact]
+        public void PushCCBySportToMainDB_WhenSuccess_DoesNotThrowException()
+        {
+            // Arrange
+            var custInfos = new List<InsertNormalAccountCustInfoEntity>()
+            {
+                new InsertNormalAccountCustInfoEntity { CustID = 1, SportGroup = 1 }
+            };
 
-        //    var dataResult = new DBResult
-        //    {
-        //        ErrorMsg = string.Empty,
-        //        ErrorCode = 0
-        //    };
+            // Act
 
-        //    custClassToMainDBDataAccess.UpdateCustomerGeneralClassificationtoMainDB(lastestCustomerClassification).Returns(dataResult);
+            var exception = Record.Exception(() => custClassToMainDBService.PushCCBySportToMainDB(custInfos, "Test", 50));
 
-        //    var result = custClassToMainDBService.RetryPushCCToMainDB(lastestCustomerClassification, 1, "Push CC To MainDB - IsApplied Lastest CC");
+            // Assert
+            Assert.Null(exception);
+        }
 
-        //    result.Should().BeTrue();
-        //}
+        [Fact]
+        public void RetryPushCCBySportToMainDB_WhenSuccess_DoesNotThrowException()
+        {
+            // Arrange
+            var custInfos = new List<GetCustomerClassificationBySportEntity>()
+            {
+                new GetCustomerClassificationBySportEntity { CustID = 1, SportID = 1, CustomerClass = 10 }
+            };
 
-        //[Fact]
-        //public void RetryUpdateDangerLevelToMainDB_WhenSuccess_ReturnTrue()
-        //{
-        //    var dangerLevelEnity = new List<DangerLevelEntity> {
-        //        new DangerLevelEntity
-        //        {
-        //            CustId = 1,
-        //            DangerLevel = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new DangerLevelEntity {
-        //            CustId = 2,
-        //            DangerLevel = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:51:55")
-        //         }
-        //    };
+            // Act
 
-        //    var dataResult = new DBResult
-        //    {
-        //        ErrorMsg = string.Empty,
-        //        ErrorCode = 0
-        //    };
+            var exception = Record.Exception(() => custClassToMainDBService.RetryPushCCBySportToMainDB(custInfos, 2, "Test"));
 
-        //    custClassToMainDBDataAccess.UpdateDangerLevelToMainDB(dangerLevelEnity, DangerLevel.Original).Returns(dataResult);
+            // Assert
+            Assert.Null(exception);
+        }
 
-        //    var result = custClassToMainDBService.RetryUpdateDangerLevelToMainDB(dangerLevelEnity, DangerLevel.Original, 1, "Push CC To MainDB - IsApplied Lastest CC");
-
-        //    result.Should().BeTrue();
-        //}
-
-        //[Fact]
-        //public void PushCustClassificationToMainDB_WhenSuccess_ReturnTrue()
-        //{
-        //    var lastestCustomerClassification = new List<LatestClassificationEntity> {
-        //        new LatestClassificationEntity
-        //        {
-        //            CustId = 1,
-        //            Category = 1,
-        //            CustomerClass = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new LatestClassificationEntity {
-        //            CustId = 2,
-        //            Category = 2,
-        //            CustomerClass = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //         }
-        //    };
-
-        //    var dataResult = new DBResult
-        //    {
-        //        ErrorMsg = string.Empty,
-        //        ErrorCode = 0
-        //    };
-
-        //    custClassToMainDBDataAccess.UpdateCustomerGeneralClassificationtoMainDB(lastestCustomerClassification).Returns(dataResult);
-
-        //    var jsonData = JsonConvert.SerializeObject(lastestCustomerClassification);
-        //    custClassToMainDBDataAccess.UpdateAppliedCustomerClassification(jsonData).Returns(dataResult);
-
-        //    var result = custClassToMainDBService.PushCustClassificationToMainDB(lastestCustomerClassification, "Push CC To MainDB", false);
-
-        //    result.Should().BeTrue();
-        //}
-
-        //[Fact]
-        //public void UpdateDangerLevelToMainDB_WhenSuccess_ReturnTrue()
-        //{
-        //    var lastestCustomerClassification = new List<LatestClassificationEntity> {
-        //        new LatestClassificationEntity
-        //        {
-        //            CustId = 1,
-        //            Category = 1,
-        //            CustomerClass = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new LatestClassificationEntity {
-        //            CustId = 2,
-        //            Category = 2,
-        //            CustomerClass = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //         }
-        //    };
-
-        //    var dangerLevelEnity = new List<DangerLevelEntity> {
-        //        new DangerLevelEntity
-        //        {
-        //            CustId = 1,
-        //            DangerLevel = 1,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:50:55")
-        //        },
-        //         new DangerLevelEntity {
-        //            CustId = 2,
-        //            DangerLevel = 2,
-        //            ScannedTime = DateTime.Parse("2021-07-05 22:51:55")
-        //         }
-        //    };
-
-        //    var dataResult = new DBResult
-        //    {
-        //        ErrorMsg = string.Empty,
-        //        ErrorCode = 0
-        //    };
-
-        //    var custIds = string.Join(",", lastestCustomerClassification.Select(c => c.CustId));
-        //    custClassToMainDBDataAccess.GetDangerLevel(custIds, DangerLevel.Original).Returns(dangerLevelEnity);
-
-        //    custClassToMainDBDataAccess.UpdateDangerLevelToMainDB(dangerLevelEnity, DangerLevel.Original).Returns(dataResult);
-
-        //    var jsonUpdateApplyCCs = JsonConvert.SerializeObject(dangerLevelEnity);
-        //    custClassToMainDBDataAccess.UpdateAppliedDangerLevel(jsonUpdateApplyCCs, DangerLevel.Original);
-
-        //    var result = custClassToMainDBService.UpdateDangerLevelToMainDB(lastestCustomerClassification, DangerLevel.Original, "Update DangerLevel To MainDB", false);
-
-        //    result.Should().BeTrue();
-        //}
     }
 }

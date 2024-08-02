@@ -15,7 +15,6 @@
     public class DailyDangerousClassificationServiceTest
     {        
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
@@ -31,8 +30,7 @@
         {
             sentryClient = Substitute.For<ISentryClient>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = Substitute.For<IProblemAccountServices>();
-
+          
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
       
@@ -78,8 +76,7 @@
                 ServiceName = "DailyDangerousClassificationServiceTest"
             };
            
-            // Act
-          
+            // Act          
             baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
 
             baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>(), paras.ServiceName).Returns(new ResultInsertCustomerClassificationModel());                       
