@@ -111,6 +111,10 @@
             CTSCustID = data.CTSCustID;
             CustID = data.CustID;
             TVSReasonID = data.TVSReasonID;
+            TVSRequestID = data.TVSRequestID;
+            IsParlay = data.IsParlay;
+            SportType = data.SportType;
+            RobotCounter = data.RobotCounter;
             CategoryID = data.CategoryID;
             RoleID = data.RoleID;
             SubscriberID = data.SubscriberID;

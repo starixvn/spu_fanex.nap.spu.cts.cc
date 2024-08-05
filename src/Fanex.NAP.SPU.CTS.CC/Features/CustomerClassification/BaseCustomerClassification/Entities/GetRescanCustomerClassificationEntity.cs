@@ -12,6 +12,14 @@
 
         public int TVSReasonID { get; set; }
 
+        public int? RobotCounter { get; set; }
+
+        public int? TVSRequestID { get; set; }
+
+        public bool? IsParlay { get; set; }
+
+        public int? SportType { get; set; }
+
         public int RoleID { get; set; }
 
         public int SubscriberID { get; set; }
