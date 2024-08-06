@@ -128,6 +128,7 @@
             IsFromAI = data.IsFromAI;
             IsFromImperva = data.IsFromImperva;
             LastModifiedDate = data.LastModifiedDate;
+            CreatedDate = data.CreatedDate;
         }
 
         public Int64 CTSCustID { get; set; }
@@ -180,5 +181,6 @@
 
         public DateTime? DetectedDate { get; set; }
 
+        public DateTime? CreatedDate { get; set; }
     }
 }

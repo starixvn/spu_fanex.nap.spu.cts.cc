@@ -230,6 +230,7 @@
                                                             IsLicensee = group.pa.IsLicensee,
                                                             CreatedBy = group.pa.CreatedBy,
                                                             LastModifiedDate = group.pa.LastModifiedDate,
+                                                            CreatedDate = group.pa.CreatedDate,
                                                             Remark = group.pa.Remark,
                                                             MatchID = group.pa.MatchID,
 

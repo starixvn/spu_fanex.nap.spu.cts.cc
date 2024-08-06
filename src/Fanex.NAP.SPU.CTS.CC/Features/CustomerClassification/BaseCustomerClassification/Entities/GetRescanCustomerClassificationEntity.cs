@@ -46,5 +46,7 @@
 
         public int InputFlowID { get; set; }
 
+        public DateTime? CreatedDate { get; set; }
+
     }
 }
