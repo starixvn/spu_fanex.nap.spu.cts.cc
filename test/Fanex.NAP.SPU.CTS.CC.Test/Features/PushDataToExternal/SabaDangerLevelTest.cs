@@ -325,7 +325,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
         #region UpdateSabaDangerLevelToMainDBForInitialization_WhenSuccess()
         [Theory]
         [InlineData(true)]
-        //[InlineData(false)] need check the function LogSentryError in this method 
+        [InlineData(false)]
         public void UpdateSabaDangerLevelToMainDBForInitialization_WhenSuccess(bool isSuccess)
         {
             // Arrange
@@ -338,6 +338,17 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
                         new SabaDangerLevelEntity(),
                         new SabaDangerLevelEntity(),
                     }
+                });
+
+            var sabaDangerLevelField = TestExtension.GetPrivateFieldInfo(typeof(SabaDangerLevelServices), PrivateFieldName.SabaDangerLevel);
+            sabaDangerLevelField.SetValue(_service,
+                new SabaDangerLevelResultEntity
+                {
+                    UpdatedResult = new SabaDangerLevelUpdateResultEntity
+                    {
+                        IsSuccess = true
+                    },
+                    LastHistoryID = 999
                 });
 
             // Act
