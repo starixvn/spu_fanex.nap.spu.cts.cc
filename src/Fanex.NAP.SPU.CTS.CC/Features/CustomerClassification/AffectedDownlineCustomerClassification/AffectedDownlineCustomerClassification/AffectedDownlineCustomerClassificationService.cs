@@ -181,7 +181,7 @@
             {
                 var modelInsert = new InsertCustomerClassificationModel()
                 {
-                    CustInfoJson = JsonConvert.SerializeObject(custInfo),
+                    CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo),
                     FromAction = (int)custInfo.FromFlow,
                     UplineRoleID = custInfo.UplineRoleID,
                     QueueID = custInfo.QueueID,
