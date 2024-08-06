@@ -155,7 +155,7 @@
                     RoleID = c.RoleID,
                     SubscriberID = c.SubscriberID,
                     Remark = c.Remark,
-                    IsMarkedDirectly = false,
+                    IsMarkedDirectly = true,
                     IsExceptDirectDownline = c.IsExceptDirectDownline,
                     CreatedBy = c.CreatedBy
                 });
