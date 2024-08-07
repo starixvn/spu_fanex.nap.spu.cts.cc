@@ -285,19 +285,13 @@ namespace Fanex.NAP.SPU.CTS.Shares
             [Description("InsertPACategory")]
             InsertPACategory = 5,
             [Description("InsertPAReason")]
-            InsertPAReason = 6,
-            [Description("InsertRobot")]
-            InsertRobot = 7,
+            InsertPAReason = 6,           
             [Description("Potential")]
             Potential = 8,            
             [Description("Normal")]
             Normal = 9,          
             [Description("RescanPACategory")]
-            RescanPACategory = 115,
-            [Description("RescanPAReason")]
-            RescanPAReason = 116,
-            [Description("RescanRobot")]
-            RescanRobot = 117,
+            RescanPACategory = 115,           
             [Description("RescanPotential")]
             RescanPotential = 118,           
             [Description("RescanNormal")]

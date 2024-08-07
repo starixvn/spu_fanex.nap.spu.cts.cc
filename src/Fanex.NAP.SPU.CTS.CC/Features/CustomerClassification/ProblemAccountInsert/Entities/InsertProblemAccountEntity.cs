@@ -54,6 +54,7 @@
             this.CustID = robotUser.CustId;
             this.CategoryID = robotUserCategoryID;
             this.RobotCounter = robotUser.Counter;
+            this.RoleID = null;
             this.CreatedBy = Constants.StarixITId;
             this.IsFromTW = true;
             this.IsMarkedDirectly = true;
@@ -62,6 +63,7 @@
         public InsertProblemAccountEntity(RobotAIEntity robotAI)
         {
             this.CustID = robotAI.CustID;
+            this.RoleID = null;
             this.CategoryID = robotAI.CategoryID;
             this.LastModifiedDate = robotAI.LastModifiedDate;
             this.CreatedBy = Constants.StarixITId;
@@ -133,7 +135,7 @@
 
         public Int64 CTSCustID { get; set; }
 
-        public int RoleID { get; set; }
+        public int? RoleID { get; set; }
 
         public int SubscriberID { get; set; }
 

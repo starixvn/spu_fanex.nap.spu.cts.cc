@@ -118,7 +118,7 @@
 
                     var insertedPA = robotBatch.ToList().Select(c => new InsertProblemAccountEntity(c, robotCategoryId));
 
-                    var custIds = InsertProblemAccountPackage(insertedPA, FunctionId.RobotUserJob, CCInputFlow.InsertRobot, false, pushConfig.ServiceName);
+                    var custIds = InsertProblemAccountPackage(insertedPA, FunctionId.RobotUserJob, CCInputFlow.InsertPACategory, false, pushConfig.ServiceName);
 
                     if (custIds != null && custIds.Any())
                     {

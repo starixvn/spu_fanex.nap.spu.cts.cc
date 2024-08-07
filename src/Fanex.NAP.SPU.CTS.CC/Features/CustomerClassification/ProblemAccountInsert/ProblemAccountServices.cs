@@ -74,16 +74,11 @@
 
                 if (insertPaResult.CustInfos != null && insertPaResult.CustInfos.Any())
                 {
-                    var custIds = insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
+                    var custUpdatePALogics = insertPaResult.CustInfos.Select(x => new CustInfoEntity { CustID = x.CustID, CTSCustID = x.CTSCustID, IsPA = x.IsPA });
 
-                    problemAccountDataAccess.CheckNewPAAssociationCustomerForRollback(JsonConvert.SerializeObject(insertPaResult.CustInfos));
+                    InsertPALogics(custUpdatePALogics, serviceName);                    
 
-                    if (ccInputFlow == CCInputFlow.InsertPACategory || ccInputFlow == CCInputFlow.InsertPAReason)
-                    {
-                        UpdateBetLimitOfFlaggedCustomer(custIds, serviceName);
-                    }
-
-                    return custIds;
+                    return insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
                 }
             }
 
@@ -115,10 +110,9 @@
                
                 CheckNewPAAssociationCustomerForRollback(custPas);
 
-                UpdateBetLimitOfFlaggedCustomer(custPas.Select(x=>x.CustID), serviceName);
+                UpdateBetLimitOfFlaggedCustomer(custPas.Select(x => x.CustID), serviceName);
             }
         }
-
         
         public void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo)
         {

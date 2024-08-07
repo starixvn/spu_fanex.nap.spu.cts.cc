@@ -69,12 +69,12 @@
                     {
                         RescanProblemAccount(group.CustRescans, paras, (CCInputFlow)group.InputFlowID);
                     }
-                }
+                }               
+            }
 
-                if (smaCustIds.Any())
-                {
-                    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
-                }
+            if (smaCustIds.Any())
+            {
+                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
             }
 
             return isSuccess;
