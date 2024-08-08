@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountBySport
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -11,11 +12,13 @@
     {
         private readonly INormalAccountInsertBySportDataAccess normalAccountDataAccess;
         private readonly INormalAccountInsertBySportService normalAccountService;
+        private readonly IBaseCustomerClassificationBySportDataAccess baseCustomerClassificationBySportDataAccess;
 
         public NormalAccountBySportServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountInsertBySportDataAccess>();
-            normalAccountService = new NormalAccountInsertBySportService(normalAccountDataAccess, null);
+            baseCustomerClassificationBySportDataAccess = Substitute.For<IBaseCustomerClassificationBySportDataAccess>();
+            normalAccountService = new NormalAccountInsertBySportService(baseCustomerClassificationBySportDataAccess, normalAccountDataAccess, null);
         }
 
         [Fact]
@@ -24,10 +27,10 @@
             // Arrange
 
             // Act
-            normalAccountService.GetNormalAccount();
+            normalAccountService.GetNormalClassificationBySport();
 
             // Assert
-            normalAccountDataAccess.Received(1).GetNormalAccount();
+            normalAccountDataAccess.Received(1).GetNormalClasificationAccount();
         }
 
         [Fact]
@@ -41,15 +44,15 @@
                 new NormalAccountBySportEntity { CustId = 2, ActiveDays = 7, CategoryId = 1, BetCount = 10, PerformanceTime = DateTime.Now },
             };
             var custsJson = JsonConvert.SerializeObject(custs);
-            var insertResult = new InsertNormalAccountBySportModel();
+            var result = new ResultInsertClassificationBySportModel();
 
             // Act
-            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
+            normalAccountService.InsertNormalClassificationBySport(custs, serviceName).Returns(result);
 
-            normalAccountService.InsertNormalAccount(custs, serviceName);
+            normalAccountService.InsertNormalClassificationBySport(custs, serviceName);
 
             // Assert
-            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
+            normalAccountService.Received(1).InsertNormalClassificationBySport(custs, serviceName);
         }
 
         [Fact]

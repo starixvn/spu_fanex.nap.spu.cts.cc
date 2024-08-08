@@ -305,7 +305,13 @@ namespace Fanex.NAP.SPU.CTS.Shares
             [Description("RemoveLicBA")]
             RemoveLicBA = 224,
             [Description("RemovePACategory")]
-            RemovePACategory = 225
+            RemovePACategory = 225,
+            [Description("BySportInsertSpecialCC")]
+            BySportInsertSpecialCC = 332,
+            [Description("BySportInsertNormal")]
+            BySportInsertNormal = 339,
+            [Description("BySportRemoveSpecialCC")]
+            BySportRemoveSpecialCC = 442
         }
     }
 }

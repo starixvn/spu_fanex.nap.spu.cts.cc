@@ -27,6 +27,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
@@ -127,6 +128,9 @@
         {
             services.AddSingleton<IBaseCustomerClassificationDataAccess, BaseCustomerClassificationDataAccess>();
             services.AddSingleton<IBaseCustomerClassificationService, BaseCustomerClassificationService>();
+
+            services.AddSingleton<IBaseCustomerClassificationBySportDataAccess, BaseCustomerClassificationBySportDataAccess>();
+            services.AddSingleton<IBaseCustomerClassificationBySportService, BaseCustomerClassificationBySportService>();
         }
 
         private static void RegisterTWInitialSmartClassification(IServiceCollection services)

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.PushDataToExternal
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
@@ -91,7 +92,7 @@
             // Arrange
             var custInfos = new List<InsertNormalAccountCustInfoEntity>()
             {
-                new InsertNormalAccountCustInfoEntity { CustID = 1, SportGroup = 1 }
+                new InsertNormalAccountCustInfoEntity (new CustInfoClassificationBySportEntity { CustID = 1, SportGroup = 1 })
             };
 
             // Act

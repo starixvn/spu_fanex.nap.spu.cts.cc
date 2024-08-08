@@ -4,9 +4,11 @@
 
     public class NormalAccountBySportEntity
     {
-        public long CustId { get; set; }        
+        public long CustId { get; set; }
 
-        public int CategoryId { get; set; }
+        public int SportGroup { get; set; }
+
+        public long CategoryId { get; set; }
 
         public decimal TurnoverRM { get; set; }
 
@@ -15,8 +17,6 @@
         public long BetCount { get; set; }
 
         public int ActiveDays { get; set; }
-
-        public int SportGroup { get; set; }
 
         public DateTime PerformanceTime { get; set; }
     }

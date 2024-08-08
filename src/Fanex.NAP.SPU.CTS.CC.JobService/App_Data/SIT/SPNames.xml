@@ -167,9 +167,11 @@
 		<Setting Key="Acc_CustomerUdpDanger_JobExclusion" SpName="Acc_CustomerUdpDanger_JobExclusion_xpre" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 	</Function>
 
-	<Function Name="NormalAccountBySport">
+	<Function Name="CustomerClassificationBySport">
 		<Setting Key="Acc_CustomerUpdateCustomerClassBySport" SpName="Acc_CustomerUpdateCustomerClassBySport" DbName="SQL.CustDB.bodbAdminNet" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_BySport_GetCC" SpName="CTS_DC_CustClassification_BySport_GetCC" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_BySport_Insert" SpName="CTS_DC_CustClassification_BySport_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_BySport_Remove" SpName="CTS_DC_CustClassification_BySport_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function name="AssociatedGroupMonitor">
@@ -203,7 +205,6 @@
 	<Function Name="NormalAccountInsertBySport">
 		<Setting Key="CTS_BySportNormalClassification_NormalAccount_Get" SpName="CTS_BySportNormalClassification_NormalAccount_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_BySportNormalClassification_NormalAccount_Complete" SpName="CTS_BySportNormalClassification_NormalAccount_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustClassification_BySport_InsertNormalAccount" SpName="CTS_DC_CustClassification_BySport_InsertNormalAccount" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="RealtimeClassificationBySport">

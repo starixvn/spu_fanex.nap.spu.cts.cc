@@ -1,51 +1,47 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport
 {
-    using Fanex.NAP.SPU.CTS.Shares;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Newtonsoft.Json;
     using Sentry;
-    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountInsertBySportService
     {
-        GetNormalAccountBySportModel GetNormalAccount();
+        GetNormalAccountBySportModel GetNormalClassificationBySport();
 
-        InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<NormalAccountBySportEntity> custs, string serviceName);
+        ResultInsertClassificationBySportModel InsertNormalClassificationBySport(IEnumerable<NormalAccountBySportEntity> custs, string serviceName);
 
         void CompleteNormalAccountBySport(long scannedMaxId, bool isSuccess);
-
     }
 
-    public class NormalAccountInsertBySportService : INormalAccountInsertBySportService
+    public class NormalAccountInsertBySportService : BaseCustomerClassificationBySportService, INormalAccountInsertBySportService
     {
         private readonly INormalAccountInsertBySportDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public NormalAccountInsertBySportService(INormalAccountInsertBySportDataAccess dataAccess, ISentryClient sentryClient)
+        public NormalAccountInsertBySportService(IBaseCustomerClassificationBySportDataAccess baseDataAccess, INormalAccountInsertBySportDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
-        public GetNormalAccountBySportModel GetNormalAccount()
+        public GetNormalAccountBySportModel GetNormalClassificationBySport()
         {
-            return dataAccess.GetNormalAccount();
+            return dataAccess.GetNormalClasificationAccount();
         }
 
-        public InsertNormalAccountBySportModel InsertNormalAccount(IEnumerable<NormalAccountBySportEntity> custInfos, string serviceName)
+        public ResultInsertClassificationBySportModel InsertNormalClassificationBySport(IEnumerable<NormalAccountBySportEntity> custs, string serviceName)
         {
-            var result = new InsertNormalAccountBySportModel();
+            var result = new ResultInsertClassificationBySportModel();
 
-            var custInfosJson = JsonConvert.SerializeObject(custInfos);
-
-            if (!string.IsNullOrEmpty(custInfosJson))
+            if (custs != null && custs.Any())
             {
-                result = dataAccess.InsertNormalAccount(custInfosJson);
-
-                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                var modelInsert = new InsertCustomerClassificationBySportModel()
                 {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount By Sport throws Exception", custInfosJson, new Exception(result.ErrorMessage), sentryClient);
-                }
+                    CustClassificationJson = JsonConvert.SerializeObject(custs)
+                };
+
+                result = base.InsertCustomerClassificationBySport(CCInputFlow.BySportInsertNormal, modelInsert, serviceName);
             }
 
             return result;
@@ -59,5 +55,4 @@
             }
         }
     }
-
 }

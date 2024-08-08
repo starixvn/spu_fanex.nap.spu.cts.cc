@@ -1,5 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport
-{   
+{
     using Fanex.NAP.SPU.CTS.Shares;
 
     [XName("r")]
@@ -10,6 +10,5 @@
 
         [XName("SportId")]
         public int SportId { get; set; }
-       
     }
 }
