@@ -18,7 +18,6 @@
         private readonly ITWInitialSmartService twInitialSmartService;
 
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
 
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
@@ -32,8 +31,7 @@
         {
             sentryClient = Substitute.For<ISentryClient>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
-            problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
-
+            
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 

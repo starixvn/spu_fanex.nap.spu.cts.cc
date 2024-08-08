@@ -20,8 +20,7 @@
         private readonly IRobotAIDetectionDataAccess robotDetectionDataAccess;
         private readonly IRobotAIDetectionService robotDetectionService;
         private readonly ISystemParameterServices systemParameterServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IProblemAccountServices problemAccountServices;
+        private readonly ICustClassToMainDBService custClassToMainDBService;      
         private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ISentryClient sentryClient;
@@ -29,8 +28,7 @@
         public RobotDetectionServiceTest()
         {
             robotDetectionDataAccess = Substitute.For<IRobotAIDetectionDataAccess>();           
-            systemParameterServices = Substitute.For<ISystemParameterServices>();
-            problemAccountServices = Substitute.For<IProblemAccountServices>();
+            systemParameterServices = Substitute.For<ISystemParameterServices>();           
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             sentryClient = Substitute.For<ISentryClient>();
             baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
@@ -55,9 +53,7 @@
         [Fact]
         public void InsertProblemAccount_WhenSuccess_ReturnData()
         {
-            // Arrange
-            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 0, LastModifiedDate = DateTime.Now } };
-            var expectedResult = new List<long>();
+            // Arrange         
             var config = new PushDataToExternalEntity { ExternalBatchSize = 10 };
 
             // Act
@@ -79,18 +75,12 @@
                 IsSyncAFCData = false,
             };
 
-            var expectedRobotAIID = 1;
-            var expectedRobotImpervaID = 2;
+            var expectedRobotAIID = 1;            
             var expectedRobotAI = new List<RobotAIEntity>()
             {
                 new RobotAIEntity { CustID = 1, CategoryID = 1 , RobotDetectionID = 1, LastModifiedDate = DateTime.Now },
                 new RobotAIEntity { CustID = 2, CategoryID = 1 , RobotDetectionID = 2, LastModifiedDate = DateTime.Now}
-            };
-            var expectedRobotImperva = new List<RobotImpervaEntity>()
-            { 
-                new RobotImpervaEntity { CustID = 1, LastCreateTime = DateTime.Now, RobotImpervaLogID = 1 },
-                new RobotImpervaEntity { CustID = 2, LastCreateTime = DateTime.Now, RobotImpervaLogID = 2 }
-            };
+            };           
 
             // Act
             systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);

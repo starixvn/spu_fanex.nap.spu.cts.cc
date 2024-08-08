@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -19,162 +20,94 @@
         private readonly IRescanCustClassificationService rescanCustClassificationService;
 
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
-
-       
-        //private readonly IPAPotentialClassificationService paPotentialServices;
-
-        private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
+        private readonly ISentryClient sentryClient;
 
         public RescanCustomerClassificationTest()
-        {   
-            //problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            //problemAccountServices = new ProblemAccountServices(Substitute.For<IBaseCustomerClassificationDataAccess>(), problemAccountDataAccess, null);
-
-            //paPotentialDataAccess = Substitute.For<IPAPotentialClassificationDataAccess>();
-            //paPotentialServices = new PAPotentialClassificationService(paPotentialDataAccess);
-
-            //feedSoon88DataAccess = Substitute.For<IFeedSoon88DataAccess>();
-            //feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
-
-            //custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            //custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
-
-            //rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
-            //rescanCustClassificationService = new RescanCustClassificationService(
-            //    rescanCustClassificationDataAccess,
-            //    paPotentialDataAccess,
-            //    null,
-            //    null,
-            //    problemAccountServices,
-            //    custClassToMainDBService,
-            //    null);
-        }
-
-        //[Fact]
-        //public void GetRoleCustomer_WhenSuccess_ReturnCustList()
-        //{
-        //    var roleCusts = new List<RoleCustomerEntity>
-        //    {
-        //        new RoleCustomerEntity
-        //        {
-        //           CustID = 1,
-        //           RoleID = 1
-        //        },
-        //          new RoleCustomerEntity
-        //        {
-        //           CustID = 2,
-        //           RoleID = 3
-        //        },
-        //    };
-
-        //    var custIds = new List<long> { 1, 2, 3 };
-
-        //    rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds)).Returns(roleCusts);
-
-        //    rescanCustClassificationService.Start().GetAgentCusts(custIds);
-
-        //    var result = rescanCustClassificationService.CustIdsToRescanPA;
-
-        //    Assert.IsAssignableFrom<IEnumerable<long>>(result);
-        //}
-
-        [Fact]
-        public void GetExistedProblemAccounts_WhenSuccess_ReturnData()
         {
-            //var existedPA = CreateSampleExistedPAModel();
+            sentryClient = Substitute.For<ISentryClient>();
+            baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
 
-            //var custIds = new List<long> { 1, 2, 3 };
+            rescanCustClassificationDataAccess = Substitute.For<IRescanCustClassificationDataAccess>();
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
 
-            //var expectPA = CreateSampleProblemAccountModel();
-            //var expectRobot = CreateSampleRobotModel();
+            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
 
-            //problemAccountDataAccess.GetExistedProblemAccounts(string.Join(",", custIds)).Returns(existedPA);
-            //rescanCustClassificationService.Start().GetExistedProblemAccounts(custIds);
-
-            //var paResult = rescanCustClassificationService.ExistedPA;
-            //var rebotResult = rescanCustClassificationService.ExistedRobot;
-
-            //paResult.Should().BeEquivalentTo(expectPA);
-            //rebotResult.Should().BeEquivalentTo(expectRobot);
+            rescanCustClassificationService = new RescanCustClassificationService(baseDataAccess, rescanCustClassificationDataAccess, 
+                problemAccountDataAccess, custClassToMainDBService, sentryClient);           
         }
 
         [Fact]
-        public void InsertProblemAccounts_WhenSuccess_ReturnData()
+        public void GetAgentCusts_WhenSuccess_ReturnNotException()
         {
-            //var existedPA = CreateSampleExistedPAModel();
+            // Arrange
+            var custIds = new List<long>() { 1, 2 };
 
-            //var problemAccount = new List<InsertProblemAccountEntity>
-            //{
-            //    CreateSampleProblemAccountModel()
-            //};
+            // Act
+            Action action = () => rescanCustClassificationService.GetAgentCusts(custIds);
 
-            //var custIds = new List<long> { 1, 2, 3 };
-
-            //problemAccountDataAccess.GetExistedProblemAccounts(string.Join(",", custIds)).Returns(existedPA);
-
-            //Action action = () => rescanCustClassificationService
-            //                        .Start()
-            //                        .GetExistedProblemAccounts(custIds)
-            //                        .InsertProblemAccountLogics(null, false, FunctionId.InsertPAJob);
-
-            //action.Should().NotThrow<Exception>();
+            // Assert
+            action.Should().NotThrow<Exception>();
         }
-
-
-        //[Fact]
-        //public void GetTWRobots_WhenSuccess_ReturnData()
-        //{
-        //    var expectData = new List<InsertRobotEntity>
-        //    {
-        //        CreateSampleTWRobotModel()
-        //    };
-
-        //    var inputData = new List<TWRobotUserEntity>
-        //    {
-        //        new TWRobotUserEntity { CustId = 0, Counter = 0}
-        //    };
-
-        //    var custIds = new List<long> { 1, 2, 3 };
-
-        //    rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
-
-        //    rescanCustClassificationService
-        //                            .Start()
-        //                            .GetTWRobotUsers(custIds);
-
-        //    var robots = rescanCustClassificationService.TWRobots;
-
-        //    robots.Should().BeEquivalentTo(expectData);
-        //}
 
         [Fact]
-        public void InsertRobots_WhenSuccess_ReturnData()
+        public void PushExternalProblemAccounts_WhenSuccess_ReturnNotException()
         {
-            //var expectData = new List<InsertRobotEntity>
-            //{
-            //    CreateSampleTWRobotModel()
-            //};
+            // Arrange
+            var custIds = new List<long>() { 1, 2 };
+            var paras = new PushDataToExternalEntity 
+            {
+                IsUpdateDangerToMainDB = true,
+                ExternalBatchSize = 50,
+                ServiceName = "Test",
+                IsSyncAFCData = false,
+                AFCInsertAccountURL = string.Empty,
+                AFCDeleteAccountURL = string.Empty,
+            };
 
-            //var inputData = new List<TWRobotUserEntity>
-            //{
-            //    new TWRobotUserEntity { CustId = 0, Counter = 0}
-            //};
+            // Act
+            Action action = () => rescanCustClassificationService.PushExternalProblemAccounts(custIds, paras);
 
-            //var custIds = new List<long> { 1, 2, 3 };
+            // Assert
+            action.Should().NotThrow<Exception>();
+        }
 
-            //rescanCustClassificationDataAccess.GetExistedTWRobotUser(string.Join(",", custIds)).Returns(inputData);
+        [Fact]
+        public void RescanCustomerClassification_WhenSuccess_ReturnNotException()
+        {
+            // Arrange
+            var custIds = new List<long>() { 1, 2 };
+            var rescanParas = new RescanParametersEntity()
+            {
+                IsToQueue = false,
+                FunctionId = FunctionId.InactivateNewCustomer,
+                RescanNormalType = RescanNormalType.Auto_Customer,
+                InternalBatchSize = 50,
+                ServiceName = "Test",
+                PushDataExternal = new PushDataToExternalEntity
+                {                   
+                    IsUpdateDangerToMainDB = true,
+                    ExternalBatchSize = 50,
+                    ServiceName = "Test",
+                    IsSyncAFCData = false,
+                    AFCInsertAccountURL = string.Empty,
+                    AFCDeleteAccountURL = string.Empty,
+                }
+            };
 
-            //Action action = () =>  rescanCustClassificationService
-            //                                .Start()
-            //                                .GetTWRobotUsers(custIds)
-            //                                .InsertRobot();
+            var expectedData = new GetRescanCustomerClassificationModel();
 
+            // Act
+            baseDataAccess.GetRescanCustomerClassification(Arg.Any<string>()).Returns(expectedData);
 
-            //action.Should().NotThrow<Exception>();
+            Action action = () => rescanCustClassificationService.RescanCustomerClassification(custIds, rescanParas);
+            
+            // Assert
+            action.Should().NotThrow<Exception>();
 
         }
+
        
     }
 }
