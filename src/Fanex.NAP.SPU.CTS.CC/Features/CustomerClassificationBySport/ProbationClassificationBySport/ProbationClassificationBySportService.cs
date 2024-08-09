@@ -28,6 +28,7 @@
         private readonly ISentryClient sentryClient;
 
         private ProbationBySportModel probationData;
+
         public IEnumerable<ProbationScanClassificationBySportEntity> ProbationClassification => probationData.CustProbations;
 
         public ProbationClassificationBySportService(
@@ -42,7 +43,7 @@
 
         public IProbationClassificationBySportService Start()
         {
-            this.probationData.CustProbations = new List<ProbationScanClassificationBySportEntity>();
+            this.probationData = new ProbationBySportModel();
             
             return this;
         }
