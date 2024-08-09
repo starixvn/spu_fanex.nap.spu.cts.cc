@@ -13,7 +13,5 @@
         public IEnumerable<ProbationScanClassificationBySportEntity> CustProbations { get; set; }
 
         public long LastCustID { get; set; }
-
-        public int LastCategoryID { get; set; }
     }
 }

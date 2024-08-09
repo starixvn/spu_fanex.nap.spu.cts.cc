@@ -8,9 +8,6 @@
         [SpParam(SqlParamName = "op_LastCustID")]
         public long LastCustID { get; set; }
 
-        [SpParam(SqlParamName = "op_LastCategoryID")]
-        public int LastCategoryID { get; set; }
-
         public override string GetSettingKey()
         {
             return "CTS_DC_CustClassification_BySport_ProbationScan_Get";

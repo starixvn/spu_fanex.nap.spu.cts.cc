@@ -66,8 +66,7 @@
 
         public bool UpdateCompleteProbationScanBySport()
         {
-            systemParameterDataAccess.UpdateTimingExecution(probationData.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_BySport_LastCategoryID);
-            systemParameterDataAccess.UpdateTimingExecution(probationData.LastCategoryID.ToString(), CTS_SystemParameters.DailyNormalClassificationBySportLastCustID);
+            systemParameterDataAccess.UpdateTimingExecution(probationData.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_BySport_LastCustID);
 
             return probationData.CustProbations != null && probationData.CustProbations.Any();
         }

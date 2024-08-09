@@ -29,8 +29,7 @@
             return new ProbationBySportModel
             {
                 CustProbations = data,
-                LastCustID = criteria.LastCustID,
-                LastCategoryID = criteria.LastCategoryID
+                LastCustID = criteria.LastCustID
             };
         }
 
