@@ -7,6 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using NSubstitute;
     using Sentry;
@@ -14,6 +15,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.RobotTWInsertConsts;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class RobotAccountInsertServicesTest
@@ -119,6 +121,48 @@
             // Assert
             result.Should().BeTrue();
         }
- 
+
+        [Fact]
+        public void UpdateLastTimespan_WhenSuccess()
+        {
+            // Arrange
+            var robotInfoField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotInfo);
+            robotInfoField.SetValue(robotTWInsertServices, new TWRobotUserViewEntity
+            {
+                RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity() },
+                MaxTimestamp = 999
+            });
+
+            var robotCategoryIdField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotCategoryId);
+            robotCategoryIdField.SetValue(robotTWInsertServices, 999);
+
+            // Act
+            systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+
+            robotTWInsertServices.UpdateLastTimespan();
+
+            // Assert
+            systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+        }
+
+        [Fact]
+        public void GetRobotUserCategoryId_WhenSuccess()
+        {
+            // Arrange
+            var robotInfoField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotInfo);
+            robotInfoField.SetValue(robotTWInsertServices, new TWRobotUserViewEntity
+            {
+                RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity() },
+                MaxTimestamp = 999
+            });
+
+            // Act
+            baseDataAccess.GetCategoryByCategoryTypeName(Arg.Any<string>()).Returns(999);
+
+            robotTWInsertServices.GetRobotUserCategoryId("TEST");
+
+            // Assert
+            baseDataAccess.Received(1).GetCategoryByCategoryTypeName(Arg.Any<string>());
+        }
     }
 }
