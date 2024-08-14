@@ -21,31 +21,32 @@
     public class RobotAccountInsertServicesTest
     {
         private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
-        private readonly IRobotTWInsertServices robotTWInsertServices;
         private readonly ISystemParameterServices systemParameterServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IDataLogTrackingServices dataLogTrackingServices;
-        private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
+        private readonly IDataLogTrackingServices _dataLogTrackingServices;
+        private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ISentryClient sentryClient;
+
+        private readonly IRobotTWInsertServices _service;
 
         public RobotAccountInsertServicesTest()
         {
             robotAccountInsertDataAccess = Substitute.For<IRobotTWInsertDataAccess>();
             systemParameterServices = Substitute.For<ISystemParameterServices>();
             problemAccountServices = Substitute.For<IProblemAccountServices>();
-            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
+            _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
             sentryClient = Substitute.For<ISentryClient>();
-            baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            robotTWInsertServices = new RobotTWInsertServices(
+            _service = new RobotTWInsertServices(
                   robotAccountInsertDataAccess
                 , systemParameterServices
-                , custClassToMainDBService
-                , dataLogTrackingServices
-                , baseDataAccess
+                , _custClassToMainDBService
+                , _dataLogTrackingServices
+                , _baseDataAccess
                 , problemAccountDataAccess
                 , sentryClient);
         }
@@ -54,7 +55,7 @@
         public void GetLastTimespan_WhenSuccess()
         {
             // Act
-            var result = robotTWInsertServices.GetLastTimespan();
+            var result = _service.GetLastTimespan();
 
             // Assert
             Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
@@ -64,7 +65,7 @@
         public void GetRobotUser_WhenSuccess()
         {
             // Act
-            var result = robotTWInsertServices.GetTWRobotUser();
+            var result = _service.GetTWRobotUser();
 
             // Assert
             Assert.IsAssignableFrom<IRobotTWInsertServices>(result);
@@ -80,46 +81,50 @@
             var expectedResult = new List<long>();
 
             // Act
-            var result = robotTWInsertServices.InsertTWRobotPackage(1, null);
+            var result = _service.InsertTWRobotPackage(1, null);
 
             // Assert
             result.Should().BeTrue();
         }
 
-        [Fact]
-        public void InsertTWRobotPackage_WhenSuccess_ReturnTrue()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void InsertTWRobotPackage_WhenSuccess_ReturnTrue(bool isSuccess)
         {
             // Arrange
-            var paras = new PushDataToExternalEntity
+            var robotInfoField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotInfo);
+            robotInfoField.SetValue(_service, new TWRobotUserViewEntity
             {
-                ExternalBatchSize = 1,
-                ServiceName = "robotAIClassServiceName",
-                IsWriteLog = false,
-                IsSyncAFCData = false,
-            };
+                RobotUsers = new List<TWRobotUserEntity>
+                {
+                    new TWRobotUserEntity(),
+                    new TWRobotUserEntity(),
+                    new TWRobotUserEntity(),
+                },
+            });
 
-            long expectedLastTimespan = 1;
+            var robotCategoryIdField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotCategoryId);
+            robotCategoryIdField.SetValue(_service, 999);
 
-            var expectedRobotInfo = new TWRobotUserViewEntity
-            {
-                MaxTimestamp = 1,
-                RobotUsers = Enumerable.Empty<TWRobotUserEntity>()
-            };
-
+            var pushConfig = new PushDataToExternalEntity();
 
             // Act
-            systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotAccountLastScannedTime).Returns(expectedLastTimespan);
+            _baseDataAccess
+                .InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>())
+                .Returns(new ResultInsertCustomerClassificationModel()
+                {
+                    CustInfos = new List<CustInfoClassificationEntity>() { new CustInfoClassificationEntity() }
+                });
 
-            robotTWInsertServices.GetLastTimespan();
+            _custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig).Returns(isSuccess);
 
-            robotAccountInsertDataAccess.GetTWRobotUsers(expectedLastTimespan).Returns(expectedRobotInfo);
-
-            robotTWInsertServices.GetTWRobotUser();
-
-            var result = robotTWInsertServices.InsertTWRobotPackage(1, paras);
+            var result = _service.InsertTWRobotPackage(999, pushConfig);
 
             // Assert
-            result.Should().BeTrue();
+            _dataLogTrackingServices.Received(1).LogInputData(Arg.Any<LogInputViewEntity>(), FunctionId.RobotUserJob, Arg.Any<string>());
+
+            Assert.True(isSuccess == result);
         }
 
         [Fact]
@@ -127,19 +132,19 @@
         {
             // Arrange
             var robotInfoField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotInfo);
-            robotInfoField.SetValue(robotTWInsertServices, new TWRobotUserViewEntity
+            robotInfoField.SetValue(_service, new TWRobotUserViewEntity
             {
                 RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity() },
                 MaxTimestamp = 999
             });
 
             var robotCategoryIdField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotCategoryId);
-            robotCategoryIdField.SetValue(robotTWInsertServices, 999);
+            robotCategoryIdField.SetValue(_service, 999);
 
             // Act
             systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
 
-            robotTWInsertServices.UpdateLastTimespan();
+            _service.UpdateLastTimespan();
 
             // Assert
             systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
@@ -150,19 +155,19 @@
         {
             // Arrange
             var robotInfoField = TestExtension.GetPrivateFieldInfo(typeof(RobotTWInsertServices), PrivateFieldName.RobotInfo);
-            robotInfoField.SetValue(robotTWInsertServices, new TWRobotUserViewEntity
+            robotInfoField.SetValue(_service, new TWRobotUserViewEntity
             {
                 RobotUsers = new List<TWRobotUserEntity> { new TWRobotUserEntity() },
                 MaxTimestamp = 999
             });
 
             // Act
-            baseDataAccess.GetCategoryByCategoryTypeName(Arg.Any<string>()).Returns(999);
+            _baseDataAccess.GetCategoryByCategoryTypeName(Arg.Any<string>()).Returns(999);
 
-            robotTWInsertServices.GetRobotUserCategoryId("TEST");
+            _service.GetRobotUserCategoryId("TEST");
 
             // Assert
-            baseDataAccess.Received(1).GetCategoryByCategoryTypeName(Arg.Any<string>());
+            _baseDataAccess.Received(1).GetCategoryByCategoryTypeName(Arg.Any<string>());
         }
     }
 }

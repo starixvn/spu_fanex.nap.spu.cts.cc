@@ -19,50 +19,87 @@
 
     public class RobotDetectionServiceTest
     {
-        private readonly IRobotAIDetectionDataAccess robotDetectionDataAccess;
-        private readonly IRobotAIDetectionService robotDetectionService;
-        private readonly ISystemParameterServices systemParameterServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
-        private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly ISentryClient sentryClient;
+        private readonly IRobotAIDetectionDataAccess _dataAccess;
+        private readonly ISystemParameterServices _systemParameterServices;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
+        private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
+        private readonly IProblemAccountDataAccess _problemAccountDataAccess;
+        private readonly ISentryClient _sentryClient;
+
+        private readonly IRobotAIDetectionService _service;
 
         public RobotDetectionServiceTest()
         {
-            robotDetectionDataAccess = Substitute.For<IRobotAIDetectionDataAccess>();
-            systemParameterServices = Substitute.For<ISystemParameterServices>();
-            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            sentryClient = Substitute.For<ISentryClient>();
-            baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            robotDetectionService = new RobotAIDetectionService(robotDetectionDataAccess
-                , systemParameterServices
-                , custClassToMainDBService
-                , baseDataAccess
-                , problemAccountDataAccess
-                , sentryClient);
+            _dataAccess = Substitute.For<IRobotAIDetectionDataAccess>();
+            _systemParameterServices = Substitute.For<ISystemParameterServices>();
+            _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _sentryClient = Substitute.For<ISentryClient>();
+            _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            _service = new RobotAIDetectionService(_dataAccess
+                , _systemParameterServices
+                , _custClassToMainDBService
+                , _baseDataAccess
+                , _problemAccountDataAccess
+                , _sentryClient);
         }
 
         [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
-            var result = robotDetectionService.GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID);
-
-            // Assert
-            Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
-        }
-
-        [Fact]
-        public void InsertProblemAccount_WhenSuccess_ReturnData()
-        {
-            // Arrange         
-            var config = new PushDataToExternalEntity { ExternalBatchSize = 10 };
+            // Arrange
+            var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
 
             // Act
-            var result = robotDetectionService.InsertAIRobotPackage(100, config);
+            _systemParameterServices.GetLastScannedId(Arg.Any<CTS_SystemParameters>()).Returns(999);
+
+            _dataAccess.GetRobotDetections(Arg.Any<long>()).Returns(new List<RobotAIEntity>());
+
+            _service.GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID);
+
+            var robotDetection = robotDetectionsField.GetValue(_service);
 
             // Assert
-            result.Should().BeTrue();
+            _systemParameterServices.Received(1).GetLastScannedId(Arg.Any<CTS_SystemParameters>());
+
+            _dataAccess.Received(1).GetRobotDetections(Arg.Any<long>());
+
+            Assert.NotNull(robotDetection);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void InsertAIRobotPackage_WhenSuccess(bool isSuccess)
+        {
+            // Arrange
+            var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
+            robotDetectionsField.SetValue(_service, new List<RobotAIEntity>()
+            {
+                new RobotAIEntity(), new RobotAIEntity(), new RobotAIEntity()
+            });
+
+            var pushConfig = new PushDataToExternalEntity();
+
+            // Act
+            _baseDataAccess
+                .InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>())
+                .Returns(new ResultInsertCustomerClassificationModel()
+                {
+                    CustInfos = new List<CustInfoClassificationEntity>() { new CustInfoClassificationEntity() }
+                });
+
+            _custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig).Returns(isSuccess);
+
+            var result = _service.InsertAIRobotPackage(999, pushConfig);
+
+            // Assert
+            _baseDataAccess.Received(1)
+                .InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>());
+
+            _custClassToMainDBService.Received(1).PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig);
+
+            Assert.True(isSuccess == result);
         }
 
         [Fact]
@@ -85,11 +122,11 @@
             };
 
             // Act
-            systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
+            _systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
 
-            robotDetectionDataAccess.GetRobotDetections(expectedRobotAIID).Returns((expectedRobotAI));
+            _dataAccess.GetRobotDetections(expectedRobotAIID).Returns((expectedRobotAI));
 
-            var result = robotDetectionService.InsertAIRobotPackage(1, paras);
+            var result = _service.InsertAIRobotPackage(1, paras);
 
             // Assert
             result.Should().BeTrue();
@@ -100,18 +137,18 @@
         {
             // Arrange
             var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
-            robotDetectionsField.SetValue(robotDetectionService, new List<RobotAIEntity>
+            robotDetectionsField.SetValue(_service, new List<RobotAIEntity>
             {
                 new RobotAIEntity() { RobotDetectionID = 999 }
             });
 
             // Act
-            systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+            _systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
 
-            robotDetectionService.UpdateLastScannedId(CTS_SystemParameters.AssociatedGroupLastCTSCustID);
+            _service.UpdateLastScannedId(CTS_SystemParameters.AssociatedGroupLastCTSCustID);
 
             // Assert
-            systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+            _systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
     }
 }

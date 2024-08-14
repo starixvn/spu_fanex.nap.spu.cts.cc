@@ -34,8 +34,8 @@
 
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
 
-            rescanCustClassificationService = new RescanCustClassificationService(baseDataAccess, rescanCustClassificationDataAccess, 
-                problemAccountDataAccess, custClassToMainDBService, sentryClient);           
+            rescanCustClassificationService = new RescanCustClassificationService(baseDataAccess, rescanCustClassificationDataAccess,
+                problemAccountDataAccess, custClassToMainDBService, sentryClient);
         }
 
         [Fact]
@@ -56,7 +56,7 @@
         {
             // Arrange
             var custIds = new List<long>() { 1, 2 };
-            var paras = new PushDataToExternalEntity 
+            var paras = new PushDataToExternalEntity
             {
                 IsUpdateDangerToMainDB = true,
                 ExternalBatchSize = 50,
@@ -86,7 +86,7 @@
                 InternalBatchSize = 50,
                 ServiceName = "Test",
                 PushDataExternal = new PushDataToExternalEntity
-                {                   
+                {
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = 50,
                     ServiceName = "Test",
@@ -96,18 +96,32 @@
                 }
             };
 
-            var expectedData = new GetRescanCustomerClassificationModel();
+            var expectedData = new GetRescanCustomerClassificationModel()
+            {
+                CustInfos = new List<GetRescanCustomerClassificationEntity>
+                {
+                    new GetRescanCustomerClassificationEntity {InputFlowID = (int) CCInputFlow.RescanNormal},
+                    new GetRescanCustomerClassificationEntity {InputFlowID = (int) CCInputFlow.RescanPACategory},
+                    new GetRescanCustomerClassificationEntity {InputFlowID = (int) CCInputFlow.RescanPotential},
+                }
+            };
 
             // Act
+            rescanCustClassificationDataAccess.GetRoleCustomer(Arg.Any<string>()).Returns(new List<RoleCustomerEntity> { new RoleCustomerEntity { RoleID = 2 } });
+
             baseDataAccess.GetRescanCustomerClassification(Arg.Any<string>()).Returns(expectedData);
 
-            Action action = () => rescanCustClassificationService.RescanCustomerClassification(custIds, rescanParas);
-            
+            baseDataAccess.InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel());
+
+            custClassToMainDBService.PushExternalProblemAcountPackage(Arg.Any<IEnumerable<long>>(), rescanParas.PushDataExternal).Returns(true);
+
+            var result = rescanCustClassificationService.RescanCustomerClassification(custIds, rescanParas);
+
             // Assert
-            action.Should().NotThrow<Exception>();
+            Assert.True(result);
 
         }
 
-       
+
     }
 }

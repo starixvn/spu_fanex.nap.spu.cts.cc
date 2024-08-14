@@ -19,6 +19,19 @@
             return method;
         }
 
+        public static MethodInfo GetPrivateStaticMethod(Type type, string methodName, int pos = 0)
+        {
+            var methodList = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+                                .Where(x => x.Name == methodName && x.IsPrivate);
+
+            if (methodList is null || !methodList.Any())
+                throw new EntryPointNotFoundException();
+
+            var method = methodList.ElementAt(pos);
+
+            return method;
+        }
+
         public static FieldInfo GetPrivateFieldInfo(Type type, string fieldName, int pos = 0)
         {
             var fieldInfo = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)

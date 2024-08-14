@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
+using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using Fanex.NAP.SPU.Notification.Services;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.IncorrectDataMonitoringConsts;
 using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
 namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
@@ -161,19 +163,30 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         }
         #endregion
 
-        //#region NotifyTelegram
-        //[Theory]
-        //[InlineData(JobMonitor_IssueType.Classification_BySportPoolStatus)]
-        //public void NotifyTelegram_WhenSuccess(JobMonitor_IssueType issueTypeID)
-        //{
-        //    // Arrange
-        //    var data = new List<GetMonitoringEntity>() { new GetMonitoringEntity() { IssueTypeID = (int)issueTypeID } };
+        #region GenerateMessage
+        [Theory]
+        [InlineData(JobMonitor_IssueType.NewCustomer_NullCategory)]
+        [InlineData(JobMonitor_IssueType.Realtime_NullCategory)]
+        [InlineData(JobMonitor_IssueType.NewCustomer_Missing)]
+        [InlineData(JobMonitor_IssueType.NewCustomer_IncorrectCustInfo)]
+        [InlineData(JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory)]
+        [InlineData(JobMonitor_IssueType.Classification_GeneralPoolStatus)]
+        [InlineData(JobMonitor_IssueType.Classification_BySportPoolStatus)]
+        [InlineData(JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus)]
+        [InlineData(JobMonitor_IssueType.Classification_MissingTVSProblemAccount)]
+        public void GenerateMessage_WhenSuccess(JobMonitor_IssueType issueTypeID)
+        {
+            // Arrange
+            var generateMessageMethod = TestExtension.GetPrivateStaticMethod(typeof(IncorrectDataMonitoringService), PrivateMethodName.GenerateMessage);
 
-        //    // Act
-        //    _service.NotifyTelegram(data, "LOCAL");
+            var data = new List<GetMonitoringEntity> { new GetMonitoringEntity() { IssueTypeID = (int)issueTypeID, CustID = 999 } };
 
-        //    // Assert
-        //}
-        //#endregion
+            // Act
+            var message = generateMessageMethod.Invoke(_service, new object[] { data, issueTypeID });
+
+            // Assert
+            Assert.NotNull(message);
+        }
+        #endregion
     }
 }

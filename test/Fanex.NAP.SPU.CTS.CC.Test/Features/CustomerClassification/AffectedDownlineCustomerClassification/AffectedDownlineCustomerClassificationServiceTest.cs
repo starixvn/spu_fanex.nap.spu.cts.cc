@@ -10,6 +10,8 @@
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using System.Collections.Generic;
     using Sentry;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
+    using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.AffectedDownlineCustomerClassificationConsts;
 
     public class AffectedDownlineCustomerClassificationServiceTest
     {
@@ -36,7 +38,7 @@
             custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
 
             affectedDownlineCustomerClassificationService = new AffectedDownlineCustomerClassificationService(affectedDownlineCustomerClassificationDataAccess,
-                baseCustomerClassificationDataAccess, problemAccountDataAccess, 
+                baseCustomerClassificationDataAccess, problemAccountDataAccess,
                 custClassToMainDBService, null, Substitute.For<IRescanCustClassificationService>(), sentryClient);
         }
 
@@ -54,22 +56,49 @@
             Assert.Null(exception);
         }
 
-        [Fact]
-        public void CustomerClassification_WhenSuccess_DoesNotThrowException()
+        [Theory]
+        [InlineData(DownlineClassification_ActionType.InsertVVIP, CCInputFlow.VVIP)]
+        [InlineData(DownlineClassification_ActionType.InsertPA, CCInputFlow.InsertPACategory)]
+        public void CustomerClassification_WhenSuccess_Insert_DoesNotThrowException(DownlineClassification_ActionType actionType, CCInputFlow inputFlow)
         {
             // Arrange
             var paramaters = ExpectedRescanParameters();
 
-            var expectedData = ExpectedDataFromQueue();
+            var expectedData = ExpectedDataFromQueue(actionType);
 
             // Act
             affectedDownlineCustomerClassificationDataAccess.GetCustomerCategoryFromQueue().Returns(expectedData);
 
             affectedDownlineCustomerClassificationService.GetCustomerClassificationFromQueue();
 
-            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(inputFlow, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
 
-            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
+            baseCustomerClassificationService.InsertCustomerClassification(inputFlow, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
+
+            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassification(paramaters));
+
+            // Assert
+            Assert.Null(exception);
+        }
+
+        [Theory]
+        [InlineData(DownlineClassification_ActionType.RemoveVVIP, CCInputFlow.RemoveVVIP)]
+        [InlineData(DownlineClassification_ActionType.RemovePA, CCInputFlow.RemovePACategory)]
+        public void CustomerClassification_WhenSuccess_Remove_DoesNotThrowException(DownlineClassification_ActionType actionType, CCInputFlow inputFlow)
+        {
+            // Arrange
+            var paramaters = ExpectedRescanParameters();
+
+            var expectedData = ExpectedDataFromQueue(actionType);
+
+            // Act
+            affectedDownlineCustomerClassificationDataAccess.GetCustomerCategoryFromQueue().Returns(expectedData);
+
+            affectedDownlineCustomerClassificationService.GetCustomerClassificationFromQueue();
+
+            baseCustomerClassificationDataAccess.When(x => x.RemoveCustomerClassification(inputFlow, Arg.Any<RemoveCustomerClassificationModel>()).Returns(new ResultRemoveCustomerClassificationModel()));
+
+            baseCustomerClassificationService.RemoveCustomerClassification(inputFlow, Arg.Any<RemoveCustomerClassificationModel>(), "").Returns(new ResultRemoveCustomerClassificationModel());
 
             var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassification(paramaters));
 
@@ -84,7 +113,7 @@
 
             // Act
             var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CompleteCustomerClassificationFromQueue());
-          
+
             // Assert
             Assert.Null(exception);
         }
@@ -96,7 +125,7 @@
             var rescanParamaters = ExpectedRescanParameters();
             var custInfo = new VVIPCustomerInsertEntity
             {
-                CustInfo = new List<VVIPCategoryEntity>() { new VVIPCategoryEntity {  CustID = 1, CTSCustID = 1, RoleID = 1, SubscriberID = 6, CreatedBy = 8} },
+                CustInfo = new List<VVIPCategoryEntity>() { new VVIPCategoryEntity { CustID = 1, CTSCustID = 1, RoleID = 1, SubscriberID = 6, CreatedBy = 8 } },
                 FromFlow = FromFlow.CTSServices,
                 IsAffectDownline = false,
                 QueueID = null,
@@ -109,17 +138,36 @@
             baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.VVIP, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
 
             var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.InsertVVIP(rescanParamaters, custInfo));
-          
+
             // Assert
             Assert.Null(exception);
         }
 
-        private CustClassificationFromQueueResultEntity ExpectedDataFromQueue()
+        [Fact]
+        public void CompleteCustomerClassificationFromQueue_WhenSuccess()
+        {
+            // Arrange
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(AffectedDownlineCustomerClassificationService), PrivateFieldName.IsSuccess);
+            isSuccessField.SetValue(affectedDownlineCustomerClassificationService, true);
+
+            var dataFromQueueField = TestExtension.GetPrivateFieldInfo(typeof(AffectedDownlineCustomerClassificationService), PrivateFieldName.DataFromQueue);
+            dataFromQueueField.SetValue(affectedDownlineCustomerClassificationService, ExpectedDataFromQueue(DownlineClassification_ActionType.InsertPA));
+
+            // Act
+            affectedDownlineCustomerClassificationDataAccess.CustomerClassificationFromQueueComplete(Arg.Any<ulong>(), Arg.Any<long>());
+
+            affectedDownlineCustomerClassificationService.CompleteCustomerClassificationFromQueue();
+
+            // Assert
+            affectedDownlineCustomerClassificationDataAccess.Received(1).CustomerClassificationFromQueueComplete(Arg.Any<ulong>(), Arg.Any<long>());
+        }
+
+        private CustClassificationFromQueueResultEntity ExpectedDataFromQueue(DownlineClassification_ActionType actionType)
         {
             return new CustClassificationFromQueueResultEntity()
             {
                 QueueID = 1,
-                ActionType = 1,
+                ActionType = (int)actionType,
                 CustomerClassificationQueue = new List<CustClassificationFromQueueEntity>() {
                     new CustClassificationFromQueueEntity
                     {
