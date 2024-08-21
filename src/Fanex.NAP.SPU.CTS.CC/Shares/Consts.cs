@@ -37,12 +37,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
 
         public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
 
-        public enum MatchMonitorQueryTypes
-        {
-            Service = 1,
-            Report = 2,
-        };
-
         public enum CTS_SystemParameters
         {
             TVS_LastScanDateTime = 2,
@@ -50,16 +44,12 @@ namespace Fanex.NAP.SPU.CTS.Shares
             MatchMonitorLastScannedTrans = 20,
             JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
-            //TWGroupBetting_LastTransSec = 77,
-            //TWGroupBetting_SkipTransCount = 78,
-            //TWGroupBetting_ScanTicket_LastSequenceId = 90,
             InactiveNewMember_LastCategoryID = 80,
             InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastScannedTime = 88,
             NewCTSCustomerClassificationLastCustID = 92,
-            //RobotDetectionLastModifiedDate = 94,
             RobotDetection_LastID = 94,
             AssociatedGroupLastGroupID = 98,
             AssociatedGroupLastCTSCustID = 99,
@@ -72,11 +62,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
             JobMonitor_NewCustomerLastScannedCustID = 131,
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
-            //TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
-            //TWRobotImperva_LastID = 134,
-            //TWGroupBetting_CountTicket_BatchSize = 135,
-            //TWGroupBetting_CountTicket_LastSequenceId = 136,
-            //TWGroupBetting_CountTicket_Status = 137,
             NormalTaggingClassificationLastCategoryID = 144,
             NormalTaggingClassificationLastCustID = 145,
             CustomerNullUsername2_LastCTSCustID = 146,
@@ -123,13 +108,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Super = 4
         };
 
-        public enum FlowTypeRescanCC
-        {
-            NewMember,
-            RemoveMultipleEvidence,
-            Other
-        };
-
         public enum UpdateCustomer
         {
             ForNewCustomer = 0,
@@ -146,33 +124,14 @@ namespace Fanex.NAP.SPU.CTS.Shares
             InsertNewCustJob = 4,
             RemoveVIPWeb = 5,
             RemoveSpecialCCWeb = 6,
-            //RemovePAAPI = 7,
-            //RemoveFlaggedEvidenceWeb = 8,
-            //RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
             ProblemDailyJob = 12,
-            //InsertEvidenceJob = 13,
-            //PlaceSingleEvidence = 14,
-            //PlaceEvidenceForMultiCustAPI = 21,
-            //PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
-            //InsertNewCus_CheckPA = 24,
-            //RemoveVVIP_CheckPA = 25,
-            //RemoveSpecial_CheckPA = 26,
-            //RemovePA_CheckPA = 27,
-            //RemoveFlaggedEvidence_CheckPA = 28,
-            //RemoveMultiEvidences_CheckPA = 29,
-            //ExcludeTaggingByAss_CheckPA = 30,
             InsertNewCus_CheckRobotUser = 34,
             RemoveVVIP_CheckRobotUser = 35,
             RemoveSpecial_CheckRobotUser = 36,
-            //RemovePA_CheckRobotUser = 37,
-            //RemoveFlaggedEvi_CheckRobotUser = 38,
-            //RemoveMultiEvi_CheckRobotUser = 39,
-            //ExcludeTaggingAss_CheckRobotUser = 40,
             InsertPAJob = 41,
-            //UpdateCategory = 42,
             InsertPAM = 43,
             TWProblemAccountInsert = 44,
             ScanAssociatedAccount = 51,
@@ -204,18 +163,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Service = 1,
             Manual = 2
         }
-
-        public enum HttpStatus
-        {
-            Unauthorized = 401,
-            BadRequest = 400,
-            NotFound = 404,
-            MethodNotAllowed = 405,
-            OK = 200,
-            Created = 201,
-            ServerUnavailable = 503,
-            InternalServerError = 500
-        };
 
         public enum FromFlow
         {
