@@ -7,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class NormalAccountBySportServiceTest
     {
@@ -43,16 +44,18 @@
                 new NormalAccountBySportEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
                 new NormalAccountBySportEntity { CustId = 2, ActiveDays = 7, CategoryId = 1, BetCount = 10, PerformanceTime = DateTime.Now },
             };
-            var custsJson = JsonConvert.SerializeObject(custs);
-            var result = new ResultInsertClassificationBySportModel();
+            var result = new ResultInsertClassificationBySportModel()
+            {
+                CustInfos = new List<CustInfoClassificationBySportEntity>()
+            };
 
             // Act
-            normalAccountService.InsertNormalClassificationBySport(custs, serviceName).Returns(result);
+            baseCustomerClassificationBySportDataAccess.InsertCustomerClassificationBySport(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationBySportModel>()).Returns(result);
 
             normalAccountService.InsertNormalClassificationBySport(custs, serviceName);
 
             // Assert
-            normalAccountService.Received(1).InsertNormalClassificationBySport(custs, serviceName);
+            baseCustomerClassificationBySportDataAccess.Received(1).InsertCustomerClassificationBySport(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationBySportModel>());
         }
 
         [Fact]

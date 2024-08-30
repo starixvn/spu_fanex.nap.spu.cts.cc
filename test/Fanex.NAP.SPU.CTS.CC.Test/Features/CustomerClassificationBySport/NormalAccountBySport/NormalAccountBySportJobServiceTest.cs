@@ -41,11 +41,15 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Norm
             // Arrange
             var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
 
-            var insertNormalAccountMethod = TestExtension.GetPrivateMethod(typeof(ResultInsertClassificationBySportModel), PrivateMethodName.InsertNormalAccount);
+            var insertNormalAccountMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.InsertNormaBySport);
 
             // Act
-            _normalAccountInsertService.InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>()).Returns(new ResultInsertClassificationBySportModel());
-            var result = insertNormalAccountMethod.Invoke(_service, new object[] { data });
+            _normalAccountInsertService.InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>()).Returns(new ResultInsertClassificationBySportModel()
+            {
+                CustInfos = new List<CustInfoClassificationBySportEntity>()
+            });
+
+            var result = insertNormalAccountMethod.Invoke(_service, new object[] { data, 5000 });
 
             // Assert
             _normalAccountInsertService.Received(1).InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>());
@@ -59,11 +63,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Norm
             // Arrange
             var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
 
-            var insertNormalAccountMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.InsertNormalAccount);
+            var insertNormalAccountMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.InsertNormaBySport);
 
             // Act
             _normalAccountInsertService.InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>()).Throws<Exception>();
-            Action action = () => insertNormalAccountMethod.Invoke(_service, new object[] { data });
+            Action action = () => insertNormalAccountMethod.Invoke(_service, new object[] { data, 5000 });
 
             // Assert
             _normalAccountInsertService.Received(0).InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>());
@@ -72,76 +76,34 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Norm
         }
         #endregion
 
-        #region PushSpecialCC
+        #region PushSpecialCCBySport
         [Fact]
-        public void PushSpecialCC_WhenSuccess()
+        public void PushSpecialCCBySport_WhenSuccess()
         {
             // Arrange
             var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
             var batchSize = 1000;
 
-            var pushSpecialCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.PushSpecialCC);
+            var insertNormalAndPushCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.PushSpecialCCBySport);
 
             // Act
-            _custClassToMainDBService.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize).Returns(true);
-            var result = pushSpecialCCMethod.Invoke(_service, new object[] { data, batchSize });
-
-            // Assert
-            _custClassToMainDBService.Received(1).PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize);
-
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public void PushSpecialCC_ThrowException()
-        {
-            // Arrange
-            var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
-            var batchSize = 1000;
-
-            var pushSpecialCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.PushSpecialCC);
-
-            // Act
-            _custClassToMainDBService.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize).Throws<Exception>();
-            Action action = () => pushSpecialCCMethod.Invoke(_service, new object[] { data, batchSize });
-
-            // Assert
-            _custClassToMainDBService.Received(0).PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize);
-
-            Assert.Throws<TargetInvocationException>(action);
-        }
-        #endregion
-
-        #region InsertNormalAndPushCC
-        [Fact]
-        public void InsertNormalAndPushCC_WhenSuccess()
-        {
-            // Arrange
-            var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
-            var batchSize = 1000;
-
-            var insertNormalAndPushCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.InsertNormalAndPushCC);
-
-            // Act
-            _normalAccountInsertService.InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>()).Returns(new ResultInsertClassificationBySportModel());
             _custClassToMainDBService.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize).Returns(true);
             var result = insertNormalAndPushCCMethod.Invoke(_service, new object[] { data, batchSize });
 
             // Assert
-            _normalAccountInsertService.Received(1).InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>());
             _custClassToMainDBService.Received(1).PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>(), Arg.Any<string>(), batchSize);
 
             Assert.True((bool)result);
         }
 
         [Fact]
-        public void InsertNormalAndPushCC_ThrowException()
+        public void PushSpecialCCBySport_ThrowException()
         {
             // Arrange
             var data = new List<NormalAccountBySportEntity> { new NormalAccountBySportEntity() };
             var batchSize = 1000;
 
-            var insertNormalAndPushCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.InsertNormalAndPushCC);
+            var insertNormalAndPushCCMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountInsertBySportJobService), PrivateMethodName.PushSpecialCCBySport);
 
             // Act
             _normalAccountInsertService.InsertNormalClassificationBySport(Arg.Any<IEnumerable<NormalAccountBySportEntity>>(), Arg.Any<string>()).Returns(new ResultInsertClassificationBySportModel());

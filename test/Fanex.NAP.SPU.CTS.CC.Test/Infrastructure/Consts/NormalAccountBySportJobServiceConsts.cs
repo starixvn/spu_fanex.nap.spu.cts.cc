@@ -10,11 +10,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts
     {
         public struct PrivateMethodName
         {
-            public const string InsertNormalAccount = "InsertNormalAccount";
+            public const string InsertNormaBySport = "InsertNormaBySport";
 
             public const string PushSpecialCC = "PushSpecialCC";
 
-            public const string InsertNormalAndPushCC = "InsertNormalAndPushCC";
+            public const string PushSpecialCCBySport = "PushSpecialCCBySport";
 
             public const string Process = "Process";
         }
