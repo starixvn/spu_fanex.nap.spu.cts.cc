@@ -27,7 +27,7 @@
 
         public const string MicrosoftTeams_GroupId_Local = "19:00af2ff331b64d39adf13b428aa49c6e@thread.tacv2";
 
-        public const string MicrosoftTeams_JobMonitor_GroupId_Pro = "19:8716ea65006c45f8a7061db1cc5acd86@thread.tacv2";
+        public const string MicrosoftTeams_JobMonitor_GroupId_Pro = "19:3537f2795b2a49aabc926b3275583615@thread.tacv2";
         public const string DangerousScoreRemark = "Detection Date: {0} - Dangerous Score: {1}%";
         public const string TWInitialGBMissSport = "Soccer/Basketball";
         public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
