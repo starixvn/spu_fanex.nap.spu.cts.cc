@@ -6,9 +6,9 @@
     {
         public long CustId { get; set; }
 
-        public int SportGroupId { get; set; }
+        public int? CategoryId { get; set; }
 
-        public int CategoryId { get; set; }
+        public int? CategoryGroupId { get; set; }
 
         public DateTime CreatedTime { get; set; }
 

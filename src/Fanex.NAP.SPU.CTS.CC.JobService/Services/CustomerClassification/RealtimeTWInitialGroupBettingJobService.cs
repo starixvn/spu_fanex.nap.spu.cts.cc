@@ -52,8 +52,6 @@
             var paras = new PushDataToExternalEntity
             {
                 ExternalBatchSize = batchSize,
-                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                IsPushCCToSoon88 = true,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                 ServiceName = serviceName
@@ -62,7 +60,7 @@
             do
             {
                 var twInitialGB = twInitialGBService.GetChanges();
-
+              
                 isContinue = twInitialGB.CustInfos != null && twInitialGB.CustInfos.Any();
 
                 if (isContinue)
@@ -73,7 +71,6 @@
                 }
 
             } while (isContinue);
-
         }
 
     }

@@ -1,11 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -33,7 +32,6 @@
     {
         private readonly IDailyProblemClassificationDataAccess dailyClassificationDataAccess;       
         private readonly IProblemAccountServices problemAccountServices;
-        private readonly IPAPotentialClassificationService paPotentialClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private PADailyScanFromQueueModel paDailyScanFromQueue;
         private IEnumerable<InsertPAProbationResult> problemAccounts;
@@ -41,13 +39,11 @@
 
         public DailyProblemClassificationServices(
             IDailyProblemClassificationDataAccess dailyClassificationDataAccess,            
-            IProblemAccountServices problemAccountServices,
-            IPAPotentialClassificationService paPotentialClassificationService,
+            IProblemAccountServices problemAccountServices,           
             ICustClassToMainDBService custClassToMainDBService)
         {
             this.dailyClassificationDataAccess = dailyClassificationDataAccess;
-            this.problemAccountServices = problemAccountServices;
-            this.paPotentialClassificationService = paPotentialClassificationService;
+            this.problemAccountServices = problemAccountServices;          
             this.custClassToMainDBService = custClassToMainDBService;
         }
 
@@ -85,14 +81,10 @@
         public IDailyProblemClassificationServices InsertProblemAccountProbationClassification(int batchSize, IEnumerable<ProblemAccountLosingClassificationEntity> problemClassification)
         {
             if (problemClassification != null && problemClassification.Any())
-            {
-                this.paPotentialClassificationService.SetTWInitialGBs(paDailyScanFromQueue);
+            {                
+                var pasJson = JsonConvert.SerializeObject(problemClassification);
 
-                this.paPotentialClassificationService.SetTWInitialSmartSmarts(paDailyScanFromQueue);
-
-                var jsonPas = this.paPotentialClassificationService.BuildPAPotentialInfo(problemClassification);
-
-                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(jsonPas);
+                problemAccounts = dailyClassificationDataAccess.InsertProblemProbationClassification(pasJson);
             }
 
             return this;
@@ -118,7 +110,7 @@
             {
                 var custIds = problemAccounts.Select(c => c.CustID).Distinct();
 
-                return custClassToMainDBService.PushDataToExternal(custIds, paras);
+                return custClassToMainDBService.PushExternalPackageByCustId(custIds, paras);
             }
 
             return true;

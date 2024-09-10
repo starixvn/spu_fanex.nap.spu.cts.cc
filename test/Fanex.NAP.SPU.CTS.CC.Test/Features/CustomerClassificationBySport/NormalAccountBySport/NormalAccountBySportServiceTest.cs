@@ -1,23 +1,25 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.NormalAccountBySport
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using Fanex.NAP.SPU.CTS.Shares;
-    using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class NormalAccountBySportServiceTest
     {
         private readonly INormalAccountInsertBySportDataAccess normalAccountDataAccess;
         private readonly INormalAccountInsertBySportService normalAccountService;
+        private readonly IBaseCustomerClassificationBySportDataAccess baseCustomerClassificationBySportDataAccess;
 
         public NormalAccountBySportServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountInsertBySportDataAccess>();
-            normalAccountService = new NormalAccountInsertBySportService(normalAccountDataAccess, null);
+            baseCustomerClassificationBySportDataAccess = Substitute.For<IBaseCustomerClassificationBySportDataAccess>();
+            normalAccountService = new NormalAccountInsertBySportService(baseCustomerClassificationBySportDataAccess, normalAccountDataAccess, null);
         }
 
         [Fact]
@@ -26,10 +28,10 @@
             // Arrange
 
             // Act
-            normalAccountService.GetNormalAccount();
+            normalAccountService.GetNormalClassificationBySport();
 
             // Assert
-            normalAccountDataAccess.Received(1).GetNormalAccount();
+            normalAccountDataAccess.Received(1).GetNormalClasificationAccount();
         }
 
         [Fact]
@@ -42,31 +44,32 @@
                 new NormalAccountBySportEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
                 new NormalAccountBySportEntity { CustId = 2, ActiveDays = 7, CategoryId = 1, BetCount = 10, PerformanceTime = DateTime.Now },
             };
-            var custsJson = JsonConvert.SerializeObject(custs);
-            var insertResult = new InsertNormalAccountBySportModel();
+            var result = new ResultInsertClassificationBySportModel()
+            {
+                CustInfos = new List<CustInfoClassificationBySportEntity>()
+            };
 
             // Act
-            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
+            baseCustomerClassificationBySportDataAccess.InsertCustomerClassificationBySport(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationBySportModel>()).Returns(result);
 
-            normalAccountService.InsertNormalAccount(custs, serviceName);
+            normalAccountService.InsertNormalClassificationBySport(custs, serviceName);
 
             // Assert
-            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
+            baseCustomerClassificationBySportDataAccess.Received(1).InsertCustomerClassificationBySport(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationBySportModel>());
         }
 
-        //[Fact]
-        //public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
-        //{
-        //    // Arrange                        
-        //    long scannedMaxId = 7;
+        [Fact]
+        public void CompleteNormalAccountBySport_WhenSuccess_ReturnTrue()
+        {
+            // Arrange                        
+            long scannedMaxId = 7;
 
-        //    // Act
-        //    normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
+            // Act
+            normalAccountService.CompleteNormalAccountBySport(scannedMaxId, true);
 
-        //    // Assert
-        //    normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
-        //}
-
+            // Assert
+            normalAccountDataAccess.Received(1).CompleteNormalAccountBySport(scannedMaxId);
+        }
     }
 }
 

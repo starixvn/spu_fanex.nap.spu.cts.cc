@@ -1,13 +1,16 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RealtimeTWInitialSmartService
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class TWInitialSmartServiceTest
     {
@@ -15,21 +18,32 @@
         private readonly ITWInitialSmartService twInitialSmartService;
 
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
 
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        
+
+        private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
+        private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
+
+        private readonly ISentryClient sentryClient;
+
         public TWInitialSmartServiceTest()
         {
-            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-
+            sentryClient = Substitute.For<ISentryClient>();
+            problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
+            
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+
+            baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
 
             twInitialSmartDataAccess = Substitute.For<ITWInitialSmartDataAccess>();
-            twInitialSmartService = new TWInitialSmartService(problemAccountServices, custClassToMainDBService, twInitialSmartDataAccess);
+            twInitialSmartService = new TWInitialSmartService(baseCustomerClassificationDataAccess,
+                problemAccountDataAccess,
+                sentryClient,
+                custClassToMainDBService,
+                twInitialSmartDataAccess);
         }
 
         [Fact]
@@ -59,20 +73,24 @@
                      IsLicensee = true, RoleID = 1, Probability = new decimal(0.8971), SubscriberID = 6
                  }
             };
-           
+
             var paras = new PushDataToExternalEntity
             {
-                ExternalBatchSize = 500,              
+                ExternalBatchSize = 500,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = false,
                 ServiceName = "Realtime TW Initial Smart JobService"
             };
 
             // Act
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
+
+            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>(), paras.ServiceName).Returns(new ResultInsertCustomerClassificationModel());
+
             var result = twInitialSmartService.InsertTWInitialSmartClassification(twInitialSmartCusts, paras);
 
             // Assert
-            result.Should().BeTrue();           
+            result.Should().BeTrue();
         }
     }
 }

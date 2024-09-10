@@ -25,10 +25,8 @@
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
-        private readonly ITWProblemAccountJobService twProblemAccountJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
-        private readonly ITWRobotImpervaJobService robotImpervaJobService;
+        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;       
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
         private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
@@ -47,10 +45,8 @@
             INormalTaggingClassificationJobService normalTaggingClassificationJobService,
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
-            ITWProblemAccountJobService twProblemAccountJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            IMatchMonitorClassificationJobService mmClassificationJobService,
-            ITWRobotImpervaJobService robotImpervaJobService,
+            IMatchMonitorClassificationJobService mmClassificationJobService,            
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
@@ -70,10 +66,8 @@
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
-            this.twProblemAccountJobService = twProblemAccountJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
-            this.mmClassificationJobService = mmClassificationJobService;
-            this.robotImpervaJobService = robotImpervaJobService;
+            this.mmClassificationJobService = mmClassificationJobService;          
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
@@ -166,22 +160,10 @@
             return await this.robotAccountInsertJobService.ScanningTWRobotAccount(batchExternalSize, batchInternalSize);
         }
 
-        [HttpPost("robotAIImpervaDetection")]
-        public async Task<bool> RobotAIImpervaDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
-        {           
-            return await this.robotAccountInsertJobService.ScanningAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
-        }
-
-        [HttpPost("scan-tw-problem-account-customer")]
-        public async Task<bool> ScanTWSystemFormulaBetCustomer()
+        [HttpPost("robotAIDetection")]
+        public async Task<bool> RobotAIDetection([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await twProblemAccountJobService.Execute();
-        }
-
-        [HttpPost("robotImpervaGet")]
-        public async Task<bool> RobotImpervaGet([FromForm] int batchSize)
-        {           
-            return await this.robotImpervaJobService.Execute(batchSize);
+            return await this.robotAccountInsertJobService.ScanningAIRobotClassification(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("tvsProblemAccountInsert")]

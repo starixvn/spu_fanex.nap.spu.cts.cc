@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System;
     using System.Linq;
@@ -10,7 +11,7 @@
         TVSProblemAccountResultEntity GetTWProblemAccount(DateTime? lastDateTime);
     }
 
-    public class TVSProblemAccountDataAccess : ITVSProblemAccountDataAccess
+    public class TVSProblemAccountDataAccess : BaseCustomerClassificationDataAccess, ITVSProblemAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 

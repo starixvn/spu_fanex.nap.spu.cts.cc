@@ -139,7 +139,7 @@
 
                     if (!initSabaDangerLevel.UpdatedResult.IsSuccess)
                     {
-                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, initSabaDangerLevel.CustSabaDangerLevel, null, sentryClient);
+                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, initSabaDangerLevel.CustSabaDangerLevel, new Exception(), sentryClient);
 
                         return this;
                     }

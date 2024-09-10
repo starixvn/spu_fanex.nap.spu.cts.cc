@@ -1,13 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport
 {
     using Fanex.Data.Repository;
-    using System.Linq;
 
     public interface INormalAccountInsertBySportDataAccess
     {
-        GetNormalAccountBySportModel GetNormalAccount();
-
-        InsertNormalAccountBySportModel InsertNormalAccount(string custIdList);
+        GetNormalAccountBySportModel GetNormalClasificationAccount();
 
         void CompleteNormalAccountBySport(long scannedMaxId);
     }
@@ -21,30 +18,17 @@
             repository = new DynamicRepository();
         }
 
-        public GetNormalAccountBySportModel GetNormalAccount()
+        public GetNormalAccountBySportModel GetNormalClasificationAccount()
         {
             var criteria = new GetNormalAccountBySportCriteria();
 
-            var data = repository.Fetch<GetNormalAccountBySportEntity>(criteria);
+            var data = repository.Fetch<NormalAccountBySportEntity>(criteria);
 
             return new GetNormalAccountBySportModel
             {
                 NormalAccount = data,
-                ScannedMaxId = criteria.ScannedMaxId,
-                IsContinute = data != null && data.Any()
+                ScannedMaxId = criteria.ScannedMaxId
             };
-        }
-
-        public InsertNormalAccountBySportModel InsertNormalAccount(string custIdList)
-        {
-            var criteria = new InsertNormalAccountBySportCriteria
-            {
-                NewClassification = custIdList
-            };
-
-            var custNAInserted = repository.Fetch<InsertNormalAccountCustInfoEntity>(criteria);
-
-            return new InsertNormalAccountBySportModel { CustNAInserted = custNAInserted, ErrorMessage = criteria.ErrorMessage };
         }
 
         public void CompleteNormalAccountBySport(long scannedMaxId)
@@ -56,6 +40,5 @@
 
             repository.Execute(criteria);
         }
-
     }
 }

@@ -1,62 +1,59 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountService
     {
         GetNormalAccountModel GetNormalAccounts();
-
-        InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog);
+     
+        ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog);
 
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
-        IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
+        IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
 
-        IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs);
+        IEnumerable<InsertNormalAccountEntity> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs);
 
     }
 
-    public class NormalAccountService : INormalAccountService
+    public class NormalAccountService : BaseCustomerClassificationService, INormalAccountService
     {
         private readonly INormalAccountDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
 
-        public NormalAccountService(INormalAccountDataAccess dataAccess, ISentryClient sentryClient)
+        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient) 
         {
             this.dataAccess = dataAccess;
             this.sentryClient = sentryClient;
-        }
+        }       
 
         public GetNormalAccountModel GetNormalAccounts()
         {
             return dataAccess.GetNormalAccount();
-        }
+        }      
 
-        public InsertNormalAccountResultEntity InsertNormalAccount(IEnumerable<InsertNormalAccountModel> custs, string serviceName, bool isWriteLog)
+        public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog)
         {
-            var result = new InsertNormalAccountResultEntity();
-
-            var custsJson = custs != null && custs.Any() ? JsonConvert.SerializeObject(custs) : string.Empty;
-
-            if (!string.IsNullOrEmpty(custsJson))
+            var result = new ResultInsertCustomerClassificationModel();
+                      
+            if (custs != null && custs.Any())
             {
-                result = dataAccess.InsertNormalAccount(custsJson);
+                var modelInsert = new InsertCustomerClassificationModel()
+                {                
+                    FromAction = (int)FromFlow.CTSServices,
+                    CustInfoJson = JsonConvert.SerializeObject(custs)
+                };
 
-                Utilities.LogSentryInfo(serviceName, "InsertNormalAccount done", custsJson, isWriteLog, sentryClient);
-
-                if (!string.IsNullOrEmpty(result.ErrorMessage))
-                {
-                    Utilities.LogSentryError(serviceName, "InsertNormalAccount throws Exception", custsJson, new Exception(result.ErrorMessage), sentryClient);
-                }
+                result = base.InsertCustomerClassification(CCInputFlow.Normal, modelInsert, serviceName);
             }
-
+            
             return result;
         }
 
@@ -68,11 +65,11 @@
             }
         }
 
-        public IEnumerable<InsertNormalAccountModel> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs)
+        public IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs)
         {
             if (custs == null || !custs.Any())
             {
-                return Enumerable.Empty<InsertNormalAccountModel>();
+                return Enumerable.Empty<InsertNormalAccountEntity>();
             }
 
             var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
@@ -88,11 +85,11 @@
             return finalNormalAcc;
         }
 
-        public IEnumerable<InsertNormalAccountModel> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
+        public IEnumerable<InsertNormalAccountEntity> MergeWithTWTaggedCustAndCTSTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
         {
             if (custs == null || !custs.Any())
             {
-                return Enumerable.Empty<InsertNormalAccountModel>();
+                return Enumerable.Empty<InsertNormalAccountEntity>();
             }
 
             var twTaggingSRPCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
@@ -164,7 +161,7 @@
             return new NormalAccountAfterCheckTWDetectionModel(cust);
         }
 
-        private IEnumerable<InsertNormalAccountModel> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
+        private IEnumerable<InsertNormalAccountEntity> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
         {
             var custsMapping = custs ?? new List<NormalAccountAfterCheckTWDetectionModel>();
             var ctsTaggedCustMapping = ctsTaggedCust ?? new List<CTSTaggedCustEntity>();
@@ -175,7 +172,7 @@
                                (custClass, taggedCusts) => new { custClass, taggedCusts })
                                .SelectMany(
                                     group => group.taggedCusts.DefaultIfEmpty(),
-                                    (group, temp) => new InsertNormalAccountModel(group.custClass, temp));
+                                    (group, temp) => new InsertNormalAccountEntity(group.custClass, temp));
         }
 
         #endregion

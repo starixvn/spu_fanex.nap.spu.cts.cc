@@ -10,7 +10,7 @@
 
         public int SubscriberID { get; set; }
 
-        public long CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         public string Remark { get; set; }
     }

@@ -13,13 +13,13 @@
     {
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
-        DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification);
+        DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification);
 
         DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
 
         IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
 
-        DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification);
+        DBResult UpdateCustomerClassificationBySport(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification);
     }
 
     public class CustClassToMainDBDataAccess : ICustClassToMainDBDataAccess
@@ -41,7 +41,7 @@
             return repository.Fetch<LatestCCDangerLevelEntity>(criteria) ?? Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
-        public DBResult UpdateCustomerGeneralClassificationtoMainDB(IEnumerable<LatestClassificationEntity> custClassification)
+        public DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification)
         {
             var criteria = new CustomerClassificationUpdateCriteria
             {
@@ -85,7 +85,7 @@
             return repository.Fetch<GetCustomerClassificationBySportEntity>(criteria) ?? Enumerable.Empty<GetCustomerClassificationBySportEntity>();
         }
 
-        public DBResult UpdateCustomerClassificationBySportToMainDB(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification)
+        public DBResult UpdateCustomerClassificationBySport(IEnumerable<CustomerClassificationUpdateBySportToMainDBEntity> custClassification)
         {
             var criteria = new CustomerClassificationUpdateBySportCriteria
             {

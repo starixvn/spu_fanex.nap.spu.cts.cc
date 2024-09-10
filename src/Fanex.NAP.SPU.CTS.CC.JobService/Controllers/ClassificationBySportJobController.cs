@@ -32,7 +32,6 @@
             this.dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
         }
 
-        #region Renovate
         [HttpPost("NormalAccountClassificationBySport")]
         public async Task<bool> NormalAccountClassificationBySport([FromForm] int batchInternalSize)
         {
@@ -52,18 +51,16 @@
         }
 
         [HttpPost("ScanProbationClassificationBySport")]
-        public async Task<bool> ScanProbationClassificationBySport([FromForm] int batchSize)
+        public async Task<bool> ScanProbationClassificationBySport()
         {
-            return await this.probationClassificationBySportJobService.Execute(batchSize);
+            return await this.probationClassificationBySportJobService.Execute();
         }
 
         [HttpPost("ScanningDailyNormalClassificationBySport")]
-        public async Task<bool> ScanningDailyNormalClassificationBySport([FromForm] int batchSize)
+        public async Task<bool> ScanningDailyNormalClassificationBySport()
         {
             return await this.dailyNormalClassificationBySportJobService.Execute();
         }
-
-        #endregion Renovate
 
     }
 }

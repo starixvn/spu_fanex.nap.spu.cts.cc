@@ -1,8 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares.Models;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAssociatedGroupMonitorService
     {
@@ -15,15 +21,23 @@
         DBResult UpdateABIToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueABI);
 
         DBResult UpdateOriToMainDB(IEnumerable<CustomerInfoMainDBEntity> customerInfoMainDBs, int valueOri);
+
+        IEnumerable<long> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> pas, PushDataToExternalEntity paras);
     }
 
-    public class AssociatedGroupMonitorService : IAssociatedGroupMonitorService
+    public class AssociatedGroupMonitorService : ProblemAccountServices, IAssociatedGroupMonitorService
     {
         private readonly IAssociatedGroupMonitorDataAccess dataAccess;
+        private readonly ICustClassToMainDBService custClassToMainDBService;     
 
-        public AssociatedGroupMonitorService(IAssociatedGroupMonitorDataAccess dataAccess)
+        public AssociatedGroupMonitorService(IBaseCustomerClassificationDataAccess baseDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ISentryClient sentryClient,
+            ICustClassToMainDBService custClassToMainDBService,
+            IAssociatedGroupMonitorDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
             this.dataAccess = dataAccess;
+            this.custClassToMainDBService = custClassToMainDBService;         
         }
 
         public ScanAssociatedAccountModel ScanAssociatedAccount()
@@ -77,6 +91,15 @@
             }           
 
             return new DBResult { ErrorCode = 0 };
+        }
+
+        public IEnumerable<long> InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> pas, PushDataToExternalEntity paras)
+        {
+            var paCustIDs = InsertProblemAccountPackage(pas, FunctionId.ScanAssociatedAccount, CCInputFlow.InsertPACategory, false, paras.ServiceName);
+
+            custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
+
+            return paCustIDs;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
@@ -16,7 +17,7 @@
         public ProbationClassificationTest()
         {
             probationClassificationDataAccess = Substitute.For<IProbationClassificationDataAccess>();
-            probationClassificationServices = new ProbationClassificationServices(probationClassificationDataAccess);
+            probationClassificationServices = new ProbationClassificationServices(probationClassificationDataAccess, Substitute.For<ISystemParameterDataAccess>());
         }
 
         [Theory]
@@ -38,7 +39,12 @@
                },
             };
 
-            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(probationList);
+            var probationModel = new ProbationModel()
+            {
+                CustProbations = probationList
+            };
+
+            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(probationModel);
 
             probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
 
@@ -52,7 +58,7 @@
         [InlineData(-1)]
         public void GetProbationCustForScanning_WhenFail_ReturnEmptyList(int batchSize)
         {
-            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
+            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new ProbationModel());
 
             probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
 
@@ -84,7 +90,7 @@
 
             probationClassificationDataAccess.ClassifyProbation(custToString);
 
-            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new List<ProbationEntity>());
+            probationClassificationDataAccess.GetProbationCustForScanning(batchSize).Returns(new ProbationModel());
 
             probationClassificationServices.Start().GetProbationCustForScanning(batchSize);
 
@@ -110,10 +116,14 @@
                },
             };
 
+            var probationModel = new ProbationModel()
+            {
+                CustProbations = probationList
+            };
+
             var dataJson = JsonConvert.SerializeObject(probationList);
 
-            probationClassificationDataAccess.GetProbationCustForScanning(1).Returns(probationList);
-            probationClassificationDataAccess.UpdateLastScanDate(dataJson);
+            probationClassificationDataAccess.GetProbationCustForScanning(1).Returns(probationModel);
 
             probationClassificationServices.GetProbationCustForScanning(1);
             Action action = () => probationClassificationServices.UpdateLastScanDate();

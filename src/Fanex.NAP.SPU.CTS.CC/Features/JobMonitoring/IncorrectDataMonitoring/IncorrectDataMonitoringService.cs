@@ -90,7 +90,7 @@
             }
             message += "</pre>";
 
-            Utilities.NotifyTelegramMessage(message, "Job Monitoring", environment, environment == "LOCAL" ? Telegram_GroupId_Local : Telegram_JobMonitor_GroupId_Pro);
+            Utilities.NotifyTeamsMessage(message, "Job Monitoring", environment, environment == "LOCAL" ? MicrosoftTeams_GroupId_Local : MicrosoftTeams_JobMonitor_GroupId_Pro);
         }
 
         private static string GenerateMessage(IEnumerable<GetMonitoringEntity> data, JobMonitor_IssueType issueTypeID)

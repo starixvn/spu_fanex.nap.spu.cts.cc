@@ -17,5 +17,7 @@
         public Int64 BetCount { get; set; }
 
         public int ActiveDays { get; set; }
+
+        public DateTime? PerformanceTime { get; set; }
     }
 }

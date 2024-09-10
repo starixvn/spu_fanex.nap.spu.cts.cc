@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using Newtonsoft.Json;
@@ -19,7 +20,7 @@
         public NormalAccountServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountDataAccess>();
-            normalAccountService = new NormalAccountService(normalAccountDataAccess, null);
+            normalAccountService = new NormalAccountService(Substitute.For<IBaseCustomerClassificationDataAccess>(), normalAccountDataAccess, null);
         }
 
         [Fact]
@@ -68,49 +69,7 @@
             // Assert
             normalAccountDataAccess.Received(1).CheckGroupBettingAndRejectCustomer(custIds);
         }       
-
-        [Fact]
-        public void InsertNormalAccount_WhenSuccess_ReturnResult()
-        {
-            // Arrange
-            var serviceName = "NormalAccountInsert";
-            var custs = new List<InsertNormalAccountModel>()
-            {
-                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-                        new GetNormalAccountEntity{
-                            CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-                        }
-                    )),
-                new InsertNormalAccountModel(new NormalAccountAfterCheckTWDetectionModel(
-                        new GetNormalAccountEntity{
-                            CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now
-                        }
-                    ))
-            };
-            var custsJson = JsonConvert.SerializeObject(custs);
-            var insertResult = new InsertNormalAccountResultEntity() { CustIds = new List<long> { 1, 2 }, ErrorMessage = string.Empty };
-
-            // Act
-            normalAccountDataAccess.InsertNormalAccount(custsJson).Returns(insertResult);
-
-            normalAccountService.InsertNormalAccount(custs, serviceName, false);
-
-            // Assert
-            normalAccountDataAccess.Received(1).InsertNormalAccount(custsJson);
-        }
-
-        [Fact]
-        public void InsertNormalAccount_WhenSuccess_ReturnNotException()
-        {
-            // Arrange
-
-            // Act
-            normalAccountService.InsertNormalAccount(null, string.Empty, false);
-
-            // Assert
-            normalAccountDataAccess.Received(0).InsertNormalAccount(Arg.Any<string>());
-        }
-
+      
         [Fact]
         public void UpdateCompleteNormalAccountInsert_WhenSuccess_ReturnNotException()
         {
@@ -160,7 +119,7 @@
             // Arrange
             var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
             var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
-            var compareResult = new List<InsertNormalAccountModel> { new InsertNormalAccountModel(cust[0], twTaggedCust[0]) };
+            var compareResult = new List<InsertNormalAccountEntity> { new InsertNormalAccountEntity(cust[0], twTaggedCust[0]) };
 
             var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
 
@@ -229,8 +188,6 @@
             };
 
             var twTaggingSRPCusts = new List<TWTaggedCustEntity>() { new TWTaggedCustEntity { CustID = 1, TaggingID = 999 } };
-
-            var twGBTaggingNewCusts = new List<NewTWTaggedCustEntity>() { new NewTWTaggedCustEntity { CustID = 3, TaggingID = 456 } };
 
             var custAssWithPAReulst = new List<CTSTaggedCustEntity>() { new CTSTaggedCustEntity { CustID = 2, TaggingID = 222 } };
 

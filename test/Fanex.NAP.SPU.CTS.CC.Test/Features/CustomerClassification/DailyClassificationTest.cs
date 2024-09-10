@@ -40,5 +40,21 @@
             Action action = () => dailyClassificationServices.ClassifyDailyNormal();
             action.Should().NotThrow<Exception>();
         }
+
+        [Fact]
+        public void UpdateLastScan_WhenSuccess_ReturnNotException()
+        {
+            // Arrange 
+
+            // Act
+            dailyClassificationDataAccess.GetCustomerForDailyNormalScanning().Returns(new DailyNormalClassificationEntity());
+
+            var result = dailyClassificationServices.Start()
+                .GetCustomerForDailyNormalScanning()
+                .UpdateLastScan();
+
+            // Assert
+            result.Should().BeFalse();
+        }
     }
 }

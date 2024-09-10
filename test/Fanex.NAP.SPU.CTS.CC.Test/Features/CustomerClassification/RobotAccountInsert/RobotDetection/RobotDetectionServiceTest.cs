@@ -1,150 +1,154 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.RobotAIDetectionConsts;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class RobotDetectionServiceTest
     {
-        private readonly IRobotAIDetectionDataAccess robotDetectionDataAccess;
-        private readonly IRobotAIDetectionService robotDetectionService;
-        private readonly ISystemParameterServices systemParameterServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IProblemAccountServices problemAccountServices;
+        private readonly IRobotAIDetectionDataAccess _dataAccess;
+        private readonly ISystemParameterServices _systemParameterServices;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
+        private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
+        private readonly IProblemAccountDataAccess _problemAccountDataAccess;
+        private readonly ISentryClient _sentryClient;
+
+        private readonly IRobotAIDetectionService _service;
 
         public RobotDetectionServiceTest()
         {
-            robotDetectionDataAccess = Substitute.For<IRobotAIDetectionDataAccess>();           
-            systemParameterServices = Substitute.For<ISystemParameterServices>();
-            problemAccountServices = Substitute.For<IProblemAccountServices>();
-            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            robotDetectionService = new RobotAIDetectionService(robotDetectionDataAccess
-                , systemParameterServices
-                , custClassToMainDBService
-                , problemAccountServices);
+            _dataAccess = Substitute.For<IRobotAIDetectionDataAccess>();
+            _systemParameterServices = Substitute.For<ISystemParameterServices>();
+            _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _sentryClient = Substitute.For<ISentryClient>();
+            _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            _service = new RobotAIDetectionService(_dataAccess
+                , _systemParameterServices
+                , _custClassToMainDBService
+                , _baseDataAccess
+                , _problemAccountDataAccess
+                , _sentryClient);
         }
 
         [Fact]
         public void GetRobotDetections_WhenSuccess()
         {
-            var result = robotDetectionService.GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID);
-
-            // Assert
-            Assert.IsAssignableFrom<IRobotAIDetectionService>(result);
-        }
-
-        [Fact]
-        public void InsertProblemAccount_WhenSuccess_ReturnData()
-        {
             // Arrange
-            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 0, LastModifiedDate = DateTime.Now } };
-            var paras = new InsertRobotParaEntity();
-            var expectedResult = new List<long>();
+            var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
 
             // Act
-            var result = robotDetectionService.InsertRobotAIImperva(robotDetections, paras);
+            _systemParameterServices.GetLastScannedId(Arg.Any<CTS_SystemParameters>()).Returns(999);
+
+            _dataAccess.GetRobotDetections(Arg.Any<long>()).Returns(new List<RobotAIEntity>());
+
+            _service.GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID);
+
+            var robotDetection = robotDetectionsField.GetValue(_service);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expectedResult);
+            _systemParameterServices.Received(1).GetLastScannedId(Arg.Any<CTS_SystemParameters>());
+
+            _dataAccess.Received(1).GetRobotDetections(Arg.Any<long>());
+
+            Assert.NotNull(robotDetection);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void InsertAIRobotPackage_WhenSuccess(bool isSuccess)
+        {
+            // Arrange
+            var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
+            robotDetectionsField.SetValue(_service, new List<RobotAIEntity>()
+            {
+                new RobotAIEntity(), new RobotAIEntity(), new RobotAIEntity()
+            });
+
+            var pushConfig = new PushDataToExternalEntity();
+
+            // Act
+            _baseDataAccess
+                .InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>())
+                .Returns(new ResultInsertCustomerClassificationModel()
+                {
+                    CustInfos = new List<CustInfoClassificationEntity>() { new CustInfoClassificationEntity() }
+                });
+
+            _custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig).Returns(isSuccess);
+
+            var result = _service.InsertAIRobotPackage(999, pushConfig);
+
+            // Assert
+            _baseDataAccess.Received(1)
+                .InsertCustomerClassification(Arg.Any<CCInputFlow>(), Arg.Any<InsertCustomerClassificationModel>());
+
+            _custClassToMainDBService.Received(1).PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig);
+
+            Assert.True(isSuccess == result);
         }
 
         [Fact]
         public void Process_WhenSuccess_ReturnTrue()
         {
             // Arrange
-            var paras = new InsertRobotParaEntity()
+            var paras = new PushDataToExternalEntity
             {
-                BatchInternalSize = 1,
-                IsFromTW = false,
-                IsFromCTS = false,
-                IsDirect = true,
-                IsFromAI = true,
-                IsFromTVS = false,
-                PushDataExternal = new PushDataToExternalEntity
-                {
-                    ExternalBatchSize = 1,
-                    ServiceName = "robotDetectionServiceName",
-                    IsPushCCToSoon88 = true,
-                    IsWriteLog = false,
-                    IsSyncAFCData = false,
-                }
+                ExternalBatchSize = 1,
+                ServiceName = "robotDetectionServiceName",
+                IsWriteLog = false,
+                IsSyncAFCData = false,
             };
+
             var expectedRobotAIID = 1;
-            var expectedRobotImpervaID = 2;
             var expectedRobotAI = new List<RobotAIEntity>()
             {
                 new RobotAIEntity { CustID = 1, CategoryID = 1 , RobotDetectionID = 1, LastModifiedDate = DateTime.Now },
                 new RobotAIEntity { CustID = 2, CategoryID = 1 , RobotDetectionID = 2, LastModifiedDate = DateTime.Now}
             };
-            var expectedRobotImperva = new List<RobotImpervaEntity>()
-            { 
-                new RobotImpervaEntity { CustID = 1, LastCreateTime = DateTime.Now, RobotImpervaLogID = 1 },
-                new RobotImpervaEntity { CustID = 2, LastCreateTime = DateTime.Now, RobotImpervaLogID = 2 }
-            };
 
             // Act
-            systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
-          
-            robotDetectionDataAccess.GetRobotDetections(expectedRobotAIID, expectedRobotImpervaID).Returns((expectedRobotAI, expectedRobotImperva));
-            
-            var result = robotDetectionService.InsertRobotAIImpervaPackage(paras);
+            _systemParameterServices.GetLastScannedId(CTS_SystemParameters.RobotDetection_LastID).Returns(expectedRobotAIID);
+
+            _dataAccess.GetRobotDetections(expectedRobotAIID).Returns((expectedRobotAI));
+
+            var result = _service.InsertAIRobotPackage(1, paras);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Fact]
-        public void MappingRobotCategory_WhenSuccess_ReturnData()
+        public void UpdateLastScannedId_WhenSuccess()
         {
             // Arrange
-            var robotDetections = new List<RobotDetectionEntity> { new RobotDetectionEntity { CustID = 0, LastModifiedDate = DateTime.Now } };
-            var paras = new InsertRobotParaEntity();
-            var expectedResult = new List<InsertRobotEntity>()
+            var robotDetectionsField = TestExtension.GetPrivateFieldInfo(typeof(RobotAIDetectionService), PrivateFieldName.RobotDetections);
+            robotDetectionsField.SetValue(_service, new List<RobotAIEntity>
             {
-                CreateSampleRobotModel()
-            };
+                new RobotAIEntity() { RobotDetectionID = 999 }
+            });
 
             // Act
-            var result = robotDetectionService.MappingRobotCategory(robotDetections, paras);
+            _systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+
+            _service.UpdateLastScannedId(CTS_SystemParameters.AssociatedGroupLastCTSCustID);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expectedResult);
-        }
-
-        private InsertRobotEntity CreateSampleRobotModel()
-        {
-            var rd = new Random();
-            var data = new InsertRobotEntity
-            {
-                CustID = 0,
-                IsFromTW = false,
-                IsFromCTS = false,
-                IsDirect = false,
-                IsFromAI = false,
-                IsFromTVS = false,
-                RobotCounter = null,
-                CreatedBy = StarixITId,
-                Remark = null,
-                BetCount = null,
-                TVSRequestID = null,
-                ActiveDays = null,
-                TurnoverRM = null,
-                WinlossRM = null,
-                WinlossStatus = null
-            };
-
-            return data;
+            _systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
     }
 }

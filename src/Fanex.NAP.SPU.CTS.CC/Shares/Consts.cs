@@ -1,4 +1,6 @@
-﻿namespace Fanex.NAP.SPU.CTS.Shares
+﻿using System.ComponentModel;
+
+namespace Fanex.NAP.SPU.CTS.Shares
 {
     public static class Constants
     {
@@ -25,19 +27,15 @@
 
         public const int StarixITId = 10278938;
 
-        public const string Telegram_GroupId_Local = "-869606030";
+        public const string MicrosoftTeams_GroupId_Local = "19:00af2ff331b64d39adf13b428aa49c6e@thread.tacv2";
 
-        public const string Telegram_JobMonitor_GroupId_Pro = "-845108430";
+        public const string MicrosoftTeams_JobMonitor_GroupId_Pro = "19:3537f2795b2a49aabc926b3275583615@thread.tacv2";
         public const string DangerousScoreRemark = "Detection Date: {0} - Dangerous Score: {1}%";
         public const string TWInitialGBMissSport = "Soccer/Basketball";
         public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
         public const string TWTWInitialGBRemark = "Detection Date: {0} - GB Bet Count: {1} - Sport: {2}";
 
-        public enum MatchMonitorQueryTypes
-        {
-            Service = 1,
-            Report = 2,
-        };
+        public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
 
         public enum CTS_SystemParameters
         {
@@ -46,16 +44,12 @@
             MatchMonitorLastScannedTrans = 20,
             JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
-            //TWGroupBetting_LastTransSec = 77,
-            //TWGroupBetting_SkipTransCount = 78,
-            //TWGroupBetting_ScanTicket_LastSequenceId = 90,
             InactiveNewMember_LastCategoryID = 80,
             InactiveNewMember_LastCustID = 81,
             DailyNormalClassificationLastCategoryID = 85,
             DailyNormalClassificationLastCustID = 86,
             DailyProblemClassificationLastScannedTime = 88,
             NewCTSCustomerClassificationLastCustID = 92,
-            //RobotDetectionLastModifiedDate = 94,
             RobotDetection_LastID = 94,
             AssociatedGroupLastGroupID = 98,
             AssociatedGroupLastCTSCustID = 99,
@@ -68,11 +62,6 @@
             JobMonitor_NewCustomerLastScannedCustID = 131,
             JobMonitor_NewCustomerLastScannedCustSubID = 132,
             TWRobotImperva_LastLogID = 133,
-            //TWRobotImperva_LastTime = 134 // TWRobotImperva_LastCreateTime
-            TWRobotImperva_LastID = 134,
-            //TWGroupBetting_CountTicket_BatchSize = 135,
-            //TWGroupBetting_CountTicket_LastSequenceId = 136,
-            //TWGroupBetting_CountTicket_Status = 137,
             NormalTaggingClassificationLastCategoryID = 144,
             NormalTaggingClassificationLastCustID = 145,
             CustomerNullUsername2_LastCTSCustID = 146,
@@ -87,7 +76,10 @@
             DangerousScoreClassification_Deposit_LastScannedDate = 156,
             DangerousScoreClassification_Deposit_LastCustID = 157,
             TWInitialSmartClassification_LastCustID = 159,
-            TWInitialSmartClassification_LastScanDate = 160
+            TWInitialSmartClassification_LastScanDate = 160,            
+            DailyProbation_LastCategoryID = 166,
+            DailyProbation_LastCustID = 167,
+            DailyProbation_BySport_LastCustID = 169
         };
 
         public enum Main_SystemParameters
@@ -116,13 +108,6 @@
             Super = 4
         };
 
-        public enum FlowTypeRescanCC
-        {
-            NewMember,
-            RemoveMultipleEvidence,
-            Other
-        };
-
         public enum UpdateCustomer
         {
             ForNewCustomer = 0,
@@ -139,33 +124,14 @@
             InsertNewCustJob = 4,
             RemoveVIPWeb = 5,
             RemoveSpecialCCWeb = 6,
-            //RemovePAAPI = 7,
-            //RemoveFlaggedEvidenceWeb = 8,
-            //RemoveMultiEvidencesWeb = 9,
             ExcludeTaggingAssPAWeb = 10,
             InactivateNewCustomer = 11,
             ProblemDailyJob = 12,
-            //InsertEvidenceJob = 13,
-            //PlaceSingleEvidence = 14,
-            //PlaceEvidenceForMultiCustAPI = 21,
-            //PlaceMultiEvidencesForMultiCustAPI = 22,
             RobotUserJob = 23,
-            //InsertNewCus_CheckPA = 24,
-            //RemoveVVIP_CheckPA = 25,
-            //RemoveSpecial_CheckPA = 26,
-            //RemovePA_CheckPA = 27,
-            //RemoveFlaggedEvidence_CheckPA = 28,
-            //RemoveMultiEvidences_CheckPA = 29,
-            //ExcludeTaggingByAss_CheckPA = 30,
             InsertNewCus_CheckRobotUser = 34,
             RemoveVVIP_CheckRobotUser = 35,
             RemoveSpecial_CheckRobotUser = 36,
-            //RemovePA_CheckRobotUser = 37,
-            //RemoveFlaggedEvi_CheckRobotUser = 38,
-            //RemoveMultiEvi_CheckRobotUser = 39,
-            //ExcludeTaggingAss_CheckRobotUser = 40,
             InsertPAJob = 41,
-            //UpdateCategory = 42,
             InsertPAM = 43,
             TWProblemAccountInsert = 44,
             ScanAssociatedAccount = 51,
@@ -198,39 +164,19 @@
             Manual = 2
         }
 
-        public enum HttpStatus
-        {
-            Unauthorized = 401,
-            BadRequest = 400,
-            NotFound = 404,
-            MethodNotAllowed = 405,
-            OK = 200,
-            Created = 201,
-            ServerUnavailable = 503,
-            InternalServerError = 500
-        };
-
         public enum FromFlow
         {
             CTSWEB = 1,
             CTSAPI = 2,
-            CTSServices = 3,
-            AFCSerivce = 4,
-            ManualTrigger = 5
+            CTSServices = 3,           
+            ManualTrigger = 4
         };
 
         public enum QueryType
         {
             GetByRange = 1,
             GetByCustId = 2
-        };
-
-        public enum VVIP_FromAction
-        {
-            WebSite = 1,
-            Service = 2,
-            ServiceInsertNew = 3
-        }
+        };       
 
         public enum DownlineClassification_ActionType
         {
@@ -239,12 +185,6 @@
             InsertPA = 3,
             RemovePA = 4,
         }
-
-        public enum InsertPA_ByType
-        {
-            Category = 1,
-            Reason = 2,
-        };
 
         public enum JobMonitor_IssueType
         {
@@ -277,11 +217,47 @@
             Exist = 1,
             ExistOnly = 2,
         };
-
-        public enum CustToBuildRemark
+       
+        public enum CCInputFlow
         {
-            TWInitialSmart = 1,
-            TWInitialGB = 2            
-        };
+            [Description("VVIP")]
+            VVIP = 1,
+            [Description("SpecialCC")]
+            SpecialCC = 2,
+            [Description("LicVIP")]
+            LicVIP = 3,
+            [Description("LicBA")]
+            LicBA = 4,
+            [Description("InsertPACategory")]
+            InsertPACategory = 5,
+            [Description("InsertPAReason")]
+            InsertPAReason = 6,           
+            [Description("Potential")]
+            Potential = 8,            
+            [Description("Normal")]
+            Normal = 9,          
+            [Description("RescanPACategory")]
+            RescanPACategory = 115,           
+            [Description("RescanPotential")]
+            RescanPotential = 118,           
+            [Description("RescanNormal")]
+            RescanNormal = 9,
+            [Description("RemoveVVIP")]
+            RemoveVVIP = 221,
+            [Description("RemoveSpecialCC")]
+            RemoveSpecialCC = 222,
+            [Description("RemoveLicVIP")]
+            RemoveLicVIP = 223,
+            [Description("RemoveLicBA")]
+            RemoveLicBA = 224,
+            [Description("RemovePACategory")]
+            RemovePACategory = 225,
+            [Description("BySportInsertSpecialCC")]
+            BySportInsertSpecialCC = 332,
+            [Description("BySportInsertNormal")]
+            BySportInsertNormal = 339,
+            [Description("BySportRemoveSpecialCC")]
+            BySportRemoveSpecialCC = 442
+        }
     }
 }

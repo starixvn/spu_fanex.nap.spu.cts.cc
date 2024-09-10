@@ -18,6 +18,6 @@
 
         public bool IsExceptDirectDownline { get; set; }
 
-        public bool IsDirectPA { get; set; }
+        public bool IsMarkedDirectly { get; set; }
     }
 }

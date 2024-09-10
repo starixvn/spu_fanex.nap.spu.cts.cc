@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -18,21 +20,20 @@
         void UpdateNextScannedTime(DateTime nextScannedDateTime, long nextScannedCustID);
     }
 
-    public class TWInitialGroupBettingService : ITWInitialGroupBettingService
+    public class TWInitialGroupBettingService : ProblemAccountServices, ITWInitialGroupBettingService
     {
-        private readonly ITWInitialGroupBettingDataAccess dataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
+        private readonly ITWInitialGroupBettingDataAccess dataAccess;      
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private readonly string serviceName;
+        private readonly string serviceName;     
 
-        public TWInitialGroupBettingService(IProblemAccountServices problemAccountServices, 
+        public TWInitialGroupBettingService(IBaseCustomerClassificationDataAccess baseDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
-            ITWInitialGroupBettingDataAccess dataAccess)
+            ITWInitialGroupBettingDataAccess dataAccess,
+            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
-            this.dataAccess = dataAccess;
-            this.problemAccountServices = problemAccountServices;
-            this.dataAccess = dataAccess;
+            this.dataAccess = dataAccess;          
             this.custClassToMainDBService = custClassToMainDBService;
             this.serviceName = "TWInitialGroupBettingService";
         }
@@ -57,10 +58,10 @@
             var pasChunks = pas.Chunk(paras.ExternalBatchSize);
 
             foreach (var pasChunk in pasChunks)
-            {
-                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialGBClassification, InsertPA_ByType.Category, false, serviceName);
+            {                
+                var paCustIDs = InsertProblemAccountPackage(pasChunk, FunctionId.TWInitialGBClassification, CCInputFlow.Potential, false, serviceName);
 
-                custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                custClassToMainDBService.PushExternalPackageByCustId(paCustIDs, paras);
             }
 
             return true;

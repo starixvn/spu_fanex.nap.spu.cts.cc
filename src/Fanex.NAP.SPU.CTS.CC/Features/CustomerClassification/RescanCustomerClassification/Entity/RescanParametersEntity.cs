@@ -10,10 +10,6 @@
             IsWriteLog = false;
         }
 
-        public bool IsRescanPotentialPA { get; set; }
-
-        public bool IsRescanPA { get; set; }
-
         public bool IsToQueue { get; set; }
 
         public FunctionId FunctionId { get; set; }

@@ -114,7 +114,7 @@
 
             var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
-            var inserAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
+            var inserAccountList = new List<InsertNormalAccountEntity> { (InsertNormalAccountEntity)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountEntity)) };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
@@ -151,7 +151,7 @@
 
             var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
-            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
+            var insertAccountList = new List<InsertNormalAccountEntity> { (InsertNormalAccountEntity)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountEntity)) };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
@@ -228,7 +228,7 @@
 
             var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custIds };
 
-            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
+            var insertAccountList = new List<InsertNormalAccountEntity> { (InsertNormalAccountEntity)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountEntity)) };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
@@ -264,7 +264,7 @@
             };
             var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
-            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
+            var insertAccountList = new List<InsertNormalAccountEntity> { (InsertNormalAccountEntity)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountEntity)) };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);
@@ -304,7 +304,7 @@
             };
             var _getNormalTaggingScanningModel = new GetNormalTaggingScanningModel { CustInfos = custInfos };
 
-            var insertAccountList = new List<InsertNormalAccountModel> { (InsertNormalAccountModel)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountModel)) };
+            var insertAccountList = new List<InsertNormalAccountEntity> { (InsertNormalAccountEntity)FormatterServices.GetUninitializedObject(typeof(InsertNormalAccountEntity)) };
 
             // Act
             _normalTaggingClassificationDataAccess.GetNormalTaggingScanning().Returns(_getNormalTaggingScanningModel);

@@ -1,6 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.DetectUnauthorizedLoginCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
@@ -12,14 +16,17 @@
     public class DetectUnauthorizedLoginCustomerServiceTest
     {
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
-        private readonly IDetectUnauthorizedLoginCustomerDataAccess unAuthorizedLogindataAccess;        
+        private readonly IDetectUnauthorizedLoginCustomerDataAccess unAuthorizedLogindataAccess;
         private readonly IDetectUnauthorizedLoginCustomerService unAuthorizedLoginService;
+        private readonly ICustClassToMainDBService custClassToMainDBService;
 
         public DetectUnauthorizedLoginCustomerServiceTest()
         {
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
             unAuthorizedLogindataAccess = Substitute.For<IDetectUnauthorizedLoginCustomerDataAccess>();
-            unAuthorizedLoginService = new DetectUnauthorizedLoginCustomerService(unAuthorizedLogindataAccess, systemParameterDataAccess);
+            custClassToMainDBService = new CustClassToMainDBService(Substitute.For<ICustClassToMainDBDataAccess>(), null, null);
+            unAuthorizedLoginService = new DetectUnauthorizedLoginCustomerService(Substitute.For<IBaseCustomerClassificationDataAccess>(),
+                Substitute.For<IProblemAccountDataAccess>(), null, custClassToMainDBService, unAuthorizedLogindataAccess, systemParameterDataAccess);
         }
 
         [Theory]
@@ -66,18 +73,18 @@
         }
 
         [Theory]
-        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Credit, "2023-12-29 10:50:53")]
-        public void UpdateLastScannedID_WhenSuccess(CTS_SystemParameters paraID, string lastScannedTime)
+        [InlineData(CTS_SystemParameters.UnauthorizedLogin_LastScanDate_Credit, "2024-08-01 10:50:53")]
+        public void UpdateLastScannedID_WhenSuccess_ReturnTrue(CTS_SystemParameters paraID, string lastScannedTime)
         {
             // Arrange
 
             // Act
             systemParameterDataAccess.UpdateTimingExecution(lastScannedTime, paraID);
 
-            bool isSuccess = unAuthorizedLoginService.UpdateLastScannedID(paraID, lastScannedTime);
+            var result = unAuthorizedLoginService.UpdateLastScannedID(paraID, lastScannedTime);
 
             // Assert
-            isSuccess.Should().BeTrue();
+            result.Should().BeTrue();
         }
 
         [Fact]
@@ -135,5 +142,18 @@
             result.Should().BeEquivalentTo(expectedResult);
         }
 
+        [Fact]
+        public void InsertProblemAccount_WhenSuccess_ReturnData()
+        {
+            // Arrange
+            var pas = new List<InsertProblemAccountEntity>();
+            var pushDataParams = new PushDataToExternalEntity();
+
+            // Act
+            var result = unAuthorizedLoginService.InsertProblemAccount(pas, pushDataParams);
+
+            // Assert
+            result.Should().BeTrue();
+        }
     }
 }

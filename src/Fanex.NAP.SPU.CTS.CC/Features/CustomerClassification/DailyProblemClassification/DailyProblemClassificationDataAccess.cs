@@ -24,13 +24,10 @@
         public PADailyScanFromQueueModel GetPADailyScanFromQueue()
         {
             var criteria = new PADailyScanFromQueueGetCriteria();
-
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<ulong, CustToBuildRemarkEntity>(criteria);
-
+            
             return new PADailyScanFromQueueModel
             {
-                PADailyScanCustIDs = firstResultSet,
-                PAPotentialScanCustIDs = secondResultSet
+                PADailyScanCustIDs = repository.Fetch<long>(criteria)
             };
         }
 

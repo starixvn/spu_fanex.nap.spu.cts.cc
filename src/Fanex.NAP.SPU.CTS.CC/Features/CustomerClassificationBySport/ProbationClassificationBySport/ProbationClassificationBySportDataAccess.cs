@@ -6,11 +6,9 @@
 
     public interface IProbationClassificationBySportDataAccess
     {
-        IEnumerable<ProbationScanClassificationBySportEntity> GetProbationScanClassificationBySport(int numberOfRecord);
+        ProbationBySportModel GetProbationScanClassificationBySport();
 
         void PreprocessProbationClassificationBySport(IEnumerable<ProbationScanClassificationBySportEntity> custList);
-
-        void UpdateScanDateProbationClassificationBySport(string custList);
     }
 
     public class ProbationClassificationBySportDataAccess : IProbationClassificationBySportDataAccess
@@ -22,14 +20,17 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProbationScanClassificationBySportEntity> GetProbationScanClassificationBySport(int numberOfRecord)
+        public ProbationBySportModel GetProbationScanClassificationBySport()
         {
-            var criteria = new GetProbationScanClassificationBySportCriteria
-            {
-                NumberOfRecord = numberOfRecord
-            };
+            var criteria = new GetProbationScanClassificationBySportCriteria();
 
-            return repository.Fetch<ProbationScanClassificationBySportEntity>(criteria);
+            var data = repository.Fetch<ProbationScanClassificationBySportEntity>(criteria);
+
+            return new ProbationBySportModel
+            {
+                CustProbations = data,
+                LastCustID = criteria.LastCustID
+            };
         }
 
         public void PreprocessProbationClassificationBySport(IEnumerable<ProbationScanClassificationBySportEntity> custList)
@@ -37,16 +38,6 @@
             var criteria = new PreprocessProbationClassificationBySportCriteria
             {
                 CustomersXML = custList.ToXmlString()
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public void UpdateScanDateProbationClassificationBySport(string custList)
-        {
-            var criteria = new UpdateScanDateProbationClassificationBySportCriteria
-            {
-                CustSportJson = custList
             };
 
             repository.Execute(criteria);

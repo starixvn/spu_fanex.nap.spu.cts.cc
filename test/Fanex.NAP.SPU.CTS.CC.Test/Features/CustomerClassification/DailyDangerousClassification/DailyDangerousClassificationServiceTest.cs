@@ -1,41 +1,44 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.DailyDangerousClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;   
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;  
     using FluentAssertions;
     using NSubstitute;
+    using Sentry;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class DailyDangerousClassificationServiceTest
     {        
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly IProblemAccountServices problemAccountServices;
-
-        private readonly IFeedSoon88DataAccess feedSoon88DataAccess;
-        private readonly IFeedSoon88Services feedSoon88Services;
-
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         private readonly IDailyDangerousClassificationDataAccess dangerousCCDataAccess;
         private readonly IDailyDangerousClassificationService dailyDangerousCCService;
 
+        private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
+        private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
+
+        private readonly ISentryClient sentryClient;
+
         public DailyDangerousClassificationServiceTest()
         {
+            sentryClient = Substitute.For<ISentryClient>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = new ProblemAccountServices(problemAccountDataAccess, null);
-
-            feedSoon88DataAccess = Substitute.For<IFeedSoon88DataAccess>();
-            feedSoon88Services = new FeedSoon88Services(feedSoon88DataAccess, null);
-
+          
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, feedSoon88Services, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+      
+            baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);           
 
             dangerousCCDataAccess = Substitute.For<IDailyDangerousClassificationDataAccess>();
-            dailyDangerousCCService = new DailyDangerousClassificationService(problemAccountServices, dangerousCCDataAccess, custClassToMainDBService);
+            dailyDangerousCCService = new DailyDangerousClassificationService(dangerousCCDataAccess, problemAccountDataAccess, baseCustomerClassificationDataAccess, custClassToMainDBService, sentryClient);
         }
 
         [Fact]
@@ -64,22 +67,24 @@
             {
                 new DangerousToCCEntity { CustID = 1, RoleID = 1, CategoryID = 65, SubscriberID = 6, CTSCustID = 1, CategoryGroup = 50 }
             };
+
             var paras = new PushDataToExternalEntity
             {
                 ExternalBatchSize = 500,
-                FeedSoon88API = "",
-                IsPushCCToSoon88 = true,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = false,
                 ServiceName = "DailyDangerousClassificationServiceTest"
             };
+           
+            // Act          
+            baseCustomerClassificationDataAccess.When(x => x.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>()).Returns(new ResultInsertCustomerClassificationModel()));
 
-            // Act
+            baseCustomerClassificationService.InsertCustomerClassification(CCInputFlow.Potential, Arg.Any<InsertCustomerClassificationModel>(), paras.ServiceName).Returns(new ResultInsertCustomerClassificationModel());                       
+            
             var result = dailyDangerousCCService.InsertDangerousClassification(dangerousCCs, isLicensee, paras);
 
             // Assert
             result.Should().BeTrue();
-
         }
 
     }

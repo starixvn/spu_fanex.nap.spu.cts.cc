@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\CustomerClassification\PAPotentialClassification\**" />
     <Compile Remove="Features\TWProblemAccount\**" />
+    <EmbeddedResource Remove="Features\CustomerClassification\PAPotentialClassification\**" />
     <EmbeddedResource Remove="Features\TWProblemAccount\**" />
+    <None Remove="Features\CustomerClassification\PAPotentialClassification\**" />
     <None Remove="Features\TWProblemAccount\**" />
   </ItemGroup>
 

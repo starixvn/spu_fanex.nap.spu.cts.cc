@@ -12,7 +12,7 @@
     {
         Task<bool> ScanningTWRobotAccount(int batchExternalSize, int batchInternalSize);
 
-        Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize);
+        Task<bool> ScanningAIRobotClassification(int batchExternalSize, int batchInternalSize);
     }
 
     public class RobotAccountInsertJobService : IRobotAccountInsertJobService
@@ -63,7 +63,7 @@
             return Task.FromResult(response);
         }
 
-        public Task<bool> ScanningAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
+        public Task<bool> ScanningAIRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var response = true;
 
@@ -71,7 +71,7 @@
             {
                 if (batchExternalSize > 0 && batchInternalSize > 0)
                 {
-                    response = InsertAIImpervaRobotClassification(batchExternalSize, batchInternalSize);
+                    response = InsertAIRobotClassification(batchExternalSize, batchInternalSize);
                 }
                 else
                 {
@@ -95,27 +95,17 @@
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
                                                       .GetTWRobotUser()
-                                                      .InsertTWRobotPackage(new InsertRobotParaEntity
-                                                      {
-                                                          BatchInternalSize = batchInternalSize,
-                                                          IsFromTW = true,
-                                                          IsFromCTS = false,
-                                                          IsDirect = true,
-                                                          IsFromAI = false,
-                                                          IsFromTVS = false,
-                                                          PushDataExternal = new PushDataToExternalEntity
+                                                      .GetRobotUserCategoryId(robotAccountServiceName)
+                                                      .InsertTWRobotPackage(batchInternalSize, new PushDataToExternalEntity
                                                           {
                                                               IsUpdateDangerToMainDB = true,
-                                                              IsPushCCToSoon88 = true,
-                                                              FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                                               ServiceName = robotAccountServiceName,
                                                               ExternalBatchSize = batchExternalSize,
                                                               IsWriteLog = appSettings.RobotAccountIsWriteLog,
                                                               IsSyncAFCData = false,
                                                               AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
                                                               AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
-                                                          }
-                                                      });
+                                                          });
 
             if (isSuccess)
             {
@@ -125,34 +115,24 @@
             return isSuccess;
         }
 
-        public bool InsertAIImpervaRobotClassification(int batchExternalSize, int batchInternalSize)
+        public bool InsertAIRobotClassification(int batchExternalSize, int batchInternalSize)
         {
             var isSuccess = robotDetectionService.Start()
-                                                 .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID)
-                                                 .InsertRobotAIImpervaPackage(new InsertRobotParaEntity
-                                                 {
-                                                     BatchInternalSize = batchInternalSize,
-                                                     IsFromTW = false,
-                                                     IsFromCTS = false,
-                                                     IsDirect = true,                                                     
-                                                     IsFromTVS = false,
-                                                     PushDataExternal = new PushDataToExternalEntity
-                                                     {
-                                                         IsUpdateDangerToMainDB = true,
-                                                         IsPushCCToSoon88 = true,
-                                                         FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                                                         ServiceName = robotDetectionServiceName,
-                                                         ExternalBatchSize = batchExternalSize,
-                                                         IsWriteLog = appSettings.RobotAccountIsWriteLog,
-                                                         IsSyncAFCData = false,
-                                                         AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                                                         AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
-                                                     }
-                                                 });
+                                                 .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID)
+                                                 .InsertAIRobotPackage(batchInternalSize, new PushDataToExternalEntity
+                                                    {
+                                                        IsUpdateDangerToMainDB = true,
+                                                        ServiceName = robotDetectionServiceName,
+                                                        ExternalBatchSize = batchExternalSize,
+                                                        IsWriteLog = appSettings.RobotAccountIsWriteLog,
+                                                        IsSyncAFCData = false,
+                                                        AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
+                                                        AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
+                                                    });
 
             if (isSuccess)
             {
-                robotDetectionService.UpdateLastScannedId(CTS_SystemParameters.RobotDetection_LastID, CTS_SystemParameters.TWRobotImperva_LastID);
+                robotDetectionService.UpdateLastScannedId(CTS_SystemParameters.RobotDetection_LastID);
             }
 
             return isSuccess;

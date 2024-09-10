@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProbationClassificationServices
     {
@@ -20,16 +22,18 @@
     public class ProbationClassificationServices : IProbationClassificationServices
     {
         private readonly IProbationClassificationDataAccess probationClassificationDataAccess;
-        private IEnumerable<ProbationEntity> custProbation;
+        private readonly ISystemParameterDataAccess systemParameterDataAccess;
+        private ProbationModel probationModel;
 
-        public ProbationClassificationServices(IProbationClassificationDataAccess probationClassificationDataAccess)
+        public ProbationClassificationServices(IProbationClassificationDataAccess probationClassificationDataAccess, ISystemParameterDataAccess systemParameterDataAccess)
         {
             this.probationClassificationDataAccess = probationClassificationDataAccess;
+            this.systemParameterDataAccess = systemParameterDataAccess;
         }
 
         public IProbationClassificationServices Start()
         {
-            custProbation = new List<ProbationEntity>();
+            probationModel = new ProbationModel();
 
             return this;
         }
@@ -38,7 +42,7 @@
         {
             if (batchSize > 0)
             {
-                custProbation = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
+                probationModel = probationClassificationDataAccess.GetProbationCustForScanning(batchSize);
             }
 
             return this;
@@ -46,9 +50,9 @@
 
         public IProbationClassificationServices ClassifyProbation()
         {
-            if (custProbation != null && custProbation.Any())
+            if (probationModel != null && probationModel.CustProbations != null && probationModel.CustProbations.Any())
             {
-                var custToString = string.Join(",", custProbation.Select(c => c.CustId).Distinct());
+                var custToString = string.Join(",", probationModel.CustProbations.Select(c => c.CustId).Distinct());
 
                 probationClassificationDataAccess.ClassifyProbation(custToString);
             }
@@ -57,19 +61,13 @@
         }
 
         public bool UpdateLastScanDate()
-        {
-            if (custProbation != null && custProbation.Any())
-            {
-                var custJson = JsonConvert.SerializeObject(custProbation);
-
-                probationClassificationDataAccess.UpdateLastScanDate(custJson);
-
-                return true;
-            }
-
-            return false;
+        {                      
+            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_LastCustID);
+            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCategoryID.ToString(), CTS_SystemParameters.DailyProbation_LastCategoryID);
+            
+            return probationModel.CustProbations != null && probationModel.CustProbations.Any();            
         }
 
-        public IEnumerable<ProbationEntity> Customers => custProbation;
+        public IEnumerable<ProbationEntity> Customers => probationModel.CustProbations;
     }
 }

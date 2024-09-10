@@ -1,131 +1,269 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Tests.Features.CustomerClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.RealTimeClassificationConsts;
 
     public class RealtimeClassificationTest
     {
-        //private readonly IRealtimeClassificationDataAccess realtimeClassificationDataAccess;
-        //private readonly IRealtimeClassificationServices realtimeClassificationServices;
+        private readonly IRealtimeClassificationDataAccess _dataAccess;
+        private readonly ISentryClient _sentryClient;
+
+        private readonly IRealtimeClassificationService _service;
 
         public RealtimeClassificationTest()
         {
-            //realtimeClassificationDataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
-            //realtimeClassificationServices = new RealtimeClassificationServices(realtimeClassificationDataAccess, null);
+            _dataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
+            _sentryClient = Substitute.For<ISentryClient>();
+
+            _service = new RealtimeClassificationService(_dataAccess, _sentryClient);
         }
 
-        //[Fact]
-        //public void GetCustHasChangeForRealTime_WhenSuccess_ReturnNotException()
-        //{
-        //    var realtimeScanningList = new List<CustClassificationRealtimeEntity>
-        //    {
-        //        new CustClassificationRealtimeEntity
-        //        {
-        //            CustId = 1,
-        //            CurrentCategoryID = 1,
-        //            SportGroupId =1
-        //        },
-        //        new CustClassificationRealtimeEntity
-        //        {
-        //            CustId = 2,
-        //            CurrentCategoryID = 2,
-        //            SportGroupId =2
-        //        },
-        //    };
+        #region GetNewPlaceBetCustomers
+        [Fact]
+        public void GetNewPlaceBetCustomers_WhenSuccess()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service, new GetNewPlaceBetCustomerModel());
 
-        //    realtimeClassificationDataAccess.GetNewPlaceBetCustomers().Returns(realtimeScanningList);
+            // Act
+            _dataAccess.GetNewPlaceBetCustomers().Returns(new GetNewPlaceBetCustomerModel());
 
-        //    realtimeClassificationServices.GetNewPlaceBetCustomers();
-        //    var result = realtimeClassificationServices.CustomerClassification;
+            _service.GetNewPlaceBetCustomers();
+            // Assert
+            _dataAccess.Received(1).GetNewPlaceBetCustomers();
+        }
 
-        //    result.Should().BeEquivalentTo(realtimeScanningList);
-        //}
+        [Fact]
+        public void GetNewPlaceBetCustomers_ThrowException()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service, new GetNewPlaceBetCustomerModel());
 
-        //[Fact]
-        //public void GetCustForRunRealtime_WhenSuccess_ReturnCustClassificationList()
-        //{
-        //    var custClassificationList = new List<CustClassificationRealtimeEntity>
-        //    {
-        //        new CustClassificationRealtimeEntity
-        //        {
-        //            CustId = 1,
-        //            CurrentCategoryID = 1,
-        //            SportGroupId =1
-        //        },
-        //        new CustClassificationRealtimeEntity
-        //        {
-        //            CustId = 2,
-        //            CurrentCategoryID = 2,
-        //            SportGroupId =2
-        //        },
-        //    };
+            // Act
+            _dataAccess.GetNewPlaceBetCustomers().Throws<Exception>();
 
-        //    var custSportJson = JsonConvert.SerializeObject(custClassificationList);
-        //    realtimeClassificationDataAccess.GetCustomerCategory(custSportJson).Returns(custClassificationList);
+            Action action = () => _service.GetNewPlaceBetCustomers();
+            // Assert
+            _dataAccess.Received(0).GetNewPlaceBetCustomers();
 
-        //    var result = realtimeClassificationServices.GetCustomerGeneralCategoryForRunRealtime(custClassificationList);
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
 
-        //    result.Should().BeEquivalentTo(custClassificationList);
-        //}
+        #region GetCustomerCategory
+        [Fact]
+        public void GetCustomerCategory_WhenSuccess()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service,
+                new GetNewPlaceBetCustomerModel()
+                {
+                    CustomerNewPlaceBets = new List<GetNewPlaceBetCustomerEntity>()
+                    {
+                        new GetNewPlaceBetCustomerEntity() { CustId = 1 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 2 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 3 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 4 },
+                    }
+                });
 
-        //[Fact]
-        //public void ClassifyCustomerGeneralCategoryRealtime_WhenSuccess_ReturnNotException()
-        //{
-        //    var classification = new CustClassificationRealtimeViewEntity()
-        //    {
-        //        CustClassification = new List<CustClassificationRealtimeEntity>
-        //                            {
-        //                                new CustClassificationRealtimeEntity
-        //                                {
-        //                                    CustId = 1,
-        //                                    CurrentCategoryID = 0,
-        //                                    SportGroupId =1
-        //                                },
-        //                                new CustClassificationRealtimeEntity
-        //                                {
-        //                                    CustId = 2,
-        //                                    CurrentCategoryID = 0,
-        //                                    SportGroupId =2
-        //                                },
-        //                            },
-        //        CustCategories = new List<CustClassificationRealtimeEntity>
-        //                            {
-        //                                new CustClassificationRealtimeEntity
-        //                                {
-        //                                    CustId = 1,
-        //                                    CurrentCategoryID = 1,
-        //                                    SportGroupId =1
-        //                                },
-        //                                new CustClassificationRealtimeEntity
-        //                                {
-        //                                    CustId = 2,
-        //                                    CurrentCategoryID = 0,
-        //                                    SportGroupId =2
-        //                                },
-        //                            }
-        //    };
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service, new GetCustomerCategoryRealtimeModel());
 
-        //    realtimeClassificationDataAccess.ClassifyCustomerGeneralCategoryRealtime(classification.CustClassification);
+            var batchSize = 1;
 
-        //    Action action = () => realtimeClassificationServices.ClassifyCustomerGeneralCategoryRealtime(classification);
+            // Act
+            _dataAccess.GetCustomerCategory(Arg.Any<string>()).Returns(new GetCustomerCategoryRealtimeModel());
 
-        //    action.Should().NotThrow<Exception>();
-        //}
+            _service.GetCustomerCategory(batchSize);
+            // Assert
+            _dataAccess.Received(4).GetCustomerCategory(Arg.Any<string>());
+        }
 
-        //[Fact]
-        //public void RealtimeUpdateLastScanTime_WhenSuccess_ReturnNotException()
-        //{
-        //    realtimeClassificationDataAccess.UpdateGeneralRealtimeLastScan(true);
+        [Fact]
+        public void GetCustomerCategory_ThrowException()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service,
+                new GetNewPlaceBetCustomerModel()
+                {
+                    CustomerNewPlaceBets = new List<GetNewPlaceBetCustomerEntity>()
+                    {
+                        new GetNewPlaceBetCustomerEntity() { CustId = 1 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 2 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 3 },
+                        new GetNewPlaceBetCustomerEntity() { CustId = 4 },
+                    }
+                });
 
-        //    Action action = () => realtimeClassificationServices.UpdateGeneralRealtimeLastScan();
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service, new GetCustomerCategoryRealtimeModel());
 
-        //    action.Should().NotThrow<Exception>();
-        //}
+            var batchSize = 1;
+
+            // Act
+            _dataAccess.GetCustomerCategory(Arg.Any<string>()).Throws<Exception>();
+
+            Action action = () => _service.GetCustomerCategory(batchSize);
+
+            // Assert
+            _dataAccess.Received(0).GetCustomerCategory(Arg.Any<string>());
+
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+
+        #region PreprocessCustomerClassRealtime
+        [Fact]
+        public void PreprocessCustomerClassRealtime_WhenSuccess()
+        {
+            // Arrange
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service,
+                    new GetCustomerCategoryRealtimeModel()
+                    {
+                        CustomerCategory = new List<long> { 1, 2, 3, 4 }
+                    }
+                );
+
+            var batchSize = 1;
+
+            // Act
+            _dataAccess.PreprocessCustomerClassRealtime(Arg.Any<string>());
+
+            _service.PreprocessCustomerClassRealtime(batchSize);
+            // Assert
+            _dataAccess.Received(4).PreprocessCustomerClassRealtime(Arg.Any<string>());
+        }
+
+        [Fact]
+        public void PreprocessCustomerClassRealtime_ThrowException()
+        {
+            // Arrange
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service,
+                    new GetCustomerCategoryRealtimeModel()
+                    {
+                        CustomerCategory = new List<long> { 1, 2, 3, 4 }
+                    }
+                );
+
+            var batchSize = 1;
+
+            // Act
+            _dataAccess.When(x => x.PreprocessCustomerClassRealtime(Arg.Any<string>())).Throw<Exception>();
+
+            Action action = () => _service.PreprocessCustomerClassRealtime(batchSize);
+
+            // Assert
+            _dataAccess.Received(0).PreprocessCustomerClassRealtime(Arg.Any<string>());
+
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+
+        #region InsertPADailyScanQueue
+        [Fact]
+        public void InsertPADailyScanQueue_WhenSuccess()
+        {
+            // Arrange
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service,
+                    new GetCustomerCategoryRealtimeModel()
+                    {
+                        CustomerPADailyScan = new List<long> { 1, 2, 3, 4 }
+                    }
+                );
+
+            var batchSize = 1;
+
+            // Act
+            _dataAccess.InsertPADailyScanQueue(Arg.Any<string>());
+
+            _service.InsertPADailyScanQueue(batchSize);
+            // Assert
+            _dataAccess.Received(4).InsertPADailyScanQueue(Arg.Any<string>());
+        }
+
+        [Fact]
+        public void InsertPADailyScanQueue_ThrowException()
+        {
+            // Arrange
+            var customerCategoriesField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.CustomerCategories);
+            customerCategoriesField.SetValue(_service,
+                    new GetCustomerCategoryRealtimeModel()
+                    {
+                        CustomerPADailyScan = new List<long> { 1, 2, 3, 4 }
+                    }
+                );
+
+            var batchSize = 1;
+
+            // Act
+            _dataAccess.When(x => x.InsertPADailyScanQueue(Arg.Any<string>())).Throw<Exception>();
+
+            Action action = () => _service.InsertPADailyScanQueue(batchSize);
+
+            // Assert
+            _dataAccess.Received(0).InsertPADailyScanQueue(Arg.Any<string>());
+
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+
+        #region CompleteCustomerRealtime
+        [Fact]
+        public void CompleteCustomerRealtime_WhenSuccess()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service,
+                new GetNewPlaceBetCustomerModel()
+                {
+                    ScannedMaxId = 999
+                });
+
+            // Act
+            _dataAccess.CompleteCustomerRealtime(Arg.Any<long>());
+
+            _service.CompleteCustomerRealtime();
+            // Assert
+            _dataAccess.Received(1).CompleteCustomerRealtime(Arg.Any<long>());
+        }
+
+        [Fact]
+        public void CompleteCustomerRealtime_ThrowException()
+        {
+            // Arrange
+            var customersField = TestExtension.GetPrivateFieldInfo(typeof(RealtimeClassificationService), PrivateFieldName.Customers);
+            customersField.SetValue(_service,
+                new GetNewPlaceBetCustomerModel()
+                {
+                    ScannedMaxId = 999
+                });
+
+            // Act
+            _dataAccess.When(x => x.CompleteCustomerRealtime(Arg.Any<long>())).Throw<Exception>();
+
+            Action action = () => _service.CompleteCustomerRealtime();
+
+            // Assert
+            _dataAccess.Received(0).CompleteCustomerRealtime(Arg.Any<long>());
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
     }
 }

@@ -5,13 +5,8 @@
         public PushDataToExternalEntity()
         {
             IsWriteLog = false;
-            IsPushCCToSoon88 = true;
             IsUpdateDangerToMainDB = true;
         }
-
-        public bool IsPushCCToSoon88 { get; set; }
-
-        public string FeedSoon88API { get; set; }
 
         public bool IsUpdateDangerToMainDB { get; set; }
 

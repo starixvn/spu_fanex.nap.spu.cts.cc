@@ -48,7 +48,7 @@
 
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
-
+                
                 do
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
@@ -68,7 +68,7 @@
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var normalAccountModel = normalAccountService.GetNormalAccounts();
-            
+           
             if (normalAccountModel.IsContinute)
             {
                 var failedThreads = new ConcurrentBag<bool>();
@@ -90,17 +90,17 @@
         {            
             var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
-            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);
+            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);            
 
             if (string.IsNullOrEmpty(result.ErrorMessage))
             {
-                Parallel.Invoke(() =>
+                var custIDs = result.CustInfos.Select(x => x.CustID).Distinct();
+
+                Parallel.Invoke((() =>
                 {
-                    var isPushCCSuccess = custClassToMainDBService.PushDataToExternal(result.CustIds, new PushDataToExternalEntity
+                    var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId((IEnumerable<long>)custIDs, (PushDataToExternalEntity)new PushDataToExternalEntity
                     {
                         ExternalBatchSize = batchExternalSize,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                        IsPushCCToSoon88 = true,
                         IsUpdateDangerToMainDB = true,
                         IsWriteLog = appSettings.NormalAccountIsWriteLog,
                         ServiceName = serviceName
@@ -110,10 +110,10 @@
                     {
                         failedThreads.Add(false);
                     }
-                },
+                }),
                 () =>
                 {
-                    antiFraudCenterServices.DeleteAFCAccounts(result.CustIds, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                    antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
                 });
             }
         }

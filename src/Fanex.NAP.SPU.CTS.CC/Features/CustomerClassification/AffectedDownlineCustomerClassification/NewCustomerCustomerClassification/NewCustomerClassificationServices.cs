@@ -77,13 +77,13 @@
                 var custInfo = new VVIPCustomerInsertEntity
                 {
                     CustInfo = newCustomerClassification.VVIPClassification,
-                    FromAction = VVIP_FromAction.ServiceInsertNew,
-                    IsAffectDownline = true,
+                    FromFlow = FromFlow.CTSServices,
+                    IsAffectDownline = false,
                     QueueID = null,
                     UplineRoleID = null
                 };
 
-                IsSuccess = affectedCustomerClassificationService.InsertVVIPForDownlinePackage(parameters, custInfo);
+                IsSuccess = affectedCustomerClassificationService.InsertVVIP(parameters, custInfo);
             }
 
             return this;
@@ -93,7 +93,11 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification, FunctionId.InsertNewCustJob, InsertPA_ByType.Category, parameters.IsToQueue, parameters.ServiceName);
+                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification,
+                    FunctionId.InsertNewCustJob,
+                    CCInputFlow.InsertPACategory,
+                    parameters.IsToQueue, parameters.ServiceName);
+               
                 IsSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters.PushDataExternal);
             }
 
@@ -104,9 +108,9 @@
         {
             if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
             {                
-                var cusIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
+                var custIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
 
-                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(cusIDs, parameters);
+                IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
 
             return this;

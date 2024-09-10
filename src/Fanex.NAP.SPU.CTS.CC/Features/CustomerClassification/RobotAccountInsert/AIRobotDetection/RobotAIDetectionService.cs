@@ -1,12 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using System;
+    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -16,174 +17,96 @@
     {
         IRobotAIDetectionService Start();
 
-        IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters robotAILastTime, CTS_SystemParameters robotImpervaLastTime);
+        IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters lastRobotAIIDPara);
 
-        bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras);       
+        bool InsertAIRobotPackage(int internalSize, PushDataToExternalEntity pushConfig);
 
-        IEnumerable<long> InsertRobotAIImperva(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
-
-        IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras);
-
-        IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters robotAILastTime, CTS_SystemParameters robotImpervaLastTime);
+        IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters lastAIRobotIDPara);
     }
 
-    public class RobotAIDetectionService : IRobotAIDetectionService
+    public class RobotAIDetectionService : ProblemAccountServices, IRobotAIDetectionService
     {
         private readonly IRobotAIDetectionDataAccess dataAccess;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly IProblemAccountServices problemAccountServices;
-        private IEnumerable<RobotDetectionEntity> robotDetections;
+        private IEnumerable<RobotAIEntity> robotDetections;
 
         public RobotAIDetectionService(IRobotAIDetectionDataAccess dataAccess,
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
-            IProblemAccountServices problemAccountServices)
+            IBaseCustomerClassificationDataAccess baseDataAccess,
+            IProblemAccountDataAccess problemAccountDataAccess,
+            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
         {
             this.dataAccess = dataAccess;
             this.systemParameterServices = systemParameterServices;
-            this.custClassToMainDBService = custClassToMainDBService;
-            this.problemAccountServices = problemAccountServices;            
+            this.custClassToMainDBService = custClassToMainDBService;         
         }
         
-        public IEnumerable<RobotDetectionEntity> RobotDetections => robotDetections;
+        public IEnumerable<RobotAIEntity> RobotDetections => robotDetections;
 
         public IRobotAIDetectionService Start()
         {
-            this.robotDetections = new List<RobotDetectionEntity>();
+            this.robotDetections = new List<RobotAIEntity>();
             
             return this;
         }
 
-        public IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters lastRobotAIIDPara, CTS_SystemParameters lastRobotImpervaIDPara)
+        public IRobotAIDetectionService GetRobotDetections(CTS_SystemParameters lastRobotAIIDPara)
         {
             var lastRobotAIID = systemParameterServices.GetLastScannedId(lastRobotAIIDPara);
 
-            var lastRobotImpervaID = systemParameterServices.GetLastScannedId(lastRobotImpervaIDPara);
-
-            if (lastRobotAIID > 0 || lastRobotImpervaID > 0)
+            if (lastRobotAIID > 0)
             {
-                var (robotAI, robotImperva) = this.dataAccess.GetRobotDetections(lastRobotAIID, lastRobotImpervaID);
-                                               
-                this.robotDetections = CombineRobotAIImperva(robotAI, robotImperva.Distinct(x => x.CustID));               
+                robotDetections = this.dataAccess.GetRobotDetections(lastRobotAIID);                                              
             }
 
             return this;
         }
 
-        public bool InsertRobotAIImpervaPackage(InsertRobotParaEntity paras)
+        public bool InsertAIRobotPackage(int internalSize, PushDataToExternalEntity pushConfig)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {
-                var robotDetectionChunks = this.robotDetections.Chunk(paras.BatchInternalSize);
+                var robotDetectionChunks = this.robotDetections.Chunk(internalSize);
 
                 foreach (var robot in robotDetectionChunks)
                 {
-                    var custIds = InsertRobotAIImperva(robot, paras);
+
+                    var insertedPA = robot.ToList().Select(c => new InsertProblemAccountEntity(c));
+
+                    var custIds = InsertProblemAccountPackage(insertedPA, FunctionId.RobotUserJob, CCInputFlow.InsertPACategory, false, pushConfig.ServiceName);
 
                     if (custIds != null && custIds.Any())
                     {
-                        var isSuccess = custClassToMainDBService.PushDataToExternal(custIds, paras.PushDataExternal);
-                        
-                        if (isSuccess)
+                        var isSuccess = custClassToMainDBService.PushExternalPackageByCustId(custIds, pushConfig);
+
+                        if (!isSuccess)
                         {
-                            Thread.Sleep(RobotUsers_SleepTimes);
-                        }                            
-                        else
-                        {
-                            return isSuccess;
-                        }                            
+                            return false;
+                        }
                     }
+
+                    Thread.Sleep(RobotUsers_SleepTimes);
                 }
             }
 
             return true;
         }
 
-        public IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters lastRobotAIIDPara, CTS_SystemParameters lastRobotImpervaIDPara)
+        public IRobotAIDetectionService UpdateLastScannedId(CTS_SystemParameters lastAIRobotIDPara)
         {
             if (this.robotDetections != null && this.robotDetections.Any())
             {               
-                var lastRobotAIID = this.robotDetections.Max(x => x.RobotDetectionID);
-                if (lastRobotAIID > 0)
-                {
-                    systemParameterServices.UpdateTimingExecution(lastRobotAIID.ToString(), lastRobotAIIDPara);
-                }
+                var lastAIRobotID = this.robotDetections.Max(x => x.RobotDetectionID);
 
-                var lastRobotImpervaLogID = this.robotDetections.Max(x => x.RobotImpervaLogID);
-                if (lastRobotImpervaLogID > 0)
+                if (lastAIRobotID > 0)
                 {
-                    systemParameterServices.UpdateTimingExecution(lastRobotImpervaLogID.ToString(), lastRobotImpervaIDPara);
+                    systemParameterServices.UpdateTimingExecution(lastAIRobotID.ToString(), lastAIRobotIDPara);
                 }
             }
 
             return this;
-        }
-
-        public IEnumerable<long> InsertRobotAIImperva(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
-        {
-            if (robotDetections != null && robotDetections.Any())
-            {
-                var robotToInsert = MappingRobotCategory(robotDetections, paras);
-
-                var customerInfo = problemAccountServices.InsertRobotAccountPackage(robotToInsert, false);
-
-                if (customerInfo != null && customerInfo.Any())
-                {
-                    return customerInfo.Select(x => x.CustID).Distinct();
-                }
-            }
-
-            return Enumerable.Empty<long>();
-        }       
-
-        public IEnumerable<InsertRobotEntity> MappingRobotCategory(IEnumerable<RobotDetectionEntity> robotDetections, InsertRobotParaEntity paras)
-        {
-            var custCategory = new List<InsertRobotEntity>();
-
-            if (robotDetections != null && robotDetections.Any())
-            {
-                custCategory = robotDetections.Select(c => new InsertRobotEntity
-                {
-                    CustID = c.CustID,
-                    CategoryID = c.CategoryID,
-                    IsFromAI = c.IsFromAI,
-                    IsFromImperva = c.IsFromImperva,
-                    IsFromTW = paras.IsFromTW,
-                    IsFromCTS = paras.IsFromCTS,
-                    IsDirect = paras.IsDirect,
-                    IsFromTVS = paras.IsFromTVS,
-                    RobotCounter = null,
-                    CreatedBy = StarixITId
-                }).ToList();
-            }
-
-            return custCategory;
-        }
-
-        private IEnumerable<RobotDetectionEntity> CombineRobotAIImperva(IEnumerable<RobotAIEntity> robotAI, IEnumerable<RobotImpervaEntity> robotImperva)
-        {
-            var result = robotAI.Select(x => new RobotDetectionEntity
-            {
-                RobotDetectionID = x.RobotDetectionID,
-                CustID = x.CustID,
-                CategoryID = x.CategoryID,
-                LastModifiedDate = x.LastModifiedDate,
-                LastCreateTime = DateTime.MinValue,
-                IsFromAI = true,
-                IsFromImperva = false
-            }).Union(robotImperva.Select(x => new RobotDetectionEntity
-            {
-                RobotImpervaLogID = x.RobotImpervaLogID,
-                CustID = x.CustID,                
-                LastModifiedDate = DateTime.MinValue,
-                LastCreateTime = x.LastCreateTime,
-                IsFromAI = false,
-                IsFromImperva = true
-            })).OrderBy(x => x.LastTimeOrderBy);
-
-            return result;
-        }
-        
+        }   
     }
 }

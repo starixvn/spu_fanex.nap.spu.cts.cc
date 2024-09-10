@@ -9,8 +9,10 @@
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IAssociatedGroupMonitorJobService
     {
@@ -21,27 +23,21 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
-        private const string serviceName = "ArchiveAssociationCustomer";
+        private const string serviceName = "Associated Group Monitor";
         private const string MarkPA_AssociatedGroup = "Associated Group";
         private const int DangerLevelABIOri = 2;
         private const int batchSize = 500;
-        private readonly IAssociatedGroupMonitorService associatedGroupService;
-        private readonly IProblemAccountServices problemAccountServices;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IAssociatedGroupMonitorService associatedGroupService;       
         private readonly ISystemParameterServices systemParameterServices;
 
         public AssociatedGroupMonitorJobService(ISentryClient sentryClient
             , IAppSettings appSettings
-            , IAssociatedGroupMonitorService associatedGroupService
-            , IProblemAccountServices problemAccountServices
-            , ICustClassToMainDBService custClassToMainDBService
+            , IAssociatedGroupMonitorService associatedGroupService        
             , ISystemParameterServices systemParameterServices)
         {
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
-            this.associatedGroupService = associatedGroupService;
-            this.problemAccountServices = problemAccountServices;
-            this.custClassToMainDBService = custClassToMainDBService;
+            this.associatedGroupService = associatedGroupService;      
             this.systemParameterServices = systemParameterServices;
         }
 
@@ -52,7 +48,7 @@
                 var dbResult = new DBResult { ErrorCode = 0 };
 
                 var custInfo = this.associatedGroupService.ScanAssociatedAccount();
-
+              
                 if (custInfo.ScanAssociatedAccountList != null && custInfo.ScanAssociatedAccountList.Any())
                 {                    
                     var custSyncPAs = custInfo.ScanAssociatedAccountList.Where(x => x.IsSyncPA).Select(x => new InsertProblemAccountEntity
@@ -62,29 +58,22 @@
                         RoleID = x.RoleID,
                         SubscriberID = x.SubscriberID,
                         CategoryID = custInfo.PACategoryID,
-                        CategoryGroup = custInfo.PACategoryID,
+                        CategoryGroupID = custInfo.PACategoryID,
                         IsLicensee = x.IsLicensee,
-                        IsDirectPA = true,                       
+                        IsMarkedDirectly = true,                       
                         IsFromCTS = true,
                         IsFromTVS = false,
                         IsFromTW = false,
                         CreatedBy = Constants.StarixITId,
+                        GroupName = custInfo.GroupName,
                         Remark = MarkPA_AssociatedGroup + " - " + custInfo.GroupName                       
                     });
 
                     if (custSyncPAs.Any())
-                    {                        
-                        var custIdsResult = problemAccountServices.InsertProblemAccountPackage(custSyncPAs
-                           , Shares.Constants.FunctionId.ScanAssociatedAccount
-                           , Shares.Constants.InsertPA_ByType.Category
-                           , false
-                           , serviceName);
-
-                        custClassToMainDBService.PushExternalProblemAcountPackage(custIdsResult, new PushDataToExternalEntity
+                    {
+                        var custIdsResult = this.associatedGroupService.InsertProblemAccount(custSyncPAs, new PushDataToExternalEntity
                         {
                             ExternalBatchSize = batchSize,
-                            FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                            IsPushCCToSoon88 = true,
                             IsUpdateDangerToMainDB = true,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
@@ -97,7 +86,7 @@
 
                         var custUpdateGroupABI = this.associatedGroupService.GetCustomerInfoMainDB(string.Join(",", custGroupABIPAs), DangerLevelABIOri);
                         dbResult = this.associatedGroupService.UpdateABIToMainDB(custUpdateGroupABI, custInfo.ABI);
-                    }                   
+                    }
                     
                     var ctsCustIDs = string.Join(",", custInfo.ScanAssociatedAccountList.Select(x => x.CTSCustID).Distinct());
 
@@ -140,6 +129,6 @@
             }
 
             return Task.FromResult(true);
-        }
+        }     
     }
 }

@@ -76,7 +76,6 @@
                         InternalBatchSize = batchSize,
                         ExternalBatchSize = batchSize,
                         IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        FeedSoon88API = appSettings.Soon88FeedDataAPI,
                         IsInsertMissingCust = false,
                         InsertVIPURL = appSettings.InsertVIPURL,
                         InsertBAURL = appSettings.InsertBAURL,
@@ -259,7 +258,6 @@
 
                         var rescanConfig = new RescanParametersEntity()
                         {
-                            IsRescanPA = false,
                             IsToQueue = false,
                             FunctionId = FunctionId.InactivateNewCustomer,
                             RescanNormalType = RescanNormalType.Auto_Customer,
@@ -267,8 +265,6 @@
                             ServiceName = "InactiveNewCustomer",
                             PushDataExternal = new PushDataToExternalEntity
                             {
-                                IsPushCCToSoon88 = true,
-                                FeedSoon88API = appSettings.Soon88FeedDataAPI,
                                 IsUpdateDangerToMainDB = true,
                                 ExternalBatchSize = batchSize,
                                 ServiceName = "InactiveNewCustomer",
@@ -311,11 +307,9 @@
 
         private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
         {
-            return custClassToMainDBService.PushDataToExternal(custIDs.Distinct(), new PushDataToExternalEntity
+            return custClassToMainDBService.PushExternalPackageByCustId(custIDs.Distinct(), new PushDataToExternalEntity
             {
                 ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
-                FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                IsPushCCToSoon88 = true,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,
                 ServiceName = serviceName
@@ -372,7 +366,6 @@
                 InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                 ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                 IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                FeedSoon88API = appSettings.Soon88FeedDataAPI,
                 IsInsertMissingCust = false,
                 InsertVIPURL = appSettings.InsertVIPURL,
                 InsertBAURL = appSettings.InsertBAURL,

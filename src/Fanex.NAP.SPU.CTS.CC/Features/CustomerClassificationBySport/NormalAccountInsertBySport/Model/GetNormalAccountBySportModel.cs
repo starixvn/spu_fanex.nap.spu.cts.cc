@@ -6,14 +6,11 @@
     {
         public GetNormalAccountBySportModel()
         {
-            this.NormalAccount = new List<GetNormalAccountBySportEntity>();
-            this.IsContinute = false;
+            this.NormalAccount = new List<NormalAccountBySportEntity>();
         }
 
-        public IEnumerable<GetNormalAccountBySportEntity> NormalAccount { get; set; }
+        public IEnumerable<NormalAccountBySportEntity> NormalAccount { get; set; }
 
         public long ScannedMaxId { get; set; }
-
-        public bool IsContinute { get; set; }
     }
 }

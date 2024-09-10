@@ -14,6 +14,6 @@
 
         public int? Sporttype { get; set; }
 
-        public int IssueTypeId { get; set; }
+        public int? IssueTypeId { get; set; }
     }
 }

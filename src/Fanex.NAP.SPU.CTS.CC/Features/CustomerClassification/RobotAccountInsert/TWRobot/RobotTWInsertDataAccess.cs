@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using System.Collections.Generic;
 
     public interface IRobotTWInsertDataAccess
@@ -8,7 +9,7 @@
         TWRobotUserViewEntity GetTWRobotUsers(long lastTimestamp);
     }
 
-    public class RobotTWInsertDataAccess : IRobotTWInsertDataAccess
+    public class RobotTWInsertDataAccess : BaseCustomerClassificationDataAccess, IRobotTWInsertDataAccess
     {
         private readonly IDynamicRepository repository;
 

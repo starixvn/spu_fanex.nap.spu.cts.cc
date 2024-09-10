@@ -33,7 +33,7 @@
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService)
         {
-            this.serviceName = "DetectUnauthorizedLoginCustomer";
+            this.serviceName = "Detect Unauthorized Login Customer";
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.detectUnauthorizedLoginCustService = detectUnauthorizedLoginCustService;
@@ -74,12 +74,13 @@
                 return false;
 
             var custFirstBetDates = detectUnauthorizedLoginCustService.GetCustWithFirstBetDate(param, processDate);
-            
+           
             if (custFirstBetDates.Any())
             {
                 custFirstBetDates.Chunk(batchInternalSize).AsParallel().WithDegreeOfParallelism(4).ForAll(cust =>
                 {
-                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust, processDate);
+                    var unauthorizedCustResult = DetectUnauthorizedLoginCust(cust, processDate);                  
+
                     InsertProblemAccount(unauthorizedCustResult, batchExternalSize);
                 });            
 
@@ -92,7 +93,7 @@
             }
             return true;
         }
-
+       
         private IEnumerable<DetectUnauthorizedLoginCustEntity> DetectUnauthorizedLoginCust(IEnumerable<CustFirstBetDateEntity> custFirstBetDates, DateTime processDate)
         {            
             if (custFirstBetDates.Any())
@@ -109,39 +110,31 @@
         {
             if (unauthorizedCustResult.Any())
             {
-                var pas = unauthorizedCustResult.Select(x =>
+                var pas = unauthorizedCustResult.Select(x => new InsertProblemAccountEntity 
                 {
-                    return new InsertProblemAccountEntity
-                    {
-                        CustID = x.CustID,
-                        CTSCustID = x.CTSCustID,
-                        RoleID = x.RoleID,
-                        SubscriberID = x.SubscriberID,
-                        CategoryID = x.CategoryID,
-                        CategoryGroup = x.CategoryID,
-                        IsLicensee = x.IsLicensee,
-                        IsDirectPA = true,
-                        IsFromCTS = true,
-                        IsFromTVS = false,
-                        IsFromTW = false,
-                        CreatedBy = Constants.StarixITId,
-                        Remark = JsonConvert.SerializeObject(new RemarkDetectUnauthorizedModel(x))
-                    };
+                    CustID = x.CustID,
+                    CTSCustID = x.CTSCustID,
+                    RoleID = x.RoleID,
+                    SubscriberID = x.SubscriberID,
+                    CategoryID = x.CategoryID,
+                    CategoryGroupID = x.CategoryID,
+                    IsLicensee = x.IsLicensee,
+                    IsMarkedDirectly = true,
+                    IsFromCTS = true,
+                    IsFromTVS = false,
+                    IsFromTW = false,
+                    CreatedBy = Constants.StarixITId
                 });
-
-                var paCustIDs = problemAccountServices.InsertProblemAccountPackage(pas, FunctionId.DetectUnauthorizedLoginCust, InsertPA_ByType.Category, false, serviceName);
 
                 var paras = new PushDataToExternalEntity
                 {
                     ExternalBatchSize = batchExternalSize,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
-                    IsPushCCToSoon88 = true,
                     IsUpdateDangerToMainDB = true,
                     IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                     ServiceName = serviceName
                 };
 
-                custClassToMainDBService.PushDataToExternal(paCustIDs, paras);
+                return detectUnauthorizedLoginCustService.InsertProblemAccount(pas, paras);               
             }                                 
 
             return true;

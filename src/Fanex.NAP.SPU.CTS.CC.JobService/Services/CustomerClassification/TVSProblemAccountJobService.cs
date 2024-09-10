@@ -84,8 +84,6 @@
             {
                 var paramaters = new PushDataToExternalEntity()
                 {
-                    IsPushCCToSoon88 = true,
-                    FeedSoon88API = appSettings.Soon88FeedDataAPI,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
@@ -95,12 +93,6 @@
                 };
 
                 isSuccess = tvsProblemAccountServices.InsertTVSProblemAccounts(tvsProblemAccounts.ProblemAccounts, paramaters);
-
-                if (isSuccess)
-                {
-                    paramaters.IsSyncAFCData = false;
-                    isSuccess = tvsProblemAccountServices.InsertTVSRobot(tvsProblemAccounts.ProblemAccounts, paramaters);
-                }
             }
 
             if (isSuccess)

@@ -4,52 +4,50 @@
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;   
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
+    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
+    using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.FeedCCToSoon88;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TWProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
-    using Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
-    using Fanex.NAP.SPU.CTS.CC.Features.TWRobotImperva;    
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyNormalClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.PAPotentialClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
 
     public static class InitService
     {
@@ -69,8 +67,6 @@
 
             RegisterTWGroupBetting(services);
 
-            RegisterTWProblemAccount(services);
-
             RegisterTVSProblemAccountInsert(services);
 
             RegisterClassifyGBMatchMonitor(services);
@@ -84,8 +80,6 @@
             RegisterClassificationJobMonitor(services);
 
             RegisterCustomerJobMonitor(services);
-
-            RegisterRobotImperva(services);
 
             RegisterRealtimeClassification(services);
 
@@ -126,6 +120,17 @@
             RegisterTWInitialGroupBetting(services);
 
             RegisterTWInitialSmartClassification(services);
+
+            RegisterWrapperCustomerClassificaton(services);
+        }
+
+        private static void RegisterWrapperCustomerClassificaton(IServiceCollection services)
+        {
+            services.AddSingleton<IBaseCustomerClassificationDataAccess, BaseCustomerClassificationDataAccess>();
+            services.AddSingleton<IBaseCustomerClassificationService, BaseCustomerClassificationService>();
+
+            services.AddSingleton<IBaseCustomerClassificationBySportDataAccess, BaseCustomerClassificationBySportDataAccess>();
+            services.AddSingleton<IBaseCustomerClassificationBySportService, BaseCustomerClassificationBySportService>();
         }
 
         private static void RegisterTWInitialSmartClassification(IServiceCollection services)
@@ -149,13 +154,6 @@
             services.AddSingleton<ITWGroupBettingJobService, TWGroupBettingJobService>();
         }
 
-        private static void RegisterTWProblemAccount(this IServiceCollection services)
-        {
-            services.AddSingleton<ITWProblemAccountDataAccess, TWProblemAccountDataAccess>();
-            services.AddSingleton<ITWProblemAccountService, TWProblemAccountService>();
-            services.AddSingleton<ITWProblemAccountJobService, TWProblemAccountJobService>();
-        }
-
         private static void RegisterNAPService(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -170,10 +168,7 @@
         }      
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
-        {
-            services.AddSingleton<IPAPotentialClassificationDataAccess, PAPotentialClassificationDataAccess>();
-            services.AddSingleton<IPAPotentialClassificationService, PAPotentialClassificationService>();
-
+        {          
             services.AddSingleton<IDailyProblemClassificationDataAccess, DailyProblemClassificationDataAccess>();
             services.AddSingleton<IDailyProblemClassificationServices, DailyProblemClassificationServices>();
             
@@ -205,9 +200,6 @@
 
             services.AddSingleton<ICustClassToMainDBDataAccess, CustClassToMainDBDataAccess>();
             services.AddSingleton<ICustClassToMainDBService, CustClassToMainDBService>();
-
-            services.AddSingleton<IFeedSoon88DataAccess, FeedSoon88DataAccess>();
-            services.AddSingleton<IFeedSoon88Services, FeedSoon88Services>();
 
             services.AddSingleton<IRescanCustClassificationDataAccess, RescanCustClassificationDataAccess>();
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
@@ -266,14 +258,7 @@
             services.AddSingleton<ICustomerJobMonitorService, CustomerJobMonitorService>();
             services.AddSingleton<ICustomerJobMonitorDataAccess, CustomerJobMonitorDataAccess>();
         }
-
-        private static void RegisterRobotImperva(this IServiceCollection services)
-        {
-            services.AddSingleton<ITWRobotImpervaJobService, TWRobotImpervaJobService>();
-            services.AddSingleton<ITWRobotImpervaService, TWRobotImpervaService>();
-            services.AddSingleton<ITWRobotImpervaDataAccess, TWRobotImpervaDataAccess>();
-        }
-
+       
         private static void RegisterRealtimeClassification(this IServiceCollection services)
         {
             services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();

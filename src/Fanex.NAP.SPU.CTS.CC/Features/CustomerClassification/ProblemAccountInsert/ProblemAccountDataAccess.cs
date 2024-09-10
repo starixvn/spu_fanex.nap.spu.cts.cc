@@ -1,56 +1,32 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
     using Fanex.Data.Repository;
-    using Fanex.Logging;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Collections.Generic; 
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IProblemAccountDataAccess
-    {
-        IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds);
-
+    {       
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
-
-        IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isFromDownlineQueue);
-
-        RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue);
-
-        IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan);
-
-        void RemoveOldProblemAccount(string custIds);
-
+             
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
 
         DBResult UpdateBetLimitOfFlaggedCustomer(string custIds);
 
-        DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);
-
-        IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds);
+        DBResult UpdateBetLimitOfUnflaggedCustomer(string custIds);      
     }
 
-    public class ProblemAccountDataAccess : IProblemAccountDataAccess
+    public class ProblemAccountDataAccess : BaseCustomerClassificationDataAccess, IProblemAccountDataAccess
     {
         private readonly IDynamicRepository repository;
 
         public ProblemAccountDataAccess()
         {
             repository = new DynamicRepository();
-        }
-
-        public IEnumerable<ExistedProblemAccountEntity> GetExistedProblemAccounts(string custIds)
-        {
-            var criteria = new ProblemAccountGetCriteria()
-            {
-                CustIds = custIds,
-            };
-
-            return repository.Fetch<ExistedProblemAccountEntity>(criteria) ?? Enumerable.Empty<ExistedProblemAccountEntity>();
-        }
+        }       
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
         {
@@ -61,58 +37,7 @@
             };
 
             return repository.Fetch<ProblemAccountLosingClassificationEntity>(criteria);
-        }
-
-        public IEnumerable<CustInfoEntity> InsertProblemAccount(string problemAccountJson, string inputType, bool isToQueue)
-        {           
-            var criteria = new ProblemAccountInsertCriteria
-            {
-                ProblemAccountJson = problemAccountJson,
-                InputType = inputType,
-                IsToQueue = isToQueue
-            };
-
-            return repository.Fetch<CustInfoEntity>(criteria);
-        }
-
-        public RemovePAResultEntity RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue)
-        {
-            var criteria = new ProblemAccountRemoveCriteria
-            {
-                ProblemAccountJson = JsonConvert.SerializeObject(problemAccounts),
-                IsFromQueue = isFromQueue
-            };
-
-            var custInfos = repository.Fetch<CustRemovePAEntity>(criteria);
-
-            return new RemovePAResultEntity
-            {
-                ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
-                ErrorMessage = criteria.ErrorMessage,
-                CustomerInfo = custInfos ?? Enumerable.Empty<CustRemovePAEntity>()
-            };
-        }
-
-        public void RemoveOldProblemAccount(string custIds)
-        {
-            var criteria = new OldProblemAccountRemoveCriteria
-            {
-                CustId = custIds
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public IEnumerable<CustInfoEntity> InsertRobotAccount(string robotAccountJson, bool isRescan)
-        {
-            var criteria = new RobotAccountInsertCriteria
-            {
-                CustInfo = robotAccountJson,
-                IsRescan = isRescan
-            };
-
-            return repository.Fetch<CustInfoEntity>(criteria) ?? Enumerable.Empty<CustInfoEntity>();
-        }
+        }            
 
         public int CheckNewPAAssociationCustomerForRollback(string custInfoJson)
         {
@@ -154,16 +79,6 @@
                 ErrorCode = string.IsNullOrEmpty(criteria.ErrorMessage) ? 0 : -1,
                 ErrorMsg = criteria.ErrorMessage
             };
-        }
-
-        public IEnumerable<CustInfoEntity> CheckCleanPAEvidence(string ctsCustIds)
-        {
-            var criteria = new CheckCleanPAEvidenceCriteria
-            {
-                CTSCustIds = ctsCustIds
-            };
-
-            return repository.Fetch<CustInfoEntity>(criteria);
-        }
+        }     
     }
 }

@@ -5,7 +5,6 @@
 
     public class GetNormalAccountBySportCriteria : CriteriaBase
     {
-
         [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
