@@ -43,7 +43,7 @@
             var custInfosJson = JsonConvert.SerializeObject(custInfos);
 
             // Act            
-            realtimeCheckChangeService.UpdateLastTransDate(custInfos);
+            realtimeCheckChangeService.UpdateLastTransDate(custInfos, 100);
 
             // Assert
             realtimeCheckChangeDataAccess.Received(1).UpdateLastTransDate(custInfosJson);            

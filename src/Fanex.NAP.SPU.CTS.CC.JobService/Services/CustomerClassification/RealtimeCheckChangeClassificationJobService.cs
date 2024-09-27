@@ -3,9 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
-    using System;
-    using System.Linq;
-    using System.Threading;
+    using System;    
     using System.Threading.Tasks;
 
     public interface IRealtimeCheckChangeClassificationJobService
@@ -33,19 +31,9 @@
             {
                 var realtimeChanges = realtimeCheckChangeServices.CheckChange();
 
-                if (realtimeChanges.CustInfos != null && realtimeChanges.CustInfos.Any())
-                {
-                    var batchChunks = realtimeChanges.CustInfos.Chunk(batchSize);
-
-                    foreach (var transDateList in batchChunks)
-                    {
-                        realtimeCheckChangeServices.UpdateLastTransDate(transDateList);
-
-                        Thread.Sleep(10);
-                    }
-                }
-
-                realtimeCheckChangeServices.UpdateNextScanCheckChange(realtimeChanges);
+                realtimeCheckChangeServices.UpdateLastTransDate(realtimeChanges.CustInfos, batchSize)                
+                    .UpdateSMALastTransDate(realtimeChanges.SMACustInfos, batchSize)
+                    .UpdateNextScanCheckChange(realtimeChanges);
             }
             catch (Exception ex)
             {

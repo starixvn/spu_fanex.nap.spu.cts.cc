@@ -9,9 +9,12 @@
         public RealtimeCheckChangeModel() 
         {
             CustInfos = Enumerable.Empty<RealtimeCheckChangeEntities>();
+            SMACustInfos = Enumerable.Empty<SMARealtimeCheckChangeEntities>();
         }
 
         public IEnumerable<RealtimeCheckChangeEntities> CustInfos { get; set; }
+
+        public IEnumerable<SMARealtimeCheckChangeEntities> SMACustInfos { get; set; }
 
         public DateTime? NextScannedDateTime1 { get; set; }
 
