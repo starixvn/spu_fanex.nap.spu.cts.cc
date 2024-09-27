@@ -155,6 +155,8 @@
             // Act
             ctsCustomerDataAccess.InsertNewCTSCustomer(Arg.Any<IEnumerable<CustomerMainDBModel>>(), true).Returns(expectedData);
 
+            custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), Arg.Any<PushDataToExternalEntity>()).Returns(true);
+
             var result = ctsCustomerService.InsertNewCustomer(true, data, paras);
 
 

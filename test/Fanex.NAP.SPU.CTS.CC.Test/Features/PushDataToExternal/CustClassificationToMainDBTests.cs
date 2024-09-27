@@ -128,8 +128,10 @@
         }
 
         #region PushCustClassificationToMainDB
-        [Fact]
-        public void PushCustClassificationToMainDB_WhenSuccess()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void PushCustClassificationToMainDB_WhenSuccess(bool isSMACustomer)
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -141,17 +143,19 @@
 
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer).Returns(new Shares.Models.DBResult());
 
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
             // Assert
-            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
 
             Assert.True((bool)result);
         }
 
-        [Fact]
-        public void PushCustClassificationToMainDB_WhenParamEmpty()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void PushCustClassificationToMainDB_WhenParamEmpty(bool isSMACustomer)
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -162,15 +166,17 @@
 
 
             // Act
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
             // Assert
-            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
 
             Assert.True((bool)result);
         }
 
-        [Fact]
-        public void PushCustClassificationToMainDB_ThrowException()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void PushCustClassificationToMainDB_ThrowException(bool isSMACustomer)
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -184,9 +190,9 @@
             // Act
             _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Throws<Exception>();
 
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
             // Assert
-            _dataAccess.Received(4).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(4).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
 
             Assert.False((bool)result);
         }

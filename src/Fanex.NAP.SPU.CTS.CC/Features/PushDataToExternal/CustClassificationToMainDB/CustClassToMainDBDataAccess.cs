@@ -13,7 +13,7 @@
     {
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
-        DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification);
+        DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification, bool isSMACustomer = false);
 
         DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
 
@@ -41,11 +41,12 @@
             return repository.Fetch<LatestCCDangerLevelEntity>(criteria) ?? Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
-        public DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification)
+        public DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification, bool isSMACustomer)
         {
             var criteria = new CustomerClassificationUpdateCriteria
             {
-                custList = custClassification.ToXmlString()
+                custList = custClassification.ToXmlString(),
+                DataType = isSMACustomer ? 1 : null
             };
 
             repository.Execute(criteria);

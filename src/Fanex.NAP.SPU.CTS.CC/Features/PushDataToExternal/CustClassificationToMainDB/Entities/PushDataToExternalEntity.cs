@@ -22,5 +22,7 @@
         public string AFCInsertAccountURL { get; set; }
 
         public string AFCDeleteAccountURL { get; set; }
+
+        public bool IsSMACustomer { get; set; }
     }
 }

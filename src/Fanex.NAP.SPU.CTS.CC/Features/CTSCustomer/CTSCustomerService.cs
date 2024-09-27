@@ -110,34 +110,33 @@
 
         public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
         {
-            if (data != null && data.CustomerInfos != null && data.CustomerInfos.Any())
+            if (data == null && data.CustomerInfos.IsNullOrEmpty())
             {
-                var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
+                return true;
+            }
 
-                foreach (var batchCust in chunkCusts)
+            var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
+
+            foreach (var batchCust in chunkCusts)
+            {
+                var customers = dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
+
+                if (customers.IsNotNullOrEmpty())
                 {
-                    var customers = dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
+                    var isUpdateCompleteAndRetranCustomer =
+                            PushExternalPackageByCustId(customers, isSMACustomer: true, paras)
+                        .FlatMap(() =>
+                            PushExternalPackageByCustId(customers, isSMACustomer: false, paras))
+                        .FlatMap(() =>
+                            UpdateAssociationCustomerForArchive(customers))
+                        .FlatMap(() =>
+                            InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result)
+                        .FlatMap(() =>
+                            UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust));
 
-                    if (customers != null && customers.Any())
+                    if (!isUpdateCompleteAndRetranCustomer)
                     {
-                        var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId(customers.Select(c => c.CustID).Distinct(), new PushDataToExternalEntity
-                        {
-                            ExternalBatchSize = paras.ExternalBatchSize,
-                            IsUpdateDangerToMainDB = false,
-                            IsWriteLog = false,
-                            ServiceName = serviceName
-                        });
-
-                        UpdateAssociationCustomerForArchive(customers);
-
-                        var isSuccess = InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result;
-
-                        if (!isSuccess)
-                        {
-                            return false;
-                        }
-
-                        UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust);
+                        return false;
                     }
                 }
             }
@@ -145,15 +144,39 @@
             return true;
         }
 
-        private void UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
+        private bool PushExternalPackageByCustId(IEnumerable<InsertNewCustomerResultModel> customers, bool isSMACustomer, InsertNewCustRescanEntity paras)
+        {
+            var custIds = customers
+                            .WhereIf(isSMACustomer, customer => customer.RoleID > 1)
+                            .WhereIf(!isSMACustomer, customer => customer.RoleID == 1)
+                            .Select(customer => customer.CustID)
+                            .Distinct();
+
+            var result = custClassToMainDBService.PushExternalPackageByCustId(
+                            custIds,
+                            new PushDataToExternalEntity
+                            {
+                                ExternalBatchSize = paras.ExternalBatchSize,
+                                IsUpdateDangerToMainDB = false,
+                                IsWriteLog = false,
+                                ServiceName = serviceName,
+                                IsSMACustomer = isSMACustomer
+                            });
+
+            return result;
+        }
+
+        private bool UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
         {
             if (custIdList != null && custIdList.Any())
             {
                 dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
             }
+
+            return true;
         }
 
-        private void UpdateAssociationCustomerForArchive(IEnumerable<InsertNewCustomerResultModel> customerList)
+        private bool UpdateAssociationCustomerForArchive(IEnumerable<InsertNewCustomerResultModel> customerList)
         {
             if (customerList != null && customerList.Any())
             {
@@ -169,6 +192,8 @@
 
                 dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
             }
+
+            return true;
         }
 
         private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBModel> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
@@ -499,7 +524,7 @@
 
         public IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts)
         {
-            if(reactivedCusts != null && reactivedCusts.Any())
+            if (reactivedCusts != null && reactivedCusts.Any())
             {
                 return dataAccess.CheckExistCTSArchiveCustomer(JsonConvert.SerializeObject(reactivedCusts));
             }

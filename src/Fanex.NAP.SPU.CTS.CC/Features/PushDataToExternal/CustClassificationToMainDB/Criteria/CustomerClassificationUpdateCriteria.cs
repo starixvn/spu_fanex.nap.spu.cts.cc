@@ -7,6 +7,8 @@
     {
         public string custList { get; set; }
 
+        public int? DataType { get; set; }
+
         [SpParam(SqlParamName = "ErrCode")]
         public int ErrorCode { get; set; }
 

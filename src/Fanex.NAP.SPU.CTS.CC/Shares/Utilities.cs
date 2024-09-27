@@ -125,5 +125,10 @@ namespace Fanex.NAP.SPU.CTS.Shares
                .Message(new MessageModel(systemName, DateTime.Now, environment, message))
                .SendWithoutDelay();
         }
+
+        public static bool FlatMap(this bool isAction, Func<bool> func)
+        {
+            return isAction && func();
+        }
     }
 }
