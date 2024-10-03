@@ -46,7 +46,7 @@
             var criteria = new CustomerClassificationUpdateCriteria
             {
                 custList = custClassification.ToXmlString(),
-                DataType = isSMACustomer ? 1 : null
+                //DataType = isSMACustomer ? 1 : null
             };
 
             repository.Execute(criteria);
