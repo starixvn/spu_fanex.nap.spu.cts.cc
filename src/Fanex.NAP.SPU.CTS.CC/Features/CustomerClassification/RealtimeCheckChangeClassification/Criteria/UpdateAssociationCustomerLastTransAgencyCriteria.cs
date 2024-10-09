@@ -3,14 +3,14 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class UpdateSMAAssociationCustomerLastTransCriteria : NonQueryCommand
+    public class UpdateAssociationCustomerLastTransAgencyCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_CustInfo")]
-        public string SMACustInfos { get; set; }
+        public string CustTranDatesAgency { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_Arc_CustomerAssociationSMA_LastTicketDate_Update";
+            return "CTS_Arc_CustomerAssociationAgency_LastTicketDate_Update";
         }
 
         public override bool IsValid()

@@ -13,7 +13,7 @@
 
         IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize);
 
-        IRealtimeCheckChangeClassificationService UpdateSMALastTransDate(IEnumerable<SMARealtimeCheckChangeEntities> smaCustInfos, int batchSize);
+        IRealtimeCheckChangeClassificationService UpdateLastTransDateAgency(IEnumerable<RealtimeCheckChangeAgencyEntities> custInfosAgency, int batchSize);
 
         IRealtimeCheckChangeClassificationService UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
 
@@ -52,15 +52,15 @@
             return this;
         }
 
-        public IRealtimeCheckChangeClassificationService UpdateSMALastTransDate(IEnumerable<SMARealtimeCheckChangeEntities> custInfos, int batchSize)
+        public IRealtimeCheckChangeClassificationService UpdateLastTransDateAgency(IEnumerable<RealtimeCheckChangeAgencyEntities> custInfosAgency, int batchSize)
         {
-            if (custInfos != null && custInfos.Any())
+            if (custInfosAgency != null && custInfosAgency.Any())
             {
-                var batchChunks = custInfos.Chunk(batchSize);
+                var batchChunks = custInfosAgency.Chunk(batchSize);
 
-                foreach (var smaCustTranDates in batchChunks)
+                foreach (var custTranDatesAgency in batchChunks)
                 {
-                    this.dataAccess.UpdateSMALastTransDate(JsonConvert.SerializeObject(smaCustTranDates));
+                    this.dataAccess.UpdateLastTransDateAgency(JsonConvert.SerializeObject(custTranDatesAgency));
 
                     Thread.Sleep(10);
                 }

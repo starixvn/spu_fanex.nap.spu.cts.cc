@@ -8,7 +8,7 @@
 
         void UpdateLastTransDate(string custInfos);
 
-        void UpdateSMALastTransDate(string smaCustInfos);
+        void UpdateLastTransDateAgency(string custTranDatesAgency);
 
         void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
     }
@@ -26,12 +26,12 @@
         {
             var criteria = new RealtimeCheckChangeCriteria();
 
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<RealtimeCheckChangeEntities, SMARealtimeCheckChangeEntities>(criteria);
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<RealtimeCheckChangeEntities, RealtimeCheckChangeAgencyEntities>(criteria);
 
             return new RealtimeCheckChangeModel
             {
                 CustInfos = firstResultSet,
-                SMACustInfos = secondResultSet,
+                CustInfosAgency = secondResultSet,
                 NextScannedDateTime1 = criteria.NextScannedDateTime1,
                 NextScannedDateTime2 = criteria.NextScannedDateTime2,
                 NextScannedDateTime3 = criteria.NextScannedDateTime3,
@@ -49,11 +49,11 @@
             repository.Execute(criteria);
         }
 
-        public void UpdateSMALastTransDate(string smaCustInfos)
+        public void UpdateLastTransDateAgency(string custTranDatesAgency)
         {
-            var criteria = new UpdateSMAAssociationCustomerLastTransCriteria
+            var criteria = new UpdateAssociationCustomerLastTransAgencyCriteria
             {
-                SMACustInfos = smaCustInfos
+                CustTranDatesAgency = custTranDatesAgency
             };
 
             repository.Execute(criteria);

@@ -2,12 +2,12 @@
 {
     using System;
  
-    public class SMARealtimeCheckChangeEntities
+    public class RealtimeCheckChangeAgencyEntities
     {
-        public int Recommend { get; set; }
-
-        public int CustID { get { return this.Recommend; } }
+        public int CustId { get; set; }
 
         public DateTime? LastTicketDate { get; set; }
+
+        public int RoleID { get; set; }        
     }
 }
