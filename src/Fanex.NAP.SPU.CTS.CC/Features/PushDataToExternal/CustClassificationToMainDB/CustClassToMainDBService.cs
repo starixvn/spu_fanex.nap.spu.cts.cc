@@ -68,22 +68,22 @@
                 return true;
             }
 
-            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
+            //var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
-            foreach (var custids in custIdsChunk)
-            {
-                var lastestClassifications = GetLatestCCAndDangerLevel(custids);
+            //foreach (var custids in custIdsChunk)
+            //{
+            //    var lastestClassifications = GetLatestCCAndDangerLevel(custids);
 
-                if (lastestClassifications != null && lastestClassifications.Any())
-                {
-                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
+            //    if (lastestClassifications != null && lastestClassifications.Any())
+            //    {
+            //        bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
 
-                    if (!isSuccess)
-                    {
-                        return false;
-                    }
-                }
-            }
+            //        if (!isSuccess)
+            //        {
+            //            return false;
+            //        }
+            //    }
+            //}
 
             return true;
         }

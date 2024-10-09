@@ -51,7 +51,7 @@
 
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            Start().GetAgentCusts(custIds);
+            //Start().GetAgentCusts(custIds);
 
             var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));
 
@@ -72,10 +72,10 @@
                 }               
             }
 
-            if (smaCustIds.Any())
-            {
-                isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
-            }
+            //if (smaCustIds.Any())
+            //{
+            //    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
+            //}
 
             return isSuccess;
         }
