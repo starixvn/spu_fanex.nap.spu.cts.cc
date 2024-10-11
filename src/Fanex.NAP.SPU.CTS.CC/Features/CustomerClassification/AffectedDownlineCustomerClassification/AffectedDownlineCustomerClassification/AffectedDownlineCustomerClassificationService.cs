@@ -1,10 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -19,7 +21,9 @@
 
         IAffectedDownlineCustomerClassificationService GetCustomerClassificationFromQueue();
 
-        IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters);
+        IAffectedDownlineCustomerClassificationService CustomerClassificationMember(RescanParametersEntity parameters);
+
+        IAffectedDownlineCustomerClassificationService CustomerClassificationAgency(RescanParametersEntity parameters);
 
         bool CompleteCustomerClassificationFromQueue();
 
@@ -32,7 +36,8 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
-        private CustClassificationFromQueueResultEntity dataFromQueue;
+        private readonly ICustomerClassificationAgencyService custClassAgencyService;
+        private CustClassificationFromQueueModel dataFromQueue;
         private bool IsSuccess;
 
         public AffectedDownlineCustomerClassificationService(
@@ -40,6 +45,7 @@
             IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
+            ICustomerClassificationAgencyService custClassAgencyService,
             IAntiFraudCenterServices antiFraudCenterServices,
             IRescanCustClassificationService rescanCustClassificationService,
             ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
@@ -48,11 +54,12 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
+            this.custClassAgencyService = custClassAgencyService;
         }
 
         public IAffectedDownlineCustomerClassificationService Start()
         {
-            dataFromQueue = new CustClassificationFromQueueResultEntity();
+            dataFromQueue = new CustClassificationFromQueueModel();
             IsSuccess = true;
             return this;
         }
@@ -64,11 +71,11 @@
             return this;
         }
 
-        public IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters)
+        public IAffectedDownlineCustomerClassificationService CustomerClassificationMember(RescanParametersEntity parameters)
         {
             if (dataFromQueue != null
-                 && dataFromQueue.CustomerClassificationQueue != null
-                 && dataFromQueue.CustomerClassificationQueue.Any())
+                 && dataFromQueue.MemberQueue != null
+                 && dataFromQueue.MemberQueue.Any())
             {
                 var actionType = dataFromQueue.ActionType;
 
@@ -100,6 +107,45 @@
             return this;
         }
 
+        public IAffectedDownlineCustomerClassificationService CustomerClassificationAgency(RescanParametersEntity parameters)
+        {
+            if (dataFromQueue != null
+                             && dataFromQueue.AgencyQueue != null
+                             && dataFromQueue.AgencyQueue.Any())
+            {
+                var actionType = dataFromQueue.ActionType;
+
+                switch (actionType)
+                {
+                    case (int)DownlineClassification_ActionType.InsertVVIP:
+                        {                            
+                            IsSuccess = custClassAgencyService.InsertVVIP().Result;
+
+                            break;
+                        }
+                    case (int)DownlineClassification_ActionType.RemoveVVIP:
+                        {                           
+                            IsSuccess = custClassAgencyService.RemoveVVIP().Result;
+
+                            break;
+                        }
+                    case (int)DownlineClassification_ActionType.InsertPA:
+                        {
+                            IsSuccess = custClassAgencyService.InsertProblem().Result;
+
+                            break;
+                        }
+                    case (int)DownlineClassification_ActionType.RemovePA:
+                        {
+                            IsSuccess = custClassAgencyService.RemoveProblem().Result;
+                            break;
+                        }
+                }
+            }
+
+            return this;
+        }
+
         public bool CompleteCustomerClassificationFromQueue()
         {
             if (IsSuccess && dataFromQueue != null)
@@ -110,13 +156,13 @@
             return IsSuccess;
         }
 
-        private bool InsertPA(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        private bool InsertPA(RescanParametersEntity parameters, CustClassificationFromQueueModel custInfo)
         {
-            if (custInfo != null && custInfo.CustomerClassificationQueue.Any())
+            if (custInfo != null && custInfo.MemberQueue.Any())
             {
-                var custIds = custInfo.CustomerClassificationQueue.Select(c => c.CustID).Distinct();
+                var custIds = custInfo.MemberQueue.Select(c => c.CustID).Distinct();
 
-                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new InsertProblemAccountEntity
+                var probAccounts = custInfo.MemberQueue.Select(c => new InsertProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -142,13 +188,13 @@
             return true;
         }
 
-        private bool RemovePA(RescanParametersEntity rescanConfig, CustClassificationFromQueueResultEntity custInfo)
+        private bool RemovePA(RescanParametersEntity rescanConfig, CustClassificationFromQueueModel custInfo)
         {
             var isSuccess = true;
 
-            if (custInfo.CustomerClassificationQueue != null && custInfo.CustomerClassificationQueue.Any())
+            if (custInfo.MemberQueue != null && custInfo.MemberQueue.Any())
             {
-                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new RemoveProblemAccountEntity
+                var probAccounts = custInfo.MemberQueue.Select(c => new RemoveProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -246,7 +292,7 @@
             return isSuccess;
         }
 
-        private VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
+        private VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueModel custInfo)
         {
             return new VVIPCustomerInsertEntity
             {
@@ -254,7 +300,7 @@
                 IsAffectDownline = false,
                 QueueID = Convert.ToInt64(custInfo.QueueID),
                 UplineRoleID = custInfo.UplineRoleID,
-                CustInfo = custInfo.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity
+                CustInfo = custInfo.MemberQueue.Select(c => new VVIPCategoryEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,

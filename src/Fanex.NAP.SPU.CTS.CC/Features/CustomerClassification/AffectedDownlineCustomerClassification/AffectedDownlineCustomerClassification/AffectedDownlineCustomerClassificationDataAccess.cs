@@ -1,12 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
     using System;
     using System.Linq;
 
     public interface IAffectedDownlineCustomerClassificationDataAccess
     {
-        CustClassificationFromQueueResultEntity GetCustomerCategoryFromQueue();
+        CustClassificationFromQueueModel GetCustomerCategoryFromQueue();
 
         void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId);
     }
@@ -20,19 +21,21 @@
             repository = new DynamicRepository();
         }
 
-        public CustClassificationFromQueueResultEntity GetCustomerCategoryFromQueue()
+        public CustClassificationFromQueueModel GetCustomerCategoryFromQueue()
         {
-            var queueResult = new CustClassificationFromQueueResultEntity();
-
             var criteria = new CustClassificationQueueGetCriteria();
 
-            queueResult.CustomerClassificationQueue = repository.Fetch<CustClassificationFromQueueEntity>(criteria) ?? Enumerable.Empty<CustClassificationFromQueueEntity>();
-            queueResult.ActionType = criteria.ActionType;
-            queueResult.QueueID = criteria.QueueID;
-            queueResult.UplineRoleID = criteria.UplineRoleID;
-            queueResult.LastDownlineCTSCustID = criteria.LastDownlineCTSCustID;
+            var (memberQueue, agencyQueue) = repository.FetchMultiple<CustClassificationFromQueueEntity, CustClassificationFromQueueEntity>(criteria);
 
-            return queueResult;
+            return new CustClassificationFromQueueModel
+            {
+                MemberQueue = agencyQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
+                AgencyQueue = memberQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
+                ActionType = criteria.ActionType,
+                QueueID = criteria.QueueID,
+                UplineRoleID = criteria.UplineRoleID,
+                LastDownlineCTSCustID = criteria.LastDownlineCTSCustID
+            };
         }
 
         public void CustomerClassificationFromQueueComplete(UInt64 queueID, Int64 maxCustId)
