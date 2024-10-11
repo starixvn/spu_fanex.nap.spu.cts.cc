@@ -5,9 +5,11 @@
 
     public class CustomerClassificationUpdateCriteria : NonQueryCommand
     {
-        public string custList { get; set; }
+        [SpParam(SqlParamName = "Mode")]
+        public int Mode { get; set; }
 
-        //public int? DataType { get; set; }
+        [SpParam(SqlParamName = "custList")]
+        public string CustList { get; set; }
 
         [SpParam(SqlParamName = "ErrCode")]
         public int ErrorCode { get; set; }

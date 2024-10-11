@@ -84,6 +84,7 @@
             {
                 var paramaters = new PushDataToExternalEntity()
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,

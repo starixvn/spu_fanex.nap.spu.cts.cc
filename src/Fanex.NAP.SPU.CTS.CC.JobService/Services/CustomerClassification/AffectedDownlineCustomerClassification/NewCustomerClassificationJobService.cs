@@ -65,6 +65,7 @@
                 ServiceName = serviceName,
                 PushDataExternal = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,

@@ -259,5 +259,11 @@ namespace Fanex.NAP.SPU.CTS.Shares
             [Description("BySportRemoveSpecialCC")]
             BySportRemoveSpecialCC = 442
         }
+
+        public enum RoleGroupType
+        {
+            Member = 1,
+            Agency = 2
+        }
     }
 }

@@ -85,9 +85,9 @@
             };
 
             // Act   
-            _dataAccess.UpdateCustomerClassification(customerClass).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(customerClass, RoleGroupType.Member).Returns(new Shares.Models.DBResult());
 
-            var exception = Record.Exception(() => _service.PushCustomerClassification(customerClass, 1, "Test"));
+            var exception = Record.Exception(() => _service.PushCustomerClassification(customerClass, RoleGroupType.Member, 1, "Test"));
 
             // Assert
             Assert.Null(exception);
@@ -128,10 +128,8 @@
         }
 
         #region PushCustClassificationToMainDB
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void PushCustClassificationToMainDB_WhenSuccess(bool isSMACustomer)
+        [Fact]
+        public void PushCustClassificationToMainDB_WhenSuccess()
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -143,19 +141,17 @@
 
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member).Returns(new Shares.Models.DBResult());
 
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, RoleGroupType.Member, string.Empty });
             // Assert
-            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
+            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.True((bool)result);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void PushCustClassificationToMainDB_WhenParamEmpty(bool isSMACustomer)
+        [Fact]
+        public void PushCustClassificationToMainDB_WhenParamEmpty()
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -166,17 +162,15 @@
 
 
             // Act
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, RoleGroupType.Member, string.Empty });
             // Assert
-            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
+            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.True((bool)result);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void PushCustClassificationToMainDB_ThrowException(bool isSMACustomer)
+        [Fact]
+        public void PushCustClassificationToMainDB_ThrowException()
         {
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
@@ -188,11 +182,11 @@
 
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Throws<Exception>();
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member).Throws<Exception>();
 
-            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, string.Empty, isSMACustomer });
+            var result = pushCustClassificationToMainDBMethod.Invoke(_service, new object[] { data, RoleGroupType.Member, string.Empty });
             // Assert
-            _dataAccess.Received(4).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), isSMACustomer);
+            _dataAccess.Received(4).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.False((bool)result);
         }
@@ -455,12 +449,12 @@
                 new LatestCCDangerLevelEntity() { DangerLevel = 1, DangerLevelType = 1 },
             };
 
-            var paras = new PushDataToExternalEntity() { IsUpdateDangerToMainDB = true };
+            var paras = new PushDataToExternalEntity() { IsUpdateDangerToMainDB = true, RoleGroup = RoleGroupType.Member };
 
             var isPushExternalSuccessMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.IsPushExternalSuccess);
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member).Returns(new Shares.Models.DBResult());
 
             _dataAccess.UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>()).Returns(new Shares.Models.DBResult());
 
@@ -468,7 +462,7 @@
             // Assert
             _dataAccess.Received(1).UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>());
 
-            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.True((bool)result);
         }
@@ -482,18 +476,18 @@
                 new LatestCCDangerLevelEntity() { DangerLevel = 1, DangerLevelType = 1 },
             };
 
-            var paras = new PushDataToExternalEntity() { IsUpdateDangerToMainDB = false };
+            var paras = new PushDataToExternalEntity() { IsUpdateDangerToMainDB = false, RoleGroup = RoleGroupType.Member };
 
             var isPushExternalSuccessMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.IsPushExternalSuccess);
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member).Returns(new Shares.Models.DBResult());
 
             var result = isPushExternalSuccessMethod.Invoke(_service, new object[] { lastestClassifications, paras });
             // Assert
             _dataAccess.Received(0).UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>());
 
-            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(1).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.True((bool)result);
         }
@@ -508,13 +502,13 @@
             var isPushExternalSuccessMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.IsPushExternalSuccess);
 
             // Act
-            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>()).Returns(new Shares.Models.DBResult());
+            _dataAccess.UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member).Returns(new Shares.Models.DBResult());
 
             var result = isPushExternalSuccessMethod.Invoke(_service, new object[] { Enumerable.Empty<LatestCCDangerLevelEntity>(), paras });
             // Assert
             _dataAccess.Received(0).UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>());
 
-            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>());
+            _dataAccess.Received(0).UpdateCustomerClassification(Arg.Any<IEnumerable<LatestClassificationEntity>>(), RoleGroupType.Member);
 
             Assert.True((bool)result);
         }

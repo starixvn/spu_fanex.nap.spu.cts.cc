@@ -17,7 +17,7 @@
 
         bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters);
 
-        bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName, bool isSMACustomer = false);
+        bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, RoleGroupType roleGroup, int retryTime, string serviceName);
 
         #endregion
 
@@ -68,27 +68,27 @@
                 return true;
             }
 
-            //var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
+            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
 
-            //foreach (var custids in custIdsChunk)
-            //{
-            //    var lastestClassifications = GetLatestCCAndDangerLevel(custids);
+            foreach (var custids in custIdsChunk)
+            {
+                var lastestClassifications = GetLatestCCAndDangerLevel(custids);
 
-            //    if (lastestClassifications != null && lastestClassifications.Any())
-            //    {
-            //        bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
+                if (lastestClassifications != null && lastestClassifications.Any())
+                {
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
 
-            //        if (!isSuccess)
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //}
+                    if (!isSuccess)
+                    {
+                        return false;
+                    }
+                }
+            }
 
             return true;
         }
 
-        public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName, bool isSMACustomer)
+        public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, RoleGroupType roleGroup, int retryTime, string serviceName)
         {
             if (customerClassifications == null || !customerClassifications.Any())
             {
@@ -99,7 +99,7 @@
             {
                 try
                 {
-                    var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications, isSMACustomer);
+                    var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications, roleGroup);
 
                     if (result.ErrorCode != 0 && retryTime == 0)
                     {
@@ -204,7 +204,7 @@
 
         #region Private methods
 
-        private bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName, bool isSMACustomer)
+        private bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, RoleGroupType roleGroup, string serviceName)
         {
             if (lastestClassifications != null && lastestClassifications.Any())
             {
@@ -215,7 +215,7 @@
                     CustomerClass = c.CustomerClass
                 });
 
-                return PushCustomerClassification(custClassification, Constants.RetryPushCCToExternal, serviceName, isSMACustomer);
+                return PushCustomerClassification(custClassification, roleGroup, Constants.RetryPushCCToExternal, serviceName);
             }
 
             return true;
@@ -227,7 +227,7 @@
 
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName, paras.IsSMACustomer);
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
 
                 if (paras.IsUpdateDangerToMainDB && isSuccess)
                 {

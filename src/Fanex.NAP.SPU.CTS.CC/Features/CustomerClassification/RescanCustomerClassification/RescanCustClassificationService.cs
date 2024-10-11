@@ -11,10 +11,6 @@
 
     public interface IRescanCustClassificationService
     {
-        IRescanCustClassificationService Start();
-
-        IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds);
-
         bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);             
 
         bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);       
@@ -27,8 +23,6 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         private readonly ISentryClient sentryClient;       
-        private List<long> smaCustIds;
-        private bool isSuccess;
 
         public RescanCustClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
@@ -39,19 +33,9 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
         }
-      
-        public IRescanCustClassificationService Start()
-        {           
-            smaCustIds = new List<long>();
-
-            isSuccess = true;
-
-            return this;
-        }  
-
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            //Start().GetAgentCusts(custIds);
+            var isSuccess = true;
 
             var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));
 
@@ -72,11 +56,6 @@
                 }               
             }
 
-            //if (smaCustIds.Any())
-            //{
-            //    isSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(smaCustIds.Distinct(), paras.PushDataExternal);
-            //}
-
             return isSuccess;
         }
 
@@ -85,8 +64,6 @@
             var resultCustRescans = base.RescanCustomerClassification(custNormals, paras.FunctionId, ccInputFlow, paras.IsToQueue, paras.ServiceName);
 
             PushExternalProblemAccounts(resultCustRescans, paras.PushDataExternal);
-
-            smaCustIds.Except(resultCustRescans);
         }
 
         private void PreNormalClassification(IEnumerable<long> custNormals, RescanParametersEntity paras)
@@ -105,21 +82,5 @@
 
             return true;
         }
-
-        public IRescanCustClassificationService GetAgentCusts(IEnumerable<long> custIds)
-        {
-            var data = rescanCustClassificationDataAccess.GetRoleCustomer(string.Join(",", custIds));
-
-            if (data != null && data.Any())
-            {
-                smaCustIds = data.Where(c => c.RoleID == (int)CustomerRole.Agent
-                                          || c.RoleID == (int)CustomerRole.Master
-                                          || c.RoleID == (int)CustomerRole.Super).Select(c => c.CustID)?.ToList();
-
-            }
-
-            return this;
-        }
-
     }
 }

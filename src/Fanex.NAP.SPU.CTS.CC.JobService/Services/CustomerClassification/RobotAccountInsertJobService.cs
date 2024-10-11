@@ -98,6 +98,7 @@
                                                       .GetRobotUserCategoryId(robotAccountServiceName)
                                                       .InsertTWRobotPackage(batchInternalSize, new PushDataToExternalEntity
                                                           {
+                                                              RoleGroup = RoleGroupType.Member,
                                                               IsUpdateDangerToMainDB = true,
                                                               ServiceName = robotAccountServiceName,
                                                               ExternalBatchSize = batchExternalSize,
@@ -121,6 +122,7 @@
                                                  .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID)
                                                  .InsertAIRobotPackage(batchInternalSize, new PushDataToExternalEntity
                                                     {
+                                                        RoleGroup = RoleGroupType.Member,
                                                         IsUpdateDangerToMainDB = true,
                                                         ServiceName = robotDetectionServiceName,
                                                         ExternalBatchSize = batchExternalSize,

@@ -265,6 +265,7 @@
                             ServiceName = "InactiveNewCustomer",
                             PushDataExternal = new PushDataToExternalEntity
                             {
+                                RoleGroup = RoleGroupType.Member,
                                 IsUpdateDangerToMainDB = true,
                                 ExternalBatchSize = batchSize,
                                 ServiceName = "InactiveNewCustomer",
@@ -309,6 +310,7 @@
         {
             return custClassToMainDBService.PushExternalPackageByCustId(custIDs.Distinct(), new PushDataToExternalEntity
             {
+                RoleGroup = RoleGroupType.Member,
                 ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
                 IsUpdateDangerToMainDB = true,
                 IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,

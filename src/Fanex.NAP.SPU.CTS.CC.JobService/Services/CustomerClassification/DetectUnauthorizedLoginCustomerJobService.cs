@@ -128,6 +128,7 @@
 
                 var paras = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     ExternalBatchSize = batchExternalSize,
                     IsUpdateDangerToMainDB = true,
                     IsWriteLog = appSettings.ProblemAccountIsWriteLog,

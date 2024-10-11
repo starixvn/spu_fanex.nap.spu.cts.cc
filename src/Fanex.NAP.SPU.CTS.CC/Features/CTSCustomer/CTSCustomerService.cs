@@ -124,9 +124,9 @@
                 if (customers.IsNotNullOrEmpty())
                 {
                     var isUpdateCompleteAndRetranCustomer =
-                            PushExternalPackageByCustId(customers, isSMACustomer: true, paras)
+                            PushExternalPackageByCustId(customers, RoleGroupType.Agency, paras)
                         .FlatMap(() =>
-                            PushExternalPackageByCustId(customers, isSMACustomer: false, paras))
+                            PushExternalPackageByCustId(customers, RoleGroupType.Member, paras))
                         .FlatMap(() =>
                             UpdateAssociationCustomerForArchive(customers))
                         .FlatMap(() =>
@@ -144,11 +144,11 @@
             return true;
         }
 
-        private bool PushExternalPackageByCustId(IEnumerable<InsertNewCustomerResultModel> customers, bool isSMACustomer, InsertNewCustRescanEntity paras)
+        private bool PushExternalPackageByCustId(IEnumerable<InsertNewCustomerResultModel> customers, RoleGroupType roleGroup, InsertNewCustRescanEntity paras)
         {
             var custIds = customers
-                            .WhereIf(isSMACustomer, customer => customer.RoleID > 1)
-                            .WhereIf(!isSMACustomer, customer => customer.RoleID == 1)
+                            .WhereIf(roleGroup == RoleGroupType.Agency, customer => customer.RoleID > (int)CustomerRole.Member)
+                            .WhereIf(roleGroup == RoleGroupType.Member, customer => customer.RoleID == (int)CustomerRole.Member)
                             .Select(customer => customer.CustID)
                             .Distinct();
 
@@ -160,7 +160,7 @@
                                 IsUpdateDangerToMainDB = false,
                                 IsWriteLog = false,
                                 ServiceName = serviceName,
-                                IsSMACustomer = isSMACustomer
+                                RoleGroup = roleGroup
                             });
 
             return result;
