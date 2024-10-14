@@ -46,7 +46,9 @@
 
         string InsertBAURL { get; }
 
-        string AffectDownlineAgencyURL { get;  }
+        string NewCustomerClassificationAgencyURL { get; }
+
+        string AffectDownlineAgencyURL { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
@@ -68,6 +70,7 @@
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
         private readonly string affectDownlineAgencyURL;
+        private readonly string newCustomerClassificationAgencyURL;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -83,6 +86,7 @@
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
             affectDownlineAgencyURL = GetValue<string>("AffectDownlineAgency:AffectDownlineAgencyURL");
+            newCustomerClassificationAgencyURL = GetValue<string>("NewCustomerClassificationAgency:NewCustomerClassificationAgencyURL");
         }
 
         #region Variables
@@ -120,6 +124,8 @@
         public string InsertVIPURL => insertVIPURL;
 
         public string InsertBAURL => insertBAURL;
+
+        public string NewCustomerClassificationAgencyURL => newCustomerClassificationAgencyURL;
 
         public string AffectDownlineAgencyURL => affectDownlineAgencyURL;
 

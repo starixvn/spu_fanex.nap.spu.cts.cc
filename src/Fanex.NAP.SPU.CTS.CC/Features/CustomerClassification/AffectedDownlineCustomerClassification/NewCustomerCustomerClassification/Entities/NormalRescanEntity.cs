@@ -6,5 +6,6 @@
 
         public long CustID { get; set; }
 
+        public int RoleID { get; set; }
     }
 }

@@ -24,6 +24,8 @@
 
         public string AffectDownlineAgencyURL { get; set; }
 
+        public string NewCustomerClassificationAgencyURL { get; set; }
+
         public PushDataToExternalEntity PushDataExternal { get; set; }
 
         public FunctionId FuncId_CheckRobotUser

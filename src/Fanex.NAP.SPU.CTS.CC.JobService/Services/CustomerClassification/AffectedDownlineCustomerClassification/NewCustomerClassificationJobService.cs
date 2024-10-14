@@ -61,6 +61,7 @@
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
                 RescanNormalType = RescanNormalType.Auto_Customer,
+                NewCustomerClassificationAgencyURL = appSettings.NewCustomerClassificationAgencyURL,
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
                 PushDataExternal = new PushDataToExternalEntity
@@ -77,6 +78,7 @@
 
             var isSuccess = newCTSClassificationServices.Start()
                                                        .GetCategoryForNewCTSCustomer()
+                                                       .NewCustomerClassificationAgency(paramaters)
                                                        .InsertVVIPForNewCustomers(paramaters)
                                                        .InsertPAForNewCustomers(paramaters)
                                                        .ResanNormalForNewCustomers(paramaters)
