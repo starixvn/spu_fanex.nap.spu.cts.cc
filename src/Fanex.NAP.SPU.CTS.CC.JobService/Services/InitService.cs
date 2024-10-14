@@ -322,8 +322,9 @@
             services.AddSingleton<ICustomerClassificationAgencyService, CustomerClassificationAgencyService>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationService, AffectedDownlineCustomerClassificationService>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationJobService, AffectedDownlineCustomerClassificationJobService>();
+            services.AddSingleton<ICustomerClassificationAgencyService, CustomerClassificationAgencyService>();
         }
-        
+
         private static void RegisterNewCustomerClassification(this IServiceCollection services)
         {
             services.AddSingleton<INewCustomerClassificationDataAccess, NewCustomerClassificationDataAccess>();

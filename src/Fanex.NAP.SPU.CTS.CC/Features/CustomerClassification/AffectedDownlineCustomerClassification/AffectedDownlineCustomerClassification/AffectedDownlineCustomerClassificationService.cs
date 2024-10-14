@@ -113,34 +113,7 @@
                              && dataFromQueue.AgencyQueue != null
                              && dataFromQueue.AgencyQueue.Any())
             {
-                var actionType = dataFromQueue.ActionType;
-
-                switch (actionType)
-                {
-                    case (int)DownlineClassification_ActionType.InsertVVIP:
-                        {                            
-                            IsSuccess = custClassAgencyService.InsertVVIP().Result;
-
-                            break;
-                        }
-                    case (int)DownlineClassification_ActionType.RemoveVVIP:
-                        {                           
-                            IsSuccess = custClassAgencyService.RemoveVVIP().Result;
-
-                            break;
-                        }
-                    case (int)DownlineClassification_ActionType.InsertPA:
-                        {
-                            IsSuccess = custClassAgencyService.InsertProblem().Result;
-
-                            break;
-                        }
-                    case (int)DownlineClassification_ActionType.RemovePA:
-                        {
-                            IsSuccess = custClassAgencyService.RemoveProblem().Result;
-                            break;
-                        }
-                }
+                custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL);
             }
 
             return this;

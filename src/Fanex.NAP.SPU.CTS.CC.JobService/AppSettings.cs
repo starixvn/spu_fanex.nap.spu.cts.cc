@@ -46,6 +46,8 @@
 
         string InsertBAURL { get; }
 
+        string AffectDownlineAgencyURL { get;  }
+
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
         bool NormalAccountBySportIsWriteLog { get; }
@@ -65,6 +67,7 @@
         private readonly string sentryDsn;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
+        private readonly string affectDownlineAgencyURL;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -79,6 +82,7 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
+            affectDownlineAgencyURL = GetValue<string>("AffectDownlineAgency:AffectDownlineAgencyURL");
         }
 
         #region Variables
@@ -116,6 +120,8 @@
         public string InsertVIPURL => insertVIPURL;
 
         public string InsertBAURL => insertBAURL;
+
+        public string AffectDownlineAgencyURL => affectDownlineAgencyURL;
 
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 

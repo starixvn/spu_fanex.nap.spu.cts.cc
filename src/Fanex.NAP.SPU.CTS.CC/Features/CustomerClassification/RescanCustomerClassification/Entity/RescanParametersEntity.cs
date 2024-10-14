@@ -22,6 +22,8 @@
 
         public bool IsWriteLog { get; set; }
 
+        public string AffectDownlineAgencyURL { get; set; }
+
         public PushDataToExternalEntity PushDataExternal { get; set; }
 
         public FunctionId FuncId_CheckRobotUser
