@@ -84,7 +84,7 @@
 	<Function Name="Rescan">
 		<Setting Key="CTS_DC_CustInfo_GetCustIDsRole" SpName="CTS_DC_CustInfo_GetCustIDsRole" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_LogInputData" SpName="CTS_DC_CustClassification_LogInputData" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_GeneralNormalClassification_RescanNormal_Preprocess" SpName="CTS_GeneralNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />		
+		<Setting Key="CTS_GeneralNormalClassification_RescanNormal_Preprocess" SpName="CTS_GeneralNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />		
 	</Function>
 	<Function Name="CustomerEvidenceInsert">
 		<Setting Key="CTS_DC_Association_GetByCTSCustIDs" SpName="CTS_DC_Association_GetByCTSCustIDs" DbName="MySQL.SLAVE.CTS_DataCenter.ctsService" TimeOut="900" />
@@ -197,7 +197,7 @@
 
 	<Function Name="NormalAccountClassificationBySport">
 		<Setting Key="CTS_BySportNormalClassification_NormalPool_Insert" SpName="CTS_BySportNormalClassification_NormalPool_Insert" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-		<Setting Key="CTS_BySportNormalClassification_NormalPool_Get" SpName="CTS_BySportNormalClassification_NormalPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_NormalPool_Get" SpName="CTS_BySportNormalClassification_NormalPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_BySportNormalClassification_NormalPool_Clear" SpName="CTS_BySportNormalClassification_NormalPool_Clear" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_BySportNormalClassification_NormalPool_Classify" SpName="CTS_BySportNormalClassification_NormalPool_Classify" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="400" />
 		<Setting Key="CTS_DC_CustClassification_BySport_GetCurrentCategory" SpName="CTS_DC_CustClassification_BySport_GetCurrentCategory" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -225,7 +225,7 @@
 	</Function>
 
 	<Function Name="RescanClassificationBySport">
-		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_BySportNormalClassification_RescanNormal_Preprocess" SpName="CTS_BySportNormalClassification_RescanNormal_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
 	<Function Name="TWInitialGBClassification">
