@@ -225,15 +225,15 @@
         {
             bool isSuccess = true;
 
-            if (lastestClassifications != null && lastestClassifications.Any())
-            {
-                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
+            //if (lastestClassifications != null && lastestClassifications.Any())
+            //{
+            //    isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
 
-                if (paras.IsUpdateDangerToMainDB && isSuccess)
-                {
-                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
-                }
-            }
+            //    if (paras.IsUpdateDangerToMainDB && isSuccess)
+            //    {
+            //        isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
+            //    }
+            //}
 
             return isSuccess;
         }
