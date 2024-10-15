@@ -115,7 +115,7 @@
             {
                 dataFromQueue.RescanParameters = parameters;
 
-                custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL);
+                IsSuccess = custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL).Result;
             }
 
             return this;
