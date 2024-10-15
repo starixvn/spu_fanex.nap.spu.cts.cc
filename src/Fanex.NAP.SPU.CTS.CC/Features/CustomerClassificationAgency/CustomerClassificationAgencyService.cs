@@ -56,9 +56,9 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - New Customer Classification Agency fail", request, ex, _sentryClient, JsonConvert.SerializeObject(request));
-            }
 
-            return true;
+                return false;
+            }
         }
     }
 }
