@@ -113,6 +113,8 @@
                              && dataFromQueue.AgencyQueue != null
                              && dataFromQueue.AgencyQueue.Any())
             {
+                dataFromQueue.RescanParameters = parameters;
+
                 custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL);
             }
 

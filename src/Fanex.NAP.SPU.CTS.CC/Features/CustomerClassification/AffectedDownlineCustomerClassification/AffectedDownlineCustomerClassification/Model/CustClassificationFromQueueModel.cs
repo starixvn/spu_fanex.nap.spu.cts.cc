@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -24,5 +25,7 @@
         public UInt64 QueueID { get; set; }
 
         public Int64 LastDownlineCTSCustID { get; set; }
+
+        public RescanParametersEntity RescanParameters { get; set; }
     }
 }

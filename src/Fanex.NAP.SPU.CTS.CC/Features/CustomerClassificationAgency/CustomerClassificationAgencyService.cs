@@ -30,7 +30,7 @@
         {
             try
             {
-                return await ApiHelper.Post<bool>(url, agencyInfos, 300);
+                return await ApiHelper.Post<bool>(url, agencyInfos, 600);
             }
             catch (Exception ex)
             {

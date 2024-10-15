@@ -29,8 +29,8 @@
 
             return new CustClassificationFromQueueModel
             {
-                MemberQueue = agencyQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
-                AgencyQueue = memberQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
+                MemberQueue = memberQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
+                AgencyQueue = agencyQueue ?? Enumerable.Empty<CustClassificationFromQueueEntity>(),
                 ActionType = criteria.ActionType,
                 QueueID = criteria.QueueID,
                 UplineRoleID = criteria.UplineRoleID,
