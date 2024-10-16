@@ -11,7 +11,8 @@
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
-    using System.Threading.Tasks;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
+    using System;
 
     public interface INewCustomerClassificationServices
     {
@@ -42,9 +43,9 @@
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices;
         private readonly ICustomerClassificationAgencyService customerClassificationAgencyService;
-        private NewCustomerClassificationEntity newCustomerClassification;
-        private NewCustomerClassificationEntity newCustomerClassificationMember;
-        private NewCustomerClassificationEntity newCustomerClassificationAgency;
+        private UInt64 lastCTSCustID;
+        private NewCustomerClassificationModel newCustomerClassificationMember;
+        private NewCustomerClassificationModel newCustomerClassificationAgency;
         private bool IsSuccess;
 
         public NewCustomerClassificationServices(
@@ -69,23 +70,24 @@
 
         public INewCustomerClassificationServices Start()
         {
-            newCustomerClassification = new NewCustomerClassificationEntity();
             IsSuccess = true;
             return this;
         }
 
         public INewCustomerClassificationServices GetCategoryForNewCTSCustomer()
         {
-            newCustomerClassification = newCTSClassificationDataAccess.GetNewCTSCustomerCategory();
+            var newCustomerClassification = newCTSClassificationDataAccess.GetNewCTSCustomerCategory();
 
-            newCustomerClassificationAgency = new NewCustomerClassificationEntity
+            lastCTSCustID = newCustomerClassification.LastCTSCustID;
+
+            newCustomerClassificationAgency = new NewCustomerClassificationModel
             {
                 NormalClassification = newCustomerClassification.NormalClassification.Where(x => x.RoleID > (int)RoleGroupType.Member),
                 PAClassification = newCustomerClassification.PAClassification.Where(x => x.RoleID > (int)RoleGroupType.Member),
                 VVIPClassification = newCustomerClassification.VVIPClassification.Where(x => x.RoleID > (int)RoleGroupType.Member)
             };
 
-            newCustomerClassificationMember = new NewCustomerClassificationEntity
+            newCustomerClassificationMember = new NewCustomerClassificationModel
             {
                 NormalClassification = newCustomerClassification.NormalClassification.Where(x => x.RoleID == (int)RoleGroupType.Member),
                 PAClassification = newCustomerClassification.PAClassification.Where(x => x.RoleID == (int)RoleGroupType.Member),
@@ -190,7 +192,7 @@
         {
             if (IsSuccess)
             {
-                IsSuccess = systemParameterServices.UpdateTimingExecution(newCustomerClassification.LastCTSCustID.ToString(), CTS_SystemParameters.NewCTSCustomerClassificationLastCustID);
+                IsSuccess = systemParameterServices.UpdateTimingExecution(lastCTSCustID.ToString(), CTS_SystemParameters.NewCTSCustomerClassificationLastCustID);
             }
 
             return IsSuccess;

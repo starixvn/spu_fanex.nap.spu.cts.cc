@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
 using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
 using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
 using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
@@ -54,7 +55,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void GetCategoryForNewCTSCustomer_WhenSuccess()
         {
             // Arrange
-            var data = new NewCustomerClassificationEntity();
+            var data = new NewCustomerClassificationModel();
 
             // Act
             _newCTSClassificationDataAccess.GetNewCTSCustomerCategory().Returns(data);
@@ -92,7 +93,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity() }
             });
@@ -118,7 +119,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, isSuccess);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = isVVIPClassificationAny ? new List<VVIPCategoryEntity> { new VVIPCategoryEntity() } : new List<VVIPCategoryEntity>()
             });
@@ -139,7 +140,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity() }
             });
@@ -165,7 +166,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
             });
@@ -212,7 +213,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, isSuccess);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = isPAClassificationAny ? new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() } : new List<InsertProblemAccountEntity>()
             });
@@ -242,7 +243,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
             });
@@ -271,7 +272,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
             });
@@ -307,7 +308,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } }
             });
@@ -333,7 +334,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, isSuccess);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = isNormalClassificationAny ? new List<NormalRescanEntity> { new NormalRescanEntity() } : new List<NormalRescanEntity>()
             });
@@ -354,7 +355,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() }
             });
@@ -378,7 +379,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } },
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity { CustID = 1 } },
@@ -402,7 +403,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity()
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } },
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity { CustID = 1 } },
@@ -428,7 +429,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity());
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel());
 
             // Act
             _systemParameterServices.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
@@ -461,7 +462,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
             isSuccessField.SetValue(_services, true);
 
             var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
-            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationEntity());
+            newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel());
 
             // Act
             _systemParameterServices.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>())).Throw<Exception>();

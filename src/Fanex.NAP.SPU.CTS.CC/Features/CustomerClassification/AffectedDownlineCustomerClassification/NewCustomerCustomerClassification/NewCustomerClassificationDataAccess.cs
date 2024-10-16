@@ -3,35 +3,35 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System.Linq;
 
     public interface INewCustomerClassificationDataAccess
     {
-        NewCustomerClassificationEntity GetNewCTSCustomerCategory();
+        NewCustomerClassificationModel GetNewCTSCustomerCategory();
     }
 
     public class NewCustomerClassificationDataAccess : INewCustomerClassificationDataAccess
     {
-        private readonly IDynamicRepository repository;
+        private readonly IDynamicRepository _repository;
 
         public NewCustomerClassificationDataAccess()
         {
-            repository = new DynamicRepository();
+            _repository = new DynamicRepository();
         }
 
-        public NewCustomerClassificationEntity GetNewCTSCustomerCategory()
+        public NewCustomerClassificationModel GetNewCTSCustomerCategory()
         {
             var criteria = new NewCustomerCategoryGetCriteria();
 
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            var result = db.QueryMultiple(criteria);
+            (var vvipClassification, var paClassification, var normalClassification) = _repository.FetchMultiple<VVIPCategoryEntity, InsertProblemAccountEntity, NormalRescanEntity>(criteria);
 
-            return new NewCustomerClassificationEntity()
+            return new NewCustomerClassificationModel()
             {
-                VVIPClassification = result?.Read<VVIPCategoryEntity>() ?? Enumerable.Empty<VVIPCategoryEntity>(),
-                PAClassification = result?.Read<InsertProblemAccountEntity>() ?? Enumerable.Empty<InsertProblemAccountEntity>(),
-                NormalClassification = result?.Read<NormalRescanEntity>() ?? Enumerable.Empty<NormalRescanEntity>(),
+                VVIPClassification = vvipClassification ?? Enumerable.Empty<VVIPCategoryEntity>(),
+                PAClassification = paClassification ?? Enumerable.Empty<InsertProblemAccountEntity>(),
+                NormalClassification = normalClassification ?? Enumerable.Empty<NormalRescanEntity>(),
                 LastCTSCustID = criteria.LastCTSCustID
             };
         }
