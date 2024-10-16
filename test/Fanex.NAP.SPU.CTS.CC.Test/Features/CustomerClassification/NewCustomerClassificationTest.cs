@@ -46,7 +46,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
                                 _rescanCustClassificationService,
                                 _custClassToMainDBService,
                                 _systemParameterServices,
-                                _rescanNormalClassificationBySportServices);
+                                _rescanNormalClassificationBySportServices, null);
         }
 
         #region GetCategoryForNewCTSCustomer

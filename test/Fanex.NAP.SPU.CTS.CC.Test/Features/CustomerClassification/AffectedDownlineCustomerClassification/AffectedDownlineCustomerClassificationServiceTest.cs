@@ -12,6 +12,7 @@
     using Sentry;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.AffectedDownlineCustomerClassificationConsts;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
 
     public class AffectedDownlineCustomerClassificationServiceTest
     {
@@ -39,7 +40,7 @@
 
             affectedDownlineCustomerClassificationService = new AffectedDownlineCustomerClassificationService(affectedDownlineCustomerClassificationDataAccess,
                 baseCustomerClassificationDataAccess, problemAccountDataAccess,
-                custClassToMainDBService, null, Substitute.For<IRescanCustClassificationService>(), sentryClient);
+                custClassToMainDBService, null, null, Substitute.For<IRescanCustClassificationService>(), sentryClient);
         }
 
         [Fact]
@@ -75,7 +76,7 @@
 
             baseCustomerClassificationService.InsertCustomerClassification(inputFlow, Arg.Any<InsertCustomerClassificationModel>(), "").Returns(new ResultInsertCustomerClassificationModel());
 
-            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassification(paramaters));
+            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassificationMember(paramaters));
 
             // Assert
             Assert.Null(exception);
@@ -100,7 +101,7 @@
 
             baseCustomerClassificationService.RemoveCustomerClassification(inputFlow, Arg.Any<RemoveCustomerClassificationModel>(), "").Returns(new ResultRemoveCustomerClassificationModel());
 
-            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassification(paramaters));
+            var exception = Record.Exception(() => affectedDownlineCustomerClassificationService.CustomerClassificationMember(paramaters));
 
             // Assert
             Assert.Null(exception);
@@ -162,13 +163,13 @@
             affectedDownlineCustomerClassificationDataAccess.Received(1).CustomerClassificationFromQueueComplete(Arg.Any<ulong>(), Arg.Any<long>());
         }
 
-        private CustClassificationFromQueueResultEntity ExpectedDataFromQueue(DownlineClassification_ActionType actionType)
+        private CustClassificationFromQueueModel ExpectedDataFromQueue(DownlineClassification_ActionType actionType)
         {
-            return new CustClassificationFromQueueResultEntity()
+            return new CustClassificationFromQueueModel()
             {
                 QueueID = 1,
                 ActionType = (int)actionType,
-                CustomerClassificationQueue = new List<CustClassificationFromQueueEntity>() {
+                MemberQueue = new List<CustClassificationFromQueueEntity>() {
                     new CustClassificationFromQueueEntity
                     {
                          CustID = 1, CTSCustID = 1, CategoryID = 30300, ActiveDays = 1, BetCount = 1

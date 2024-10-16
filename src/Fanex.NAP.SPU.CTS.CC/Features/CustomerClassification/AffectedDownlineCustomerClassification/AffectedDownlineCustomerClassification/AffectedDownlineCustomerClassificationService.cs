@@ -113,7 +113,8 @@
                              && dataFromQueue.AgencyQueue != null
                              && dataFromQueue.AgencyQueue.Any())
             {
-                dataFromQueue.RescanParameters = parameters;
+                dataFromQueue.InternalBatchSize = parameters.InternalBatchSize;
+                dataFromQueue.ExternalBatchSize = parameters.PushDataExternal.ExternalBatchSize;
 
                 IsSuccess = custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL).Result;
             }

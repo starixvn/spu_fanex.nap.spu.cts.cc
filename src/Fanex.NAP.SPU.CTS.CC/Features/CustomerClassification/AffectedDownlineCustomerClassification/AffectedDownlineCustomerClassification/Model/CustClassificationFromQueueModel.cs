@@ -26,6 +26,8 @@
 
         public Int64 LastDownlineCTSCustID { get; set; }
 
-        public RescanParametersEntity RescanParameters { get; set; }
+        public int InternalBatchSize { get; set; }
+
+        public int ExternalBatchSize { get; set; }
     }
 }
