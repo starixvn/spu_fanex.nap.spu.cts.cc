@@ -77,8 +77,8 @@
 
             return downlineCustomerClassificationService.Start()
                                                         .GetCustomerClassificationFromQueue()
-                                                        //.CustomerClassificationMember(paramaters)
                                                         .CustomerClassificationAgency(paramaters)
+                                                        .CustomerClassificationMember(paramaters)
                                                         .CompleteCustomerClassificationFromQueue();
         }
     }
