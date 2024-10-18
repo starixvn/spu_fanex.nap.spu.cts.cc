@@ -1,43 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Features\CustomerClassification\PAPotentialClassification\**" />
-    <Compile Remove="Features\TWProblemAccount\**" />
-    <EmbeddedResource Remove="Features\CustomerClassification\PAPotentialClassification\**" />
-    <EmbeddedResource Remove="Features\TWProblemAccount\**" />
-    <None Remove="Features\CustomerClassification\PAPotentialClassification\**" />
-    <None Remove="Features\TWProblemAccount\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Features\CustomerClassification\PAPotentialClassification\**" />
+		<Compile Remove="Features\TWProblemAccount\**" />
+		<EmbeddedResource Remove="Features\CustomerClassification\PAPotentialClassification\**" />
+		<EmbeddedResource Remove="Features\TWProblemAccount\**" />
+		<None Remove="Features\CustomerClassification\PAPotentialClassification\**" />
+		<None Remove="Features\TWProblemAccount\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Features\CustomerClassification\RobotAccountInsert\TWRobot\Entities\RobotInsetViewEntity.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Features\CustomerClassification\RobotAccountInsert\TWRobot\Entities\RobotInsetViewEntity.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\.sonarlint\fanex.nap.spu.dcs\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\.sonarlint\fanex.nap.spu.dcs\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Fanex.Data" Version="4.2.2" />
-    <PackageReference Include="Fanex.Data.MySql" Version="4.2.2" />
-    <PackageReference Include="Fanex.Data.Repository" Version="4.2.2" />
-    <PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
-    <PackageReference Include="Fanex.Logging.Extensions" Version="1.0.6" />
-    <PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
-    <PackageReference Include="Fanex.Logging.Sentry" Version="1.0.6" />
-    <PackageReference Include="Fanex.MailStation" Version="2.1.0" />
-    <PackageReference Include="Fanex.NAP.Client.AspNetCore" Version="1.0.0.7" />
-    <PackageReference Include="Fanex.NAP.SPU.AspNetCore.Notification" Version="1.0.10" />
-    <PackageReference Include="Fanex.RemotingRef" Version="1.5.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Sentry.AspNetCore" Version="2.1.8" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="UAParser" Version="3.1.47" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Fanex.Data" Version="4.2.2" />
+		<PackageReference Include="Fanex.Data.MySql" Version="4.2.2" />
+		<PackageReference Include="Fanex.Data.Repository" Version="4.2.2" />
+		<PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
+		<PackageReference Include="Fanex.Logging.Extensions" Version="1.0.6" />
+		<PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
+		<PackageReference Include="Fanex.Logging.Sentry" Version="1.0.6" />
+		<PackageReference Include="Fanex.MailStation" Version="2.1.0" />
+		<PackageReference Include="Fanex.NAP.Client.AspNetCore" Version="1.0.0.7" />
+		<PackageReference Include="Fanex.NAP.SPU.AspNetCore.Notification" Version="1.0.10" />
+		<PackageReference Include="Fanex.RemotingRef" Version="1.5.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Sentry.AspNetCore" Version="2.1.8" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="UAParser" Version="3.1.47" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<SonarQubeSetting Include="sonar.coverage.exclusions">
+			<Value>**/Shares/**/**/*, **/Features/**/Entities/*, **/Features/**/Criteria/*, **/Features/**/Model/*, **/*DataAccess.cs</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
 </Project>

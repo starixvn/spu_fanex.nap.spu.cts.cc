@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
+    <SonarQubeExclude>True</SonarQubeExclude>
   </PropertyGroup>
 
   <ItemGroup>
