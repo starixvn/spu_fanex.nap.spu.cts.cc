@@ -24,6 +24,6 @@
 
         public string AFCDeleteAccountURL { get; set; }
 
-        public RoleGroupType RoleGroup { get; set; }
+        public RoleGroupType RoleGroup { get; set; } // default sp is member
     }
 }

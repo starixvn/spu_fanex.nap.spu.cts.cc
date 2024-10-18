@@ -225,15 +225,15 @@
         {
             bool isSuccess = true;
 
-            //if (lastestClassifications != null && lastestClassifications.Any())
-            //{
-            //    isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
+            if (lastestClassifications != null && lastestClassifications.Any())
+            {
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
 
-            //    if (paras.IsUpdateDangerToMainDB && isSuccess)
-            //    {
-            //        isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
-            //    }
-            //}
+                if (paras.IsUpdateDangerToMainDB && isSuccess)
+                {
+                    isSuccess = UpdateDangerLevelToMainDB(lastestClassifications, paras.ServiceName);
+                }
+            }
 
             return isSuccess;
         }
@@ -258,7 +258,7 @@
                 {
                     foreach (var dangerBatch in groupDangerType)
                     {
-                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity()
+                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity
                         {
                             CustId = c.CustID,
                             DangerLevel = c.DangerLevel.Value
