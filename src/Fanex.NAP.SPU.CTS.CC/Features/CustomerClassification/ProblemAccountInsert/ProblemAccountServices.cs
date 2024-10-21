@@ -50,6 +50,7 @@
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         public IEnumerable<long> RescanCustomerClassification(IEnumerable<GetRescanCustomerClassificationEntity> custRescans, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName)
         {
             var pas = custRescans.Select(x => new InsertProblemAccountEntity(x));
@@ -63,7 +64,7 @@
             {
                 var paClassification = CombinePAWithLosingPerformace(problemAccounts, funcId);
 
-                var modelInsert = new InsertCustomerClassificationModel()
+                var modelInsert = new InsertCustomerClassificationModel
                 {
                     CustInfoJson = JsonConvert.SerializeObject(paClassification),
                     IsToQueue = isToQueue,
@@ -133,6 +134,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
         {
             var custIds = problemAccounts.Select(c => c.CustID)?.Distinct();
@@ -144,7 +146,7 @@
 
         private ResultRemoveCustomerClassificationModel RemoveProblemAccount(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
-            var removedModel = new RemoveCustomerClassificationModel()
+            var removedModel = new RemoveCustomerClassificationModel
             {
                 CustInfoJson = JsonConvert.SerializeObject(problemAccounts),
                 IsFromQueue = isFromQueue,
@@ -166,6 +168,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3241:Methods should not return values that are never used", Justification = "<Pending>")]
         private bool UpdateBetLimitOfFlaggedCustomer(IEnumerable<long> custId, string serviceName)
         {
             if (custId != null && custId.Any())
@@ -183,8 +186,9 @@
             }
 
             return true;
-        }      
+        }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3241:Methods should not return values that are never used", Justification = "<Pending>")]
         private bool UpdateBetLimitOfUnflaggedCustomer(IEnumerable<long> custId, string serviceName)
         {
             if (custId != null && custId.Any())
@@ -204,6 +208,7 @@
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())

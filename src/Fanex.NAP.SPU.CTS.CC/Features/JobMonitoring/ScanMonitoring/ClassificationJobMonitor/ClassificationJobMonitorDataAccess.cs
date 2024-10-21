@@ -48,7 +48,7 @@
 
         public IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount)
         {
-            var criteria = new CustomerCategoryMonitorGetCriteria()
+            var criteria = new CustomerCategoryMonitorGetCriteria
             {
                 CustIDs = custIds,
                 IsCheckInternalAccount = isCheckInternalAccount
@@ -63,7 +63,7 @@
 
             repository.Execute(criteria);
 
-            return new NormalClassificationPoolMonitorEntity()
+            return new NormalClassificationPoolMonitorEntity
             {
                 GeneralRecord = criteria.GeneralRecord,
                 BySportRecord = criteria.BySportRecord

@@ -10,6 +10,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using Fanex.NAP.Client.Configuration;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.RemotingRef;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Builder;
@@ -57,6 +58,8 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             FanexDataConfig(appSettings);
 
             RegisterRemotingRef(services);
+
+            ApiHelper.Setup(appSettings.APIHelperConfig);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

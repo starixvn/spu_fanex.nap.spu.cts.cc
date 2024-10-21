@@ -14,6 +14,7 @@
     using System.Linq;
     using System.Runtime.Serialization;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class NormalTaggingClassificationServiceTest
     {
@@ -211,7 +212,7 @@
 
             _normalTaggingClassificationDataAccess.Received(0).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
+            _systemParameterDataAccess.Received(2).UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
 
         [Fact]
@@ -248,7 +249,7 @@
 
             _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
+            _systemParameterDataAccess.Received(2).UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
 
         [Fact]
@@ -273,7 +274,7 @@
 
             _normalTaggingClassificationDataAccess.CheckChangesNormalTaggingScanning(Arg.Any<string>()).Returns(new List<long> { 1, 2, 3, 4, 5 });
 
-            _systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>())).Throw<Exception>();
+            _systemParameterDataAccess.When(x => x.UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>())).Throw<Exception>();
 
             Action action = () => _normalTaggingClassificationServices.Start().GetNormalTaggingScanning().PreprocessCustomerClassNormalTagging(1).UpdateLastScanningNormalTaggingParameter();
 
@@ -288,7 +289,7 @@
 
             _normalTaggingClassificationDataAccess.Received(5).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
+            _systemParameterDataAccess.Received(1).UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
 
         [Fact]
@@ -328,7 +329,7 @@
 
             _normalTaggingClassificationDataAccess.Received(1).PreprocessCustomerClassNormalTagging(Arg.Any<string>());
 
-            _systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<Shares.Constants.CTS_SystemParameters>());
+            _systemParameterDataAccess.Received(0).UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
         #endregion
     }

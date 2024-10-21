@@ -20,37 +20,39 @@
         Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
     {
-        private readonly string serviceName;
+        //private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
         private readonly ICustomerJobMonitorService customerJobMonitorService;
         private readonly ISystemParameterServices systemParameterServices;
-        private readonly IAppSettings appSettings;
 
         public CustomerJobMonitorJobService(
             ISentryClient sentryClient,
             IIncorrectDataMonitoringService incorrectDataMonitoringService,
             ICustomerJobMonitorService customerJobMonitorService,
-            ISystemParameterServices systemParameterServices,
-            IAppSettings appSettings)
+            ISystemParameterServices systemParameterServices)
         {
             this.sentryClient = sentryClient;
             this.incorrectDataMonitoringService = incorrectDataMonitoringService;
             this.customerJobMonitorService = customerJobMonitorService;
             this.systemParameterServices = systemParameterServices;
-            this.appSettings = appSettings;
-            this.serviceName = "CustomerJobMonitor";
+            //this.serviceName = "CustomerJobMonitor";
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2971:LINQ expressions should be simplified", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
         public Task<bool> ScanMissingCustomer(int batchSize, int externalSize)
         {
             try
             {
                 var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
                 var toDate = fromDate?.AddMinutes(60);
-                bool isSuccess = true;
 
                 if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
                 {
@@ -87,7 +89,7 @@
                     }
                 }
 
-                return Task.FromResult(isSuccess);
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
@@ -102,12 +104,13 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         public Task<bool> ScanIncorrectCustomerInfo(int batchSize)
         {
             try
             {
                 var lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
-                bool isSuccess = true;
 
                 if (lastCTSCustId > 0)
                 {
@@ -120,7 +123,7 @@
                             InsertIncorrectCustomerInfo(result.CustomerInfo, batchSize);
                         }
 
-                        if (result.NextScannedCTSCustId != null 
+                        if (result.NextScannedCTSCustId != null
                             && result.NextScannedCTSCustId > 0
                             && result.NextScannedCTSCustId > lastCTSCustId)
                         {
@@ -129,7 +132,7 @@
                     }
                 }
 
-                return Task.FromResult(isSuccess);
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
@@ -192,7 +195,7 @@
 
         private IEnumerable<long> GetNullCategoryCustomers(IEnumerable<long> custIds, int batchSize)
         {
-            if (custIds != null & custIds.Any())
+            if (custIds != null && custIds.Any())
             {
                 var custCategories = customerJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
 

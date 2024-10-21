@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
 
     public static class IEnumerableExtention
     {
@@ -27,6 +26,7 @@
             return !IsNotNullOrEmpty(data);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3240:The simplest possible condition syntax should be used", Justification = "<Pending>")]
         public static IEnumerable<TSource> WhereIf<TSource>(
             this IEnumerable<TSource> source,
             bool condition,

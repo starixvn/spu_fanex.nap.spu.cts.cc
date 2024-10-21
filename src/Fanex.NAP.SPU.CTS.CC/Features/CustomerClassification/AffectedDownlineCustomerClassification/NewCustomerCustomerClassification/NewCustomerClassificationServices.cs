@@ -48,6 +48,7 @@
         private NewCustomerClassificationModel newCustomerClassificationAgency;
         private bool IsSuccess;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
         public NewCustomerClassificationServices(
                 INewCustomerClassificationDataAccess newCTSClassificationDataAccess,
                 IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService,
@@ -97,6 +98,8 @@
             return this;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1067:Expressions should not be too complex", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
         public INewCustomerClassificationServices NewCustomerClassificationAgency(RescanParametersEntity parameters)
         {
             if (IsSuccess && newCustomerClassificationAgency != null &&
@@ -104,7 +107,13 @@
                 newCustomerClassificationAgency.PAClassification.IsNotNullOrEmpty() ||
                 newCustomerClassificationAgency.NormalClassification.IsNotNullOrEmpty()))
             {
-                IsSuccess = customerClassificationAgencyService.CallAPIPost(newCustomerClassificationAgency, parameters.InternalBatchSize, parameters.PushDataExternal.ExternalBatchSize, FromFlow.CTSServices, parameters.NewCustomerClassificationAgencyURL).Result;
+                IsSuccess = customerClassificationAgencyService
+                    .CallAPIPost(
+                        newCustomerClassificationAgency,
+                        parameters.InternalBatchSize, 
+                        parameters.PushDataExternal.ExternalBatchSize, 
+                        FromFlow.CTSServices, 
+                        parameters.NewCustomerClassificationAgencyURL).Result;
             }
 
             return this;

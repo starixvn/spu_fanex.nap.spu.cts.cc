@@ -101,12 +101,17 @@
                             IsSuccess = RemovePA(parameters, dataFromQueue);
                             break;
                         }
+                    default:
+                        {
+                            break;
+                        }
                 }
             }
 
             return this;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
         public IAffectedDownlineCustomerClassificationService CustomerClassificationAgency(RescanParametersEntity parameters)
         {
             if (dataFromQueue != null
@@ -136,8 +141,6 @@
         {
             if (custInfo != null && custInfo.MemberQueue.Any())
             {
-                var custIds = custInfo.MemberQueue.Select(c => c.CustID).Distinct();
-
                 var probAccounts = custInfo.MemberQueue.Select(c => new InsertProblemAccountEntity
                 {
                     CustID = c.CustID,
@@ -201,7 +204,7 @@
 
             if (custInfo != null && custInfo.CustInfo.Any())
             {
-                var modelInsert = new InsertCustomerClassificationModel()
+                var modelInsert = new InsertCustomerClassificationModel
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo),
                     FromAction = (int)custInfo.FromFlow,
@@ -240,7 +243,7 @@
 
             if (custInfo != null && custInfo.CustInfo.Any())
             {
-                var modelInsert = new RemoveCustomerClassificationModel()
+                var modelInsert = new RemoveCustomerClassificationModel
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo.Select(c => new RemoveCustomerClassificationEntity
                     {

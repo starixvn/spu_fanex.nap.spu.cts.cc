@@ -15,7 +15,7 @@
         public RealtimeClassificationBySportServicesTest()
         {
             realtimeDataAccess = Substitute.For<IRealtimeClassificationBySportDataAccess>();
-            realtimeService = new RealtimeClassificationBySportServices(realtimeDataAccess, null);
+            realtimeService = new RealtimeClassificationBySportServices(realtimeDataAccess);
         }
 
         [Fact]

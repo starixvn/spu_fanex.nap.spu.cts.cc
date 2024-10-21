@@ -17,7 +17,5 @@
         public static string GetOddsTypeName(int oddsId, string lang = "en") => refService.GetOddsTypeName(oddsId.ToString(), lang);
 
         public static string GetOddsTypeName(string oddsType, string lang = "en") => refService.GetOddsTypeName(oddsType, lang);
-
-        public static string GetTeamName(string teamId, string lang = "en") => refService.GetTeamName(teamId.ToString(), lang);
     }
 }

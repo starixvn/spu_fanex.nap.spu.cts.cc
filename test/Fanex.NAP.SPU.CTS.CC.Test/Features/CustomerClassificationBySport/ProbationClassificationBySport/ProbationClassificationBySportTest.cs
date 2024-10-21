@@ -14,7 +14,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Prob
     {
         private readonly IProbationClassificationBySportDataAccess _dataAccess;
         private readonly ISystemParameterDataAccess _systemParameterDataAccess;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IProbationClassificationBySportService _service;
 
@@ -22,9 +21,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Prob
         {
             _dataAccess = Substitute.For<IProbationClassificationBySportDataAccess>();
             _systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new ProbationClassificationBySportService(_dataAccess, _sentryClient, _systemParameterDataAccess);
+            _service = new ProbationClassificationBySportService(_dataAccess, _systemParameterDataAccess);
         }
 
         #region GetProbationScanClassificationBySport
@@ -87,12 +85,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Prob
             });
 
             // Act
-            _systemParameterDataAccess.UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+            _systemParameterDataAccess.UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
 
             var result = _service.UpdateCompleteProbationScanBySport();
 
             // Assert
-            _systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+            _systemParameterDataAccess.Received(1).UpdateTimingExecutionForCTS(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
 
             Assert.True(result);
         }

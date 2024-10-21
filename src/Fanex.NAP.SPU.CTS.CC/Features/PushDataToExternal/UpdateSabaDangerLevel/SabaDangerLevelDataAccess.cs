@@ -55,7 +55,7 @@
 
         public SabaDangerLevelUpdateResultEntity UpdateDabaDangerLevelToMainDB(IEnumerable<SabaDangerLevelEntity> custSabaDangerLevel)
         {
-            var criteria = new SabaDangerLevelUpdateCriteria()
+            var criteria = new SabaDangerLevelUpdateCriteria
             {
                 CustList = custSabaDangerLevel.ToXmlString()
             };

@@ -16,7 +16,7 @@
         public RealtimeCheckChangeClassificationServiceTest()
         {
             realtimeCheckChangeDataAccess = Substitute.For<IRealtimeCheckChangeClassificationDataAccess>();
-            realtimeCheckChangeService = new RealtimeCheckChangeClassificationService(realtimeCheckChangeDataAccess, null);
+            realtimeCheckChangeService = new RealtimeCheckChangeClassificationService(realtimeCheckChangeDataAccess);
         }
 
         [Fact]

@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
 
     public class ClassifyMatchMonitorCriteria : NonQueryCommand

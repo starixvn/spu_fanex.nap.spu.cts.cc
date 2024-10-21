@@ -61,14 +61,14 @@
             return isSuccess;
         }
 
-        public bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
+        public bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {
             if (custIds == null || !custIds.Any())
             {
                 return true;
             }
 
-            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
+            var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
             {
@@ -76,7 +76,7 @@
 
                 if (lastestClassifications != null && lastestClassifications.Any())
                 {
-                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, paras);
 
                     if (!isSuccess)
                     {
@@ -153,6 +153,9 @@
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3776:Cognitive Complexity of methods should not be too high", Justification = "<Pending>")]
         public bool RetryPushCCBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
         {
             if (classificationBySports != null && classificationBySports.Any())
@@ -208,7 +211,7 @@
         {
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity()
+                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity
                 {
                     CustId = c.CustID,
                     Category = c.CategoryID,
@@ -248,6 +251,9 @@
             return Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         private bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
         {
             if (lastestClassifications != null && lastestClassifications.Any())

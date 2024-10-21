@@ -30,7 +30,7 @@
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
         {
-            var criteria = new ProblemAccountLosingClassificationGetCriteria()
+            var criteria = new ProblemAccountLosingClassificationGetCriteria
             {
                 ListCustIds = custIds,
                 FunctionId = (int)funcId

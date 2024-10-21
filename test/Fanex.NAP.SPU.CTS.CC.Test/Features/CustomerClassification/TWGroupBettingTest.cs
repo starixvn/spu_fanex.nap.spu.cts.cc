@@ -31,7 +31,7 @@
         {
             var output = new SystemParameterEntity { ParameterDataType = "BIGINT", ParameterValue = "1" };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(Main_SystemParameters.TWGroupBetting_LastTransSec).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForMain(Main_SystemParameters.TWGroupBetting_LastTransSec).Returns(output);
 
             var result = twGroupbettingServices.GetConfig_Int64(Main_SystemParameters.TWGroupBetting_LastTransSec);
             result.Should().NotBe(0);
@@ -42,7 +42,7 @@
         {
             var output = new SystemParameterEntity { ParameterDataType = "INT", ParameterValue = "1" };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(Main_SystemParameters.TWGroupBetting_SkipTransCount).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForMain(Main_SystemParameters.TWGroupBetting_SkipTransCount).Returns(output);
 
             var result = twGroupbettingServices.GetConfig_Int(Main_SystemParameters.TWGroupBetting_SkipTransCount);
             result.Should().NotBe(0);
@@ -78,12 +78,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.GetPreviousTimingExecution(paramID).Returns(data);
+            systemParameterDataAccess.GetPreviousTimingExecutionForMain(paramID).Returns(data);
 
             var result = twGroupbettingServices.GetConfigWithoutDefault(paramID);
 
             // Assert
-            systemParameterDataAccess.Received(1).GetPreviousTimingExecution(paramID);
+            systemParameterDataAccess.Received(1).GetPreviousTimingExecutionForMain(paramID);
 
             Assert.NotNull(result);
         }
@@ -100,12 +100,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.GetPreviousTimingExecution(paramID).Throws<Exception>();
+            systemParameterDataAccess.GetPreviousTimingExecutionForMain(paramID).Throws<Exception>();
 
             Action action = () => twGroupbettingServices.GetConfigWithoutDefault(paramID);
 
             // Assert
-            systemParameterDataAccess.Received(0).GetPreviousTimingExecution(paramID);
+            systemParameterDataAccess.Received(0).GetPreviousTimingExecutionForMain(paramID);
 
             Assert.Throws<Exception>(action);
         }
@@ -117,12 +117,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
 
             twGroupbettingServices.UpdateConfig_Int64(long.MaxValue, paramID);
 
             // Assert
-            systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.Received(1).UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
         }
 
         [Fact]
@@ -132,12 +132,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), paramID)).Throw<Exception>();
+            systemParameterDataAccess.When(x => x.UpdateTimingExecutionForMain(Arg.Any<string>(), paramID)).Throw<Exception>();
 
             Action action = () => twGroupbettingServices.UpdateConfig_Int64(long.MaxValue, paramID);
 
             // Assert
-            systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.Received(0).UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
 
             Assert.Throws<Exception>(action);
         }
@@ -149,12 +149,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
 
             twGroupbettingServices.UpdateConfig_Int(int.MaxValue, paramID);
 
             // Assert
-            systemParameterDataAccess.Received(1).UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.Received(1).UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
         }
 
         [Fact]
@@ -164,12 +164,12 @@
             var paramID = Main_SystemParameters.TWGroupBetting_LastTransSec;
 
             // Act
-            systemParameterDataAccess.When(x => x.UpdateTimingExecution(Arg.Any<string>(), paramID)).Throw<Exception>();
+            systemParameterDataAccess.When(x => x.UpdateTimingExecutionForMain(Arg.Any<string>(), paramID)).Throw<Exception>();
 
             Action action = () => twGroupbettingServices.UpdateConfig_Int(int.MaxValue, paramID);
 
             // Assert
-            systemParameterDataAccess.Received(0).UpdateTimingExecution(Arg.Any<string>(), paramID);
+            systemParameterDataAccess.Received(0).UpdateTimingExecutionForMain(Arg.Any<string>(), paramID);
 
             Assert.Throws<Exception>(action);
         }

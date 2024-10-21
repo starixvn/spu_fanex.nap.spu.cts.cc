@@ -4,6 +4,8 @@
 
     public class CustomerInfoEqualityComparer : IEqualityComparer<CustomerMainDBModel>
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1067:Expressions should not be too complex", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S121:Control structures should use curly braces", Justification = "<Pending>")]
         public bool Equals(CustomerMainDBModel x, CustomerMainDBModel y)
         {
             if (x.CustID == y.CustID

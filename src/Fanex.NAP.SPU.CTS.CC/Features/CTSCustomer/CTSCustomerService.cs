@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
@@ -20,9 +19,9 @@
 
         InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds);
 
         bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
 
@@ -42,12 +41,19 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
         string GetCustInfoToUpdate(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
         string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
+
 
         #region  Update UserName2
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
         bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize);
 
         ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
@@ -72,17 +78,14 @@
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
             ISentryClient sentryClient,
-            ICustClassToMainDBService custClassToMainDBService,
-            ISystemParameterDataAccess systemParameterDataAccess)
+            ICustClassToMainDBService custClassToMainDBService)
         {
             this.dataAccess = dataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.systemParameterDataAccess = systemParameterDataAccess;
             this.sentryClient = sentryClient;
         }
 
@@ -103,11 +106,12 @@
             return dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int numOfAccount, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID)
         {
-            return dataAccess.GetCustSubFromMainDB(numOfAccount, lastScannedCustID);
+            return dataAccess.GetCustSubFromMainDBByLastCustSub(numOfAccount, lastScannedCustID);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
         public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
         {
             if (data == null && data.CustomerInfos.IsNullOrEmpty())
@@ -200,17 +204,17 @@
         {
             if (customer != null && customer.Any())
             {
-                var custIdsToInsertVIP = customer.Where(c => c.IsLicenseeVIP == true)?.Select(c => c.CustID);
-                var custIdsToInsertBA = customer.Where(c => c.IsLicenseeBA == true)?.Select(c => c.CustID);
+                var custIdsToInsertVIP = customer.Where(c => c.IsLicenseeVIP).Select(c => c.CustID);
+                var custIdsToInsertBA = customer.Where(c => c.IsLicenseeBA).Select(c => c.CustID);
 
                 try
                 {
-                    if (custIdsToInsertVIP != null && custIdsToInsertVIP.Any())
+                    if (custIdsToInsertVIP.IsNotNullOrEmpty())
                     {
                         await CallAPIInsertVIPBA(custIdsToInsertVIP, insertVIPUrl);
                     }
 
-                    if (custIdsToInsertBA != null && custIdsToInsertBA.Any())
+                    if (custIdsToInsertBA.IsNotNullOrEmpty())
                     {
                         await CallAPIInsertVIPBA(custIdsToInsertBA, insertBAUrl);
                     }
@@ -226,6 +230,7 @@
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private static async Task<string> CallAPIInsertVIPBA(IEnumerable<int> custIds, string url)
         {
             if (custIds != null && custIds.Any())
@@ -247,6 +252,7 @@
 
         #region Update Customers Info
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
         public void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog)
         {
             try
@@ -295,6 +301,7 @@
             return custInfoToUpdate;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "<Pending>")]
         public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB
             , IEnumerable<CustomerMainDBModel> custInfoFromCTS
             , UpdateCustomer sourceType
@@ -459,6 +466,7 @@
 
         #region Update UserName2
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S126:\"if ... else if\" constructs should end with \"else\" clauses", Justification = "<Pending>")]
         public bool UpdateUserName2Package(ref UInt64 lastCTSCustId, bool isCustSub, int rowSize)
         {
             var scannedCusts = GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
@@ -500,11 +508,11 @@
             return dataAccess.GetCustWithHavingUserName2(custs, isCustSub);
         }
 
-        public void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo)
+        public void UpdateUsername2(IEnumerable<CustNullUserName2Model> customerList)
         {
-            if (custInfo != null && custInfo.Any())
+            if (customerList != null && customerList.Any())
             {
-                dataAccess.UpdateUsername2(custInfo);
+                dataAccess.UpdateUsername2(customerList);
             }
         }
 
@@ -532,9 +540,9 @@
             return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds)
         {
-            return dataAccess.GetCustSubFromMainDB(custIds) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return dataAccess.GetCustSubFromMainDBByCustIDs(custIds) ?? Enumerable.Empty<CustomerMainDBModel>();
         }
 
         public void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime)

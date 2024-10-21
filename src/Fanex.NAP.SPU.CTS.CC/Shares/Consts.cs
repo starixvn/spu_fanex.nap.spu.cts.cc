@@ -25,6 +25,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
 
         public const int RobotUsers_SleepTimes = 300;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2148:Underscores should be used to make large numbers readable", Justification = "<Pending>")]
         public const int StarixITId = 10278938;
 
         public const string MicrosoftTeams_GroupId_Local = "19:00af2ff331b64d39adf13b428aa49c6e@thread.tacv2";
@@ -37,6 +38,10 @@ namespace Fanex.NAP.SPU.CTS.Shares
 
         public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
 
+        public const string DataInfo = "Data Info";
+        public const string ExceptionInfo = "Exception Info";
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum CTS_SystemParameters
         {
             TVS_LastScanDateTime = 2,
@@ -83,6 +88,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             SabaDangerLevel_Agency_LastHistoryID = 181
         };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum Main_SystemParameters
         {
             TWGroupBetting_LastTransSec = 1,
@@ -146,6 +152,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             TWInitialSmartClassification = 104
         };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum BySport_FunctionId
         {
             InsertNewCustJob = 4
@@ -159,6 +166,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Auto_NormalTaggingScan = 7
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum BySport_RescanNormalType
         {
             Service = 1,
@@ -177,8 +185,9 @@ namespace Fanex.NAP.SPU.CTS.Shares
         {
             GetByRange = 1,
             GetByCustId = 2
-        };       
+        };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum DownlineClassification_ActionType
         {
             InsertVVIP = 1,
@@ -187,6 +196,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             RemovePA = 4,
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum JobMonitor_IssueType
         {
             NewCustomer_NullCategory = 1,
@@ -200,6 +210,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             DCSTransaction_LastLoginProcessStatus = 500
         };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum CustomerMonitor_QueryType
         {
             MissingCustomer = 1,
@@ -212,6 +223,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Invalid_Null = 3
         };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum NormalClasification_TaggingType
         {
             NotExist = 0,

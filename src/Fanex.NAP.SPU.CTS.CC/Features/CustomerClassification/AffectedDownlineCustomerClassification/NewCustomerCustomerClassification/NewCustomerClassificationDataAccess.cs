@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
@@ -27,7 +26,7 @@
 
             (var vvipClassification, var paClassification, var normalClassification) = _repository.FetchMultiple<VVIPCategoryEntity, InsertProblemAccountEntity, NormalRescanEntity>(criteria);
 
-            return new NewCustomerClassificationModel()
+            return new NewCustomerClassificationModel
             {
                 VVIPClassification = vvipClassification ?? Enumerable.Empty<VVIPCategoryEntity>(),
                 PAClassification = paClassification ?? Enumerable.Empty<InsertProblemAccountEntity>(),

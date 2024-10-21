@@ -56,7 +56,7 @@
 
         private bool JobRun(int batchSize)
         {
-            var paramaters = new RescanParametersEntity()
+            var paramaters = new RescanParametersEntity
             {
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,

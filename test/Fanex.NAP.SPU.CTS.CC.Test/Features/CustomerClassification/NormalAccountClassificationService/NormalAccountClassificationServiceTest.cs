@@ -17,7 +17,7 @@
         public NormalAccountClassificationServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountClassificationDataAccess>();
-            normalAccountService = new NormalAccountClassificationService(null, normalAccountDataAccess);
+            normalAccountService = new NormalAccountClassificationService(normalAccountDataAccess);
         }
 
         [Fact]

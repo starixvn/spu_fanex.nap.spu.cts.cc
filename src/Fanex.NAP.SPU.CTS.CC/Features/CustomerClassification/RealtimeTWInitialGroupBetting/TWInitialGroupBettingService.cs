@@ -48,6 +48,7 @@
             dataAccess.UpdateNextScannedTime(nextScannedDateTime, nextScannedCustID);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<Pending>")]
         public bool InsertTWInitalGBClassification(IEnumerable<TWInitialGBGetChangesEntity> twGBCusts, PushDataToExternalEntity paras)
         {
             var custInfos = dataAccess.GetCustInfos(string.Join(",", twGBCusts.Select(x => x.CustID)));

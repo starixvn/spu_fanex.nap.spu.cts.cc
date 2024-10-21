@@ -18,16 +18,14 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
     public class IncorrectDataMonitoringTest
     {
         private readonly IIncorrectDataMonitoringDataAccess _dataAccess;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IIncorrectDataMonitoringService _service;
 
         public IncorrectDataMonitoringTest()
         {
             _dataAccess = Substitute.For<IIncorrectDataMonitoringDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new IncorrectDataMonitoringService(_dataAccess, _sentryClient);
+            _service = new IncorrectDataMonitoringService(_dataAccess);
         }
 
         #region GetIncorrectDataMonitoring

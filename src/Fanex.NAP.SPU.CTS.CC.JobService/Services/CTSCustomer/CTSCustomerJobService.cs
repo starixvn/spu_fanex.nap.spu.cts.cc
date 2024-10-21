@@ -67,7 +67,7 @@
 
                 if (customers?.CustomerInfos != null && customers.CustomerInfos.Any())
                 {
-                    var custSubs = ctscustomerService.GetCustSubFromMainDB(batchSize, lastScanned.LastCustSubID);
+                    var custSubs = ctscustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID);
 
                     customers.CustomerInfos.AddRange(custSubs);
 
@@ -88,8 +88,8 @@
             catch (Exception ex)
             {
                 var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
@@ -125,8 +125,8 @@
             catch (Exception ex)
             {
                 var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
@@ -152,8 +152,8 @@
             catch (Exception ex)
             {
                 var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
@@ -193,6 +193,7 @@
 
         #endregion Update UserName2
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
         public Task<bool> InsertReactivatedCustomers()
         {
             try
@@ -222,11 +223,13 @@
                     if (isInsertReactivedCust)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = systemParameterServices
+                            .UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
-                ctscustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
+                ctscustomerService
+                    .InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
 
                 return Task.FromResult(isSuccess);
             }
@@ -242,6 +245,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public Task<bool> InactivateNewCustomers(int batchSize)
         {
             try
@@ -256,7 +260,7 @@
                     {
                         var custIDs = inactivateCusts.CustInfos.Select(x => x.CustID).Distinct();
 
-                        var rescanConfig = new RescanParametersEntity()
+                        var rescanConfig = new RescanParametersEntity
                         {
                             IsToQueue = false,
                             FunctionId = FunctionId.InactivateNewCustomer,
@@ -338,6 +342,7 @@
             };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private bool InsertNewCustFromReactivedCust(IEnumerable<long> insertNewCusts)
         {
             if (insertNewCusts.IsNullOrEmpty())
@@ -357,7 +362,7 @@
                 return false;
             }
 
-            var subCusts = ctscustomerService.GetCustSubFromMainDB(insertNewCustIDs);
+            var subCusts = ctscustomerService.GetCustSubFromMainDBByCustIDs(insertNewCustIDs);
 
             var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
             custInfo.CustomerInfos.AddRange(mainCusts);

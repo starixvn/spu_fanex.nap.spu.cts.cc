@@ -26,6 +26,7 @@
         int? GetConfigWithoutDefault(Main_SystemParameters paraID);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
     public class TWGroupBettingService : ITWGroupBettingService
     {
         private readonly ITWGroupBettingDataAccess twGroupBettingDataAccess;
@@ -40,32 +41,30 @@
 
         public Int64 GetConfig_Int64(Main_SystemParameters paraID)
         {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            Int64 defaultValue = 0;
-            return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : defaultValue;
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecutionForMain(paraID);
+            return lastScannedDate != null ? Int64.Parse(lastScannedDate?.ParameterValue) : 0;
         }
 
         public int GetConfig_Int(Main_SystemParameters paraID)
         {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
-            int defaultValue = 0;
-            return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : defaultValue;
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecutionForMain(paraID);
+            return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : 0;
         }
 
         public int? GetConfigWithoutDefault(Main_SystemParameters paraID)
         {
-            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecution(paraID);
+            var lastScannedDate = systemParameterDataAccess.GetPreviousTimingExecutionForMain(paraID);
             return lastScannedDate != null ? int.Parse(lastScannedDate?.ParameterValue) : null;
         }
 
         public void UpdateConfig_Int64(Int64 value, Main_SystemParameters paraID)
         {
-            systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
+            systemParameterDataAccess.UpdateTimingExecutionForMain(value.ToString(), paraID);
         }
 
         public void UpdateConfig_Int(int value, Main_SystemParameters paraID)
         {
-            systemParameterDataAccess.UpdateTimingExecution(value.ToString(), paraID);
+            systemParameterDataAccess.UpdateTimingExecutionForMain(value.ToString(), paraID);
         }
 
         public TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria)

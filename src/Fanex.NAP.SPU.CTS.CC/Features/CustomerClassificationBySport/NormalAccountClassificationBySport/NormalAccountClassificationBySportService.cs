@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport
 {
-    using Sentry;
     using System.Collections.Generic;
 
     public interface INormalAccountClassificationBySportService
@@ -16,13 +15,11 @@
 
     public class NormalAccountClassificationBySportService : INormalAccountClassificationBySportService
     {
-        public readonly INormalAccountClassificationBySportDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
+        private readonly INormalAccountClassificationBySportDataAccess dataAccess;
 
-        public NormalAccountClassificationBySportService(ISentryClient sentryClient, INormalAccountClassificationBySportDataAccess dataAccess)
+        public NormalAccountClassificationBySportService(INormalAccountClassificationBySportDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public GetNormalPoolCustomerBySportModel GetNormalPoolCustomers()

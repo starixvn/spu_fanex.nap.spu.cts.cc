@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
+    using Fanex.NAP.SPU.CTS.CC.Shares.Models;
     using Microsoft.Extensions.Configuration;
     using System;
     using System.ComponentModel;
@@ -53,6 +54,8 @@
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
         bool NormalAccountBySportIsWriteLog { get; }
+
+        APIHelperConfig APIHelperConfig { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -62,7 +65,6 @@
         private readonly string environment;
         private readonly string evironmentName;
         private readonly string spName;
-        private readonly string soon88FeedDataAPI;
         private readonly string afcInsertAccountURL;
         private readonly string afcDeleteAccountURL;
         private readonly bool isSyncAFCData;
@@ -71,6 +73,7 @@
         private readonly string insertBAURL;
         private readonly string affectDownlineAgencyURL;
         private readonly string newCustomerClassificationAgencyURL;
+        private readonly APIHelperConfig apiHelperConfig;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -87,6 +90,10 @@
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
             affectDownlineAgencyURL = GetValue<string>("AffectDownlineAgency:AffectDownlineAgencyURL");
             newCustomerClassificationAgencyURL = GetValue<string>("NewCustomerClassificationAgency:NewCustomerClassificationAgencyURL");
+            apiHelperConfig = new APIHelperConfig
+            {
+                Proxy = GetValue<string>("APIHelperConfig:Proxy")
+            };
         }
 
         #region Variables
@@ -153,6 +160,7 @@
 
         public bool NormalAccountBySportIsWriteLog => GetValue<bool>("NormalAccountBySportIsWriteLog:IsWriteLog");
 
+        public APIHelperConfig APIHelperConfig => apiHelperConfig;
         #endregion Variables
 
         #region Methods

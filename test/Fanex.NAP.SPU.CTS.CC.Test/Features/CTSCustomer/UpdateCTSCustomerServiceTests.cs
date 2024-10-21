@@ -21,13 +21,12 @@
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
         public UpdateCTSCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null);
         }
 
         [Fact]
@@ -188,9 +187,8 @@
             };
 
             var expectedResult = JsonConvert.SerializeObject(expectedData);
-            var assCustForRollbacks = Enumerable.Empty<UpdateAssociationCustomerForRollbackModel>();
 
-            var result = ctsCustomerService.CompareCustomerInfo(custFromMain, custFromCTS, UpdateCustomer.FromCustInfo, out assCustForRollbacks);
+            var result = ctsCustomerService.CompareCustomerInfo(custFromMain, custFromCTS, UpdateCustomer.FromCustInfo, out var assCustForRollbacks);
 
             result.Should().BeEquivalentTo(expectedResult);
         }

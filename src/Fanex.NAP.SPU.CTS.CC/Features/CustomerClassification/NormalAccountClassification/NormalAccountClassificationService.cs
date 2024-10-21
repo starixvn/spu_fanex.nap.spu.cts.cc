@@ -1,7 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification
 {
-    using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System.Collections.Generic;
 
     public interface INormalAccountClassificationService
@@ -18,12 +16,10 @@
     public class NormalAccountClassificationService : INormalAccountClassificationService
     {
         private readonly INormalAccountClassificationDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public NormalAccountClassificationService(ISentryClient sentryClient, INormalAccountClassificationDataAccess dataAccess)
+        public NormalAccountClassificationService(INormalAccountClassificationDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;            
         }
 
         public GetNormalPoolCustomerModel GetNormalPoolCustomers()

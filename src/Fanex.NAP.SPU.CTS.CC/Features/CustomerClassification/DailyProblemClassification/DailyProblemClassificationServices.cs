@@ -68,6 +68,7 @@
             return this;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1905:Redundant casts should not be used", Justification = "<Pending>")]
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(FunctionId funcId)
         {
             if (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any())
@@ -92,7 +93,7 @@
 
         public IDailyProblemClassificationServices InsertPALogic()
         {
-            if (problemAccounts != null & problemAccounts.Any())
+            if (problemAccounts != null && problemAccounts.Any())
             {
                 var probAccountToInsertLogic = problemAccounts.Where(c => !c.IsRobot).Select(c => new CustInfoEntity { CTSCustID = c.CTSCustID, CustID = c.CustID });
                 problemAccountServices.InsertPALogics(probAccountToInsertLogic, serviceName);

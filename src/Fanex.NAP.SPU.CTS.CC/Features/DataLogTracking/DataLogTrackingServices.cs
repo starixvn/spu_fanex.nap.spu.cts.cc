@@ -16,6 +16,7 @@
         void LogErrorData(Exception exception, string serviceName);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Datetime Code Smell", "S6566:Prefer using DateTimeOffset instead of DateTime", Justification = "<NotHandle>")]
     public class DataLogTrackingServices : IDataLogTrackingServices
     {
         private readonly IDataLogTrackingDataAccess dataLogTrackingDataAccess;
@@ -49,6 +50,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         public void LogErrorData(Exception exception, string serviceName)
         {
             try

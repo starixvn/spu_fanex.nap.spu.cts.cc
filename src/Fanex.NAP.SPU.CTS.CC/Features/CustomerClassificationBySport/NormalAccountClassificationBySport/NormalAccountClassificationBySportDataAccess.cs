@@ -2,7 +2,6 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport.Criteria;
-    using System;
     using System.Collections.Generic;
 
     public interface INormalAccountClassificationBySportDataAccess

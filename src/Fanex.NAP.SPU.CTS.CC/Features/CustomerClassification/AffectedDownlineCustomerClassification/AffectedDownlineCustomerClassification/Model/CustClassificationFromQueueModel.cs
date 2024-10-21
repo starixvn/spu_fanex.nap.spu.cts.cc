@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using System;
     using System.Collections.Generic;
     using System.Linq;

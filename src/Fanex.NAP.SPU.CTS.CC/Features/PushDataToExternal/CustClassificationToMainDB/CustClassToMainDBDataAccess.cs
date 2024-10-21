@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.Data.Repository;
-    using Fanex.Logging;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;

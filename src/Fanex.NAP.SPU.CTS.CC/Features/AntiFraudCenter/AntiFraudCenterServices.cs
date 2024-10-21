@@ -61,6 +61,7 @@
 
         #region Private methods
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private static async Task<bool> CallAPI(IEnumerable<long> custIds, FromFlow fromFlow, string url)
         {
             if (custIds != null && custIds.Any())

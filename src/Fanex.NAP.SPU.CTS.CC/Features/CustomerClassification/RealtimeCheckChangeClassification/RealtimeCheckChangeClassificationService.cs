@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;  
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -22,12 +21,10 @@
     public class RealtimeCheckChangeClassificationService : IRealtimeCheckChangeClassificationService
     {
         private readonly IRealtimeCheckChangeClassificationDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public RealtimeCheckChangeClassificationService(IRealtimeCheckChangeClassificationDataAccess dataAccess, ISentryClient sentryClient)
+        public RealtimeCheckChangeClassificationService(IRealtimeCheckChangeClassificationDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public RealtimeCheckChangeModel CheckChange()
@@ -35,6 +32,7 @@
             return this.dataAccess.CheckChange();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize)
         {
             if (custInfos != null && custInfos.Any())
@@ -52,6 +50,7 @@
             return this;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public IRealtimeCheckChangeClassificationService UpdateLastTransDateAgency(IEnumerable<RealtimeCheckChangeAgencyEntities> custInfosAgency, int batchSize)
         {
             if (custInfosAgency != null && custInfosAgency.Any())

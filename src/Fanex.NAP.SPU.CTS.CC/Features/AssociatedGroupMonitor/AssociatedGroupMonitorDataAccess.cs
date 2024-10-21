@@ -6,7 +6,6 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;

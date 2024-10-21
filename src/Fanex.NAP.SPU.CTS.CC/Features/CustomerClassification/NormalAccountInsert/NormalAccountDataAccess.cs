@@ -1,10 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountDataAccess
     {

@@ -22,21 +22,19 @@
         private readonly ISentryClient sentryClient;
         private readonly IClassificationJobMonitorService classificationJobMonitorService;
         private readonly ISystemParameterServices systemParameterServices;
-        private readonly IAppSettings appSettings;
 
         public ClassificationJobMonitorJobService(
             ISentryClient sentryClient,
             IClassificationJobMonitorService classificationJobMonitorService,
-            ISystemParameterServices systemParameterServices,
-            IAppSettings appSettings)
+            ISystemParameterServices systemParameterServices)
         {
             this.sentryClient = sentryClient;
             this.classificationJobMonitorService = classificationJobMonitorService;
             this.systemParameterServices = systemParameterServices;
-            this.appSettings = appSettings;
             this.serviceName = "ClassificationJobMonitor";
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public Task<bool> MonitorRealtimeInactiveCategory(int batchSize)
         {
             try
@@ -71,20 +69,21 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorNormalClassificationPool(int thresHold)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
+        public Task<bool> MonitorNormalClassificationPool(int threshold)
         {
             try
             {
                 var normalPool = classificationJobMonitorService.GetNormalClassificationPoolMonitor();
 
-                if (normalPool.GeneralRecord > thresHold)
+                if (normalPool.GeneralRecord > threshold)
                 {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500, thresHold);
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500, threshold);
                 }
 
-                if (normalPool.BySportRecord > thresHold)
+                if (normalPool.BySportRecord > threshold)
                 {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500, thresHold);
+                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500, threshold);
                 }
             }
             catch (Exception ex)

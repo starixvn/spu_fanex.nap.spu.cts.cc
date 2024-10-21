@@ -29,12 +29,15 @@
             this.serviceName = "NormalAccountClassificationService";
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public Task<bool> Execute(int batchInternalSize)
         {
             try
             {
                 if (batchInternalSize <= 0)
+                {
                     batchInternalSize = 5000;
+                }
 
                 JobRun(batchInternalSize);
             }
@@ -48,7 +51,7 @@
             return Task.FromResult(true);
         }
 
-        private bool JobRun(int batchInternalSize)
+        private void JobRun(int batchInternalSize)
         {
             var normalPoolCustomerModel = normalAccountService.GetNormalPoolCustomers();
 
@@ -58,10 +61,9 @@
             {
                 ClassifyNormalAccountWithBatch(normalPoolCustomerModel, batchInternalSize);
             }
-
-            return isExistCusts;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private void ClassifyNormalAccountWithBatch(GetNormalPoolCustomerModel normalPoolCustomer, int batchInternalSize)
         {
             var customerList = normalPoolCustomer.NormalPoolCustomers;

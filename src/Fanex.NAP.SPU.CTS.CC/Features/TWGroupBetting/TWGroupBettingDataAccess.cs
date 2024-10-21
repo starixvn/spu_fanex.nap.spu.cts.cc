@@ -9,7 +9,7 @@
     {
         TWGroupBetting_ScanTicketCriteria ScanTicket(TWGroupBetting_ScanTicketCriteria criteria);
 
-        long UpdateTotalTWGBTicket(int batchSize, long LastSequenceId);
+        long UpdateTotalTWGBTicket(int batchSize, long lastSequenceId);
 
         IEnumerable<TWGroupBettingRule> GetAllRules();
     }
@@ -31,7 +31,7 @@
 
         public long UpdateTotalTWGBTicket(int batchSize, long lastSequenceId)
         {
-            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria()
+            var criteria = new TWGroupBetting_UpdateTotalTicketCriteria
             {
                 BatchSize = batchSize,
                 LastSequenceId = lastSequenceId

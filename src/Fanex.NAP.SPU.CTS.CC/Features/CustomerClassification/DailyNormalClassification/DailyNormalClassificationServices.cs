@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -22,16 +21,13 @@
         private readonly IDailyNormalClassificationDataAccess dailyClassificationDataAccess;
         private readonly ISystemParameterServices systemParameterService;
         private DailyNormalClassificationEntity scanningCustomers;
-        private readonly ISentryClient sentryClient;
 
         public DailyNormalClassificationServices(
             IDailyNormalClassificationDataAccess dailyClassificationDataAccess,
-            ISystemParameterServices systemParameterService,
-            ISentryClient sentryClient)
+            ISystemParameterServices systemParameterService)
         {
             this.dailyClassificationDataAccess = dailyClassificationDataAccess;
             this.systemParameterService = systemParameterService;
-            this.sentryClient = sentryClient;
         }
 
         public IDailyNormalClassificationServices Start()

@@ -5,9 +5,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
-    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalTaggingClassificationDataAccess

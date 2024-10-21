@@ -26,13 +26,15 @@
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
-        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;       
+        private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
         private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
         private readonly IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService;
 
-        public ClassificationJobController(ISentryClient sentryClient,           
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
+        public ClassificationJobController(
+            ISentryClient sentryClient,
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeJobService,
             IRealtimeClassificationJobService realtimeJobService,
@@ -46,14 +48,14 @@
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
-            IMatchMonitorClassificationJobService mmClassificationJobService,            
+            IMatchMonitorClassificationJobService mmClassificationJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
             IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService)
         {
-            this.sentryClient = sentryClient;           
-            this.dailyProblemClassificationServices = dailyProblemClassificationServices;                       
+            this.sentryClient = sentryClient;
+            this.dailyProblemClassificationServices = dailyProblemClassificationServices;
 
             this.realtimeCheckChangeJobService = realtimeCheckChangeJobService;
             this.realtimeJobService = realtimeJobService;
@@ -67,7 +69,7 @@
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
-            this.mmClassificationJobService = mmClassificationJobService;          
+            this.mmClassificationJobService = mmClassificationJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
@@ -88,7 +90,7 @@
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
- 		[HttpPost("scanningDailyDangerousDepositClassification")]
+        [HttpPost("scanningDailyDangerousDepositClassification")]
         public async Task<bool> DailyScanningDangerousDepositClassification([FromForm] int batchSize)
         {
             sentryClient.CaptureMessage($"Daily Deposit Dangerous Score Classification Service is running at {DateTime.Now}");
@@ -103,17 +105,17 @@
 
             return await this.dailyDangerousClassificationJobService.Execute(batchSize, false);
         }
-      
+
         [HttpPost("realtimeCheckChanges")]
         public async Task<bool> RealtimeCheckChanges([FromForm] int batchSize)
         {
-            return await this.realtimeCheckChangeJobService.Execute(batchSize);           
+            return await this.realtimeCheckChangeJobService.Execute(batchSize);
         }
 
         [HttpPost("scanningRealtimeClassification")]
         public async Task<bool> RealtimeScanningClassification([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
-            return await this.realtimeJobService.Execute(batchExternalSize, batchInternalSize);            
+            return await this.realtimeJobService.Execute(batchExternalSize, batchInternalSize);
         }
 
         [HttpPost("normalAccountClassification")]
@@ -152,7 +154,7 @@
         public async Task<bool> AffectedDownlineClassificationFromQueue([FromForm] int batchSize)
         {
             return await this.affectedDownlineClassificationJobService.Execute(batchSize);
-        }      
+        }
 
         [HttpPost("robotTWClassification")]
         public async Task<bool> RobotTWClassication([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
@@ -182,7 +184,7 @@
         public async Task<bool> DetectUnauthorizedLoginCustomerLicensee([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
         {
             return await detectUnauthorizedLoginCustJobService.Execute(batchExternalSize, batchInternalSize, true);
-        }       
+        }
 
         [HttpPost("UpdateStatusMatchMonitor")]
         public async Task<bool> UpdateStatusMatchMonitor()
@@ -198,7 +200,7 @@
 
         [HttpPost("scanningSecondlyTWInitialGBClassification")]
         public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
-        {            
+        {
             return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
         }
 

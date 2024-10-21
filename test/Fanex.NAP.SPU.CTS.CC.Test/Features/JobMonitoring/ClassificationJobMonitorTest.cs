@@ -18,7 +18,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
     {
         private readonly IClassificationJobMonitorDataAccess _dataAccess;
         private readonly IIncorrectDataMonitoringService _incorrectDataMonitoringService;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IClassificationJobMonitorService _service;
 
@@ -26,9 +25,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         {
             _dataAccess = Substitute.For<IClassificationJobMonitorDataAccess>();
             _incorrectDataMonitoringService = Substitute.For<IIncorrectDataMonitoringService>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new ClassificationJobMonitorService(_dataAccess, _incorrectDataMonitoringService, _sentryClient);
+            _service = new ClassificationJobMonitorService(_dataAccess, _incorrectDataMonitoringService);
         }
 
         [Fact]

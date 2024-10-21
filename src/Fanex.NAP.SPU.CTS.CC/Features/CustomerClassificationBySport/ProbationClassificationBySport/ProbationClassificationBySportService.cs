@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using Newtonsoft.Json;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -25,7 +23,6 @@
     {
         private readonly IProbationClassificationBySportDataAccess dataAccess;
         private readonly ISystemParameterDataAccess systemParameterDataAccess;
-        private readonly ISentryClient sentryClient;
 
         private ProbationBySportModel probationData;
 
@@ -33,11 +30,9 @@
 
         public ProbationClassificationBySportService(
                 IProbationClassificationBySportDataAccess probationClassificationDataAccess
-            ,   ISentryClient sentryClient
             ,   ISystemParameterDataAccess systemParameterDataAccess)
         {            
             this.dataAccess = probationClassificationDataAccess;
-            this.sentryClient = sentryClient;
             this.systemParameterDataAccess = systemParameterDataAccess;
         }
 
@@ -67,7 +62,7 @@
 
         public bool UpdateCompleteProbationScanBySport()
         {
-            systemParameterDataAccess.UpdateTimingExecution(probationData.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_BySport_LastCustID);
+            systemParameterDataAccess.UpdateTimingExecutionForCTS(probationData.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_BySport_LastCustID);
 
             return probationData.CustProbations != null && probationData.CustProbations.Any();
         }

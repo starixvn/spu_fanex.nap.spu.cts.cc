@@ -89,10 +89,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertVVIPForNewCustomers_WhenSuccess(bool isSuccessResult)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity() }
@@ -115,10 +115,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertVVIPForNewCustomers_WhenFailure(bool isSuccess, bool isVVIPClassificationAny)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, isSuccess);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = isVVIPClassificationAny ? new List<VVIPCategoryEntity> { new VVIPCategoryEntity() } : new List<VVIPCategoryEntity>()
@@ -136,10 +136,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertVVIPForNewCustomers_ThrowException()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 VVIPClassification = new List<VVIPCategoryEntity> { new VVIPCategoryEntity() }
@@ -162,10 +162,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertPAForNewCustomers_WhenSuccess(bool isSuccessResult)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
@@ -209,10 +209,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertPAForNewCustomers_WhenFailure(bool isSuccess, bool isPAClassificationAny)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, isSuccess);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = isPAClassificationAny ? new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() } : new List<InsertProblemAccountEntity>()
@@ -239,10 +239,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertPAForNewCustomers_ThrowException_InsertProblemAccountPackage()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
@@ -268,10 +268,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void InsertPAForNewCustomers_ThrowException_PushExternalProblemAcountPackage()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 PAClassification = new List<InsertProblemAccountEntity> { new InsertProblemAccountEntity() }
@@ -304,10 +304,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void ResanNormalForNewCustomers_WhenSuccess(bool isSuccessResult)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } }
@@ -330,10 +330,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void ResanNormalForNewCustomers_WhenFailure(bool isSuccess, bool isNormalClassificationAny)
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, isSuccess);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = isNormalClassificationAny ? new List<NormalRescanEntity> { new NormalRescanEntity() } : new List<NormalRescanEntity>()
@@ -351,10 +351,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void ResanNormalForNewCustomers_ThrowException()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() }
@@ -375,10 +375,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void ResanNormalBySportForNewCustomers_WhenSuccess()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } },
@@ -399,10 +399,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void ResanNormalBySportForNewCustomers_ThrowException()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel()
             {
                 NormalClassification = new List<NormalRescanEntity> { new NormalRescanEntity() { CustID = 1 }, new NormalRescanEntity() { CustID = 2 } },
@@ -425,10 +425,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void UpdateComplete_WhenSuccess()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel());
 
             // Act
@@ -444,7 +444,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void UpdateComplete_WhenFailure()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, false);
 
             // Act
@@ -458,10 +458,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         public void UpdateComplete_ThrowException()
         {
             // Arrange
-            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess); ;
+            var isSuccessField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.IsSuccess);
             isSuccessField.SetValue(_services, true);
 
-            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification); ;
+            var newCustomerClassificationField = TestExtension.GetPrivateFieldInfo(typeof(NewCustomerClassificationServices), PrivateFieldName.NewCustomerClassification);
             newCustomerClassificationField.SetValue(_services, new NewCustomerClassificationModel());
 
             // Act

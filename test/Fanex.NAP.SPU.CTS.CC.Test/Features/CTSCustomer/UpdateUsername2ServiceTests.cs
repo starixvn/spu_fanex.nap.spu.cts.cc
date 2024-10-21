@@ -16,16 +16,15 @@
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
-        private readonly IRescanCustClassificationService rescanClassificationService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISentryClient sentryClient;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
         public UpdateUsername2ServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService, systemParameterDataAccess);
+            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService);
         }
 
         [Fact]

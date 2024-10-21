@@ -2,9 +2,7 @@
 {    
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares;
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public interface IRealtimeClassificationBySportDataAccess
     {

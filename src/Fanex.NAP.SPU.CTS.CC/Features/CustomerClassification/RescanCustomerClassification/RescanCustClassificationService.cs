@@ -22,8 +22,6 @@
       
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        private readonly ISentryClient sentryClient;       
-
         public RescanCustClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
@@ -31,12 +29,9 @@
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
-            this.sentryClient = sentryClient;
         }
         public bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras)
         {
-            var isSuccess = true;
-
             var custRescans = GetRescanCustomerClassification(string.Join(",", custIds));
 
             if (custRescans.CustInfos != null && custRescans.CustInfos.Any())
@@ -56,7 +51,7 @@
                 }               
             }
 
-            return isSuccess;
+            return true;
         }
 
         private void RescanProblemAccount(IEnumerable<GetRescanCustomerClassificationEntity> custNormals, RescanParametersEntity paras, CCInputFlow ccInputFlow)
@@ -73,11 +68,11 @@
             rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, paras.FunctionId, paras.RescanNormalType);
         }
     
-        public bool PushExternalProblemAccounts(IEnumerable<long> custIDs, PushDataToExternalEntity parameters)
+        public bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {
-            if (custIDs.Any())
+            if (custIds.Any())
             {
-                return custClassToMainDBService.PushExternalProblemAcountPackage(custIDs.Distinct(), parameters);
+                return custClassToMainDBService.PushExternalProblemAcountPackage(custIds.Distinct(), paras);
             }
 
             return true;

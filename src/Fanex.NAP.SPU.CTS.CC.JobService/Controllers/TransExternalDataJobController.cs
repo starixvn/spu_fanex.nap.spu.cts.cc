@@ -9,13 +9,11 @@
     [Route("api/transExternalDataJobs")]
     public class TransExternalDataJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly ISabaDangerLevelJobService sabaDangerLevelJobService;
 
-        public TransExternalDataJobController(ISentryClient sentryClient,
+        public TransExternalDataJobController(
             ISabaDangerLevelJobService sabaDangerLevelJobService)
         {
-            this.sentryClient = sentryClient;
             this.sabaDangerLevelJobService = sabaDangerLevelJobService;
         }
 

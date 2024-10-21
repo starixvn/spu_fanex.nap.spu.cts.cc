@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport
 {   
-    using System;
     using System.Collections.Generic;
 
     public class GetNormalPoolCustomerBySportModel

@@ -60,8 +60,8 @@
         [HttpGet("health")]
         public string CheckHealth()
         {
-            sentryClient.CaptureMessage($"Check health CTS.CC services {DateTime.Now}", Sentry.Protocol.SentryLevel.Info);
-            return JsonConvert.SerializeObject(DateTime.Now.ToString());
+            sentryClient.CaptureMessage($"Check health CTS.CC services {DateTime.Now}");
+            return JsonConvert.SerializeObject(DateTime.Now);
         }
     }
 }
