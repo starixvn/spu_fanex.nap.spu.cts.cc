@@ -165,7 +165,7 @@
 
 	<Function name="SabaDangeLevel">
 		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Init" SpName="CTS_DC_CustClassification_SabaDangerLevel_Init" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Scan" SpName="CTS_DC_CustClassification_SabaDangerLevel_Scan" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Scan" SpName="CTS_DC_CustClassification_SabaDangerLevel_Scan_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_SabaDangerLevel_Update" SpName="CTS_DC_CustClassification_SabaDangerLevel_Update" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="Acc_CustomerUdpDanger_JobExclusion" SpName="Acc_CustomerUdpDanger_JobExclusion" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 	</Function>

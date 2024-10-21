@@ -34,7 +34,8 @@
             return new SabaDangerLevelResultEntity
             {
                 CustSabaDangerLevel = result ?? Enumerable.Empty<SabaDangerLevelEntity>(),
-                LastHistoryID = criteria.LastHistoryID
+                LastHistoryID = criteria.LastHistoryID,
+                AgencyLastHistoryID = criteria.AgencyLastHistoryID
             };
         }
 

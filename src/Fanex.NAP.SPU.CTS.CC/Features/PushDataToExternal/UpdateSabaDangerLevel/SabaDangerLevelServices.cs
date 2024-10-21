@@ -75,7 +75,8 @@
 
                     if (!sabaDangerLevel.UpdatedResult.IsSuccess)
                     {
-                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, sabaDangerLevel.CustSabaDangerLevel, new Exception(sabaDangerLevel.UpdatedResult.ErrMsg), sentryClient);
+                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, sabaDangerLevel.CustSabaDangerLevel, 
+                            new Exception(sabaDangerLevel.UpdatedResult.ErrMsg), sentryClient);
 
                         return this;
                     }
@@ -104,6 +105,7 @@
             if (sabaDangerLevel.UpdatedResult.IsSuccess)
             {
                 systemParameterServices.UpdateTimingExecution(sabaDangerLevel.LastHistoryID.ToString(), CTS_SystemParameters.SabaDangerLevel_LastHistoryID);
+                systemParameterServices.UpdateTimingExecution(sabaDangerLevel.AgencyLastHistoryID.ToString(), CTS_SystemParameters.SabaDangerLevel_Agency_LastHistoryID);
 
                 return true;
             }

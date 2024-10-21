@@ -39,14 +39,14 @@
         public void UpdateLastTransDate_WhenSuccess()
         {
             // Arrange
-            var custInfos = new List<RealtimeCheckChangeEntities>();
+            var custInfos = new List<RealtimeCheckChangeEntities> { new RealtimeCheckChangeEntities() };
             var custInfosJson = JsonConvert.SerializeObject(custInfos);
 
             // Act            
             realtimeCheckChangeService.UpdateLastTransDate(custInfos, 100);
 
             // Assert
-            realtimeCheckChangeDataAccess.Received(1).UpdateLastTransDate(custInfosJson);            
+            realtimeCheckChangeDataAccess.Received(1).UpdateLastTransDate(custInfosJson);
         }
 
         [Fact]
