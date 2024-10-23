@@ -39,7 +39,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
         public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
 
         public const string DataInfo = "Data Info";
-        public const string ExceptionInfo = "Exception Info";
+        public const string ExceptionInfo = "Exception Info";        
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum CTS_SystemParameters

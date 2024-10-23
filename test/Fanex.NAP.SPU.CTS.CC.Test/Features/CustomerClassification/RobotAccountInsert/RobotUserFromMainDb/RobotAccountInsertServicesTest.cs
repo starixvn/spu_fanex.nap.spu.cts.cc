@@ -48,6 +48,7 @@
                 , _dataLogTrackingServices
                 , _baseDataAccess
                 , problemAccountDataAccess
+                , null
                 , sentryClient);
         }
 
@@ -81,7 +82,7 @@
             var expectedResult = new List<long>();
 
             // Act
-            var result = _service.InsertTWRobotPackage(1, null);
+            var result = _service.InsertTWRobotPackage(1,"", null);
 
             // Assert
             result.Should().BeTrue();
@@ -119,7 +120,7 @@
 
             _custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), pushConfig).Returns(isSuccess);
 
-            var result = _service.InsertTWRobotPackage(999, pushConfig);
+            var result = _service.InsertTWRobotPackage(999, "", pushConfig);
 
             // Assert
             _dataLogTrackingServices.Received(1).LogInputData(Arg.Any<LogInputViewEntity>(), FunctionId.RobotUserJob, Arg.Any<string>());

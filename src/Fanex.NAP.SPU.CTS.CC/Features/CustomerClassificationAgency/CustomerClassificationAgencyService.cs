@@ -34,10 +34,10 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Affect Downline Agency fail", agencyInfos, ex, _sentryClient, "agencyInfos");
-            }
+                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Affect Downline Agency fail { url }", agencyInfos, ex, _sentryClient, "agencyInfos");
 
-            return true;
+                return false;
+            }
         }
 
         public async Task<bool> CallAPIPost<T>(T agencyInfos, int internalBatchSize, int externalBatchSize, FromFlow fromFlow, string url)
@@ -51,11 +51,11 @@
 
             try
             {
-                return await ApiHelper.Post<bool>(url, request, 300);
+                return await ApiHelper.Post<bool>(url, request, 600);
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - New Customer Classification Agency fail", request, ex, _sentryClient, JsonConvert.SerializeObject(request));
+                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - CallAPIPost fail { url }", request, ex, _sentryClient, JsonConvert.SerializeObject(request));
 
                 return false;
             }

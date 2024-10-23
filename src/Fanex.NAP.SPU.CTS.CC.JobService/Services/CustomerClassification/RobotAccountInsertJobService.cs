@@ -95,8 +95,9 @@
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
                                                       .GetTWRobotUser()
-                                                      .GetRobotUserCategoryId(robotAccountServiceName)
-                                                      .InsertTWRobotPackage(batchInternalSize, new PushDataToExternalEntity
+                                                      .GetCustomerRole()
+                                                      .GetRobotUserCategoryId(robotAccountServiceName)                                                      
+                                                      .InsertTWRobotPackage(batchInternalSize, appSettings.AgencyApiUrl, new PushDataToExternalEntity
                                                           {
                                                               RoleGroup = RoleGroupType.Member,
                                                               IsUpdateDangerToMainDB = true,

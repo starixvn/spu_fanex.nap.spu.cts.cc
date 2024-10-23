@@ -47,6 +47,8 @@
 
         string InsertBAURL { get; }
 
+        string AgencyApiUrl { get; }
+
         string NewCustomerClassificationAgencyURL { get; }
 
         string AffectDownlineAgencyURL { get; }
@@ -71,6 +73,7 @@
         private readonly string sentryDsn;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
+        private readonly string agencyApiUrl;
         private readonly string affectDownlineAgencyURL;
         private readonly string newCustomerClassificationAgencyURL;
         private readonly APIHelperConfig apiHelperConfig;
@@ -88,6 +91,7 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
+            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");
             affectDownlineAgencyURL = GetValue<string>("AffectDownlineAgency:AffectDownlineAgencyURL");
             newCustomerClassificationAgencyURL = GetValue<string>("NewCustomerClassificationAgency:NewCustomerClassificationAgencyURL");
             apiHelperConfig = new APIHelperConfig
@@ -131,6 +135,8 @@
         public string InsertVIPURL => insertVIPURL;
 
         public string InsertBAURL => insertBAURL;
+
+        public string AgencyApiUrl => agencyApiUrl;
 
         public string NewCustomerClassificationAgencyURL => newCustomerClassificationAgencyURL;
 
