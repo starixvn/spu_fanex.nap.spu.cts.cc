@@ -90,7 +90,7 @@
 
         public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, RoleGroupType roleGroup, int retryTime, string serviceName)
         {
-            if (customerClassifications == null || !customerClassifications.Any())
+            if (customerClassifications.IsNullOrEmpty())
             {
                 return true;
             }
@@ -101,19 +101,24 @@
                 {
                     var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications, roleGroup);
 
-                    if (result.ErrorCode != 0 && retryTime == 0)
+                    if (result.ErrorCode == 200 || retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "PushCustomerClassificationToMain fail", customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(
+                            serviceName, $"PushCustomerClassificationToMain fail with error code: {result.ErrorCode}",
+                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+                    }
+
+                    if (result.ErrorCode == 200 || result.ErrorCode == 0)
+                    {
+                        return true;
+                    }
+
+                    if (retryTime == 0)
+                    {
                         return false;
                     }
-                    else if (result.ErrorCode != 0)
-                    {
-                        retryTime--;
-                    }
-                    else
-                    {
-                        retryTime = -1;
-                    }
+
+                    retryTime--;
                 }
                 catch (Exception ex)
                 {
