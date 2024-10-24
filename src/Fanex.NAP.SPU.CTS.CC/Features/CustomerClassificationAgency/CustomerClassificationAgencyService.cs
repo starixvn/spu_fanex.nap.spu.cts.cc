@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency.Model;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
