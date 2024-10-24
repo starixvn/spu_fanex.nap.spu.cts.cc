@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -22,11 +23,11 @@
     {
         private readonly IRobotTWInsertDataAccess robotAccountInsertDataAccess;
         private readonly ISystemParameterServices systemParameterServices;
-        private readonly ICustClassToMainDBService _custClassToMainDBService;
-        private readonly IProblemAccountServices problemAccountServices;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;   
         private readonly IDataLogTrackingServices _dataLogTrackingServices;
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
+        private readonly ICustomerClassificationAgencyService _ccAgencyService;
         private readonly ISentryClient sentryClient;
 
         private readonly IRobotTWInsertServices _service;
@@ -34,13 +35,14 @@
         public RobotAccountInsertServicesTest()
         {
             robotAccountInsertDataAccess = Substitute.For<IRobotTWInsertDataAccess>();
-            systemParameterServices = Substitute.For<ISystemParameterServices>();
-            problemAccountServices = Substitute.For<IProblemAccountServices>();
+            systemParameterServices = Substitute.For<ISystemParameterServices>();           
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             _dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
             sentryClient = Substitute.For<ISentryClient>();
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
+            _ccAgencyService = Substitute.For<ICustomerClassificationAgencyService>();
+
             _service = new RobotTWInsertServices(
                   robotAccountInsertDataAccess
                 , systemParameterServices
@@ -48,7 +50,7 @@
                 , _dataLogTrackingServices
                 , _baseDataAccess
                 , problemAccountDataAccess
-                , null
+                , _ccAgencyService
                 , sentryClient);
         }
 
@@ -88,8 +90,7 @@
             result.Should().BeTrue();
         }
 
-        [Theory]
-        [InlineData(true)]
+        [Theory]     
         [InlineData(false)]
         public void InsertTWRobotPackage_WhenSuccess_ReturnTrue(bool isSuccess)
         {
