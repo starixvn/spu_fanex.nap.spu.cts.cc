@@ -140,16 +140,16 @@
             var isSuccess = true;
 
             if (robotInfo != null && robotInfo.RobotUsers != null && robotInfo.RobotUsers.Any())
-            {
-                var memberRobots = robotInfo.RobotUsers.Where(x => x.RoleID == 1).Select(x => x);
-
+            {                
                 var agencyRobots = robotInfo.RobotUsers.Where(x => x.RoleID != 1).Select(x => x);
 
-                isSuccess = InsertTWMemberRobot(internalSize, memberRobots, pushConfig);
+                isSuccess = InsertTWAgencyRobot(internalSize, agencyApiUrl, agencyRobots, pushConfig);
 
                 if (isSuccess)
                 {
-                    isSuccess = InsertTWAgencyRobot(internalSize, agencyApiUrl, agencyRobots, pushConfig);
+                    var memberRobots = robotInfo.RobotUsers.Where(x => x.RoleID == 1).Select(x => x);
+
+                    isSuccess = InsertTWMemberRobot(internalSize, memberRobots, pushConfig);
                 }
             }
 
@@ -198,8 +198,10 @@
 
                 var response = _ccAgencyService.CallAPIPost(robot, internalSize, pushConfig.ExternalBatchSize, FromFlow.CTSServices,
                     agencyApiUrl + ApiEndpoint.InsertTWRobotAgencyEndpoint);
-               
+
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
                 if (!response.Result)
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
                 {
                     return false;
                 }
