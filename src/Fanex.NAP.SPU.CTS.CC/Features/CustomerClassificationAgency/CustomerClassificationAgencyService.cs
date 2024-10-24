@@ -11,8 +11,6 @@
 
     public interface ICustomerClassificationAgencyService
     {
-        Task<bool> AffectDownlineAgency(CustClassificationFromQueueModel agencyInfos, FromFlow fromFlow, string url);
-
         Task<bool> CallAPIPost<T>(T agencyInfos, int internalBatchSize, int externalBatchSize, FromFlow fromFlow, string url);
     }
 
@@ -24,20 +22,6 @@
         public CustomerClassificationAgencyService(ISentryClient sentryClient)
         {
             _sentryClient = sentryClient;
-        }
-
-        public async Task<bool> AffectDownlineAgency(CustClassificationFromQueueModel agencyInfos, FromFlow fromFlow, string url)
-        {
-            try
-            {
-                return await ApiHelper.Post<bool>(url, agencyInfos, 1200);
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Affect Downline Agency fail { url }", agencyInfos, ex, _sentryClient, "agencyInfos");
-
-                return false;
-            }
         }
 
         public async Task<bool> CallAPIPost<T>(T agencyInfos, int internalBatchSize, int externalBatchSize, FromFlow fromFlow, string url)
@@ -55,7 +39,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - CallAPIPost fail { url }", request, ex, _sentryClient, JsonConvert.SerializeObject(request));
+                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Call AgencyCC API fail { url }", request, ex, _sentryClient, JsonConvert.SerializeObject(request));
 
                 return false;
             }

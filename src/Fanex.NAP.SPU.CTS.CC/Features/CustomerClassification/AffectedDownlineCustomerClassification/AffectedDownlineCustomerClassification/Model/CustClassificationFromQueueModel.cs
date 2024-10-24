@@ -24,9 +24,5 @@
         public UInt64 QueueID { get; set; }
 
         public Int64 LastDownlineCTSCustID { get; set; }
-
-        public int InternalBatchSize { get; set; }
-
-        public int ExternalBatchSize { get; set; }
     }
 }

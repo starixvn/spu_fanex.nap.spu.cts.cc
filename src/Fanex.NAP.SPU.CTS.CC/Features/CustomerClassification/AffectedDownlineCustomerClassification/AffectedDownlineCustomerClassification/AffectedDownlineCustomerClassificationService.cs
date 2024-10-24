@@ -118,10 +118,8 @@
                              && dataFromQueue.AgencyQueue != null
                              && dataFromQueue.AgencyQueue.Any())
             {
-                dataFromQueue.InternalBatchSize = parameters.InternalBatchSize;
-                dataFromQueue.ExternalBatchSize = parameters.PushDataExternal.ExternalBatchSize;
-
-                IsSuccess = custClassAgencyService.AffectDownlineAgency(dataFromQueue, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL).Result;
+                IsSuccess = custClassAgencyService
+                    .CallAPIPost(dataFromQueue, parameters.InternalBatchSize, parameters.PushDataExternal.ExternalBatchSize, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL).Result;
             }
 
             return this;
