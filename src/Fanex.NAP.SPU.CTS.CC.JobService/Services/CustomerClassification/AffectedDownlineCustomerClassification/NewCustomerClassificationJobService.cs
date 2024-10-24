@@ -60,8 +60,7 @@
             {
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
-                RescanNormalType = RescanNormalType.Auto_Customer,
-                NewCustomerClassificationAgencyURL = appSettings.NewCustomerClassificationAgencyURL,
+                RescanNormalType = RescanNormalType.Auto_Customer,               
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
                 PushDataExternal = new PushDataToExternalEntity

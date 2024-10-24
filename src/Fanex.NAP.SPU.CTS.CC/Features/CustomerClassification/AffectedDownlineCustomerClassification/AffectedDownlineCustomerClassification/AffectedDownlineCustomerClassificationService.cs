@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -119,7 +120,11 @@
                              && dataFromQueue.AgencyQueue.Any())
             {
                 IsSuccess = custClassAgencyService
-                    .CallAPIPost(dataFromQueue, parameters.InternalBatchSize, parameters.PushDataExternal.ExternalBatchSize, FromFlow.CTSServices, parameters.AffectDownlineAgencyURL).Result;
+                    .CallAPIPost(dataFromQueue, 
+                        parameters.InternalBatchSize, 
+                        parameters.PushDataExternal.ExternalBatchSize, 
+                        FromFlow.CTSServices, 
+                        parameters.AgencyApiUrl + ApiEndpoint.AffectDownlineAgencyEndpoint).Result;
             }
 
             return this;

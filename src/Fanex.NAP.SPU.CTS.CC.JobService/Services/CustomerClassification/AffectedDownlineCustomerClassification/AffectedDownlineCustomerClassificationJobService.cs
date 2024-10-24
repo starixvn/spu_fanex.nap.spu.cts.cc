@@ -62,8 +62,7 @@
                 FunctionId = FunctionId.DownlineCustomerClassification,
                 RescanNormalType = RescanNormalType.Auto_AfftectedDownline,
                 InternalBatchSize = batchSize,
-                ServiceName = serviceName,
-                AffectDownlineAgencyURL = appSettings.AffectDownlineAgencyURL,
+                ServiceName = serviceName,              
                 PushDataExternal = new PushDataToExternalEntity
                 {
                     IsUpdateDangerToMainDB = true,

@@ -13,6 +13,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
     using System;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
 
     public interface INewCustomerClassificationServices
     {
@@ -113,7 +114,7 @@
                         parameters.InternalBatchSize, 
                         parameters.PushDataExternal.ExternalBatchSize, 
                         FromFlow.CTSServices, 
-                        parameters.NewCustomerClassificationAgencyURL).Result;
+                        parameters.AgencyApiUrl + ApiEndpoint.NewCCAgencyEndpoint).Result;
             }
 
             return this;

@@ -47,11 +47,7 @@
 
         string InsertBAURL { get; }
 
-        string AgencyApiUrl { get; }
-
-        string NewCustomerClassificationAgencyURL { get; }
-
-        string AffectDownlineAgencyURL { get; }
+        string AgencyApiUrl { get; }     
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
@@ -73,9 +69,7 @@
         private readonly string sentryDsn;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
-        private readonly string agencyApiUrl;
-        private readonly string affectDownlineAgencyURL;
-        private readonly string newCustomerClassificationAgencyURL;
+        private readonly string agencyApiUrl;    
         private readonly APIHelperConfig apiHelperConfig;
 
         public AppSettings(IConfiguration configuration)
@@ -91,9 +85,7 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
-            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");
-            affectDownlineAgencyURL = GetValue<string>("AffectDownlineAgency:AffectDownlineAgencyURL");
-            newCustomerClassificationAgencyURL = GetValue<string>("NewCustomerClassificationAgency:NewCustomerClassificationAgencyURL");
+            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");          
             apiHelperConfig = new APIHelperConfig
             {
                 Proxy = GetValue<string>("APIHelperConfig:Proxy")
@@ -137,11 +129,7 @@
         public string InsertBAURL => insertBAURL;
 
         public string AgencyApiUrl => agencyApiUrl;
-
-        public string NewCustomerClassificationAgencyURL => newCustomerClassificationAgencyURL;
-
-        public string AffectDownlineAgencyURL => affectDownlineAgencyURL;
-
+       
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 
         public bool NormalAccountIsWriteLog => GetValue<bool>("NormalAccountInsert:IsWriteLog");
