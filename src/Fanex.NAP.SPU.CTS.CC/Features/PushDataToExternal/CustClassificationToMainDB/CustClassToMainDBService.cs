@@ -108,13 +108,6 @@
                             customerClassifications, new Exception(result.ErrorMsg), sentryClient);
                     }
 
-                    if (retryTime == 0)
-                    {
-                        Utilities.LogSentryError(
-                            serviceName, $"PushCustomerClassificationToMain fail with error code: {result.ErrorCode}",
-                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
-                    }
-
                     if (result.ErrorCode == 200 || result.ErrorCode == 0)
                     {
                         return true;
@@ -122,6 +115,10 @@
 
                     if (retryTime == 0)
                     {
+                        Utilities.LogSentryError(
+                            serviceName, $"PushCustomerClassificationToMain fail with error code: {result.ErrorCode}",
+                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+
                         return false;
                     }
 
