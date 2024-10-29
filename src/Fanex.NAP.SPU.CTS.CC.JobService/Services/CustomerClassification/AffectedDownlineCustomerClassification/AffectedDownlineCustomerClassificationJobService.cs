@@ -66,6 +66,7 @@
                 AgencyApiUrl = appSettings.AgencyApiUrl,
                 PushDataExternal = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
