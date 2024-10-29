@@ -104,8 +104,8 @@
                     if (result.ErrorCode == 200)
                     {
                         Utilities.LogSentryError(
-                            serviceName, $"PushCustomerClassificationToMain throw exception: not existing CustIDs in mainDB",
-                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+                            serviceName, $"PushCustomerClassificationToMain throw exception: not existing CustIDs in mainDB with ErrorMsg: {result.ErrorMsg}",
+                            customerClassifications, new Exception("Not existing CustIDs in mainDB"), sentryClient);
                     }
 
                     if (result.ErrorCode == 200 || result.ErrorCode == 0)
