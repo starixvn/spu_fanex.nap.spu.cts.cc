@@ -187,29 +187,17 @@
         }
 
         private bool InsertTWAgencyRobot(int internalSize, string agencyApiUrl, IEnumerable<TWRobotUserEntity> agencyRobots, PushDataToExternalEntity pushConfig)
-        {            
-            var robotUsersChunks = agencyRobots.Chunk(internalSize).ToList();
-                     
-            foreach (var robotBatch in robotUsersChunks)
-            {
-                _dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = robotBatch }, FunctionId.RobotUserJob, pushConfig.ServiceName);
+        {         
+            _dataLogTrackingServices.LogInputData(new LogInputViewEntity { RobotUser = agencyRobots }, FunctionId.RobotUserJob, pushConfig.ServiceName);
 
-                var robot = new InsertTWAgencyRobotModel { Robots = robotBatch };
+            var robot = new InsertTWAgencyRobotModel { Robots = agencyRobots };
 
-                var response = _ccAgencyService.CallAPIPost(robot, internalSize, pushConfig.ExternalBatchSize, FromFlow.CTSServices,
-                    agencyApiUrl + ApiEndpoint.InsertTWRobotAgencyEndpoint);
+            var response = _ccAgencyService.CallAPIPost(robot, internalSize, pushConfig.ExternalBatchSize, FromFlow.CTSServices,
+                agencyApiUrl + ApiEndpoint.InsertTWRobotAgencyEndpoint);
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
-                if (!response.Result)
+            return response.Result;
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
-                {
-                    return false;
-                }
-
-                Thread.Sleep(RobotUsers_SleepTimes);
-            }
-
-            return true;
         }
 
         public void UpdateLastTimespan()
