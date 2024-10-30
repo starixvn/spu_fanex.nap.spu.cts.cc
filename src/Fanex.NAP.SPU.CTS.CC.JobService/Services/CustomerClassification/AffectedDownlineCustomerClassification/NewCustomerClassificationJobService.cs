@@ -63,6 +63,7 @@
                 RescanNormalType = RescanNormalType.Auto_Customer,               
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
+                AgencyApiUrl = appSettings.AgencyApiUrl,
                 PushDataExternal = new PushDataToExternalEntity
                 {
                     RoleGroup = RoleGroupType.Member,
@@ -71,8 +72,8 @@
                     ServiceName = serviceName,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
                     AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
-                },
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,                    
+                }
             };
 
             var isSuccess = newCTSClassificationServices.Start()

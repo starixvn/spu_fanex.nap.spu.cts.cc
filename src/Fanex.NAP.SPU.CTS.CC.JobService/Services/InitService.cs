@@ -319,7 +319,6 @@
         private static void RegisterAffectedDownline(this IServiceCollection services)
         {
             services.AddSingleton<IAffectedDownlineCustomerClassificationDataAccess, AffectedDownlineCustomerClassificationDataAccess>();
-            services.AddSingleton<ICustomerClassificationAgencyService, CustomerClassificationAgencyService>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationService, AffectedDownlineCustomerClassificationService>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationJobService, AffectedDownlineCustomerClassificationJobService>();
             services.AddSingleton<ICustomerClassificationAgencyService, CustomerClassificationAgencyService>();
