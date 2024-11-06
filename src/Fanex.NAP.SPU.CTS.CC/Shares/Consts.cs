@@ -163,7 +163,8 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Manual = 4,
             Auto_Customer = 5,
             Auto_AfftectedDownline = 6,
-            Auto_NormalTaggingScan = 7
+            Auto_NormalTaggingScan = 7,
+            Auto_InactiveCustomer = 8,
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
