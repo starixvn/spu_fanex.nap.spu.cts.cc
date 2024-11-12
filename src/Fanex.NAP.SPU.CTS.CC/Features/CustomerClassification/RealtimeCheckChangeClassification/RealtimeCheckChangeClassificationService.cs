@@ -10,9 +10,7 @@
     {
         RealtimeCheckChangeModel CheckChange();
 
-        IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize);
-
-        IRealtimeCheckChangeClassificationService UpdateLastTransDateAgency(IEnumerable<RealtimeCheckChangeAgencyEntities> custInfosAgency, int batchSize);
+        IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize);        
 
         IRealtimeCheckChangeClassificationService UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
 
@@ -48,25 +46,7 @@
             }
 
             return this;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        public IRealtimeCheckChangeClassificationService UpdateLastTransDateAgency(IEnumerable<RealtimeCheckChangeAgencyEntities> custInfosAgency, int batchSize)
-        {
-            if (custInfosAgency != null && custInfosAgency.Any())
-            {
-                var batchChunks = custInfosAgency.Chunk(batchSize);
-
-                foreach (var custTranDatesAgency in batchChunks)
-                {
-                    this.dataAccess.UpdateLastTransDateAgency(JsonConvert.SerializeObject(custTranDatesAgency));
-
-                    Thread.Sleep(10);
-                }
-            }
-
-            return this;
-        }
+        }        
 
         public IRealtimeCheckChangeClassificationService UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned)
         {

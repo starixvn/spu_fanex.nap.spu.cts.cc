@@ -32,7 +32,7 @@
                 var realtimeChanges = realtimeCheckChangeServices.CheckChange();
 
                 realtimeCheckChangeServices.UpdateLastTransDate(realtimeChanges.CustInfos, batchSize)                
-                    .UpdateLastTransDateAgency(realtimeChanges.CustInfosAgency, batchSize)
+                    .UpdateLastTransDate(realtimeChanges.CustInfosAgency, batchSize)
                     .UpdateNextScanCheckChange(realtimeChanges);
             }
             catch (Exception ex)

@@ -9,12 +9,12 @@
         public RealtimeCheckChangeModel() 
         {
             CustInfos = Enumerable.Empty<RealtimeCheckChangeEntities>();
-            CustInfosAgency = Enumerable.Empty<RealtimeCheckChangeAgencyEntities>();
+            CustInfosAgency = Enumerable.Empty<RealtimeCheckChangeEntities>();
         }
 
         public IEnumerable<RealtimeCheckChangeEntities> CustInfos { get; set; }
 
-        public IEnumerable<RealtimeCheckChangeAgencyEntities> CustInfosAgency { get; set; }
+        public IEnumerable<RealtimeCheckChangeEntities> CustInfosAgency { get; set; }
 
         public DateTime? NextScannedDateTime1 { get; set; }
 
