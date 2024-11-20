@@ -21,9 +21,9 @@
 
         InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds);
+        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds);
 
         IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo, bool isNewCustomer);
 
@@ -114,7 +114,7 @@
             var LastCustID = result.Read<Int64>().FirstOrDefault();
             var LastCustSubID = result.Read<Int64>().FirstOrDefault();
 
-            return new LastScannedCustModel()
+            return new LastScannedCustModel
             {
                 LastCustID = LastCustID,
                 LastCustSubID = LastCustSubID
@@ -134,14 +134,14 @@
             var customers = result?.Read<CustomerMainDBModel>();
             var LastCustID = result?.Read<Int64?>();
 
-            return new InsertCustomerViewModel()
+            return new InsertCustomerViewModel
             {
                 CustomerInfos = customers?.ToList() ?? new List<CustomerMainDBModel>(),
                 LastInsertCustID = LastCustID?.FirstOrDefault()
             };
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(int quantityPerBatch, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID)
         {
             var criteria = new GetCustSubFromMainDbCriteria
             {
@@ -219,8 +219,8 @@
 
             return new TranformCustModel
             {
-                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
-                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                LastUpdatedTime = firstResultSet.SingleOrDefault()?.LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault()?.LastCustId,
                 CustIdList = secondResultSet.SingleOrDefault()
             };
         }
@@ -238,8 +238,8 @@
 
             return new TranformCustModel
             {
-                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
-                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                LastUpdatedTime = firstResultSet.SingleOrDefault()?.LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault()?.LastCustId,
                 CustIdList = secondResultSet.SingleOrDefault()
             };
         }
@@ -257,8 +257,8 @@
 
             return new TranformCustModel
             {
-                LastUpdatedTime = firstResultSet.SingleOrDefault().LastUpdatedTime,
-                LastCustId = firstResultSet.SingleOrDefault().LastCustId,
+                LastUpdatedTime = firstResultSet.SingleOrDefault()?.LastUpdatedTime,
+                LastCustId = firstResultSet.SingleOrDefault()?.LastCustId,
                 CustIdList = secondResultSet.SingleOrDefault()
             };
         }
@@ -392,7 +392,7 @@
             return repository.Fetch<long>(criteria) ?? Enumerable.Empty<long>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDB(string custIds)
+        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds)
         {
             var criteria = new GetCustSubFromMainDbCriteria
             {

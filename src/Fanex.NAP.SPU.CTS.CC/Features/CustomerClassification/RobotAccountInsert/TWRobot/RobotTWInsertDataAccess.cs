@@ -2,11 +2,14 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using System.Collections.Generic;
 
     public interface IRobotTWInsertDataAccess
     {
         TWRobotUserViewEntity GetTWRobotUsers(long lastTimestamp);
+
+        IEnumerable<RoleCustomerEntity> GetCustomerRole(string custIds);
     }
 
     public class RobotTWInsertDataAccess : BaseCustomerClassificationDataAccess, IRobotTWInsertDataAccess
@@ -16,7 +19,7 @@
         public RobotTWInsertDataAccess()
         {
             repository = new DynamicRepository();
-        }
+        }        
 
         public TWRobotUserViewEntity GetTWRobotUsers(long lastTimestamp)
         {
@@ -35,6 +38,16 @@
             result.MaxTimestamp = criteria.MaxTimestamp;
 
             return result;
+        }
+
+        public IEnumerable<RoleCustomerEntity> GetCustomerRole(string custIds)
+        {
+            var criteria = new RoleCustomerGetCriteria
+            {
+                CustIds = custIds
+            };
+
+            return repository.Fetch<RoleCustomerEntity>(criteria);
         }
     }
 }

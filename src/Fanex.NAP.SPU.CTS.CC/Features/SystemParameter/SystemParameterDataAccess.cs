@@ -7,13 +7,13 @@
 
     public interface ISystemParameterDataAccess
     {
-        SystemParameterEntity GetPreviousTimingExecution(CTS_SystemParameters paramID);
+        SystemParameterEntity GetPreviousTimingExecutionForCTS(CTS_SystemParameters paramID);
 
-        void UpdateTimingExecution(string paraValue, CTS_SystemParameters paramId);
+        void UpdateTimingExecutionForCTS(string paraValue, CTS_SystemParameters paramId);
 
-        SystemParameterEntity GetPreviousTimingExecution(Main_SystemParameters paramID);
+        SystemParameterEntity GetPreviousTimingExecutionForMain(Main_SystemParameters paramID);
 
-        void UpdateTimingExecution(string paraValue, Main_SystemParameters paramId);
+        void UpdateTimingExecutionForMain(string paraValue, Main_SystemParameters paramId);
     }
 
     public class SystemParameterDataAccess : ISystemParameterDataAccess
@@ -25,7 +25,7 @@
             repository = new DynamicRepository();
         }
 
-        public SystemParameterEntity GetPreviousTimingExecution(CTS_SystemParameters paramID)
+        public SystemParameterEntity GetPreviousTimingExecutionForCTS(CTS_SystemParameters paramID)
         {
             var criteria = new PreviousTimingExecutionGetDCCriteria
             {
@@ -38,7 +38,7 @@
             }
         }
 
-        public void UpdateTimingExecution(string paraValue, CTS_SystemParameters paramId)
+        public void UpdateTimingExecutionForCTS(string paraValue, CTS_SystemParameters paramId)
         {
             var criteria = new PreviousTimingExecutionUpdateDCCriteria
             {
@@ -49,7 +49,7 @@
             repository.Execute(criteria);
         }
 
-        public SystemParameterEntity GetPreviousTimingExecution(Main_SystemParameters paramID)
+        public SystemParameterEntity GetPreviousTimingExecutionForMain(Main_SystemParameters paramID)
         {
             var criteria = new PreviousTimingExecutionGetMainCriteria
             {
@@ -62,7 +62,7 @@
             }
         }
 
-        public void UpdateTimingExecution(string paraValue, Main_SystemParameters paramId)
+        public void UpdateTimingExecutionForMain(string paraValue, Main_SystemParameters paramId)
         {
             var criteria = new PreviousTimingExecutionUpdateMainCriteria
             {

@@ -9,22 +9,19 @@
     [Route("api/classificationBySportJobs")]
     public class ClassificationBySportJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
-
         private readonly INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService;
         private readonly INormalAccountInsertBySportJobService normalAccountInsertBySportJobService;
         private readonly IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService;
         private readonly IProbationClassificationBySportJobService probationClassificationBySportJobService;
         private readonly IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService;
 
-        public ClassificationBySportJobController(ISentryClient sentryClient,
+        public ClassificationBySportJobController(
             INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService,
             INormalAccountInsertBySportJobService normalAccountInsertBySportJobService,
             IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService,
             IProbationClassificationBySportJobService probationClassificationBySportJobService,
             IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService)
         {
-            this.sentryClient = sentryClient;
             this.normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
             this.normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
             this.realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;

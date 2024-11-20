@@ -1,11 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Newtonsoft.Json;
-    using Sentry;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     public interface IRealtimeClassificationBySportServices
     {
@@ -18,18 +14,19 @@
         IRealtimeClassificationBySportServices CompleteCustomerRealtime();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Datetime Code Smell", "S6566:Prefer using DateTimeOffset instead of DateTime", Justification = "<NotHandle>")]
     public class RealtimeClassificationBySportServices : IRealtimeClassificationBySportServices
     {
         private readonly IRealtimeClassificationBySportDataAccess dataAccess;
         private GetNewPlaceBetCustomerModel customers;
-        private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Realtime Classification By Sport Service";
 
-        public RealtimeClassificationBySportServices(IRealtimeClassificationBySportDataAccess dataAccess
-                                                    , ISentryClient sentryClient)
+
+        // private const string ServiceName = "Realtime Classification By Sport Service";
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
+        public RealtimeClassificationBySportServices(IRealtimeClassificationBySportDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public IRealtimeClassificationBySportServices Start()

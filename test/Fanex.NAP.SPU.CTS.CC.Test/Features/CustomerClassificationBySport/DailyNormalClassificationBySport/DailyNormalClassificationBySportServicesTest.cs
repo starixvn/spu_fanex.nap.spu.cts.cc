@@ -11,12 +11,11 @@
     {
         private readonly IDailyNormalClassificationBySportDataAccess dailyDataAccess;
         private readonly IDailyNormalClassificationBySportServices dailyClassificationServices;
-        private readonly ISystemParameterServices systemParameterService;
 
         public DailyNormalClassificationBySportServicesTest()
         {
             dailyDataAccess = Substitute.For<IDailyNormalClassificationBySportDataAccess>();
-            dailyClassificationServices = new DailyNormalClassificationBySportServices(dailyDataAccess, systemParameterService, null);
+            dailyClassificationServices = new DailyNormalClassificationBySportServices(dailyDataAccess, null);
         }
 
         [Fact]

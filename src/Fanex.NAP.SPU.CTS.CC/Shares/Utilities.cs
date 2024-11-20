@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.CTS.Shares
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Datetime Code Smell", "S6566:Prefer using DateTimeOffset instead of DateTime", Justification = "<NotHandle>")]
     public static class Utilities
     {
         public static IEnumerable<IEnumerable<TValue>> Chunk2<TValue>(
@@ -76,6 +77,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Bug", "S2955:Generic parameters not constrained to reference types should not be compared to \"null\"", Justification = "<Pending>")]
         public static void LogSentryInfo<T>(string serviceName, string message, T data, bool isWriteLog, ISentryClient sentryClient)
         {
             if (isWriteLog)
@@ -124,6 +126,11 @@ namespace Fanex.NAP.SPU.CTS.Shares
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(systemName, DateTime.Now, environment, message))
                .SendWithoutDelay();
+        }
+
+        public static bool FlatMap(this bool isAction, Func<bool> func)
+        {
+            return isAction && func();
         }
     }
 }

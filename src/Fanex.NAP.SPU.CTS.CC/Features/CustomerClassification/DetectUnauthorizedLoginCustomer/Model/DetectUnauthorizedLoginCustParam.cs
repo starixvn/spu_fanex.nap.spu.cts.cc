@@ -1,12 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DetectUnauthorizedLoginCustomer
 {
-    using System;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class DetectUnauthorizedLoginCustParam
     {
         public DetectUnauthorizedLoginCustParam() { }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public DetectUnauthorizedLoginCustParam(bool isLicensee)
         {
             this.IsLicensee = isLicensee;

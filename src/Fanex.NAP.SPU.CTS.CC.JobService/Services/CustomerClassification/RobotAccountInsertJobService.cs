@@ -95,9 +95,11 @@
             var isSuccess = robotAccountInsertServices.Start()
                                                       .GetLastTimespan()
                                                       .GetTWRobotUser()
-                                                      .GetRobotUserCategoryId(robotAccountServiceName)
-                                                      .InsertTWRobotPackage(batchInternalSize, new PushDataToExternalEntity
+                                                      .GetCustomerRole()
+                                                      .GetRobotUserCategoryId(robotAccountServiceName)                                                      
+                                                      .InsertTWRobotPackage(batchInternalSize, appSettings.AgencyApiUrl, new PushDataToExternalEntity
                                                           {
+                                                              RoleGroup = RoleGroupType.Member,
                                                               IsUpdateDangerToMainDB = true,
                                                               ServiceName = robotAccountServiceName,
                                                               ExternalBatchSize = batchExternalSize,
@@ -121,6 +123,7 @@
                                                  .GetRobotDetections(CTS_SystemParameters.RobotDetection_LastID)
                                                  .InsertAIRobotPackage(batchInternalSize, new PushDataToExternalEntity
                                                     {
+                                                        RoleGroup = RoleGroupType.Member,
                                                         IsUpdateDangerToMainDB = true,
                                                         ServiceName = robotDetectionServiceName,
                                                         ExternalBatchSize = batchExternalSize,

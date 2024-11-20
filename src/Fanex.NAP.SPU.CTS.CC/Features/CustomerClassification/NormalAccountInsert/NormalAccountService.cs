@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -26,12 +25,10 @@
     public class NormalAccountService : BaseCustomerClassificationService, INormalAccountService
     {
         private readonly INormalAccountDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
         public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient) 
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }       
 
         public GetNormalAccountModel GetNormalAccounts()
@@ -45,7 +42,7 @@
                       
             if (custs != null && custs.Any())
             {
-                var modelInsert = new InsertCustomerClassificationModel()
+                var modelInsert = new InsertCustomerClassificationModel
                 {                
                     FromAction = (int)FromFlow.CTSServices,
                     CustInfoJson = JsonConvert.SerializeObject(custs)
@@ -124,6 +121,7 @@
             return new List<TWTaggedCustEntity>();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "<Pending>")]
         private IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggedCust)
         {
             var custsMapping = custs ?? new List<GetNormalAccountEntity>();
@@ -151,6 +149,7 @@
             return result;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "<Pending>")]
         private NormalAccountAfterCheckTWDetectionModel MappingNormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity twTaggingSRPCust)
         {
             if (twTaggingSRPCust != null)
@@ -161,6 +160,7 @@
             return new NormalAccountAfterCheckTWDetectionModel(cust);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "<Pending>")]
         private IEnumerable<InsertNormalAccountEntity> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
         {
             var custsMapping = custs ?? new List<NormalAccountAfterCheckTWDetectionModel>();

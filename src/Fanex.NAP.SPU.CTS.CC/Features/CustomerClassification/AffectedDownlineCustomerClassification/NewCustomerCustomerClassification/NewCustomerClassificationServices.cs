@@ -9,12 +9,19 @@
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Fanex.NAP.SPU.CTS.Shares;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model;
+    using System;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
 
     public interface INewCustomerClassificationServices
     {
         INewCustomerClassificationServices Start();
 
         INewCustomerClassificationServices GetCategoryForNewCTSCustomer();
+
+        INewCustomerClassificationServices NewCustomerClassificationAgency(RescanParametersEntity parameters);
 
         INewCustomerClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters);
 
@@ -36,9 +43,13 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices;
-        private NewCustomerClassificationEntity newCustomerClassification;
+        private readonly ICustomerClassificationAgencyService customerClassificationAgencyService;
+        private UInt64 lastCTSCustID;
+        private NewCustomerClassificationModel newCustomerClassificationMember;
+        private NewCustomerClassificationModel newCustomerClassificationAgency;
         private bool IsSuccess;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
         public NewCustomerClassificationServices(
                 INewCustomerClassificationDataAccess newCTSClassificationDataAccess,
                 IAffectedDownlineCustomerClassificationService affectedCustomerClassificationService,
@@ -46,7 +57,8 @@
                 IRescanCustClassificationService rescanCustClassificationService,
                 ICustClassToMainDBService custClassToMainDBService,
                 ISystemParameterServices systemParameterServices,
-                IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices)
+                IRescanNormalClassificationBySportServices rescanNormalClassificationBySportServices,
+                ICustomerClassificationAgencyService customerClassificationAgencyService)
         {
             this.newCTSClassificationDataAccess = newCTSClassificationDataAccess;
             this.affectedCustomerClassificationService = affectedCustomerClassificationService;
@@ -55,28 +67,66 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.systemParameterServices = systemParameterServices;
             this.rescanNormalClassificationBySportServices = rescanNormalClassificationBySportServices;
+            this.customerClassificationAgencyService = customerClassificationAgencyService;
         }
 
         public INewCustomerClassificationServices Start()
         {
-            newCustomerClassification = new NewCustomerClassificationEntity();
             IsSuccess = true;
             return this;
         }
 
         public INewCustomerClassificationServices GetCategoryForNewCTSCustomer()
         {
-            newCustomerClassification = newCTSClassificationDataAccess.GetNewCTSCustomerCategory();
+            var newCustomerClassification = newCTSClassificationDataAccess.GetNewCTSCustomerCategory();
+
+            lastCTSCustID = newCustomerClassification.LastCTSCustID;
+
+            newCustomerClassificationAgency = new NewCustomerClassificationModel
+            {
+                NormalClassification = newCustomerClassification.NormalClassification.Where(x => x.RoleID > (int)RoleGroupType.Member),
+                PAClassification = newCustomerClassification.PAClassification.Where(x => x.RoleID > (int)RoleGroupType.Member),
+                VVIPClassification = newCustomerClassification.VVIPClassification.Where(x => x.RoleID > (int)RoleGroupType.Member)
+            };
+
+            newCustomerClassificationMember = new NewCustomerClassificationModel
+            {
+                NormalClassification = newCustomerClassification.NormalClassification.Where(x => x.RoleID == (int)RoleGroupType.Member),
+                PAClassification = newCustomerClassification.PAClassification.Where(x => x.RoleID == (int)RoleGroupType.Member),
+                VVIPClassification = newCustomerClassification.VVIPClassification.Where(x => x.RoleID == (int)RoleGroupType.Member)
+            };
+
+            return this;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1067:Expressions should not be too complex", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
+        public INewCustomerClassificationServices NewCustomerClassificationAgency(RescanParametersEntity parameters)
+        {
+            if (IsSuccess && newCustomerClassificationAgency != null &&
+                (newCustomerClassificationAgency.VVIPClassification.IsNotNullOrEmpty() ||
+                newCustomerClassificationAgency.PAClassification.IsNotNullOrEmpty() ||
+                newCustomerClassificationAgency.NormalClassification.IsNotNullOrEmpty()))
+            {
+                IsSuccess = customerClassificationAgencyService
+                    .CallAPIPost(
+                        newCustomerClassificationAgency,
+                        parameters.InternalBatchSize, 
+                        parameters.PushDataExternal.ExternalBatchSize, 
+                        FromFlow.CTSServices, 
+                        parameters.AgencyApiUrl + ApiEndpoint.NewCCAgencyEndpoint).Result;
+            }
+
             return this;
         }
 
         public INewCustomerClassificationServices InsertVVIPForNewCustomers(RescanParametersEntity parameters)
         {
-            if (IsSuccess && newCustomerClassification != null && newCustomerClassification.VVIPClassification.Any())
+            if (IsSuccess && newCustomerClassificationMember != null && newCustomerClassificationMember.VVIPClassification.Any())
             {
                 var custInfo = new VVIPCustomerInsertEntity
                 {
-                    CustInfo = newCustomerClassification.VVIPClassification,
+                    CustInfo = newCustomerClassificationMember.VVIPClassification,
                     FromFlow = FromFlow.CTSServices,
                     IsAffectDownline = false,
                     QueueID = null,
@@ -91,13 +141,13 @@
 
         public INewCustomerClassificationServices InsertPAForNewCustomers(RescanParametersEntity parameters)
         {
-            if (IsSuccess && newCustomerClassification != null && newCustomerClassification.PAClassification.Any())
+            if (IsSuccess && newCustomerClassificationMember != null && newCustomerClassificationMember.PAClassification.Any())
             {
-                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassification.PAClassification,
+                var result = problemAccountServices.InsertProblemAccountPackage(newCustomerClassificationMember.PAClassification,
                     FunctionId.InsertNewCustJob,
                     CCInputFlow.InsertPACategory,
                     parameters.IsToQueue, parameters.ServiceName);
-               
+
                 IsSuccess = custClassToMainDBService.PushExternalProblemAcountPackage(result, parameters.PushDataExternal);
             }
 
@@ -106,9 +156,9 @@
 
         public INewCustomerClassificationServices ResanNormalForNewCustomers(RescanParametersEntity parameters)
         {
-            if (IsSuccess && newCustomerClassification != null && newCustomerClassification.NormalClassification.Any())
-            {                
-                var custIDs = newCustomerClassification.NormalClassification.Select(x=> x.CustID);
+            if (IsSuccess && newCustomerClassificationMember != null && newCustomerClassificationMember.NormalClassification.Any())
+            {
+                var custIDs = newCustomerClassificationMember.NormalClassification.Select(x => x.CustID);
 
                 IsSuccess = rescanCustClassificationService.RescanCustomerClassification(custIDs, parameters);
             }
@@ -118,26 +168,26 @@
 
         public INewCustomerClassificationServices ResanNormalBySportForNewCustomers()
         {
-            if (!IsSuccess || newCustomerClassification == null)
+            if (!IsSuccess || newCustomerClassificationMember == null)
             {
                 return this;
             }
 
             var custIds = new List<long>();
 
-            if (newCustomerClassification.NormalClassification.Any())
+            if (newCustomerClassificationMember.NormalClassification.Any())
             {
-                custIds.AddRange(newCustomerClassification.NormalClassification.Select(x => x.CustID));
+                custIds.AddRange(newCustomerClassificationMember.NormalClassification.Select(x => x.CustID));
             }
 
-            if (newCustomerClassification.VVIPClassification.Any())
+            if (newCustomerClassificationMember.VVIPClassification.Any())
             {
-                custIds.AddRange(newCustomerClassification.VVIPClassification.Select(x => x.CustID));
+                custIds.AddRange(newCustomerClassificationMember.VVIPClassification.Select(x => x.CustID));
             }
 
-            if (newCustomerClassification.PAClassification.Any())
+            if (newCustomerClassificationMember.PAClassification.Any())
             {
-                custIds.AddRange(newCustomerClassification.PAClassification.Select(x => x.CustID));
+                custIds.AddRange(newCustomerClassificationMember.PAClassification.Select(x => x.CustID));
             }
 
             if (custIds.Any())
@@ -152,7 +202,7 @@
         {
             if (IsSuccess)
             {
-                IsSuccess = systemParameterServices.UpdateTimingExecution(newCustomerClassification.LastCTSCustID.ToString(), CTS_SystemParameters.NewCTSCustomerClassificationLastCustID);
+                IsSuccess = systemParameterServices.UpdateTimingExecution(lastCTSCustID.ToString(), CTS_SystemParameters.NewCTSCustomerClassificationLastCustID);
             }
 
             return IsSuccess;

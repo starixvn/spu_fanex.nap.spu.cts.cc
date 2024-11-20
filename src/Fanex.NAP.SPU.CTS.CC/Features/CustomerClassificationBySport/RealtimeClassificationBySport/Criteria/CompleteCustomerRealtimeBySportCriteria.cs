@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
 
     public class CompleteCustomerRealtimeBySportCriteria : NonQueryCommand

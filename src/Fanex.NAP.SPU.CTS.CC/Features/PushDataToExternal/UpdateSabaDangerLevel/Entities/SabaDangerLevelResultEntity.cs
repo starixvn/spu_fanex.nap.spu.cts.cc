@@ -16,6 +16,8 @@
 
         public UInt64 LastHistoryID { get; set; }
 
+        public UInt64 AgencyLastHistoryID { get; set; }
+
         public SabaDangerLevelUpdateResultEntity UpdatedResult { get; set; }
     }
 }

@@ -25,5 +25,21 @@
         {
             return !IsNotNullOrEmpty(data);
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3240:The simplest possible condition syntax should be used", Justification = "<Pending>")]
+        public static IEnumerable<TSource> WhereIf<TSource>(
+            this IEnumerable<TSource> source,
+            bool condition,
+            Func<TSource, bool> predicate)
+        {
+            if (condition)
+            {
+                return source.Where(predicate);
+            }
+            else
+            {
+                return source;
+            }
+        }
     }
 }

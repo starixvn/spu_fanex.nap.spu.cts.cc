@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -41,17 +40,17 @@
         private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
         private IEnumerable<CustomerCategoryMonitorEntity> realtimeNullCategory;
         private IEnumerable<CustomerCategoryMonitorEntity> realtimeInactiveCategory;
-        private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Classification Job Monitor";
 
+
+        // private const string ServiceName = "Classification Job Monitor";
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
         public ClassificationJobMonitorService(
                 IClassificationJobMonitorDataAccess classificationJobMonitorDataAccess,
-                IIncorrectDataMonitoringService incorrectDataMonitoringService,
-                ISentryClient sentryClient)
+                IIncorrectDataMonitoringService incorrectDataMonitoringService)
         {
             this.classificationJobMonitorDataAccess = classificationJobMonitorDataAccess;
             this.incorrectDataMonitoringService = incorrectDataMonitoringService;
-            this.sentryClient = sentryClient;
         }
 
         #region Monitor Realtime Category
@@ -138,7 +137,8 @@
             if (excessiveNumber > 0)
             {
                 var data = new List<InsertMonitoringEntity> { new InsertMonitoringEntity { Value = excessiveNumber, TrackingInfo = $"threshold = {thresHold}" } };
-                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
+                incorrectDataMonitoringService
+                    .InsertIncorrectDataMonitoring(data, isGeneralPool ? JobMonitor_IssueType.Classification_GeneralPoolStatus : JobMonitor_IssueType.Classification_BySportPoolStatus, batchSize);
             }
         }
 

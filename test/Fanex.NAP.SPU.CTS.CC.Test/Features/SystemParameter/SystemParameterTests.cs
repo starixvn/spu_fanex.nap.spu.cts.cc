@@ -29,7 +29,7 @@
                 ParameterValue = "212121"
             };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(paraID).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForCTS(paraID).Returns(output);
 
             var result = systemParameterServices.GetLastScannedId(paraID);
 
@@ -48,7 +48,7 @@
                 ParameterValue = "2021-07-05 22:50:55"
             };
 
-            systemParameterDataAccess.GetPreviousTimingExecution(paraID).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForCTS(paraID).Returns(output);
 
             var result = systemParameterServices.GetLastScannedDateTime(paraID);
 
@@ -59,7 +59,7 @@
         [InlineData(CTS_SystemParameters.DailyNormalClassificationLastCategoryID, "2021-07-05 22:50:53")]
         public void UpdateTimingExecution_WhenSuccess(CTS_SystemParameters paraId, string lastScannedTime)
         {
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedTime, paraId);
+            systemParameterDataAccess.UpdateTimingExecutionForCTS(lastScannedTime, paraId);
 
             bool isSuccess = systemParameterServices.UpdateTimingExecution(lastScannedTime, paraId);
 

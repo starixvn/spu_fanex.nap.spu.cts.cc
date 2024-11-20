@@ -1,14 +1,15 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification.NewCustomerCustomerClassification.Model
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class NewCustomerClassificationEntity
+    public class NewCustomerClassificationModel
     {
-        public NewCustomerClassificationEntity()
+        public NewCustomerClassificationModel()
         {
             VVIPClassification = Enumerable.Empty<VVIPCategoryEntity>();
             PAClassification = Enumerable.Empty<InsertProblemAccountEntity>();

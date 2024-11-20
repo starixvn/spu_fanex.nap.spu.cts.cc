@@ -15,16 +15,14 @@
     public class RealtimeClassificationTest
     {
         private readonly IRealtimeClassificationDataAccess _dataAccess;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IRealtimeClassificationService _service;
 
         public RealtimeClassificationTest()
         {
             _dataAccess = Substitute.For<IRealtimeClassificationDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new RealtimeClassificationService(_dataAccess, _sentryClient);
+            _service = new RealtimeClassificationService(_dataAccess);
         }
 
         #region GetNewPlaceBetCustomers

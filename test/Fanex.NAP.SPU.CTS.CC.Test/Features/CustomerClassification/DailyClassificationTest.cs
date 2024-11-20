@@ -19,7 +19,7 @@
         {
             dailyClassificationDataAccess = Substitute.For<IDailyNormalClassificationDataAccess>();
             systemParameterService = Substitute.For<ISystemParameterServices>();
-            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService, null);
+            dailyClassificationServices = new DailyNormalClassificationServices(dailyClassificationDataAccess, systemParameterService);
         }
 
         [Fact]

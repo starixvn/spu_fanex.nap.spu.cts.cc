@@ -1,30 +1,28 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification
 {
+    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
 
     public interface IRealtimeCheckChangeClassificationService
     {
         RealtimeCheckChangeModel CheckChange();
 
-        void UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> CustInfos);
+        IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize);        
 
-        void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
+        IRealtimeCheckChangeClassificationService UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
 
     }
 
     public class RealtimeCheckChangeClassificationService : IRealtimeCheckChangeClassificationService
     {
         private readonly IRealtimeCheckChangeClassificationDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public RealtimeCheckChangeClassificationService(IRealtimeCheckChangeClassificationDataAccess dataAccess, ISentryClient sentryClient)
+        public RealtimeCheckChangeClassificationService(IRealtimeCheckChangeClassificationDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public RealtimeCheckChangeModel CheckChange()
@@ -32,14 +30,29 @@
             return this.dataAccess.CheckChange();
         }
 
-        public void UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> CustInfos)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
+        public IRealtimeCheckChangeClassificationService UpdateLastTransDate(IEnumerable<RealtimeCheckChangeEntities> custInfos, int batchSize)
         {
-            this.dataAccess.UpdateLastTransDate(JsonConvert.SerializeObject(CustInfos));
-        }
+            if (custInfos != null && custInfos.Any())
+            {
+                var batchChunks = custInfos.Chunk(batchSize);
 
-        public void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned)
+                foreach (var custTranDates in batchChunks)
+                {
+                    this.dataAccess.UpdateLastTransDate(JsonConvert.SerializeObject(custTranDates));
+
+                    Thread.Sleep(10);
+                }
+            }
+
+            return this;
+        }        
+
+        public IRealtimeCheckChangeClassificationService UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned)
         {
             this.dataAccess.UpdateNextScanCheckChange(nextScanned);
+
+            return this;
         }
     }
 }

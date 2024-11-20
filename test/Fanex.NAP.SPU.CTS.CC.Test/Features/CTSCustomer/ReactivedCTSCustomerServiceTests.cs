@@ -17,14 +17,12 @@
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
 
         public ReactivedCTSCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
             sentryClient = Substitute.For<ISentryClient>();
-            systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null);
         }
 
         [Fact]
@@ -53,9 +51,9 @@
                 CreateSampleCustomerMainDBModel()
             };
 
-            dataAccess.GetCustSubFromMainDB("1,2,3").Returns(dataFromDB);
+            dataAccess.GetCustSubFromMainDBByCustIDs("1,2,3").Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetCustSubFromMainDB("1,2,3");
+            var realData = ctsCustomerService.GetCustSubFromMainDBByCustIDs("1,2,3");
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 

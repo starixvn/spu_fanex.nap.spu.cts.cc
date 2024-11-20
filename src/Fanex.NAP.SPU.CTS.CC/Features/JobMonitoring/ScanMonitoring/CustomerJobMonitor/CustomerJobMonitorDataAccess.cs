@@ -41,20 +41,20 @@
             var maxScannedCustID = result?.Read<long?>();
             var newCustomers = result?.Read<MonitoringNewCustomerEntity>();
 
-            return new MonitoringNewCustomerViewModel()
+            return new MonitoringNewCustomerViewModel
             {
                 NewCustomers = newCustomers ?? Enumerable.Empty<MonitoringNewCustomerEntity>(),
                 MaxScannedCustomerID = maxScannedCustID?.FirstOrDefault()
             };
         }
 
-        public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustID)
+        public MonitoringNewCustomerViewModel GetCustSubInfoFromMainDBForMonitor(int batchSize, DateTime toDate, long lastScannedCustSubID)
         {
             var criteria = new GetCustSubInfoFromMainDBForMonitorCriteria
             {
                 RowSize = batchSize,
                 MaxScannedDate = toDate,
-                LastCustSubId = lastScannedCustID
+                LastCustSubId = lastScannedCustSubID
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
@@ -62,7 +62,7 @@
             var maxScannedCustID = result?.Read<long?>();
             var newCustomers = result?.Read<MonitoringNewCustomerEntity>();
 
-            return new MonitoringNewCustomerViewModel()
+            return new MonitoringNewCustomerViewModel
             {
                 NewCustomers = newCustomers ?? Enumerable.Empty<MonitoringNewCustomerEntity>(),
                 MaxScannedCustomerID = maxScannedCustID?.FirstOrDefault()
@@ -95,7 +95,7 @@
             var missingCustomerInfo = result?.Read<long>();
             var nextScannedCTSCustId = result?.Read<ulong?>();
 
-            return new IncorrectCustomerInfoModel()
+            return new IncorrectCustomerInfoModel
             {
                 NextScannedCTSCustId = nextScannedCTSCustId?.FirstOrDefault(),
                 CustomerInfo = missingCustomerInfo ?? Enumerable.Empty<long>()

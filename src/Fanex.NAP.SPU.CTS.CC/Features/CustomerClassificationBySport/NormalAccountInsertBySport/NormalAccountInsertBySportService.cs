@@ -20,7 +20,10 @@
     {
         private readonly INormalAccountInsertBySportDataAccess dataAccess;
 
-        public NormalAccountInsertBySportService(IBaseCustomerClassificationBySportDataAccess baseDataAccess, INormalAccountInsertBySportDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
+        public NormalAccountInsertBySportService(
+            IBaseCustomerClassificationBySportDataAccess baseDataAccess,
+            INormalAccountInsertBySportDataAccess dataAccess,
+            ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
         {
             this.dataAccess = dataAccess;
         }
@@ -36,7 +39,7 @@
 
             if (custs != null && custs.Any())
             {
-                var modelInsert = new InsertCustomerClassificationBySportModel()
+                var modelInsert = new InsertCustomerClassificationBySportModel
                 {
                     CustClassificationJson = JsonConvert.SerializeObject(custs)
                 };

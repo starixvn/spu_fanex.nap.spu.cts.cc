@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -62,8 +61,8 @@
 
         public bool UpdateLastScanDate()
         {                      
-            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_LastCustID);
-            systemParameterDataAccess.UpdateTimingExecution(probationModel.LastCategoryID.ToString(), CTS_SystemParameters.DailyProbation_LastCategoryID);
+            systemParameterDataAccess.UpdateTimingExecutionForCTS(probationModel.LastCustID.ToString(), CTS_SystemParameters.DailyProbation_LastCustID);
+            systemParameterDataAccess.UpdateTimingExecutionForCTS(probationModel.LastCategoryID.ToString(), CTS_SystemParameters.DailyProbation_LastCategoryID);
             
             return probationModel.CustProbations != null && probationModel.CustProbations.Any();            
         }

@@ -56,26 +56,29 @@
 
         private bool JobRun(int batchSize)
         {
-            var paramaters = new RescanParametersEntity()
+            var paramaters = new RescanParametersEntity
             {
                 IsToQueue = false,
                 FunctionId = FunctionId.InsertNewCustJob,
-                RescanNormalType = RescanNormalType.Auto_Customer,
+                RescanNormalType = RescanNormalType.Auto_Customer,               
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
+                AgencyApiUrl = appSettings.AgencyApiUrl,
                 PushDataExternal = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
                     IsSyncAFCData = appSettings.IsSyncAFCData,
                     AFCInsertAccountURL = appSettings.AFCInsertAccountURL,
-                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL
-                },
+                    AFCDeleteAccountURL = appSettings.AFCDeleteAccountURL,                    
+                }
             };
 
             var isSuccess = newCTSClassificationServices.Start()
                                                        .GetCategoryForNewCTSCustomer()
+                                                       .NewCustomerClassificationAgency(paramaters)
                                                        .InsertVVIPForNewCustomers(paramaters)
                                                        .InsertPAForNewCustomers(paramaters)
                                                        .ResanNormalForNewCustomers(paramaters)

@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
-    using System.Collections.Generic;
     using System.Linq;
 
     public interface IRealtimeClassificationService
@@ -24,14 +22,12 @@
     public class RealtimeClassificationService : IRealtimeClassificationService
     {
         private readonly IRealtimeClassificationDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
         private GetNewPlaceBetCustomerModel customers;
         private GetCustomerCategoryRealtimeModel customerCategories;
 
-        public RealtimeClassificationService(IRealtimeClassificationDataAccess dataAccess, ISentryClient sentryClient)
+        public RealtimeClassificationService(IRealtimeClassificationDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public IRealtimeClassificationService Start()

@@ -82,8 +82,9 @@
 
             if (tvsProblemAccounts.ProblemAccounts.Any())
             {
-                var paramaters = new PushDataToExternalEntity()
+                var paramaters = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
@@ -110,6 +111,7 @@
             return isSuccess;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private void InsertIncorrectDataMonitoring(string missingData)
         {
             if (!string.IsNullOrEmpty(missingData))

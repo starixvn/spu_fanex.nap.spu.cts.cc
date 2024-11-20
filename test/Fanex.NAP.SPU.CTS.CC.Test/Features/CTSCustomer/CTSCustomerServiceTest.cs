@@ -20,17 +20,15 @@
         private readonly CTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess ctsCustomerDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISystemParameterDataAccess systemParameterDataAccess;
         private readonly ISentryClient sentryClient;
 
         public CTSCustomerServiceTest()
         {
             sentryClient = Substitute.For<ISentryClient>();
-            systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
             ctsCustomerDataAccess = Substitute.For<ICTSCustomerDataAccess>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             
-            ctsCustomerService = new CTSCustomerService(ctsCustomerDataAccess, sentryClient, custClassToMainDBService, systemParameterDataAccess);
+            ctsCustomerService = new CTSCustomerService(ctsCustomerDataAccess, sentryClient, custClassToMainDBService);
         }
 
         [Fact]
@@ -115,9 +113,9 @@
             var expectedData = new List<CustomerMainDBModel>();
 
             // Act
-            ctsCustomerDataAccess.GetCustSubFromMainDB(custIDs).Returns(expectedData);
+            ctsCustomerDataAccess.GetCustSubFromMainDBByCustIDs(custIDs).Returns(expectedData);
 
-            var result = ctsCustomerService.GetCustSubFromMainDB(custIDs);
+            var result = ctsCustomerService.GetCustSubFromMainDBByCustIDs(custIDs);
 
             // Assert
             result.Equals(expectedData);
@@ -154,6 +152,8 @@
 
             // Act
             ctsCustomerDataAccess.InsertNewCTSCustomer(Arg.Any<IEnumerable<CustomerMainDBModel>>(), true).Returns(expectedData);
+
+            custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), Arg.Any<PushDataToExternalEntity>()).Returns(true);
 
             var result = ctsCustomerService.InsertNewCustomer(true, data, paras);
 

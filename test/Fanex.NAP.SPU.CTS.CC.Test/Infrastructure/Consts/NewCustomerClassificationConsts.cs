@@ -12,7 +12,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts
 
         public struct PrivateFieldName
         {
-            public const string NewCustomerClassification = "newCustomerClassification";
+            public const string NewCustomerClassification = "newCustomerClassificationMember";
 
             public const string IsSuccess = "IsSuccess";
 

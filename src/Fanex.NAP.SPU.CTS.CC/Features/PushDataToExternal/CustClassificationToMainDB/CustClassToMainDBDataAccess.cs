@@ -1,21 +1,21 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.Data.Repository;
-    using Fanex.Logging;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustClassToMainDBDataAccess
     {
         IEnumerable<LatestCCDangerLevelEntity> GetLatestCCAndDangerLevel(IEnumerable<long> custIds);
 
-        DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification);
+        DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification, RoleGroupType roleGroup);
 
-        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);       
+        DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId);
 
         IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos);
 
@@ -41,11 +41,12 @@
             return repository.Fetch<LatestCCDangerLevelEntity>(criteria) ?? Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
-        public DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification)
+        public DBResult UpdateCustomerClassification(IEnumerable<LatestClassificationEntity> custClassification, RoleGroupType roleGroup)
         {
             var criteria = new CustomerClassificationUpdateCriteria
             {
-                custList = custClassification.ToXmlString()
+                Mode = (int)roleGroup,
+                CustList = custClassification.ToXmlString()
             };
 
             repository.Execute(criteria);
@@ -60,21 +61,21 @@
         public DBResult UpdateDangerLevelToMainDB(IEnumerable<DangerLevelEntity> dangerLevel, int dangerTypeId)
         {
             if (dangerLevel != null && dangerLevel.Any())
-            {               
+            {
                 var criteria = new DangerLevelUpdateCriteria
                 {
                     CustList = dangerLevel.ToXmlString(),
                     DangerType = dangerTypeId
                 };
 
-                repository.Execute(criteria);                
+                repository.Execute(criteria);
 
                 return new DBResult { ErrorCode = criteria.ErrorCode, ErrorMsg = criteria.ErrorMessage };
             }
 
             return new DBResult { ErrorCode = 0, ErrorMsg = string.Empty };
         }
-      
+
         public IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
         {
             var criteria = new GetCustomerClassificationBySportCriteria

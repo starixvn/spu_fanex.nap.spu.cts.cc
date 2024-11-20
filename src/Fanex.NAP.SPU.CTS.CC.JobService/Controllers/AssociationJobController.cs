@@ -9,12 +9,10 @@
     [Route("api/associationJob")]
     public class AssociationJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly IAssociatedGroupMonitorJobService associatedGroupMonitorJobService;
 
-        public AssociationJobController(ISentryClient sentryClient, IAssociatedGroupMonitorJobService associatedGroupMonitorJobService)
+        public AssociationJobController(IAssociatedGroupMonitorJobService associatedGroupMonitorJobService)
         {
-            this.sentryClient = sentryClient;            
             this.associatedGroupMonitorJobService = associatedGroupMonitorJobService;
         }
 

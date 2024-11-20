@@ -1,11 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -19,7 +22,9 @@
 
         IAffectedDownlineCustomerClassificationService GetCustomerClassificationFromQueue();
 
-        IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters);
+        IAffectedDownlineCustomerClassificationService CustomerClassificationMember(RescanParametersEntity parameters);
+
+        IAffectedDownlineCustomerClassificationService CustomerClassificationAgency(RescanParametersEntity parameters);
 
         bool CompleteCustomerClassificationFromQueue();
 
@@ -32,7 +37,8 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
-        private CustClassificationFromQueueResultEntity dataFromQueue;
+        private readonly ICustomerClassificationAgencyService custClassAgencyService;
+        private CustClassificationFromQueueModel dataFromQueue;
         private bool IsSuccess;
 
         public AffectedDownlineCustomerClassificationService(
@@ -40,6 +46,7 @@
             IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
+            ICustomerClassificationAgencyService custClassAgencyService,
             IAntiFraudCenterServices antiFraudCenterServices,
             IRescanCustClassificationService rescanCustClassificationService,
             ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
@@ -48,11 +55,12 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.antiFraudCenterServices = antiFraudCenterServices;
             this.rescanCustClassificationService = rescanCustClassificationService;
+            this.custClassAgencyService = custClassAgencyService;
         }
 
         public IAffectedDownlineCustomerClassificationService Start()
         {
-            dataFromQueue = new CustClassificationFromQueueResultEntity();
+            dataFromQueue = new CustClassificationFromQueueModel();
             IsSuccess = true;
             return this;
         }
@@ -64,11 +72,11 @@
             return this;
         }
 
-        public IAffectedDownlineCustomerClassificationService CustomerClassification(RescanParametersEntity parameters)
+        public IAffectedDownlineCustomerClassificationService CustomerClassificationMember(RescanParametersEntity parameters)
         {
             if (dataFromQueue != null
-                 && dataFromQueue.CustomerClassificationQueue != null
-                 && dataFromQueue.CustomerClassificationQueue.Any())
+                 && dataFromQueue.MemberQueue != null
+                 && dataFromQueue.MemberQueue.Any())
             {
                 var actionType = dataFromQueue.ActionType;
 
@@ -94,7 +102,29 @@
                             IsSuccess = RemovePA(parameters, dataFromQueue);
                             break;
                         }
+                    default:
+                        {
+                            break;
+                        }
                 }
+            }
+
+            return this;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
+        public IAffectedDownlineCustomerClassificationService CustomerClassificationAgency(RescanParametersEntity parameters)
+        {
+            if (dataFromQueue != null
+                             && dataFromQueue.AgencyQueue != null
+                             && dataFromQueue.AgencyQueue.Any())
+            {
+                IsSuccess = custClassAgencyService
+                    .CallAPIPost(dataFromQueue, 
+                        parameters.InternalBatchSize, 
+                        parameters.PushDataExternal.ExternalBatchSize, 
+                        FromFlow.CTSServices, 
+                        parameters.AgencyApiUrl + ApiEndpoint.AffectDownlineAgencyEndpoint).Result;
             }
 
             return this;
@@ -110,13 +140,11 @@
             return IsSuccess;
         }
 
-        private bool InsertPA(RescanParametersEntity parameters, CustClassificationFromQueueResultEntity custInfo)
+        private bool InsertPA(RescanParametersEntity parameters, CustClassificationFromQueueModel custInfo)
         {
-            if (custInfo != null && custInfo.CustomerClassificationQueue.Any())
+            if (custInfo != null && custInfo.MemberQueue.Any())
             {
-                var custIds = custInfo.CustomerClassificationQueue.Select(c => c.CustID).Distinct();
-
-                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new InsertProblemAccountEntity
+                var probAccounts = custInfo.MemberQueue.Select(c => new InsertProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -142,13 +170,13 @@
             return true;
         }
 
-        private bool RemovePA(RescanParametersEntity rescanConfig, CustClassificationFromQueueResultEntity custInfo)
+        private bool RemovePA(RescanParametersEntity rescanConfig, CustClassificationFromQueueModel custInfo)
         {
             var isSuccess = true;
 
-            if (custInfo.CustomerClassificationQueue != null && custInfo.CustomerClassificationQueue.Any())
+            if (custInfo.MemberQueue != null && custInfo.MemberQueue.Any())
             {
-                var probAccounts = custInfo.CustomerClassificationQueue.Select(c => new RemoveProblemAccountEntity
+                var probAccounts = custInfo.MemberQueue.Select(c => new RemoveProblemAccountEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,
@@ -179,7 +207,7 @@
 
             if (custInfo != null && custInfo.CustInfo.Any())
             {
-                var modelInsert = new InsertCustomerClassificationModel()
+                var modelInsert = new InsertCustomerClassificationModel
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo),
                     FromAction = (int)custInfo.FromFlow,
@@ -218,7 +246,7 @@
 
             if (custInfo != null && custInfo.CustInfo.Any())
             {
-                var modelInsert = new RemoveCustomerClassificationModel()
+                var modelInsert = new RemoveCustomerClassificationModel
                 {
                     CustInfoJson = JsonConvert.SerializeObject(custInfo.CustInfo.Select(c => new RemoveCustomerClassificationEntity
                     {
@@ -246,7 +274,7 @@
             return isSuccess;
         }
 
-        private VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueResultEntity custInfo)
+        private VVIPCustomerInsertEntity MappingVVIPModel(CustClassificationFromQueueModel custInfo)
         {
             return new VVIPCustomerInsertEntity
             {
@@ -254,7 +282,7 @@
                 IsAffectDownline = false,
                 QueueID = Convert.ToInt64(custInfo.QueueID),
                 UplineRoleID = custInfo.UplineRoleID,
-                CustInfo = custInfo.CustomerClassificationQueue.Select(c => new VVIPCategoryEntity
+                CustInfo = custInfo.MemberQueue.Select(c => new VVIPCategoryEntity
                 {
                     CustID = c.CustID,
                     CTSCustID = c.CTSCustID,

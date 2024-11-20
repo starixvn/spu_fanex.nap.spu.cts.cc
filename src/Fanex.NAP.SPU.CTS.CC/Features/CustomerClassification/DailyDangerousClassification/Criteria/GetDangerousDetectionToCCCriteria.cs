@@ -2,7 +2,6 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class GetDangerousDetectionToCCCriteria : CriteriaBase
     {

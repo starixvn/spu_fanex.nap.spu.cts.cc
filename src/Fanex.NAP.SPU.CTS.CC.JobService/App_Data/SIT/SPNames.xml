@@ -117,8 +117,8 @@
 		<Setting Key="CTS_Arc_CustomerAssociation_InsertUpdate" SpName="CTS_Arc_CustomerAssociation_InsertUpdate" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 		<Setting Key="CTS_Arc_CustomerAssociation_LastTicketDate_Update" SpName="CTS_Arc_CustomerAssociation_LastTicketDate_Update" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
 		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByCustStatus" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByCustStatus" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
-		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />
-	</Function>
+		<Setting Key="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" SpName="CTS_Arc_CustomerAssociation_RollBack_CheckByNewPA" DbName="MySQL.CTS_Archive.ctsServiceAdmin" />  
+  </Function>
 
 	<Function Name="InsertReactivatedCustomer">
 		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
@@ -142,7 +142,7 @@
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustInfo_CheckCategoryInfoNewCust" SpName="CTS_DC_CustInfo_CheckCategoryInfoNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetRescanNewCust" SpName="CTS_DC_CustClassification_GetRescanNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Category_GetByCategoryTypeName" SpName="CTS_DC_Category_GetByCategoryTypeName" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 

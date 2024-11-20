@@ -34,6 +34,7 @@
             this.serviceName = "InsertNormalAccountBySport";
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
         {
             try
@@ -41,7 +42,9 @@
                 bool isContinue = true;
 
                 if (batchInternalSize <= 0)
+                {
                     batchInternalSize = 5000;
+                }
 
                 do
                 {
@@ -59,6 +62,7 @@
             return Task.FromResult(true);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var isContinue = false;
@@ -100,6 +104,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         private bool InsertNormaBySport(IEnumerable<NormalAccountBySportEntity> insertNormalAccounts, int batchExternalSize)
         {
             var isSuccess = true;

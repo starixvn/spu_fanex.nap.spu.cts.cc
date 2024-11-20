@@ -27,6 +27,7 @@
         bool InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> pas, PushDataToExternalEntity paras);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Datetime Code Smell", "S6566:Prefer using DateTimeOffset instead of DateTime", Justification = "<NotHandle>")]
     public class DetectUnauthorizedLoginCustomerService : ProblemAccountServices, IDetectUnauthorizedLoginCustomerService
     {
         private readonly IDetectUnauthorizedLoginCustomerDataAccess detectUnauthorizedDataAccess;
@@ -46,31 +47,35 @@
             this.custClassToMainDBService = custClassToMainDBService;
             this.serviceName = "Detect Unauthorized Login Customer";
         }
-       
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         public int GetLastScannedCustID(CTS_SystemParameters paraID)
         {
-            var lastValue = systemDataAccess.GetPreviousTimingExecution(paraID);
+            var lastValue = systemDataAccess.GetPreviousTimingExecutionForCTS(paraID);
 
             return lastValue != null ? int.Parse(lastValue?.ParameterValue) : 0;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S6580:Use a format provider when parsing date and time", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         public DateTime GetLastScannedDate(CTS_SystemParameters paraID)
         {
-            var lastValue = systemDataAccess.GetPreviousTimingExecution(paraID);
+            var lastValue = systemDataAccess.GetPreviousTimingExecutionForCTS(paraID);
 
             return (lastValue != null && !string.IsNullOrEmpty(lastValue.ParameterValue)) ? DateTime.Parse(lastValue?.ParameterValue) : DateTime.MinValue;
         }
 
-        public bool UpdateLastScannedID(CTS_SystemParameters para, string value)
+        public bool UpdateLastScannedID(CTS_SystemParameters paraID, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
-                systemDataAccess.UpdateTimingExecution(value, para);
+                systemDataAccess.UpdateTimingExecutionForCTS(value, paraID);
             }
             
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S6562:Always set the \"DateTimeKind\" when creating new \"DateTime\" instances", Justification = "<Pending>")]
         public DateTime GetProcessDate(CTS_SystemParameters lastScanDate)
         {
             var now = DateTime.Now;

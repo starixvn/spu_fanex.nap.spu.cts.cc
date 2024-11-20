@@ -42,7 +42,7 @@
             };
 
             // Act
-            systemParameterDataAccess.GetPreviousTimingExecution(paraID).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForCTS(paraID).Returns(output);
 
             var result = unAuthorizedLoginService.GetLastScannedCustID(paraID);
 
@@ -64,7 +64,7 @@
             };
 
             // Act
-            systemParameterDataAccess.GetPreviousTimingExecution(paraID).Returns(output);
+            systemParameterDataAccess.GetPreviousTimingExecutionForCTS(paraID).Returns(output);
 
             var result = unAuthorizedLoginService.GetLastScannedDate(paraID);
 
@@ -79,7 +79,7 @@
             // Arrange
 
             // Act
-            systemParameterDataAccess.UpdateTimingExecution(lastScannedTime, paraID);
+            systemParameterDataAccess.UpdateTimingExecutionForCTS(lastScannedTime, paraID);
 
             var result = unAuthorizedLoginService.UpdateLastScannedID(paraID, lastScannedTime);
 

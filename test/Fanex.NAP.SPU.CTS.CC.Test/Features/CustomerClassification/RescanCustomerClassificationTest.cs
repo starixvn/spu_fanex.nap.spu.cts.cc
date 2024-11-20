@@ -39,19 +39,6 @@
         }
 
         [Fact]
-        public void GetAgentCusts_WhenSuccess_ReturnNotException()
-        {
-            // Arrange
-            var custIds = new List<long>() { 1, 2 };
-
-            // Act
-            Action action = () => rescanCustClassificationService.GetAgentCusts(custIds);
-
-            // Assert
-            action.Should().NotThrow<Exception>();
-        }
-
-        [Fact]
         public void PushExternalProblemAccounts_WhenSuccess_ReturnNotException()
         {
             // Arrange

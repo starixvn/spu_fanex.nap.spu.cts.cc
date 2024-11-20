@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -22,13 +21,14 @@
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
     {
         private readonly IIncorrectDataMonitoringDataAccess incorrectDataMonitoringDataAccess;
-        private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Incorrect Data Monitoring Job";
 
-        public IncorrectDataMonitoringService(IIncorrectDataMonitoringDataAccess incorrectDataMonitoringDataAccess, ISentryClient sentryClient)
+
+        // private const string ServiceName = "Incorrect Data Monitoring Job";
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
+        public IncorrectDataMonitoringService(IIncorrectDataMonitoringDataAccess incorrectDataMonitoringDataAccess)
         {
             this.incorrectDataMonitoringDataAccess = incorrectDataMonitoringDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring()
@@ -50,11 +50,11 @@
             }
         }
 
-        public void InsertIncorrectDataMonitoring(IEnumerable<long> custIDs, JobMonitor_IssueType issueType, int batchSize)
+        public void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize)
         {
-            if (custIDs != null && custIDs.Any())
+            if (incorrectList != null && incorrectList.Any())
             {
-                var dataChunks = custIDs.Chunk(batchSize);
+                var dataChunks = incorrectList.Chunk(batchSize);
 
                 foreach (var logDataBatch in dataChunks)
                 {
@@ -71,6 +71,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
         public void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment)
         {
             if (incorrectList == null || !incorrectList.Any())
@@ -93,6 +94,9 @@
             Utilities.NotifyTeamsMessage(message, "Job Monitoring", environment, environment == "LOCAL" ? MicrosoftTeams_GroupId_Local : MicrosoftTeams_JobMonitor_GroupId_Pro);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         private static string GenerateMessage(IEnumerable<GetMonitoringEntity> data, JobMonitor_IssueType issueTypeID)
         {
             var message = string.Empty;
@@ -131,17 +135,22 @@
                         case JobMonitor_IssueType.Classification_GeneralPoolStatus:
                         case JobMonitor_IssueType.Classification_BySportPoolStatus:
                             {
-                                message += $"\r\n⚠️ {(issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport")} Classification Pool exceeds {trackingInfo.Value} records ({trackingInfo.TrackingInfo})\r\n";
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport";
+                                message += $"\r\n⚠️ {issueTypeConvertToString} Classification Pool exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
                             {
-                                message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo.Value} records ({trackingInfo.TrackingInfo})\r\n";
+                                message += $"\r\n⚠️ Last Login Transaction Process exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.Classification_MissingTVSProblemAccount:
                             {
                                 message += $"\r\n🆘 Missing TVS Problem Account {{Total RequestId: {values.Count()}}} {string.Join(',', values.Take(50))}\r\n";
+                                break;
+                            }
+                        default:
+                            {
                                 break;
                             }
                     }

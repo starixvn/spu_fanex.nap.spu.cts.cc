@@ -39,6 +39,7 @@
             return tvsProblemAccountDataAccess.GetTWProblemAccount(lastDateTime) ?? new TVSProblemAccountResultEntity();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S121:Control structures should use curly braces", Justification = "<Pending>")]
         public bool InsertTVSProblemAccounts(IEnumerable<TVSProblemAccountEntity> problemAccounts, PushDataToExternalEntity parameters)
         {
             if (problemAccounts != null && problemAccounts.Any())

@@ -29,7 +29,10 @@
         private GetNormalTaggingScanningModel _getNormalTaggingScanningModel;
         private IEnumerable<GetNormalTaggingScanningViewModel> _custInfos;
 
-        public NormalTaggingClassificationServices(INormalTaggingClassificationDataAccess normalTaggingClassificationDataAccess, ISystemParameterDataAccess systemParameterDataAccess, INormalAccountService normalAccountService)
+        public NormalTaggingClassificationServices(
+            INormalTaggingClassificationDataAccess normalTaggingClassificationDataAccess, 
+            ISystemParameterDataAccess systemParameterDataAccess, 
+            INormalAccountService normalAccountService)
         {
             _normalTaggingClassificationDataAccess = normalTaggingClassificationDataAccess;
             _systemParameterDataAccess = systemParameterDataAccess;
@@ -56,7 +59,7 @@
         {
             if (_custInfos != null && _custInfos.Any())
             {
-                var custIdChunks = _custInfos?.Chunk(batchInternalSize);
+                var custIdChunks = _custInfos.Chunk(batchInternalSize);
 
                 foreach (var custBatch in custIdChunks)
                 {
@@ -78,8 +81,8 @@
         {
             if (_getNormalTaggingScanningModel != null)
             {
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCategoryID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCategoryID);
-                _systemParameterDataAccess.UpdateTimingExecution(_getNormalTaggingScanningModel.LastCustID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCustID);
+                _systemParameterDataAccess.UpdateTimingExecutionForCTS(_getNormalTaggingScanningModel.LastCategoryID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCategoryID);
+                _systemParameterDataAccess.UpdateTimingExecutionForCTS(_getNormalTaggingScanningModel.LastCustID.ToString(), CTS_SystemParameters.NormalTaggingClassificationLastCustID);
 
                 return _custInfos != null && _custInfos.Any();
             }
@@ -87,6 +90,7 @@
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         private IEnumerable<long> CheckChangesNormalTaggingScanning(IEnumerable<GetNormalTaggingScanningViewModel> custBatch)
         {
             if (custBatch != null && custBatch.Any())

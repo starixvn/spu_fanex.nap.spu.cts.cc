@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
+    using Fanex.NAP.SPU.CTS.CC.Shares.Models;
     using Microsoft.Extensions.Configuration;
     using System;
     using System.ComponentModel;
@@ -46,9 +47,13 @@
 
         string InsertBAURL { get; }
 
+        string AgencyApiUrl { get; }     
+
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
         bool NormalAccountBySportIsWriteLog { get; }
+
+        APIHelperConfig APIHelperConfig { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -58,13 +63,14 @@
         private readonly string environment;
         private readonly string evironmentName;
         private readonly string spName;
-        private readonly string soon88FeedDataAPI;
         private readonly string afcInsertAccountURL;
         private readonly string afcDeleteAccountURL;
         private readonly bool isSyncAFCData;
         private readonly string sentryDsn;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
+        private readonly string agencyApiUrl;    
+        private readonly APIHelperConfig apiHelperConfig;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -79,6 +85,11 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
+            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");          
+            apiHelperConfig = new APIHelperConfig
+            {
+                Proxy = GetValue<string>("APIHelperConfig:Proxy")
+            };
         }
 
         #region Variables
@@ -117,6 +128,8 @@
 
         public string InsertBAURL => insertBAURL;
 
+        public string AgencyApiUrl => agencyApiUrl;
+       
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 
         public bool NormalAccountIsWriteLog => GetValue<bool>("NormalAccountInsert:IsWriteLog");
@@ -141,6 +154,7 @@
 
         public bool NormalAccountBySportIsWriteLog => GetValue<bool>("NormalAccountBySportIsWriteLog:IsWriteLog");
 
+        public APIHelperConfig APIHelperConfig => apiHelperConfig;
         #endregion Variables
 
         #region Methods

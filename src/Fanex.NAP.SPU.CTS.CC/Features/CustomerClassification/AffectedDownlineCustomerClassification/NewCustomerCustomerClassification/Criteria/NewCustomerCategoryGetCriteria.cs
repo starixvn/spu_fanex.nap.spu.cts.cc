@@ -11,7 +11,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustInfo_CheckCategoryInfoNewCust";
+            return "CTS_DC_CustClassification_GetRescanNewCust";
         }
 
         public override bool IsValid()

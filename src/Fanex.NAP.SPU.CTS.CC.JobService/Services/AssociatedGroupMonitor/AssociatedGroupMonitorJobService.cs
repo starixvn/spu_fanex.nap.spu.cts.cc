@@ -73,6 +73,7 @@
                     {
                         var custIdsResult = this.associatedGroupService.InsertProblemAccount(custSyncPAs, new PushDataToExternalEntity
                         {
+                            RoleGroup = RoleGroupType.Member,
                             ExternalBatchSize = batchSize,
                             IsUpdateDangerToMainDB = true,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,

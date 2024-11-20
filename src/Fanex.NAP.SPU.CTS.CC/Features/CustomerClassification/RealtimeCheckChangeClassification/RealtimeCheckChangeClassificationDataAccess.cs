@@ -7,7 +7,7 @@
         RealtimeCheckChangeModel CheckChange();
 
         void UpdateLastTransDate(string custInfos);
-
+     
         void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned);
     }
 
@@ -24,17 +24,18 @@
         {
             var criteria = new RealtimeCheckChangeCriteria();
 
-            var data = repository.Fetch<RealtimeCheckChangeEntities>(criteria);
+            var (firstResultSet, secondResultSet) = repository.FetchMultiple<RealtimeCheckChangeEntities, RealtimeCheckChangeEntities>(criteria);
 
             return new RealtimeCheckChangeModel
             {
-                CustInfos = data,
+                CustInfos = firstResultSet,
+                CustInfosAgency = secondResultSet,
                 NextScannedDateTime1 = criteria.NextScannedDateTime1,
                 NextScannedDateTime2 = criteria.NextScannedDateTime2,
                 NextScannedDateTime3 = criteria.NextScannedDateTime3,
-                NextScannedDateTime4 = criteria.NextScannedDateTime4,
+                NextScannedDateTime4 = criteria.NextScannedDateTime4
             };
-        }
+        }       
 
         public void UpdateLastTransDate(string custInfos)
         {
@@ -44,7 +45,7 @@
             };
 
             repository.Execute(criteria);
-        }
+        }     
 
         public void UpdateNextScanCheckChange(RealtimeCheckChangeModel nextScanned)
         {

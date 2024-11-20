@@ -17,7 +17,7 @@
         public NormalAccountClassificationBySportServiceTest()
         {
             normalAccountClassifyDataAccess = Substitute.For<INormalAccountClassificationBySportDataAccess>();
-            normalAccountClassifyService = new NormalAccountClassificationBySportService(null, normalAccountClassifyDataAccess);
+            normalAccountClassifyService = new NormalAccountClassificationBySportService(normalAccountClassifyDataAccess);
         }
 
         [Fact]

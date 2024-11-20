@@ -27,6 +27,7 @@
             return repository.Fetch<GetMonitoringEntity>(criteria);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<Pending>")]
         public void InsertIncorrectDataMonitoring(string incorrectDataJson, JobMonitor_IssueType issueType)
         {
             var criteria = new JobMonitoringInsertCriteria

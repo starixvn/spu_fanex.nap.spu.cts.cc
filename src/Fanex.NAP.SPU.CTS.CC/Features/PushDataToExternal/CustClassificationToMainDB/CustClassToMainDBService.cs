@@ -17,7 +17,7 @@
 
         bool PushExternalProblemAcountPackage(IEnumerable<long> custIds, PushDataToExternalEntity parameters);
 
-        bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName);
+        bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, RoleGroupType roleGroup, int retryTime, string serviceName);
 
         #endregion
 
@@ -61,14 +61,14 @@
             return isSuccess;
         }
 
-        public bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity parameters)
+        public bool PushExternalPackageByCustId(IEnumerable<long> custIds, PushDataToExternalEntity paras)
         {
             if (custIds == null || !custIds.Any())
             {
                 return true;
             }
 
-            var custIdsChunk = custIds.Distinct().Chunk(parameters.ExternalBatchSize);
+            var custIdsChunk = custIds.Distinct().Chunk(paras.ExternalBatchSize);
 
             foreach (var custids in custIdsChunk)
             {
@@ -76,7 +76,7 @@
 
                 if (lastestClassifications != null && lastestClassifications.Any())
                 {
-                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, parameters);
+                    bool isSuccess = IsPushExternalSuccess(lastestClassifications, paras);
 
                     if (!isSuccess)
                     {
@@ -88,9 +88,9 @@
             return true;
         }
 
-        public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, int retryTime, string serviceName)
+        public bool PushCustomerClassification(IEnumerable<LatestClassificationEntity> customerClassifications, RoleGroupType roleGroup, int retryTime, string serviceName)
         {
-            if (customerClassifications == null || !customerClassifications.Any())
+            if (customerClassifications.IsNullOrEmpty())
             {
                 return true;
             }
@@ -99,21 +99,30 @@
             {
                 try
                 {
-                    var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications);
+                    var result = custClassToMainDBDataAccess.UpdateCustomerClassification(customerClassifications, roleGroup);
 
-                    if (result.ErrorCode != 0 && retryTime == 0)
+                    if (result.ErrorCode == 200)
                     {
-                        Utilities.LogSentryError(serviceName, "PushCustomerClassificationToMain fail", customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(
+                            serviceName, $"PushCustomerClassificationToMain throw exception: not existing CustIDs in mainDB with ErrorMsg: {result.ErrorMsg}",
+                            customerClassifications, new Exception("Not existing CustIDs in mainDB"), sentryClient);
+                    }
+
+                    if (result.ErrorCode == 200 || result.ErrorCode == 0)
+                    {
+                        return true;
+                    }
+
+                    if (retryTime == 0)
+                    {
+                        Utilities.LogSentryError(
+                            serviceName, $"PushCustomerClassificationToMain fail with error code: {result.ErrorCode}",
+                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+
                         return false;
                     }
-                    else if (result.ErrorCode != 0)
-                    {
-                        retryTime--;
-                    }
-                    else
-                    {
-                        retryTime = -1;
-                    }
+
+                    retryTime--;
                 }
                 catch (Exception ex)
                 {
@@ -153,6 +162,9 @@
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3776:Cognitive Complexity of methods should not be too high", Justification = "<Pending>")]
         public bool RetryPushCCBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName)
         {
             if (classificationBySports != null && classificationBySports.Any())
@@ -204,18 +216,18 @@
 
         #region Private methods
 
-        private bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
+        private bool PushCustClassificationToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, RoleGroupType roleGroup, string serviceName)
         {
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity()
+                var custClassification = lastestClassifications.Select(c => new LatestClassificationEntity
                 {
                     CustId = c.CustID,
                     Category = c.CategoryID,
                     CustomerClass = c.CustomerClass
                 });
 
-                return PushCustomerClassification(custClassification, Constants.RetryPushCCToExternal, serviceName);
+                return PushCustomerClassification(custClassification, roleGroup, Constants.RetryPushCCToExternal, serviceName);
             }
 
             return true;
@@ -227,7 +239,7 @@
 
             if (lastestClassifications != null && lastestClassifications.Any())
             {
-                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.ServiceName);
+                isSuccess = PushCustClassificationToMainDB(lastestClassifications, paras.RoleGroup, paras.ServiceName);
 
                 if (paras.IsUpdateDangerToMainDB && isSuccess)
                 {
@@ -248,6 +260,9 @@
             return Enumerable.Empty<LatestCCDangerLevelEntity>();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         private bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
         {
             if (lastestClassifications != null && lastestClassifications.Any())
@@ -258,7 +273,7 @@
                 {
                     foreach (var dangerBatch in groupDangerType)
                     {
-                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity()
+                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity
                         {
                             CustId = c.CustID,
                             DangerLevel = c.DangerLevel.Value

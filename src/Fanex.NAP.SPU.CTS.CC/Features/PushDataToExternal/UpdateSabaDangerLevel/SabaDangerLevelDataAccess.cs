@@ -34,7 +34,8 @@
             return new SabaDangerLevelResultEntity
             {
                 CustSabaDangerLevel = result ?? Enumerable.Empty<SabaDangerLevelEntity>(),
-                LastHistoryID = criteria.LastHistoryID
+                LastHistoryID = criteria.LastHistoryID,
+                AgencyLastHistoryID = criteria.AgencyLastHistoryID
             };
         }
 
@@ -54,7 +55,7 @@
 
         public SabaDangerLevelUpdateResultEntity UpdateDabaDangerLevelToMainDB(IEnumerable<SabaDangerLevelEntity> custSabaDangerLevel)
         {
-            var criteria = new SabaDangerLevelUpdateCriteria()
+            var criteria = new SabaDangerLevelUpdateCriteria
             {
                 CustList = custSabaDangerLevel.ToXmlString()
             };

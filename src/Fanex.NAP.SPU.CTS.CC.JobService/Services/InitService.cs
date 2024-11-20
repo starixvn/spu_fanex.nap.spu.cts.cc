@@ -27,6 +27,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
@@ -320,8 +321,9 @@
             services.AddSingleton<IAffectedDownlineCustomerClassificationDataAccess, AffectedDownlineCustomerClassificationDataAccess>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationService, AffectedDownlineCustomerClassificationService>();
             services.AddSingleton<IAffectedDownlineCustomerClassificationJobService, AffectedDownlineCustomerClassificationJobService>();
-        }  
-        
+            services.AddSingleton<ICustomerClassificationAgencyService, CustomerClassificationAgencyService>();
+        }
+
         private static void RegisterNewCustomerClassification(this IServiceCollection services)
         {
             services.AddSingleton<INewCustomerClassificationDataAccess, NewCustomerClassificationDataAccess>();

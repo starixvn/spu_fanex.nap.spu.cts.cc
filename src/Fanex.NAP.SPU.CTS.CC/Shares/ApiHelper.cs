@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.Shares
 {
+    using Fanex.NAP.SPU.CTS.CC.Shares.Models;
     using Newtonsoft.Json;
     using System;
     using System.Net;
@@ -9,8 +10,18 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4005:\"System.Uri\" arguments should be used instead of strings", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S112:General or reserved exceptions should never be thrown", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Info Code Smell", "S1133:Deprecated code should be removed", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Info Code Smell", "S4136:All 'Post' method overloads should be adjacent.", Justification = "<NotHandle>")]
     public static class ApiHelper
     {
+        private static APIHelperConfig _config;
+        public static void Setup(APIHelperConfig config)
+        {
+            _config = config;
+        }
+
         [Obsolete("Too many generic and parameter")]
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param, int environment, int mailingListId)
         {
@@ -58,7 +69,7 @@
         {
             var proxy = new WebProxy
             {
-                Address = new Uri($"http://10.3.252.100:8801")
+                Address = new Uri(_config?.Proxy)
             };
 
             var httpClientHandler = new HttpClientHandler

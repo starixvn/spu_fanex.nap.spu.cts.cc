@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification
 {
     using Fanex.Data.Repository;
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     public interface IDailyDangerousClassificationDataAccess

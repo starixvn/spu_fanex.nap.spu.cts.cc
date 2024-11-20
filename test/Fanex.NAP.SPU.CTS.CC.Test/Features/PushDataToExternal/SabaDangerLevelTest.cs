@@ -225,7 +225,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
                     {
                         IsSuccess = true
                     },
-                    LastHistoryID = 999
+                    LastHistoryID = 999,
+                    AgencyLastHistoryID = 123123
                 });
 
             // Act
@@ -234,7 +235,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
             _service.UpdateLastScan();
 
             // Assert
-            _systemParameterServices.Received(1).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
+            _systemParameterServices.Received(2).UpdateTimingExecution(Arg.Any<string>(), Arg.Any<CTS_SystemParameters>());
         }
 
         [Fact]

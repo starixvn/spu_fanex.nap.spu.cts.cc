@@ -9,14 +9,11 @@
     [Route("api/TransformCustomer")]
     public class CustomerJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly ICTSCustomerJobService ctsCustomerJobService;
 
         public CustomerJobController(
-            ISentryClient sentryClient,
             ICTSCustomerJobService ctsCustomerJobService)
         {
-            this.sentryClient = sentryClient;
             this.ctsCustomerJobService = ctsCustomerJobService;
         }
 

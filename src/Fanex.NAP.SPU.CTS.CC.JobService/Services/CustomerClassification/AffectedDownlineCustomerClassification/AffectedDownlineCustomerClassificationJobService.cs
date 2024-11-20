@@ -56,15 +56,17 @@
 
         private bool JobRun(int batchSize)
         {
-            var paramaters = new RescanParametersEntity()
+            var paramaters = new RescanParametersEntity
             {
                 IsToQueue = false,
                 FunctionId = FunctionId.DownlineCustomerClassification,
                 RescanNormalType = RescanNormalType.Auto_AfftectedDownline,
                 InternalBatchSize = batchSize,
                 ServiceName = serviceName,
+                AgencyApiUrl = appSettings.AgencyApiUrl,
                 PushDataExternal = new PushDataToExternalEntity
                 {
+                    RoleGroup = RoleGroupType.Member,
                     IsUpdateDangerToMainDB = true,
                     ExternalBatchSize = batchSize,
                     ServiceName = serviceName,
@@ -76,7 +78,8 @@
 
             return downlineCustomerClassificationService.Start()
                                                         .GetCustomerClassificationFromQueue()
-                                                        .CustomerClassification(paramaters)
+                                                        .CustomerClassificationAgency(paramaters)
+                                                        .CustomerClassificationMember(paramaters)
                                                         .CompleteCustomerClassificationFromQueue();
         }
     }
