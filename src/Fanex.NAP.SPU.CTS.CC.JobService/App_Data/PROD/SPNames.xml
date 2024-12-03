@@ -241,4 +241,8 @@
 	<Function name="RealtimeTWInitialSmartClassification">
 		<Setting Key="CTS_DC_CustClassification_InitialSmart_Get" SpName="CTS_DC_CustClassification_InitialSmart_Get" DbName="MySQL.CTS_DataCenter.ctsService" />	
 	</Function>
+
+	<Function name="NormalDangerousAssociation">
+		<Setting Key="CTS_GeneralNormalClassification_DangerousAssociation_Preprocess" SpName="CTS_GeneralNormalClassification_DangerousAssociation_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+	</Function>
 </Functions>
