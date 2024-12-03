@@ -6,6 +6,8 @@
 
     public interface INormalDangerousAssociationCheckService
     {
+        public ScanAssociationByDeviceModel ScanAssociationByDevice(int batchSize);
+
         public void PreprocessDangerousAssociation(IEnumerable<PreprocessDangerousAssociationModel> data);
     }
 
@@ -16,6 +18,11 @@
         public NormalDangerousAssociationCheckService(INormalDangerousAssociationCheckDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
+        }
+
+        public ScanAssociationByDeviceModel ScanAssociationByDevice(int batchSize)
+        {
+            return _dataAccess.ScanAssociationByDevice(batchSize);
         }
 
         public void PreprocessDangerousAssociation(IEnumerable<PreprocessDangerousAssociationModel> data)

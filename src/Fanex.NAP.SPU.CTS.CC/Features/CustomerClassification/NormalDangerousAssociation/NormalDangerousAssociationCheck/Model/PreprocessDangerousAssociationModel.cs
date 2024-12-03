@@ -2,8 +2,8 @@
 {
     public class PreprocessDangerousAssociationModel
     {
-        public long CustID { get; set; }
+        public long CTSCustID { get; set; }
         
-        public long? DeviceID { get;set; }
+        public long? DCSDeviceID { get;set; }
     }
 }

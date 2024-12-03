@@ -2,19 +2,21 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
-    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System.Collections.Generic;
 
     public interface INormalDangerousAssociationCheckDataAccess
     {
         public void PreprocessDangerousAssociation(IEnumerable<PreprocessDangerousAssociationModel> data);
+
+        public ScanAssociationByDeviceModel ScanAssociationByDevice(int batchSize);
     }
 
     public class NormalDangerousAssociationCheckDataAccess : INormalDangerousAssociationCheckDataAccess
     {
-        public IDynamicRepository _repository;
+        private readonly IDynamicRepository _repository;
 
         public NormalDangerousAssociationCheckDataAccess()
         {
@@ -23,12 +25,26 @@
 
         public void PreprocessDangerousAssociation(IEnumerable<PreprocessDangerousAssociationModel> data)
         {
-            var criteria = new PreprocessDangerousAssociationCriteria()
+            var criteria = new PreprocessDangerousAssociationCriteria
             {
-                CustJson = JsonConvert.SerializeObject(data)
+                CustInfoJson = JsonConvert.SerializeObject(data)
             };
 
             _repository.Execute(criteria);
+        }
+
+        public ScanAssociationByDeviceModel ScanAssociationByDevice(int batchSize)
+        {
+            var criteria = new ScanAssociationByDeviceCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return new ScanAssociationByDeviceModel
+            {
+                Data = _repository.Fetch<ScanAssociationByDeviceEntity>(criteria),
+                LastCTSAssDevID = criteria.LastCTSAssDevID
+            };
         }
     }
 }

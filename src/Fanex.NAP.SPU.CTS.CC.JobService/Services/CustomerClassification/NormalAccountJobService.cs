@@ -26,7 +26,7 @@
         private readonly ISentryClient _sentryClient;
         private readonly IAppSettings _appSettings;
         private readonly INormalAccountService _normalAccountService;
-        private readonly ICustClassToMainDBService _custClassToMainDBService;       
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IAntiFraudCenterServices _antiFraudCenterServices;
         private readonly INormalDangerousAssociationCheckService _normalDangerousAssociationCheckService;
 
@@ -54,7 +54,7 @@
 
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
-                
+
                 do
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
@@ -74,11 +74,11 @@
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
             var normalAccountModel = _normalAccountService.GetNormalAccounts();
-           
+
             if (normalAccountModel.IsContinute)
             {
                 var failedThreads = new ConcurrentBag<bool>();
-                
+
                 var custChunks = normalAccountModel.NormalAccount.Chunk(batchInternalSize);
 
                 custChunks
@@ -93,10 +93,10 @@
         }
 
         private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, int batchExternalSize, ConcurrentBag<bool> failedThreads)
-        {            
+        {
             var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
-            var result = _normalAccountService.InsertNormalAccount(finalNormalAcc, _serviceName, _appSettings.NormalAccountIsWriteLog);            
+            var result = _normalAccountService.InsertNormalAccount(finalNormalAcc, _serviceName, _appSettings.NormalAccountIsWriteLog);
 
             if (string.IsNullOrEmpty(result.ErrorMessage))
             {
@@ -132,17 +132,14 @@
         private void PreprocessDangerousAssociation(IEnumerable<CustInfoClassificationEntity> custInfos)
         {
             var preprocessSRPChange = custInfos
-                                               .Where(x => x.IsPSR)
-                                               .Select(x => new PreprocessDangerousAssociationModel
-                                               {
-                                                   CustID = x.CustID,
-                                                   DeviceID = null
-                                               });
+                                            .Where(x => x.IsPSR)
+                                            .Select(x => new PreprocessDangerousAssociationModel
+                                            {
+                                                CTSCustID = x.CTSCustID,
+                                                DCSDeviceID = null
+                                            });
 
-            if (preprocessSRPChange.IsNotNullOrEmpty())
-            {
-                _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
-            }
+            _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
         }
     }
 }

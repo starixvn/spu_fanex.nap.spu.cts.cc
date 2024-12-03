@@ -39,7 +39,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
         public const string CATEGORYTYPEPARENT_CATEID_ROBOTUSER = "CONST_CATEID_ROBOTUSER";
 
         public const string DataInfo = "Data Info";
-        public const string ExceptionInfo = "Exception Info";        
+        public const string ExceptionInfo = "Exception Info";
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum CTS_SystemParameters
@@ -73,7 +73,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             UnauthorizedLogin_LastScanCustID_Credit = 147,
             UnauthorizedLogin_LastScanCustID_Licensee = 148,
             UnauthorizedLogin_LastScanDate_Credit = 149,
-            UnauthorizedLogin_LastScanDate_Licensee = 150,         
+            UnauthorizedLogin_LastScanDate_Licensee = 150,
             JobMonitoring_IncorrectData_LastScanID = 151,
             JobMonitoring_NewCustomer_LastCTSCustID = 152,
             DangerousScoreClassification_Credit_LastScannedDate = 153,
@@ -81,11 +81,12 @@ namespace Fanex.NAP.SPU.CTS.Shares
             DangerousScoreClassification_Deposit_LastScannedDate = 156,
             DangerousScoreClassification_Deposit_LastCustID = 157,
             TWInitialSmartClassification_LastCustID = 159,
-            TWInitialSmartClassification_LastScanDate = 160,            
+            TWInitialSmartClassification_LastScanDate = 160,
             DailyProbation_LastCategoryID = 166,
             DailyProbation_LastCustID = 167,
             DailyProbation_BySport_LastCustID = 169,
-            SabaDangerLevel_Agency_LastHistoryID = 181
+            SabaDangerLevel_Agency_LastHistoryID = 181,
+            NormalDangerousAssociationCheck_LastCTSAssDevID = 183
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -178,7 +179,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
         {
             CTSWEB = 1,
             CTSAPI = 2,
-            CTSServices = 3,           
+            CTSServices = 3,
             ManualTrigger = 4
         };
 
@@ -231,7 +232,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Exist = 1,
             ExistOnly = 2,
         };
-       
+
         public enum CCInputFlow
         {
             [Description("VVIP")]
@@ -245,15 +246,15 @@ namespace Fanex.NAP.SPU.CTS.Shares
             [Description("InsertPACategory")]
             InsertPACategory = 5,
             [Description("InsertPAReason")]
-            InsertPAReason = 6,           
+            InsertPAReason = 6,
             [Description("Potential")]
-            Potential = 8,            
+            Potential = 8,
             [Description("Normal")]
-            Normal = 9,          
+            Normal = 9,
             [Description("RescanPACategory")]
-            RescanPACategory = 115,           
+            RescanPACategory = 115,
             [Description("RescanPotential")]
-            RescanPotential = 118,           
+            RescanPotential = 118,
             [Description("RescanNormal")]
             RescanNormal = 9,
             [Description("RemoveVVIP")]

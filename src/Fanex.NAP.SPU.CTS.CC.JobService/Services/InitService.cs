@@ -47,6 +47,7 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -126,13 +127,14 @@
 
             RegisterWrapperCustomerClassificaton(services);
 
-            RegisterDangerousAssociation(services);
+            RegisterNormalDangerousAssociationCheck(services);
         }
 
-        private static void RegisterDangerousAssociation(IServiceCollection services)
+        private static void RegisterNormalDangerousAssociationCheck(IServiceCollection services)
         {
             services.AddSingleton<INormalDangerousAssociationCheckDataAccess, NormalDangerousAssociationCheckDataAccess>();
             services.AddSingleton<INormalDangerousAssociationCheckService, NormalDangerousAssociationCheckService>();
+            services.AddSingleton<INormalDangerousAssociationCheckJobService, NormalDangerousAssociationCheckJobService>();
         }
 
         private static void RegisterWrapperCustomerClassificaton(IServiceCollection services)

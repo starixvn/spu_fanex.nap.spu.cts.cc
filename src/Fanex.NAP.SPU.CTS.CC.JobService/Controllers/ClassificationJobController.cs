@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -23,6 +24,7 @@
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService;
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
+        private readonly INormalDangerousAssociationCheckJobService normalDangerousAssociationCheckJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
@@ -52,7 +54,8 @@
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
-            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService)
+            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService,
+            INormalDangerousAssociationCheckJobService normalDangerousAssociationCheckJobService)
         {
             this.sentryClient = sentryClient;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
@@ -66,6 +69,7 @@
             this.newCustomerClassificationJobService = newCustomerClassificationJobService;
             this.affectedDownlineClassificationJobService = affectedDownlineClassificationJobService;
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
+            this.normalDangerousAssociationCheckJobService = normalDangerousAssociationCheckJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
@@ -208,6 +212,12 @@
         public async Task<bool> RealtimeTWInitialSmartClassification([FromForm] int batchSize)
         {
             return await this.realtimeTWInitialSmartJobService.Execute(batchSize);
+        }
+
+        [HttpPost("normalDangerousAssociationCheck")]
+        public async Task<bool> NormalDangerousAssociationCheck([FromForm] int batchSize)
+        {
+            return await this.normalDangerousAssociationCheckJobService.Execute(batchSize);
         }
     }
 }
