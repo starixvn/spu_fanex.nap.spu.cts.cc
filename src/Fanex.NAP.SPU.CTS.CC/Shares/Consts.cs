@@ -86,7 +86,8 @@ namespace Fanex.NAP.SPU.CTS.Shares
             DailyProbation_LastCustID = 167,
             DailyProbation_BySport_LastCustID = 169,
             SabaDangerLevel_Agency_LastHistoryID = 181,
-            NormalDangerousAssociationCheck_LastCTSAssDevID = 183
+            NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
+            NormalDangerousAssociationScan_LastScannedID = 184,
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -150,7 +151,8 @@ namespace Fanex.NAP.SPU.CTS.Shares
             DetectUnauthorizedLoginCust = 101,
             DailyDangerousClassification = 102,
             TWInitialGBClassification = 103,
-            TWInitialSmartClassification = 104
+            TWInitialSmartClassification = 104,
+            NormalDangerousTagging = 105,
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -166,6 +168,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             Auto_AfftectedDownline = 6,
             Auto_NormalTaggingScan = 7,
             Auto_InactiveCustomer = 8,
+            Auto_DangerousAssociation = 9,
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]

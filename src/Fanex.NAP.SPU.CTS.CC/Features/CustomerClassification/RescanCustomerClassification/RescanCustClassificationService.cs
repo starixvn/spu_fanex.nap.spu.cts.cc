@@ -11,9 +11,11 @@
 
     public interface IRescanCustClassificationService
     {
-        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);             
+        bool RescanCustomerClassification(IEnumerable<long> custIds, RescanParametersEntity paras);
 
-        bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);       
+        bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras);
+
+        void PreNormalClassification(IEnumerable<long> custNormals, FunctionId functionId, RescanNormalType rescanNormalType);
     }
 
     public class RescanCustClassificationService : ProblemAccountServices, IRescanCustClassificationService
@@ -42,7 +44,7 @@
                 {
                     if ((CCInputFlow)group.InputFlowID == CCInputFlow.RescanNormal)
                     {
-                        PreNormalClassification(group.CustRescans.Select(x => x.CustID), paras);
+                        PreNormalClassification(group.CustRescans.Select(x => x.CustID), paras.FunctionId, paras.RescanNormalType);
                     }
                     else
                     {
@@ -54,18 +56,18 @@
             return true;
         }
 
+        public void PreNormalClassification(IEnumerable<long> custNormals, FunctionId functionId, RescanNormalType rescanNormalType)
+        {
+            var custIDToString = string.Join(",", custNormals);
+
+            rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, functionId, rescanNormalType);
+        }
+
         private void RescanProblemAccount(IEnumerable<GetRescanCustomerClassificationEntity> custNormals, RescanParametersEntity paras, CCInputFlow ccInputFlow)
         {
             var resultCustRescans = base.RescanCustomerClassification(custNormals, paras.FunctionId, ccInputFlow, paras.IsToQueue, paras.ServiceName);
 
             PushExternalProblemAccounts(resultCustRescans, paras.PushDataExternal);
-        }
-
-        private void PreNormalClassification(IEnumerable<long> custNormals, RescanParametersEntity paras)
-        {
-            var custIDToString = string.Join(",", custNormals);
-
-            rescanCustClassificationDataAccess.PreNormalClassification(custIDToString, paras.FunctionId, paras.RescanNormalType);
         }
     
         public bool PushExternalProblemAccounts(IEnumerable<long> custIds, PushDataToExternalEntity paras)

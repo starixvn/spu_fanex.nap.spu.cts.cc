@@ -18,6 +18,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationScan;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
@@ -128,6 +129,15 @@
             RegisterWrapperCustomerClassificaton(services);
 
             RegisterNormalDangerousAssociationCheck(services);
+
+            RegisterNormalDangerousAssociationScan(services);
+        }
+
+        private static void RegisterNormalDangerousAssociationScan(IServiceCollection services)
+        {
+            services.AddSingleton<INormalDangerousAssociationScanDataAccess, NormalDangerousAssociationScanDataAccess>();
+            services.AddSingleton<INormalDangerousAssociationScanService, NormalDangerousAssociationScanService>();
+            services.AddSingleton<INormalDangerousAssociationScanJobService, NormalDangerousAssociationScanJobService>();
         }
 
         private static void RegisterNormalDangerousAssociationCheck(IServiceCollection services)
