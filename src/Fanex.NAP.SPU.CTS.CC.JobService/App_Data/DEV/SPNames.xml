@@ -244,6 +244,12 @@
 	</Function>
 
 	<Function name="NormalDangerousAssociation">
-		<Setting Key="CTS_GeneralNormalClassification_DangerousAssociation_Preprocess" SpName="CTS_GeneralNormalClassification_DangerousAssociation_Preprocess_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_ScanDevice" SpName="CTS_DC_CustClassification_DgrAssociation_ScanDevice_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Insert_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
+
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_CheckAssociation" SpName="CTS_DC_CustClassification_DgrAssociation_CheckAssociation_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck" SpName="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck_xpre" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_Insert_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 </Functions>

@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            throw new System.NotImplementedException();
+            return "CTS_DC_CustClassification_DgrAssociation_CheckAssociation";
         }
 
         public override bool IsValid()

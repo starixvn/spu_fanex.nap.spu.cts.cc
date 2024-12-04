@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassification_DangerousAssociation_Check";
+            return "CTS_DC_CustClassification_DgrAssociation_ScanDevice";
         }
 
         public override bool IsValid()

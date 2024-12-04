@@ -11,7 +11,7 @@
 
         public override string GetSettingKey()
         {
-            throw new NotImplementedException();
+            return "CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear";
         }
 
         public override bool IsValid()

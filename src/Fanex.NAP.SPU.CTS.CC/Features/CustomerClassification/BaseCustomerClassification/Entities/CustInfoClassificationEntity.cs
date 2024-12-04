@@ -18,6 +18,6 @@
 
         public bool IsPA { get; set; }
 
-        public bool IsPSR { get; set; }
+        public bool IsScanDgrAssociation { get; set; }
     }
 }

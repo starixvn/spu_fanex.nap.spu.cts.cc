@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_GeneralNormalClassification_DangerousAssociation_Preprocess";
+            return "CTS_DC_CustClassification_DgrAssociation_DevicePool_Insert";
         }
 
         public override bool IsValid()

@@ -132,7 +132,7 @@
         private void PreprocessDangerousAssociation(IEnumerable<CustInfoClassificationEntity> custInfos)
         {
             var preprocessSRPChange = custInfos
-                                            .Where(x => x.IsPSR)
+                                            .Where(x => x.IsScanDgrAssociation)
                                             .Select(x => new PreprocessDangerousAssociationModel
                                             {
                                                 CTSCustID = x.CTSCustID,
