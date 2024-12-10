@@ -29,7 +29,7 @@
         {
             if (custIds.IsNotNullOrEmpty())
             {
-                return _dataAccess.CheckDangerousAssociationPerformance(string.Join(", ", custIds));
+                return _dataAccess.CheckDangerousAssociationPerformance(string.Join(",", custIds));
             }
 
             return Enumerable.Empty<long>();
@@ -44,7 +44,7 @@
         {
             if (custIds.IsNotNullOrEmpty())
             {
-                _dataAccess.InsertDangerousAssociationDataSource(string.Join(", ", custIds));
+                _dataAccess.InsertDangerousAssociationDataSource(string.Join(",", custIds));
             }
         }
 
