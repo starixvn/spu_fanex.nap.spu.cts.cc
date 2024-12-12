@@ -1,7 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
@@ -19,25 +22,28 @@
 
     public class NormalAccountJobService : INormalAccountJobService
     {
-        private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
-        private readonly IAppSettings appSettings;
-        private readonly INormalAccountService normalAccountService;
-        private readonly ICustClassToMainDBService custClassToMainDBService;       
-        private readonly IAntiFraudCenterServices antiFraudCenterServices;
+        private readonly string _serviceName;
+        private readonly ISentryClient _sentryClient;
+        private readonly IAppSettings _appSettings;
+        private readonly INormalAccountService _normalAccountService;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
+        private readonly IAntiFraudCenterServices _antiFraudCenterServices;
+        private readonly INormalDangerousAssociationCheckService _normalDangerousAssociationCheckService;
 
         public NormalAccountJobService(ISentryClient sentryClient,
             IAppSettings appSettings,
             INormalAccountService normalAccountService,
             ICustClassToMainDBService pushDataToExternalService,
-            IAntiFraudCenterServices antiFraudCenterServices)
+            IAntiFraudCenterServices antiFraudCenterServices,
+            INormalDangerousAssociationCheckService normalDangerousAssociationCheckService)
         {
-            this.sentryClient = sentryClient;
-            this.normalAccountService = normalAccountService;
-            this.custClassToMainDBService = pushDataToExternalService;
-            this.appSettings = appSettings;
-            this.antiFraudCenterServices = antiFraudCenterServices;
-            this.serviceName = "NormalAccountInsert";
+            _sentryClient = sentryClient;
+            _normalAccountService = normalAccountService;
+            _custClassToMainDBService = pushDataToExternalService;
+            _appSettings = appSettings;
+            _antiFraudCenterServices = antiFraudCenterServices;
+            _serviceName = "NormalAccountInsert";
+            _normalDangerousAssociationCheckService = normalDangerousAssociationCheckService;
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
@@ -48,7 +54,7 @@
 
                 if (batchInternalSize <= 0)
                     batchInternalSize = 5000;
-                
+
                 do
                 {
                     isContinue = JobRun(batchExternalSize, batchInternalSize);
@@ -57,7 +63,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
 
                 return Task.FromResult(false);
             }
@@ -67,12 +73,12 @@
 
         private bool JobRun(int batchExternalSize, int batchInternalSize)
         {
-            var normalAccountModel = normalAccountService.GetNormalAccounts();
-           
+            var normalAccountModel = _normalAccountService.GetNormalAccounts();
+
             if (normalAccountModel.IsContinute)
             {
                 var failedThreads = new ConcurrentBag<bool>();
-                
+
                 var custChunks = normalAccountModel.NormalAccount.Chunk(batchInternalSize);
 
                 custChunks
@@ -80,17 +86,17 @@
                     .WithDegreeOfParallelism(5)
                     .ForAll(custBatch => InsertNormalAccount(custBatch, batchExternalSize, failedThreads));
 
-                normalAccountService.CompleteNormalAccountInsert(normalAccountModel.ScannedMaxId, failedThreads.IsEmpty);
+                _normalAccountService.CompleteNormalAccountInsert(normalAccountModel.ScannedMaxId, failedThreads.IsEmpty);
             }
 
             return normalAccountModel.IsContinute;
         }
 
         private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, int batchExternalSize, ConcurrentBag<bool> failedThreads)
-        {            
-            var finalNormalAcc = normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
+        {
+            var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
 
-            var result = normalAccountService.InsertNormalAccount(finalNormalAcc, serviceName, appSettings.NormalAccountIsWriteLog);            
+            var result = _normalAccountService.InsertNormalAccount(finalNormalAcc, _serviceName, _appSettings.NormalAccountIsWriteLog);
 
             if (string.IsNullOrEmpty(result.ErrorMessage))
             {
@@ -98,13 +104,13 @@
 
                 Parallel.Invoke((() =>
                 {
-                    var isPushCCSuccess = custClassToMainDBService.PushExternalPackageByCustId((IEnumerable<long>)custIDs, (PushDataToExternalEntity)new PushDataToExternalEntity
+                    var isPushCCSuccess = _custClassToMainDBService.PushExternalPackageByCustId(custIDs, new PushDataToExternalEntity
                     {
                         RoleGroup = RoleGroupType.Member,
                         ExternalBatchSize = batchExternalSize,
                         IsUpdateDangerToMainDB = true,
-                        IsWriteLog = appSettings.NormalAccountIsWriteLog,
-                        ServiceName = serviceName
+                        IsWriteLog = _appSettings.NormalAccountIsWriteLog,
+                        ServiceName = _serviceName
                     });
 
                     if (!isPushCCSuccess)
@@ -114,9 +120,26 @@
                 }),
                 () =>
                 {
-                    antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, appSettings.IsSyncAFCData, appSettings.AFCDeleteAccountURL);
+                    PreprocessDangerousAssociation(result.CustInfos);
+                },
+                () =>
+                {
+                    _antiFraudCenterServices.DeleteAFCAccounts(custIDs, FromFlow.CTSServices, _appSettings.IsSyncAFCData, _appSettings.AFCDeleteAccountURL);
                 });
             }
+        }
+
+        private void PreprocessDangerousAssociation(IEnumerable<CustInfoClassificationEntity> custInfos)
+        {
+            var preprocessSRPChange = custInfos
+                                            .Where(x => x.IsScanDgrAssociation)
+                                            .Select(x => new PreprocessDangerousAssociationModel
+                                            {
+                                                CTSCustID = x.CTSCustID,
+                                                DCSDeviceID = null
+                                            });
+
+            _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
         }
     }
 }

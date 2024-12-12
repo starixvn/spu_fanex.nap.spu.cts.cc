@@ -17,7 +17,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;   
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationScan;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
@@ -46,9 +48,11 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using System;
 
     public static class InitService
     {
@@ -58,9 +62,9 @@
 
             RegisterProblemAccount(services);
 
-            RegisterDataAccesLayer(services);        
+            RegisterDataAccesLayer(services);
 
-            RegisterDailyProblemClassification(services);       
+            RegisterDailyProblemClassification(services);
 
             RegisterRobotAccountInsert(services);
 
@@ -74,7 +78,7 @@
 
             RegisterDataLogTracking(services);
 
-            RegisterSabaDangerLevel(services);   
+            RegisterSabaDangerLevel(services);
 
             RegisterAssociatedGroupMonitor(services);
 
@@ -112,7 +116,7 @@
 
             RegisterDailyNormalBySport(services);
 
-            RegisterRescanBySport(services);        
+            RegisterRescanBySport(services);
 
             RegisterDetectUnauthorizedLoginCustomer(services);
 
@@ -123,6 +127,24 @@
             RegisterTWInitialSmartClassification(services);
 
             RegisterWrapperCustomerClassificaton(services);
+
+            RegisterNormalDangerousAssociationCheck(services);
+
+            RegisterNormalDangerousAssociationScan(services);
+        }
+
+        private static void RegisterNormalDangerousAssociationScan(IServiceCollection services)
+        {
+            services.AddSingleton<INormalDangerousAssociationScanDataAccess, NormalDangerousAssociationScanDataAccess>();
+            services.AddSingleton<INormalDangerousAssociationScanService, NormalDangerousAssociationScanService>();
+            services.AddSingleton<INormalDangerousAssociationScanJobService, NormalDangerousAssociationScanJobService>();
+        }
+
+        private static void RegisterNormalDangerousAssociationCheck(IServiceCollection services)
+        {
+            services.AddSingleton<INormalDangerousAssociationCheckDataAccess, NormalDangerousAssociationCheckDataAccess>();
+            services.AddSingleton<INormalDangerousAssociationCheckService, NormalDangerousAssociationCheckService>();
+            services.AddSingleton<INormalDangerousAssociationCheckJobService, NormalDangerousAssociationCheckJobService>();
         }
 
         private static void RegisterWrapperCustomerClassificaton(IServiceCollection services)
@@ -140,14 +162,14 @@
             services.AddSingleton<ITWInitialSmartService, TWInitialSmartService>();
             services.AddSingleton<IRealtimeTWInitialSmartJobService, RealtimeTWInitialSmartJobService>();
         }
-      
+
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
         {
-            services.AddSingleton<IDetectUnauthorizedLoginCustomerDataAccess, DetectUnauthorizedLoginCustomerDataAccess>();            
+            services.AddSingleton<IDetectUnauthorizedLoginCustomerDataAccess, DetectUnauthorizedLoginCustomerDataAccess>();
             services.AddSingleton<IDetectUnauthorizedLoginCustomerService, DetectUnauthorizedLoginCustomerService>();
             services.AddSingleton<IDetectUnauthorizedLoginCustomerJobService, DetectUnauthorizedLoginCustomerJobService>();
         }
-        
+
         private static void RegisterTWGroupBetting(this IServiceCollection services)
         {
             services.AddSingleton<ITWGroupBettingDataAccess, TWGroupBettingDataAccess>();
@@ -166,15 +188,15 @@
         {
             services.AddSingleton<IProblemAccountDataAccess, ProblemAccountDataAccess>();
             services.AddSingleton<IProblemAccountServices, ProblemAccountServices>();
-        }      
+        }
 
         private static void RegisterDailyProblemClassification(this IServiceCollection services)
-        {          
+        {
             services.AddSingleton<IDailyProblemClassificationDataAccess, DailyProblemClassificationDataAccess>();
             services.AddSingleton<IDailyProblemClassificationServices, DailyProblemClassificationServices>();
-            
+
             services.AddSingleton<IDailyProblemClassificationJobService, DailyProblemClassificationJobService>();
-        }     
+        }
 
         private static void RegisterRobotAccountInsert(this IServiceCollection services)
         {
@@ -206,7 +228,7 @@
             services.AddSingleton<IRescanCustClassificationService, RescanCustClassificationService>();
 
             services.AddSingleton<IAntiFraudCenterServices, AntiFraudCenterServices>();
-        }            
+        }
 
         private static void RegisterTVSProblemAccountInsert(this IServiceCollection services)
         {
@@ -259,7 +281,7 @@
             services.AddSingleton<ICustomerJobMonitorService, CustomerJobMonitorService>();
             services.AddSingleton<ICustomerJobMonitorDataAccess, CustomerJobMonitorDataAccess>();
         }
-       
+
         private static void RegisterRealtimeClassification(this IServiceCollection services)
         {
             services.AddSingleton<IRealtimeClassificationJobService, RealtimeClassificationJobService>();
@@ -269,7 +291,7 @@
 
         private static void RegisterRealtimeCheckChangeClassification(this IServiceCollection services)
         {
-            services.AddSingleton<IRealtimeCheckChangeClassificationJobService, 
+            services.AddSingleton<IRealtimeCheckChangeClassificationJobService,
                 RealtimeCheckChangeClassificationJobService>();
             services.AddSingleton<IRealtimeCheckChangeClassificationService, RealtimeCheckChangeClassificationService>();
             services.AddSingleton<IRealtimeCheckChangeClassificationDataAccess, RealtimeCheckChangeClassificationDataAccess>();

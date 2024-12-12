@@ -220,4 +220,14 @@
 	<Function name="RealtimeTWInitialSmartClassification">
 		<Setting Key="CTS_DC_CustClassification_InitialSmart_Get" SpName="CTS_DC_CustClassification_InitialSmart_Get" DbName="MySQL.CTS_DataCenter.ctsService" />		
 	</Function>
+
+	<Function name="NormalDangerousAssociation">
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_ScanDevice" SpName="CTS_DC_CustClassification_DgrAssociation_ScanDevice" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="300" />
+
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_CheckAssociation" SpName="CTS_DC_CustClassification_DgrAssociation_CheckAssociation" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck" SpName="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_Insert_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+	</Function>
 </Functions>

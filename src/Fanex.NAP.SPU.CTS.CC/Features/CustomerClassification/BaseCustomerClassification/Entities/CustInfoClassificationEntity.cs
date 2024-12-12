@@ -17,5 +17,7 @@
         public DateTime ScannedTime { get; set; }
 
         public bool IsPA { get; set; }
+
+        public bool IsScanDgrAssociation { get; set; }
     }
 }

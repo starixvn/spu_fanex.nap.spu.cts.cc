@@ -45,4 +45,8 @@
 			<Value>**/Shares/**/**/*, **/Features/**/Entities/*, **/Features/**/Criteria/*, **/Features/**/Model/*, **/*DataAccess.cs</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Features\CustomerClassification\NormalDangerousAssociation\NormalDangerousAssociationScan\Entities\" />
+	</ItemGroup>
 </Project>

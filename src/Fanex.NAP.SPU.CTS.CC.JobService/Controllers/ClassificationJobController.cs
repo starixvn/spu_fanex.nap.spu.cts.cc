@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -23,6 +24,8 @@
         private readonly INewCustomerClassificationJobService newCustomerClassificationJobService;
         private readonly IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService;
         private readonly INormalTaggingClassificationJobService normalTaggingClassificationJobService;
+        private readonly INormalDangerousAssociationCheckJobService normalDangerousAssociationCheckJobService;
+        private readonly INormalDangerousAssociationScanJobService normalDangerousAssociationScanJobService;
 
         private readonly IRobotAccountInsertJobService robotAccountInsertJobService;
         private readonly ITVSProblemAccountJobService tvsProblemAccountJobService;
@@ -45,6 +48,8 @@
             INewCustomerClassificationJobService newCustomerClassificationJobService,
             IAffectedDownlineCustomerClassificationJobService affectedDownlineClassificationJobService,
             INormalTaggingClassificationJobService normalTaggingClassificationJobService,
+            INormalDangerousAssociationCheckJobService normalDangerousAssociationCheckJobService,
+            INormalDangerousAssociationScanJobService normalDangerousAssociationScanJobService,
 
             IRobotAccountInsertJobService robotAccountInsertJobService,
             ITVSProblemAccountJobService tvsProblemAccountJobService,
@@ -66,6 +71,8 @@
             this.newCustomerClassificationJobService = newCustomerClassificationJobService;
             this.affectedDownlineClassificationJobService = affectedDownlineClassificationJobService;
             this.normalTaggingClassificationJobService = normalTaggingClassificationJobService;
+            this.normalDangerousAssociationCheckJobService = normalDangerousAssociationCheckJobService;
+            this.normalDangerousAssociationScanJobService = normalDangerousAssociationScanJobService;
 
             this.robotAccountInsertJobService = robotAccountInsertJobService;
             this.tvsProblemAccountJobService = tvsProblemAccountJobService;
@@ -208,6 +215,18 @@
         public async Task<bool> RealtimeTWInitialSmartClassification([FromForm] int batchSize)
         {
             return await this.realtimeTWInitialSmartJobService.Execute(batchSize);
+        }
+
+        [HttpPost("normalDangerousAssociationCheck")]
+        public async Task<bool> NormalDangerousAssociationCheck([FromForm] int batchSize)
+        {
+            return await this.normalDangerousAssociationCheckJobService.Execute(batchSize);
+        }
+
+        [HttpPost("normalDangerousAssociationScan")]
+        public async Task<bool> NormalDangerousAssociationScan([FromForm] int internalBatchSize, [FromForm] int externalBatchSize)
+        {
+            return await this.normalDangerousAssociationScanJobService.Execute(internalBatchSize, externalBatchSize);
         }
     }
 }
