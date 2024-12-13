@@ -103,12 +103,14 @@
 
             if (data.Any())
             {
-                var custIDs = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.CustID)?.Distinct();
+                var rawCustIds = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => new { c.CustID, c.IsResolved} )?.Distinct();
                 var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
                 var values = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.Value)?.Distinct();
 
-                if (custIDs.Any() || trackingInfo != null)
+                if (rawCustIds.Any() || trackingInfo != null)
                 {
+                    var custIDs = rawCustIds.Select(c => c.CustID).Distinct();
+
                     switch (issueTypeID)
                     {
                         case JobMonitor_IssueType.NewCustomer_NullCategory:
@@ -119,7 +121,10 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                message += $"\r\n🆘 Missing customer {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                var corrected = rawCustIds.Where(c => c.IsResolved);
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved);
+                                if(corrected.Any()) message += $"\r\n✅ Corrected missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                if(uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
