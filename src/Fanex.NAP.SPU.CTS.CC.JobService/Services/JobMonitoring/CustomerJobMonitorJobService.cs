@@ -15,7 +15,7 @@
 
     public interface ICustomerJobMonitorJobService
     {
-        Task<bool> ScanMissingCustomer(int batchSize, int externalSize);
+        Task<bool> ScanMissingCustomer(int batchSize, int externalSize, int addMinute);
 
         Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
@@ -47,14 +47,15 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2971:LINQ expressions should be simplified", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
-        public Task<bool> ScanMissingCustomer(int batchSize, int externalSize)
+        public Task<bool> ScanMissingCustomer(int batchSize, int externalSize, int addMinute)
         {
             try
             {
+                int addTime = (addMinute == 0) ? 15 : addMinute;
                 var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
-                var toDate = fromDate?.AddMinutes(60);
+                var toDate = fromDate?.AddMinutes(addMinute);
 
-                if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-60))
+                if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-addMinute))
                 {
                     var lastScannedCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
                     var lastScannedCustSubID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);

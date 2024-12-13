@@ -21,6 +21,8 @@
     {
         Task<bool> InsertNewCustomer(int batchSize);
 
+        Task<bool> InsertMissingCustomer(int batchSize);
+
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
         Task<bool> UpdateUsername2ForCustMain(int batchSize);
@@ -80,6 +82,45 @@
                         InsertVIPURL = appSettings.InsertVIPURL,
                         InsertBAURL = appSettings.InsertBAURL,
                         serviceName = "InsertNewCustomer"
+                    });
+                }
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+                 
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> InsertMissingCustomer(int batchSize)
+        {
+            try
+            {
+                var isSuccess = true;
+                var custInfo = new InsertCustomerViewModel();
+
+                var data = ctscustomerService.GetMissingCustomers();
+
+                custInfo = ctscustomerService.GetMissingCustInfo(data.CustIDs);
+
+                if (custInfo.CustomerInfos.Any())
+                {
+                    isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                    {
+                        InternalBatchSize = batchSize,
+                        ExternalBatchSize = batchSize,
+                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                        IsInsertMissingCust = true,
+                        InsertVIPURL = appSettings.InsertVIPURL,
+                        InsertBAURL = appSettings.InsertBAURL,
+                        serviceName = "InsertMissingCustomer"
                     });
                 }
 
@@ -351,23 +392,10 @@
                 return true;
             }
 
-            var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
-
             // sleep for latency
             Thread.Sleep(2000);
 
-            var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
-
-            if (mainCusts.IsNullOrEmpty())
-            {
-                return false;
-            }
-
-            var subCusts = ctscustomerService.GetCustSubFromMainDBByCustIDs(insertNewCustIDs);
-
-            var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
-            custInfo.CustomerInfos.AddRange(mainCusts);
-            custInfo.CustomerInfos.AddRange(subCusts);
+            var custInfo = ctscustomerService.GetMissingCustInfo(insertNewCusts);
 
             return ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
             {

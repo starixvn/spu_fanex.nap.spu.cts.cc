@@ -23,6 +23,12 @@
             return await ctsCustomerJobService.InsertNewCustomer(batchSize);
         }
 
+        [HttpPost("InsertMissingCustomer")]
+        public async Task<bool> InsertMissingCustomer([FromForm] int batchSize)
+        {
+            return await ctsCustomerJobService.InsertMissingCustomer(batchSize);
+        }
+
         [HttpPost("UpdateCTSCustomerInfo")]
         public async Task<bool> UpdateCTSCustomerInfo([FromForm] int batchSize)
         {

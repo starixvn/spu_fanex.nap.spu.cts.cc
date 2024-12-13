@@ -49,6 +49,12 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
+        #region Insert Missing Customers
+
+        MissingCustomerModel GetMissingCustomers();
+
+        #endregion
+
         #region UserName2
 
         ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
@@ -203,6 +209,24 @@
         }
 
         #endregion Insert New Customers
+
+        #region Insert Missing Customer
+
+        public MissingCustomerModel GetMissingCustomers()
+        {
+
+            var criteria = new GetMissingCustomerCriteria();
+
+            var data = repository.Fetch<long>(criteria);
+
+            return new MissingCustomerModel
+            {
+                CustIDs = data ?? Enumerable.Empty<long>(),
+                LastCustID = criteria.LastScannedID
+            };
+        }
+
+        #endregion
 
         #region Update Customers Info
 
