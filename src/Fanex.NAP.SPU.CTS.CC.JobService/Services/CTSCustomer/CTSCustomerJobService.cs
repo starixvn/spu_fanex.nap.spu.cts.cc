@@ -108,21 +108,30 @@
 
                 var data = ctscustomerService.GetMissingCustomers();
 
-                custInfo = ctscustomerService.GetMissingCustInfo(data.CustIDs);
+                var chunkCusts = data.CustIDs.Distinct().Chunk(batchSize);
 
-                if (custInfo.CustomerInfos.Any())
+                foreach (var batchCust in chunkCusts)
                 {
-                    isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                    custInfo = ctscustomerService.GetMissingCustInfo(batchCust);
+
+                    if (custInfo.CustomerInfos.Any())
                     {
-                        InternalBatchSize = batchSize,
-                        ExternalBatchSize = batchSize,
-                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        IsInsertMissingCust = true,
-                        InsertVIPURL = appSettings.InsertVIPURL,
-                        InsertBAURL = appSettings.InsertBAURL,
-                        serviceName = "InsertMissingCustomer"
-                    });
+                        isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                        {
+                            InternalBatchSize = batchSize,
+                            ExternalBatchSize = batchSize,
+                            IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                            IsInsertMissingCust = true,
+                            InsertVIPURL = appSettings.InsertVIPURL,
+                            InsertBAURL = appSettings.InsertBAURL,
+                            serviceName = "InsertMissingCustomer"
+                        });
+
+                        if (!isSuccess) return Task.FromResult(isSuccess);
+                    }
                 }
+                    
+                ctscustomerService.CompleteMissingCustomer(data.lastScannedID);
 
                 return Task.FromResult(isSuccess);
             }

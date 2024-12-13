@@ -5,7 +5,7 @@
 
     public class MissingCustomerModel
     {
-        public Int64 LastCustID { get; set; }
+        public Int64 lastScannedID { get; set; }
 
         public IEnumerable<long> CustIDs { get; set; }
     }

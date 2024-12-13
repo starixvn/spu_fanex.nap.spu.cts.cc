@@ -56,6 +56,8 @@
 
         public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds);
 
+        void CompleteMissingCustomer(long lastScannedID);
+
         #endregion
 
         #region  Update UserName2
@@ -262,6 +264,11 @@
         public MissingCustomerModel GetMissingCustomers()
         {
             return dataAccess.GetMissingCustomers();
+        }
+
+        public void CompleteMissingCustomer(long lastScannedID)
+        {
+            dataAccess.CompleteMissingCustomer(lastScannedID);
         }
 
         public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds)

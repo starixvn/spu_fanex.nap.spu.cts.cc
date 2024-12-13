@@ -53,6 +53,8 @@
 
         MissingCustomerModel GetMissingCustomers();
 
+        void CompleteMissingCustomer(long lastScannedID);
+
         #endregion
 
         #region UserName2
@@ -214,7 +216,6 @@
 
         public MissingCustomerModel GetMissingCustomers()
         {
-
             var criteria = new GetMissingCustomerCriteria();
 
             var data = repository.Fetch<long>(criteria);
@@ -222,8 +223,18 @@
             return new MissingCustomerModel
             {
                 CustIDs = data ?? Enumerable.Empty<long>(),
-                LastCustID = criteria.LastScannedID
+                lastScannedID = criteria.LastScannedID
             };
+        }
+
+        public void CompleteMissingCustomer(long lastScannedID)
+        {
+            var criteria = new CompleteMissingCustomerCriteria
+            {
+                LastScannedID = lastScannedID
+            };
+
+            repository.Execute(criteria);
         }
 
         #endregion
