@@ -45,6 +45,7 @@
                 foreach (var logDataBatch in dataChunks)
                 {
                     var dataJson = JsonConvert.SerializeObject(logDataBatch);
+
                     incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(dataJson, issueType);
                 }
             }
@@ -145,11 +146,25 @@
                                 message += $"\r\n🆘 Incorrect customer category {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))} \r\n";
                                 break;
                             }
-                        case JobMonitor_IssueType.Classification_GeneralPoolStatus:
-                        case JobMonitor_IssueType.Classification_BySportPoolStatus:
+                        case JobMonitor_IssueType.Classification_ExcessiveGeneralPool:
+                        case JobMonitor_IssueType.Classification_ExcessiveBySportPool:
                             {
-                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport";
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_ExcessiveGeneralPool ? "General" : "BySport";
                                 message += $"\r\n⚠️ {issueTypeConvertToString} Classification Pool exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.Classification_ExcessiveGerneralNormalInsert:
+                        case JobMonitor_IssueType.Classification_ExcessiveBySportNormalInsert:
+                            {
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_ExcessiveGerneralNormalInsert ? "General" : "BySport";
+                                message += $"\r\n⚠️ {issueTypeConvertToString} Normal Insert exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.Realtime_ExcessiveGerneralChanges:
+                        case JobMonitor_IssueType.Realtime_ExcessiveBySportChanges:
+                            {
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Realtime_ExcessiveGerneralChanges ? "General" : "BySport";
+                                message += $"\r\n⚠️ {issueTypeConvertToString} Realtime Check-Changes exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:
