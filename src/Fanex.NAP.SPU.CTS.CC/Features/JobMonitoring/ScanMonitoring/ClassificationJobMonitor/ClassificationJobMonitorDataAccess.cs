@@ -12,7 +12,7 @@
 
         IEnumerable<CustomerCategoryMonitorEntity> GetCustomerCategoryToMonitor(string custIds, bool isCheckInternalAccount);
 
-        NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor();
+        IEnumerable<NormalPoolMonitoringEntity> GetNormalPoolMonitoring();
     }
 
     public class ClassificationJobMonitorDataAccess : IClassificationJobMonitorDataAccess
@@ -57,17 +57,11 @@
             return repository.Fetch<CustomerCategoryMonitorEntity>(criteria);
         }
 
-        public NormalClassificationPoolMonitorEntity GetNormalClassificationPoolMonitor()
+        public IEnumerable<NormalPoolMonitoringEntity> GetNormalPoolMonitoring()
         {
             var criteria = new NormalClassificationPoolMonitorGetCriteria();
 
-            repository.Execute(criteria);
-
-            return new NormalClassificationPoolMonitorEntity
-            {
-                GeneralRecord = criteria.GeneralRecord,
-                BySportRecord = criteria.BySportRecord
-            };
+            return repository.Fetch<NormalPoolMonitoringEntity>(criteria);
         }
     }
 }

@@ -212,9 +212,13 @@ namespace Fanex.NAP.SPU.CTS.Shares
             ReactivatedCustomer_Missing = 50,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
-            Classification_GeneralPoolStatus = 200,
-            Classification_BySportPoolStatus = 201,
+            Realtime_ExcessiveGerneralChanges = 102,
+            Realtime_ExcessiveBySportChanges = 103,
+            Classification_ExcessiveGeneralPool = 200,
+            Classification_ExcessiveBySportPool = 201, 
             Classification_MissingTVSProblemAccount = 202,
+            Classification_ExcessiveGerneralNormalInsert = 203,
+            Classification_ExcessiveBySportNormalInsert = 204,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 
