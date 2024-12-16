@@ -18,6 +18,8 @@
     {
         Task<bool> ScanMissingCustomer(int batchSize, int externalSize, int addMinute);
 
+        Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addMinute);
+
         Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
 

@@ -33,6 +33,12 @@
             return await customerJobMonitorService.ScanMissingCustomer(batchSize, externalSize, addMinute);
         }
 
+        [HttpPost("ReactivatedCustomerMonitoring")]
+        public async Task<bool> MonitorReactivatedCustomer([FromForm] int batchSize, [FromForm] int addMinute)
+        {
+            return await customerJobMonitorService.ScanMissingReactivatedCustomer(batchSize, addMinute);
+        }
+
         [HttpPost("CustomerInfoMonitoring")]
         public async Task<bool> MonitorCustomerInfo([FromForm] int batchSize)
         {
