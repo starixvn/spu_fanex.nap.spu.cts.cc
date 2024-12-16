@@ -36,9 +36,9 @@
 
             var data = DateTime.Now;
 
-            dataAccess.GetReactivatedCustomers(data).Returns(dataFromDB);
+            dataAccess.GetReactivatedCustomers(data, null).Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetReactivatedCustomers(data);
+            var realData = ctsCustomerService.GetReactivatedCustomers(data, null);
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 

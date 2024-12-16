@@ -1,6 +1,7 @@
 ﻿using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
 using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Sentry;
 using System;
@@ -133,12 +134,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Arrange
 
             // Act
-            _dataAccess.GetNormalClassificationPoolMonitor().Returns(new NormalClassificationPoolMonitorEntity());
+            _dataAccess.GetNormalPoolMonitoring().Returns(Enumerable.Empty<NormalPoolMonitoringEntity>());
 
-            var result = _service.GetNormalClassificationPoolMonitor();
+            var result = _service.GetNormalPoolMonitoring();
 
             // Assert
-            _dataAccess.Received(1).GetNormalClassificationPoolMonitor();
+            _dataAccess.Received(1).GetNormalPoolMonitoring();
 
             Assert.NotNull(result);
         }
@@ -151,7 +152,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Act
             _incorrectDataMonitoringService.InsertIncorrectDataMonitoring(Arg.Any<IEnumerable<InsertMonitoringEntity>>(), Arg.Any<JobMonitor_IssueType>(), Arg.Any<int>());
 
-            _service.NotifyExcessiveClassificationPool(999, true, 999, 999);
+            _service.NotifyExcessivePools(999, JobMonitor_IssueType.Classification_ExcessiveGeneralPool, 999, 999);
 
             // Assert
             _incorrectDataMonitoringService.Received(1).InsertIncorrectDataMonitoring(Arg.Any<IEnumerable<InsertMonitoringEntity>>(), Arg.Any<JobMonitor_IssueType>(), Arg.Any<int>());

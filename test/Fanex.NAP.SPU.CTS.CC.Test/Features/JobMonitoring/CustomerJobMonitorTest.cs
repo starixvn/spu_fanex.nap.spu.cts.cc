@@ -105,7 +105,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         public void CheckMissingCustomer_WhenSuccess(bool isReturnData)
         {
             // Arrange
-            var data = new List<MonitoringNewCustomerEntity>() { new MonitoringNewCustomerEntity() };
+            var data = new List<MonitoringNewCustomerEntity>();
 
             // Act
             _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Returns(isReturnData ? new List<MissingCustomerCompareEntity>() : null);
@@ -136,7 +136,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         public void CheckMissingCustomer_ThrowException()
         {
             // Arrange
-            var data = new List<MonitoringNewCustomerEntity>() { new MonitoringNewCustomerEntity() };
+            var data = new List<MonitoringNewCustomerEntity>();
 
             // Act
             _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Throws<Exception>();

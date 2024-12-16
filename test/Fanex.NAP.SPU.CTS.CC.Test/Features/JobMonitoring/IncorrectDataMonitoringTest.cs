@@ -168,8 +168,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         [InlineData(JobMonitor_IssueType.NewCustomer_Missing)]
         [InlineData(JobMonitor_IssueType.NewCustomer_IncorrectCustInfo)]
         [InlineData(JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory)]
-        [InlineData(JobMonitor_IssueType.Classification_GeneralPoolStatus)]
-        [InlineData(JobMonitor_IssueType.Classification_BySportPoolStatus)]
+        [InlineData(JobMonitor_IssueType.Classification_ExcessiveGeneralPool)]
+        [InlineData(JobMonitor_IssueType.Classification_ExcessiveBySportPool)]
         [InlineData(JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus)]
         [InlineData(JobMonitor_IssueType.Classification_MissingTVSProblemAccount)]
         public void GenerateMessage_WhenSuccess(JobMonitor_IssueType issueTypeID)
