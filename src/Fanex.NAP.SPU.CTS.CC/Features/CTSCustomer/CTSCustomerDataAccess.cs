@@ -69,7 +69,7 @@
 
         void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust);
 
-        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate, DateTime? nextScannedDate);
 
         IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson);
 
@@ -223,7 +223,7 @@
             return new MissingCustomerModel
             {
                 CustIDs = data ?? Enumerable.Empty<long>(),
-                lastScannedID = criteria.LastScannedID
+                lastScannedID = criteria?.LastScannedID
             };
         }
 
@@ -407,11 +407,12 @@
 
         #region Insert Reactivated Customers
 
-        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate)
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate, DateTime? nextScannedDate)
         {
             var criteria = new ReactivatedCustomerGetCriteria
             {
-                LastScannedDate = lastScannedDate
+                LastScannedDate = lastScannedDate,
+                NextScannedDate = nextScannedDate
             };
 
             return repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();

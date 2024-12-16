@@ -73,7 +73,7 @@
 
         #endregion
 
-        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate, DateTime? nextScannedDate);
 
         IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts);
 
@@ -560,11 +560,11 @@
 
         #region Insert Reactivated Customers
 
-        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate)
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate, DateTime? nextScannedDate)
         {
             if (lastScannedDate != null)
             {
-                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value);
+                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value, nextScannedDate);
             }
 
             return Enumerable.Empty<ReactivatedCustModel>();

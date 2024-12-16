@@ -2,6 +2,7 @@
 {
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -24,6 +25,8 @@
     public class CustomerJobMonitorJobService : ICustomerJobMonitorJobService
     {
         //private readonly string serviceName;
+
+        private readonly ICTSCustomerService ctscustomerService;
         private readonly ISentryClient sentryClient;
         private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
         private readonly ICustomerJobMonitorService customerJobMonitorService;
@@ -33,12 +36,14 @@
             ISentryClient sentryClient,
             IIncorrectDataMonitoringService incorrectDataMonitoringService,
             ICustomerJobMonitorService customerJobMonitorService,
-            ISystemParameterServices systemParameterServices)
+            ISystemParameterServices systemParameterServices,
+            ICTSCustomerService ctscustomerService)
         {
             this.sentryClient = sentryClient;
             this.incorrectDataMonitoringService = incorrectDataMonitoringService;
             this.customerJobMonitorService = customerJobMonitorService;
             this.systemParameterServices = systemParameterServices;
+            this.ctscustomerService = ctscustomerService;
             //this.serviceName = "CustomerJobMonitor";
         }
 
@@ -78,7 +83,8 @@
                         MonitorNewCustomers(new InsertMissingCustomerModel
                         {
                             CustomerInfo = customers,
-                            MissingCustomers = missingCustomers
+                            MissingCustomers = missingCustomers,
+                            MissingCustomerIssueType = JobMonitor_IssueType.NewCustomer_Missing
                         }, batchSize);
 
                         UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
@@ -101,6 +107,57 @@
 
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
 
+                return Task.FromResult(false);
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
+        public Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addMinute)
+        {
+            try
+            {
+                int addTime = (addMinute == 0) ? 60 : addMinute;
+                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
+                var toDate = fromDate?.AddMinutes(addMinute);
+
+                if (fromDate != null && toDate != null && toDate <= DateTime.Now.AddMinutes(-addMinute))
+                {
+                    var custToReactive = ctscustomerService.GetReactivatedCustomers(fromDate, toDate);
+
+                    if (custToReactive != null && custToReactive.Any())
+                    {
+                        var missingCustomers = new List<MissingCustomerCompareEntity>();
+
+                        var customerChunks = custToReactive.Chunk(batchSize);
+
+                        foreach (var custBatch in customerChunks)
+                        {
+                            var input = custBatch.Select(x => new MonitoringNewCustomerEntity(x));
+
+                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(input));
+                        }
+
+                        MonitorNewCustomers(new InsertMissingCustomerModel
+                        {
+                            CustomerInfo = Enumerable.Empty<MonitoringNewCustomerEntity>(),
+                            MissingCustomers = missingCustomers,
+                            MissingCustomerIssueType = JobMonitor_IssueType.ReactivatedCustomer_Missing
+                        }, batchSize);
+                    }
+
+                    systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
+                }
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
             }
         }
@@ -166,7 +223,7 @@
             {
                 var missingCustomers = newCustomers.MissingCustomers.Select(c => c.CustID).Distinct();
 
-                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, batchSize);
+                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomers, newCustomers.MissingCustomerIssueType, batchSize);
             }
         }
 

@@ -108,30 +108,36 @@
 
                 var data = ctscustomerService.GetMissingCustomers();
 
-                var chunkCusts = data.CustIDs.Distinct().Chunk(batchSize);
-
-                foreach (var batchCust in chunkCusts)
+                if (data != null && data.CustIDs.Any())
                 {
-                    custInfo = ctscustomerService.GetMissingCustInfo(batchCust);
+                    var chunkCusts = data.CustIDs.Distinct().Chunk(batchSize);
 
-                    if (custInfo.CustomerInfos.Any())
+                    foreach (var batchCust in chunkCusts)
                     {
-                        isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
-                        {
-                            InternalBatchSize = batchSize,
-                            ExternalBatchSize = batchSize,
-                            IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                            IsInsertMissingCust = true,
-                            InsertVIPURL = appSettings.InsertVIPURL,
-                            InsertBAURL = appSettings.InsertBAURL,
-                            serviceName = "InsertMissingCustomer"
-                        });
+                        custInfo = ctscustomerService.GetMissingCustInfo(batchCust);
 
-                        if (!isSuccess) return Task.FromResult(isSuccess);
+                        if (custInfo.CustomerInfos.Any())
+                        {
+                            isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                            {
+                                InternalBatchSize = batchSize,
+                                ExternalBatchSize = batchSize,
+                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                                IsInsertMissingCust = true,
+                                InsertVIPURL = appSettings.InsertVIPURL,
+                                InsertBAURL = appSettings.InsertBAURL,
+                                serviceName = "InsertMissingCustomer"
+                            });
+
+                            if (!isSuccess) return Task.FromResult(isSuccess);
+                        }
                     }
                 }
-                    
-                ctscustomerService.CompleteMissingCustomer(data.lastScannedID);
+
+                if (data.lastScannedID != null && data.lastScannedID > 0)
+                {
+                    ctscustomerService.CompleteMissingCustomer(data.lastScannedID.Value);
+                }    
 
                 return Task.FromResult(isSuccess);
             }
@@ -256,30 +262,24 @@
                 var custInfoTime = DateTime.MaxValue;
                 var requestTime = DateTime.Now;
 
-                // step 1 get
-                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
+                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime, null);
 
-                // step 2
                 var ctsArchiveCustIDs = CheckExistCTSArchiveCustomerAndPushCC(custToReactive);
 
                 custInfoTime = DateTime.Now;
 
                 if (ctsArchiveCustIDs.IsPushCCSuccess)
                 {
-                    // step 3
                     var isInsertReactivedCust = InsertNewCustFromReactivedCust(ctsArchiveCustIDs.NotExistCusts);
 
-                    // step 4 update scantime for next
                     if (isInsertReactivedCust)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = systemParameterServices
-                            .UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
-                ctscustomerService
-                    .InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
+                ctscustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
 
                 return Task.FromResult(isSuccess);
             }

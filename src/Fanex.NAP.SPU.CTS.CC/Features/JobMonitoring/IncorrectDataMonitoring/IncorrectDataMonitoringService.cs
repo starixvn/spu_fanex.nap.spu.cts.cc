@@ -127,6 +127,14 @@
                                 if(uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
+                        case JobMonitor_IssueType.ReactivatedCustomer_Missing:
+                            {
+                                var corrected = rawCustIds.Where(c => c.IsResolved);
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved);
+                                if (corrected.Any()) message += $"\r\n✅ Corrected missing reactivated-customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                if (uncorrected.Any()) message += $"\r\n🆘 Missing reactivated-customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
+                                break;
+                            }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
                             {
                                 message += $"\r\n🆘 Incorrect customer info {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
