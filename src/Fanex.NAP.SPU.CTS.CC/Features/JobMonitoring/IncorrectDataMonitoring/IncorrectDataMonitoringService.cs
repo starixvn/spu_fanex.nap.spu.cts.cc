@@ -136,6 +136,11 @@
                                 if (uncorrected.Any()) message += $"\r\n🆘 Missing reactivated-customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
+                        case JobMonitor_IssueType.NewCustomer_TotalUnresolvedMissingCustomers:
+                            {
+                                message += $"\r\n🆘 Total missing customers so far {{Total custid: {values.Count()}}} \r\n";
+                                break;
+                            }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
                             {
                                 message += $"\r\n🆘 Incorrect customer info {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";

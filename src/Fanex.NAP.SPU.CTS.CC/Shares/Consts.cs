@@ -209,6 +209,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             NewCustomer_NullCategory = 1,
             NewCustomer_Missing = 2,
             NewCustomer_IncorrectCustInfo = 3,
+            NewCustomer_TotalUnresolvedMissingCustomers = 4,
             ReactivatedCustomer_Missing = 50,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
