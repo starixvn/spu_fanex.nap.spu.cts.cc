@@ -51,9 +51,9 @@
 
         #region Insert Missing Customers
 
-        MissingCustomerModel GetMissingCustomers();
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers();
 
-        void CompleteMissingCustomer(long lastScannedID);
+        void CompleteMissingCustomer(string resolvedIDs);
 
         #endregion
 
@@ -214,24 +214,18 @@
 
         #region Insert Missing Customer
 
-        public MissingCustomerModel GetMissingCustomers()
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers()
         {
             var criteria = new GetMissingCustomerCriteria();
 
-            var data = repository.Fetch<long>(criteria);
-
-            return new MissingCustomerModel
-            {
-                CustIDs = data ?? Enumerable.Empty<long>(),
-                lastScannedID = criteria?.LastScannedID
-            };
+            return repository.Fetch<MissingCustomerModel>(criteria);
         }
 
-        public void CompleteMissingCustomer(long lastScannedID)
+        public void CompleteMissingCustomer(string resolvedIDs)
         {
             var criteria = new CompleteMissingCustomerCriteria
             {
-                LastScannedID = lastScannedID
+                ResolvedIDs = resolvedIDs
             };
 
             repository.Execute(criteria);

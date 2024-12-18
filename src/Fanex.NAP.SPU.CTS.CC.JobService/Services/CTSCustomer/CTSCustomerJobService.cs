@@ -108,9 +108,16 @@
 
                 var data = ctscustomerService.GetMissingCustomers();
 
-                if (data != null && data.CustIDs.Any())
+                if (data == null || !data.Any())
                 {
-                    var chunkCusts = data.CustIDs.Distinct().Chunk(batchSize);
+                    return Task.FromResult(isSuccess);
+                }
+            
+                var missingCusts = data.Where(c => c.IsMissingCust).Select(c=>c.CustID).Distinct();
+
+                if (missingCusts.Any()) 
+                {
+                    var chunkCusts = missingCusts.Distinct().Chunk(batchSize);
 
                     foreach (var batchCust in chunkCusts)
                     {
@@ -132,12 +139,9 @@
                             if (!isSuccess) return Task.FromResult(isSuccess);
                         }
                     }
-                }
+                } 
 
-                if (data.lastScannedID != null && data.lastScannedID > 0)
-                {
-                    ctscustomerService.CompleteMissingCustomer(data.lastScannedID.Value);
-                }    
+                ctscustomerService.CompleteMissingCustomer(string.Join(',', data.Select(c=>c.ID)));
 
                 return Task.FromResult(isSuccess);
             }

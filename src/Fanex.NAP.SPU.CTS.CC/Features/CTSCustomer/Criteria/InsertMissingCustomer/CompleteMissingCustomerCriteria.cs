@@ -6,8 +6,8 @@
     public class CompleteMissingCustomerCriteria : NonQueryCommand
     {
 
-        [SpParam(SqlParamName = "ip_LastScannedID")]
-        public long LastScannedID { get; set; }
+        [SpParam(SqlParamName = "ip_ResolvedIDs")]
+        public string ResolvedIDs { get; set; }
 
         public override string GetSettingKey()
         {

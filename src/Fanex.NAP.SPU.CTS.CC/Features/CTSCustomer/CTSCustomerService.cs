@@ -52,11 +52,11 @@
 
         #region Insert Missing Customers
 
-        MissingCustomerModel GetMissingCustomers();
+        IEnumerable<MissingCustomerModel> GetMissingCustomers();
 
         public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds);
 
-        void CompleteMissingCustomer(long lastScannedID);
+        void CompleteMissingCustomer(string resolvedIDs);
 
         #endregion
 
@@ -261,14 +261,14 @@
 
         #region Insert Missing Customers
 
-        public MissingCustomerModel GetMissingCustomers()
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers()
         {
             return dataAccess.GetMissingCustomers();
         }
 
-        public void CompleteMissingCustomer(long lastScannedID)
+        public void CompleteMissingCustomer(string resolvedIDs)
         {
-            dataAccess.CompleteMissingCustomer(lastScannedID);
+            dataAccess.CompleteMissingCustomer(resolvedIDs);
         }
 
         public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds)

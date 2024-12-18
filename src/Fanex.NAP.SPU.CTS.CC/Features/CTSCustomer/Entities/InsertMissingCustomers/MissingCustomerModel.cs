@@ -1,12 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities
 {
-    using System;
-    using System.Collections.Generic;
-
     public class MissingCustomerModel
     {
-        public Int64? lastScannedID { get; set; }
+        public long ID { get; set; }
 
-        public IEnumerable<long> CustIDs { get; set; }
+        public long CustID { get; set; }
+
+        public bool IsMissingCust { get; set; }
     }
 }
