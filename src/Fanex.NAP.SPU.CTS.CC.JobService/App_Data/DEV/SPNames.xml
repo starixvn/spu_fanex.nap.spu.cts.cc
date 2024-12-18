@@ -107,8 +107,8 @@
 		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 
-		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Get" SpName="CTS_DC_Monitoring_MissingCustomer_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Complete" SpName="CTS_DC_Monitoring_MissingCustomer_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Get" SpName="CTS_DC_Monitoring_MissingCustomer_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Complete" SpName="CTS_DC_Monitoring_MissingCustomer_Complete_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="CTSCustomer-NullUserName2">
@@ -125,7 +125,7 @@
 	</Function>
 
 	<Function Name="InsertReactivatedCustomer">
-		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
+		<Setting Key="CTS_Customer_GetReactivated" SpName="CTS_Customer_GetReactivated_xtest" DbName="SQL.bodb_CustomerLog.bodbSPUNet" />
 		<Setting Key="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" SpName="CTS_DC_ArchiveCustomer_Reactivate_CheckExist" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_ArchiveCustomer_Reactive_InsertLog" SpName="CTS_DC_ArchiveCustomer_Reactive_InsertLog" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
@@ -186,8 +186,8 @@
 
 	<Function Name="JobMonitoring">
 		<Setting Key="CTS_DC_Monitoring_IncorrectData_Insert" SpName="CTS_DC_Monitoring_IncorrectData_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Monitoring_CustomerClassificationPool_Get" SpName="CTS_Monitoring_CustomerClassificationPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_Monitoring_CustomerClassificationPool_Get" SpName="CTS_Monitoring_CustomerClassificationPool_Get_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Check" SpName="CTS_DC_Monitoring_MissingCustomer_Check" DbName="MySQL.CTS_DataCenter.ctsService" />
