@@ -88,8 +88,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             SabaDangerLevel_Agency_LastHistoryID = 181,
             NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
             NormalDangerousAssociationScan_LastScannedID = 184,
-            JobMonitoring_MissingCustomer_LastScanID = 185,
-            JobMonitoring_ReactivatedCustomerLastScannedTime = 186
+            JobMonitoring_ReactivatedCustomerLastScannedTime = 185
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
