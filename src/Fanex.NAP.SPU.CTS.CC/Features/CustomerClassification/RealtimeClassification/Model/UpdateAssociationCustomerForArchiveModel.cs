@@ -2,7 +2,7 @@
 {
     public class UpdateAssociationCustomerForArchiveModel
     {
-        public int CTSCustID { get; set; }
+        public long CTSCustID { get; set; }
 
         public long CustID { get; set; }
 
