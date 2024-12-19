@@ -122,23 +122,23 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                var corrected = rawCustIds.Where(c => c.IsResolved);
-                                var uncorrected = rawCustIds.Where(c => !c.IsResolved);
-                                if(corrected.Any()) message += $"\r\n✅ Corrected missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c=>c.CustID).Distinct();
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved).Select(c => c.CustID).Distinct();
+                                if(corrected.Any()) message += $"\r\n✅ Inserted missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
                                 if(uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.ReactivatedCustomer_Missing:
                             {
-                                var corrected = rawCustIds.Where(c => c.IsResolved);
-                                var uncorrected = rawCustIds.Where(c => !c.IsResolved);
-                                if (corrected.Any()) message += $"\r\n✅ Corrected missing reactivated-customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c => c.CustID).Distinct();
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved).Select(c => c.CustID).Distinct();
+                                if (corrected.Any()) message += $"\r\n✅ Inserted missing reactivated-customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
                                 if (uncorrected.Any()) message += $"\r\n🆘 Missing reactivated-customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_TotalUnresolvedMissingCustomers:
                             {
-                                message += $"\r\n🆘 Total missing customers so far {{Total custid: {values.Count()}}} \r\n";
+                                message += $"\r\n🆘 Total missing customers so far  {{Total custid: {trackingInfo.Value}}} \r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
