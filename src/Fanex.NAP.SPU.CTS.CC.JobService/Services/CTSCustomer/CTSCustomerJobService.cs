@@ -113,7 +113,8 @@
                     return Task.FromResult(isSuccess);
                 }
             
-                var missingCusts = data.Where(c => c.IsMissingCust).Select(c=>c.CustID).Distinct();
+                var missingCusts = data.Where(c => c.IsMissingCust);
+                var notMissingCusts = data.Where(c => !c.IsMissingCust);
 
                 if (missingCusts.Any()) 
                 {
@@ -121,7 +122,9 @@
 
                     foreach (var batchCust in chunkCusts)
                     {
-                        custInfo = ctscustomerService.GetMissingCustInfo(batchCust);
+                        var custIds = batchCust.Select(c => c.CustID).Distinct();
+
+                        custInfo = ctscustomerService.GetMissingCustInfo(custIds);
 
                         if (custInfo.CustomerInfos.Any())
                         {
@@ -136,12 +139,19 @@
                                 serviceName = "InsertMissingCustomer"
                             });
 
-                            if (!isSuccess) return Task.FromResult(isSuccess);
+                            if (isSuccess)
+                            {
+                                ctscustomerService.CompleteMissingCustomer(string.Join(',', batchCust.Select(c => c.ID).Distinct()));
+                            }
+                            else
+                            {
+                                return Task.FromResult(isSuccess);
+                            }
                         }
                     }
                 } 
 
-                ctscustomerService.CompleteMissingCustomer(string.Join(',', data.Select(c=>c.ID)));
+                ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c=>c.ID)));
 
                 return Task.FromResult(isSuccess);
             }
