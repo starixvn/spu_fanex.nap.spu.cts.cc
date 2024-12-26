@@ -64,6 +64,10 @@
                         {
                             systemParameterServices.UpdateTimingExecution(lastScannedID.ToString(), CTS_SystemParameters.JobMonitoring_IncorrectData_LastScanID);
                         }
+                        else
+                        {
+                            isContinue = false;
+                        }
                     }
                     else
                     {
