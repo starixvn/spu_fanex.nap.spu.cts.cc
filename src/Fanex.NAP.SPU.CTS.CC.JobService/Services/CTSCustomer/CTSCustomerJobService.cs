@@ -149,9 +149,12 @@
                             }
                         }
                     }
-                } 
+                }
 
-                ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c=>c.ID)));
+                if (notMissingCusts.Any())
+                {
+                    ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID)));
+                }
 
                 return Task.FromResult(isSuccess);
             }
