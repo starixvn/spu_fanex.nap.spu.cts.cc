@@ -52,8 +52,8 @@
 	</Function>
 
 	<Function Name="NormalAccount">
-		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Get" SpName="CTS_GeneralNormalClassification_NormalAccount_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
-		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Complete" SpName="CTS_GeneralNormalClassification_NormalAccount_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Get" SpName="CTS_GeneralNormalClassification_NormalAccount_Get_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Complete" SpName="CTS_GeneralNormalClassification_NormalAccount_Complete_UAT1" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
 	<Function Name="NormalTaggingClassification">
