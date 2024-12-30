@@ -6,7 +6,7 @@
 
     public interface INormalAccountDataAccess
     {
-        GetNormalAccountModel GetNormalAccount();
+        GetNormalAccountModel GetNormalAccount(bool isLogData);
 
         IEnumerable<CTSTaggedCustEntity> GetCustsAssociationProblemAccount(string custIdList);
 
@@ -25,9 +25,12 @@
             repository = new DynamicRepository();
         }
 
-        public GetNormalAccountModel GetNormalAccount()
+        public GetNormalAccountModel GetNormalAccount(bool isLogData)
         {
-            var criteria = new GetNormalAccountCriteria();
+            var criteria = new GetNormalAccountCriteria
+            { 
+               IsLogData = isLogData
+            };
 
             var data = repository.Fetch<GetNormalAccountEntity>(criteria);
 

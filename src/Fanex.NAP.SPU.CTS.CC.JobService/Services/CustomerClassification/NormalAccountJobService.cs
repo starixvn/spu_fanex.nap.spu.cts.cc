@@ -17,7 +17,7 @@
 
     public interface INormalAccountJobService
     {
-        Task<bool> Execute(int batchExternalSize, int batchInternalSize);
+        Task<bool> Execute(int batchExternalSize, int batchInternalSize, bool isLogData);
     }
 
     public class NormalAccountJobService : INormalAccountJobService
@@ -46,7 +46,7 @@
             _normalDangerousAssociationCheckService = normalDangerousAssociationCheckService;
         }
 
-        public Task<bool> Execute(int batchExternalSize, int batchInternalSize)
+        public Task<bool> Execute(int batchExternalSize, int batchInternalSize, bool isLogData)
         {
             try
             {
@@ -57,7 +57,7 @@
 
                 do
                 {
-                    isContinue = JobRun(batchExternalSize, batchInternalSize);
+                    isContinue = JobRun(batchExternalSize, batchInternalSize, isLogData);
 
                 } while (isContinue);
             }
@@ -71,9 +71,9 @@
             return Task.FromResult(true);
         }
 
-        private bool JobRun(int batchExternalSize, int batchInternalSize)
+        private bool JobRun(int batchExternalSize, int batchInternalSize, bool isLogData)
         {
-            var normalAccountModel = _normalAccountService.GetNormalAccounts();
+            var normalAccountModel = _normalAccountService.GetNormalAccounts(isLogData);
 
             if (normalAccountModel.IsContinute)
             {

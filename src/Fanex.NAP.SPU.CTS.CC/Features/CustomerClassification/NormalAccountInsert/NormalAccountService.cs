@@ -10,7 +10,7 @@
 
     public interface INormalAccountService
     {
-        GetNormalAccountModel GetNormalAccounts();
+        GetNormalAccountModel GetNormalAccounts(bool isLogData);
      
         ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog);
 
@@ -31,9 +31,9 @@
             this.dataAccess = dataAccess;
         }       
 
-        public GetNormalAccountModel GetNormalAccounts()
+        public GetNormalAccountModel GetNormalAccounts(bool isLogData)
         {
-            return dataAccess.GetNormalAccount();
+            return dataAccess.GetNormalAccount(isLogData);
         }      
 
         public ResultInsertCustomerClassificationModel InsertNormalAccount(IEnumerable<InsertNormalAccountEntity> custs, string serviceName, bool isWriteLog)

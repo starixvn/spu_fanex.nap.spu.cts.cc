@@ -8,6 +8,9 @@
         [SpParam(SqlParamName = "ScannedMaxId")]
         public long ScannedMaxId { get; set; }
 
+        [SpParam(SqlParamName = "IsLogData")]
+        public bool IsLogData { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_GeneralNormalClassification_NormalAccount_Get";
