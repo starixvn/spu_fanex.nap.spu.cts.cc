@@ -29,10 +29,10 @@
             // Arrange
 
             // Act
-            normalAccountService.GetNormalAccounts();
+            normalAccountService.GetNormalAccounts(false);
 
             // Assert
-            normalAccountDataAccess.Received(1).GetNormalAccount();
+            normalAccountDataAccess.Received(1).GetNormalAccount(false);
         }
 
         [Fact]

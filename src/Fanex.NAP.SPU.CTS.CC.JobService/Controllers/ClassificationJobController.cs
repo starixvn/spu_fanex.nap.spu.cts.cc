@@ -132,9 +132,9 @@
         }
 
         [HttpPost("normalAccountInsert")]
-        public async Task<bool> NormalAccountInsert([FromForm] int batchExternalSize, [FromForm] int batchInternalSize)
+        public async Task<bool> NormalAccountInsert([FromForm] int batchExternalSize, [FromForm] int batchInternalSize, [FromForm] bool isLogData)
         {
-            return await this.normalAccountJobService.Execute(batchExternalSize, batchInternalSize);
+            return await this.normalAccountJobService.Execute(batchExternalSize, batchInternalSize, isLogData);
         }
 
         [HttpPost("probationClassification")]
