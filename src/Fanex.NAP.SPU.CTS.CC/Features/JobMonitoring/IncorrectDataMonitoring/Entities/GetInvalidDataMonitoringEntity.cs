@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class GetMonitoringEntity
+    public class GetInvalidDataMonitoringEntity
     {
         public Int64 ID { get; set; }
 

@@ -9,13 +9,13 @@
 
     public interface IIncorrectDataMonitoringService
     {
-        IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring();
+        GetNotificationMonitoringEntity GetIncorrectDataMonitoring();
 
         void InsertIncorrectDataMonitoring(IEnumerable<InsertMonitoringEntity> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
-        void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment);
+        void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment);
     }
 
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
@@ -31,7 +31,7 @@
             this.incorrectDataMonitoringDataAccess = incorrectDataMonitoringDataAccess;
         }
 
-        public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring()
+        public GetNotificationMonitoringEntity GetIncorrectDataMonitoring()
         {
             return incorrectDataMonitoringDataAccess.GetIncorrectDataMonitoring();
         }
@@ -73,7 +73,7 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
-        public void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment)
+        public void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment)
         {
             if (incorrectList == null || !incorrectList.Any())
             {
@@ -98,7 +98,7 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        private static string GenerateMessage(IEnumerable<GetMonitoringEntity> data, JobMonitor_IssueType issueTypeID)
+        private static string GenerateMessage(IEnumerable<GetInvalidDataMonitoringEntity> data, JobMonitor_IssueType issueTypeID)
         {
             var message = string.Empty;
 

@@ -6,7 +6,7 @@
 
     public interface IIncorrectDataMonitoringDataAccess
     {
-        public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring();
+        GetNotificationMonitoringEntity GetIncorrectDataMonitoring();
 
         void InsertIncorrectDataMonitoring(string incorrectDataJson, JobMonitor_IssueType type);
     }
@@ -20,17 +20,23 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring()
+        public GetNotificationMonitoringEntity GetIncorrectDataMonitoring()
         {
-            var criteria = new JobMonitoringGetCriteria();
+            var criteria = new NotificationMonitoringGetCriteria();
 
-            return repository.Fetch<GetMonitoringEntity>(criteria);
+            var invalidDataList = repository.Fetch<GetInvalidDataMonitoringEntity>(criteria);
+
+            return new GetNotificationMonitoringEntity
+            {
+                IsContinue = criteria.IsContinue,
+                InvalidDataList = invalidDataList ?? new List<GetInvalidDataMonitoringEntity>()
+            };
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<Pending>")]
         public void InsertIncorrectDataMonitoring(string incorrectDataJson, JobMonitor_IssueType issueType)
         {
-            var criteria = new JobMonitoringInsertCriteria
+            var criteria = new NotificationMonitoringInsertCriteria
             {
                 IncorrectData = incorrectDataJson,
                 IssueTypeID = (int)issueType

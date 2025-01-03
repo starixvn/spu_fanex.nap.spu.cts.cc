@@ -35,7 +35,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Arrange
 
             // Act
-            _dataAccess.GetIncorrectDataMonitoring().Returns(new List<GetMonitoringEntity>());
+            _dataAccess.GetIncorrectDataMonitoring().Returns(new GetNotificationMonitoringEntity());
 
             var result = _service.GetIncorrectDataMonitoring();
             // Assert
@@ -177,7 +177,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Arrange
             var generateMessageMethod = TestExtension.GetPrivateStaticMethod(typeof(IncorrectDataMonitoringService), PrivateMethodName.GenerateMessage);
 
-            var data = new List<GetMonitoringEntity> { new GetMonitoringEntity() { IssueTypeID = (int)issueTypeID, CustID = 999 } };
+            var data = new List<GetInvalidDataMonitoringEntity> { new GetInvalidDataMonitoringEntity() { IssueTypeID = (int)issueTypeID, CustID = 999 } };
 
             // Act
             var message = generateMessageMethod.Invoke(_service, new object[] { data, issueTypeID });

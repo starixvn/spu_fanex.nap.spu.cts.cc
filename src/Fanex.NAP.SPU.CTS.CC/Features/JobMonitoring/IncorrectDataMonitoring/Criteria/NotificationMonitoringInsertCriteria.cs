@@ -3,7 +3,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class JobMonitoringInsertCriteria : NonQueryCommand
+    public class NotificationMonitoringInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_IncorrectData")]
         public string IncorrectData { get; set; }
