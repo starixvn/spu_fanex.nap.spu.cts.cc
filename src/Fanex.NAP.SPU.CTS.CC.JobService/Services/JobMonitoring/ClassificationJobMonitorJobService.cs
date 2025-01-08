@@ -13,7 +13,7 @@
     {
         Task<bool> MonitorRealtimeInactiveCategory(int batchSize);
 
-        Task<bool> MonitorNormalClassificationPool(int threshold);
+        Task<bool> MonitorNormalPools(int threshold);
     }
 
     public class ClassificationJobMonitorJobService : IClassificationJobMonitorJobService
@@ -70,20 +70,21 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        public Task<bool> MonitorNormalClassificationPool(int threshold)
+        public Task<bool> MonitorNormalPools(int threshold)
         {
             try
             {
-                var normalPool = classificationJobMonitorService.GetNormalClassificationPoolMonitor();
+                var normalPool = classificationJobMonitorService.GetNormalPoolMonitoring();
 
-                if (normalPool.GeneralRecord > threshold)
+                if (normalPool != null && normalPool.Any())
                 {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.GeneralRecord, true, 500, threshold);
-                }
-
-                if (normalPool.BySportRecord > threshold)
-                {
-                    classificationJobMonitorService.NotifyExcessiveClassificationPool(normalPool.BySportRecord, false, 500, threshold);
+                    foreach (var item in normalPool)
+                    {
+                        if (item.NumberOfRecord > threshold)
+                        {
+                            classificationJobMonitorService.NotifyExcessivePools(item.NumberOfRecord, item.MapIssueTypeID, 500, threshold);
+                        }
+                    }
                 }
             }
             catch (Exception ex)

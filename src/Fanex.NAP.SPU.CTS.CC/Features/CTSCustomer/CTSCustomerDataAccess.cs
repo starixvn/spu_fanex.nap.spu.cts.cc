@@ -49,6 +49,14 @@
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
+        #region Insert Missing Customers
+
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers();
+
+        void CompleteMissingCustomer(string resolvedIDs);
+
+        #endregion
+
         #region UserName2
 
         ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub);
@@ -61,7 +69,7 @@
 
         void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust);
 
-        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate);
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate, DateTime? nextScannedDate);
 
         IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson);
 
@@ -203,6 +211,27 @@
         }
 
         #endregion Insert New Customers
+
+        #region Insert Missing Customer
+
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers()
+        {
+            var criteria = new GetMissingCustomerCriteria();
+
+            return repository.Fetch<MissingCustomerModel>(criteria);
+        }
+
+        public void CompleteMissingCustomer(string resolvedIDs)
+        {
+            var criteria = new CompleteMissingCustomerCriteria
+            {
+                ResolvedIDs = resolvedIDs
+            };
+
+            repository.Execute(criteria);
+        }
+
+        #endregion
 
         #region Update Customers Info
 
@@ -372,11 +401,12 @@
 
         #region Insert Reactivated Customers
 
-        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate)
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime lastScannedDate, DateTime? nextScannedDate)
         {
             var criteria = new ReactivatedCustomerGetCriteria
             {
-                LastScannedDate = lastScannedDate
+                LastScannedDate = lastScannedDate,
+                NextScannedDate = nextScannedDate
             };
 
             return repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();

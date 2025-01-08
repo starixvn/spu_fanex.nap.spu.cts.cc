@@ -88,6 +88,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
             SabaDangerLevel_Agency_LastHistoryID = 181,
             NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
             NormalDangerousAssociationScan_LastScannedID = 184,
+            JobMonitoring_ReactivatedCustomerLastScannedTime = 185
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -207,11 +208,17 @@ namespace Fanex.NAP.SPU.CTS.Shares
             NewCustomer_NullCategory = 1,
             NewCustomer_Missing = 2,
             NewCustomer_IncorrectCustInfo = 3,
+            NewCustomer_TotalUnresolvedMissingCustomers = 4,
+            ReactivatedCustomer_Missing = 50,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
-            Classification_GeneralPoolStatus = 200,
-            Classification_BySportPoolStatus = 201,
+            Realtime_ExcessiveGerneralChanges = 102,
+            Realtime_ExcessiveBySportChanges = 103,
+            Classification_ExcessiveGeneralPool = 200,
+            Classification_ExcessiveBySportPool = 201, 
             Classification_MissingTVSProblemAccount = 202,
+            Classification_ExcessiveGerneralNormalInsert = 203,
+            Classification_ExcessiveBySportNormalInsert = 204,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 

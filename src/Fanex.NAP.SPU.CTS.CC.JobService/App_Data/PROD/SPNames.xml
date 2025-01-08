@@ -106,6 +106,9 @@
 		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
+
+		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Get" SpName="CTS_DC_Monitoring_MissingCustomer_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Complete" SpName="CTS_DC_Monitoring_MissingCustomer_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="CTSCustomer-NullUserName2">
@@ -186,7 +189,7 @@
 		<Setting Key="CTS_Monitoring_CustomerClassificationPool_Get" SpName="CTS_Monitoring_CustomerClassificationPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" TimeOut="600" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_DC_Monitoring_CheckMissingCustomer" SpName="CTS_DC_Monitoring_CheckMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_DC_Monitoring_MissingCustomer_Check" SpName="CTS_DC_Monitoring_MissingCustomer_Check" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
 		<Setting Key="CTS_DC_Monitoring_InsertMissingCustomer" SpName="CTS_DC_Monitoring_InsertMissingCustomer" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_Monitoring_GetCategoryByCustIDs" SpName="CTS_DC_Monitoring_GetCategoryByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Monitoring_InsertIncorrectCategory" SpName="CTS_DC_Monitoring_InsertIncorrectCategory" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />

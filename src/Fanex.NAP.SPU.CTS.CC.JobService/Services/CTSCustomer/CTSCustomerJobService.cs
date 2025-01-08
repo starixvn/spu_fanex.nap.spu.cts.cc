@@ -21,6 +21,8 @@
     {
         Task<bool> InsertNewCustomer(int batchSize);
 
+        Task<bool> InsertMissingCustomer(int batchSize);
+
         Task<bool> UpdateCTSCustomerInfo(int packageSize);
 
         Task<bool> UpdateUsername2ForCustMain(int batchSize);
@@ -81,6 +83,77 @@
                         InsertBAURL = appSettings.InsertBAURL,
                         serviceName = "InsertNewCustomer"
                     });
+                }
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+                 
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> InsertMissingCustomer(int batchSize)
+        {
+            try
+            {
+                var isSuccess = true;
+                var custInfo = new InsertCustomerViewModel();
+
+                var data = ctscustomerService.GetMissingCustomers();
+
+                if (data == null || !data.Any())
+                {
+                    return Task.FromResult(isSuccess);
+                }
+            
+                var missingCusts = data.Where(c => c.IsMissingCust);
+                var notMissingCusts = data.Where(c => !c.IsMissingCust);
+
+                if (missingCusts.Any()) 
+                {
+                    var chunkCusts = missingCusts.Distinct().Chunk(batchSize);
+
+                    foreach (var batchCust in chunkCusts)
+                    {
+                        var custIds = batchCust.Select(c => c.CustID).Distinct();
+
+                        custInfo = ctscustomerService.GetMissingCustInfo(custIds);
+
+                        if (custInfo.CustomerInfos.Any())
+                        {
+                            isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                            {
+                                InternalBatchSize = batchSize,
+                                ExternalBatchSize = batchSize,
+                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                                IsInsertMissingCust = true,
+                                InsertVIPURL = appSettings.InsertVIPURL,
+                                InsertBAURL = appSettings.InsertBAURL,
+                                serviceName = "InsertMissingCustomer"
+                            });
+
+                            if (isSuccess)
+                            {
+                                ctscustomerService.CompleteMissingCustomer(string.Join(',', batchCust.Select(c => c.ID).Distinct()));
+                            }
+                            else
+                            {
+                                return Task.FromResult(isSuccess);
+                            }
+                        }
+                    }
+                }
+
+                if (notMissingCusts.Any())
+                {
+                    ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID).Distinct()));
                 }
 
                 return Task.FromResult(isSuccess);
@@ -206,30 +279,24 @@
                 var custInfoTime = DateTime.MaxValue;
                 var requestTime = DateTime.Now;
 
-                // step 1 get
-                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime);
+                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime, null);
 
-                // step 2
                 var ctsArchiveCustIDs = CheckExistCTSArchiveCustomerAndPushCC(custToReactive);
 
                 custInfoTime = DateTime.Now;
 
                 if (ctsArchiveCustIDs.IsPushCCSuccess)
                 {
-                    // step 3
                     var isInsertReactivedCust = InsertNewCustFromReactivedCust(ctsArchiveCustIDs.NotExistCusts);
 
-                    // step 4 update scantime for next
                     if (isInsertReactivedCust)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = systemParameterServices
-                            .UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
-                ctscustomerService
-                    .InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
+                ctscustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
 
                 return Task.FromResult(isSuccess);
             }
@@ -291,7 +358,7 @@
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCategoryID);
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCustID);
 
-                    Thread.Sleep(300);
+                    Thread.Sleep(150);
 
                 } while (isContinue);
 
@@ -351,23 +418,10 @@
                 return true;
             }
 
-            var insertNewCustIDs = string.Join(",", insertNewCusts.Distinct());
-
             // sleep for latency
             Thread.Sleep(2000);
 
-            var mainCusts = ctscustomerService.GetCustomerFromMainDBForUpdate(insertNewCustIDs, UpdateCustomer.ForNewCustomer);
-
-            if (mainCusts.IsNullOrEmpty())
-            {
-                return false;
-            }
-
-            var subCusts = ctscustomerService.GetCustSubFromMainDBByCustIDs(insertNewCustIDs);
-
-            var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
-            custInfo.CustomerInfos.AddRange(mainCusts);
-            custInfo.CustomerInfos.AddRange(subCusts);
+            var custInfo = ctscustomerService.GetMissingCustInfo(insertNewCusts);
 
             return ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
             {

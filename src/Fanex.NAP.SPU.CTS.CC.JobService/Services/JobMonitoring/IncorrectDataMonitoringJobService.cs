@@ -43,26 +43,27 @@
 
                 do
                 {
-                    var incorrectData = monitoringService.GetIncorrectDataMonitoring();
+                    var result = monitoringService.GetIncorrectDataMonitoring();
 
-                    if (incorrectData != null && incorrectData.Any())
+                    isContinue = result.IsContinue;
+
+                    if (result.InvalidDataList != null && result.InvalidDataList.Any())
                     {
-                        isContinue = true;
+                        monitoringService.NotifyTelegram(result.InvalidDataList, appSettings.EvironmentName);
 
-                        monitoringService.NotifyTelegram(incorrectData, appSettings.EvironmentName);
-
-                        var inValidIssueType = incorrectData.Where(c => c.IsIssueTypeValid == false);
+                        var inValidIssueType = result.InvalidDataList.Where(c => c.IsIssueTypeValid == false);
 
                         if (inValidIssueType.Any())
                         {
                             Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check more detail with list ID (table CTS_DataCenter.JobMonitoring_IncorrectData) : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"), sentryClient);
                         }
 
-                        systemParameterServices.UpdateTimingExecution(incorrectData.Max(c => c.ID).ToString(), CTS_SystemParameters.JobMonitoring_IncorrectData_LastScanID);
-                    }
-                    else
-                    {
-                        isContinue = false;
+                        var lastScannedID = result.InvalidDataList.Max(c => c.ID);
+
+                        if (lastScannedID > 0)
+                        {
+                            systemParameterServices.UpdateTimingExecution(lastScannedID.ToString(), CTS_SystemParameters.JobMonitoring_IncorrectData_LastScanID);
+                        }
                     }
                 } while (isContinue);
             }

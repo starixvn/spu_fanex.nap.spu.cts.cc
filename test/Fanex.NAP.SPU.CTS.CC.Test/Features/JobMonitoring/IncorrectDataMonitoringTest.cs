@@ -35,7 +35,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Arrange
 
             // Act
-            _dataAccess.GetIncorrectDataMonitoring().Returns(new List<GetMonitoringEntity>());
+            _dataAccess.GetIncorrectDataMonitoring().Returns(new GetNotificationMonitoringEntity());
 
             var result = _service.GetIncorrectDataMonitoring();
             // Assert
@@ -168,8 +168,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         [InlineData(JobMonitor_IssueType.NewCustomer_Missing)]
         [InlineData(JobMonitor_IssueType.NewCustomer_IncorrectCustInfo)]
         [InlineData(JobMonitor_IssueType.Realtime_NewPlaceBetInactiveCategory)]
-        [InlineData(JobMonitor_IssueType.Classification_GeneralPoolStatus)]
-        [InlineData(JobMonitor_IssueType.Classification_BySportPoolStatus)]
+        [InlineData(JobMonitor_IssueType.Classification_ExcessiveGeneralPool)]
+        [InlineData(JobMonitor_IssueType.Classification_ExcessiveBySportPool)]
         [InlineData(JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus)]
         [InlineData(JobMonitor_IssueType.Classification_MissingTVSProblemAccount)]
         public void GenerateMessage_WhenSuccess(JobMonitor_IssueType issueTypeID)
@@ -177,7 +177,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             // Arrange
             var generateMessageMethod = TestExtension.GetPrivateStaticMethod(typeof(IncorrectDataMonitoringService), PrivateMethodName.GenerateMessage);
 
-            var data = new List<GetMonitoringEntity> { new GetMonitoringEntity() { IssueTypeID = (int)issueTypeID, CustID = 999 } };
+            var data = new List<GetInvalidDataMonitoringEntity> { new GetInvalidDataMonitoringEntity() { IssueTypeID = (int)issueTypeID, CustID = 999 } };
 
             // Act
             var message = generateMessageMethod.Invoke(_service, new object[] { data, issueTypeID });

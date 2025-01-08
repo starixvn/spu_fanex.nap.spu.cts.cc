@@ -9,13 +9,13 @@
 
     public interface IIncorrectDataMonitoringService
     {
-        IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring();
+        GetNotificationMonitoringEntity GetIncorrectDataMonitoring();
 
         void InsertIncorrectDataMonitoring(IEnumerable<InsertMonitoringEntity> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
-        void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment);
+        void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment);
     }
 
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
@@ -31,7 +31,7 @@
             this.incorrectDataMonitoringDataAccess = incorrectDataMonitoringDataAccess;
         }
 
-        public IEnumerable<GetMonitoringEntity> GetIncorrectDataMonitoring()
+        public GetNotificationMonitoringEntity GetIncorrectDataMonitoring()
         {
             return incorrectDataMonitoringDataAccess.GetIncorrectDataMonitoring();
         }
@@ -45,6 +45,7 @@
                 foreach (var logDataBatch in dataChunks)
                 {
                     var dataJson = JsonConvert.SerializeObject(logDataBatch);
+
                     incorrectDataMonitoringDataAccess.InsertIncorrectDataMonitoring(dataJson, issueType);
                 }
             }
@@ -72,7 +73,7 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
-        public void NotifyTelegram(IEnumerable<GetMonitoringEntity> incorrectList, string environment)
+        public void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment)
         {
             if (incorrectList == null || !incorrectList.Any())
             {
@@ -97,18 +98,20 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        private static string GenerateMessage(IEnumerable<GetMonitoringEntity> data, JobMonitor_IssueType issueTypeID)
+        private static string GenerateMessage(IEnumerable<GetInvalidDataMonitoringEntity> data, JobMonitor_IssueType issueTypeID)
         {
             var message = string.Empty;
 
             if (data.Any())
             {
-                var custIDs = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.CustID)?.Distinct();
+                var rawCustIds = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => new { c.CustID, c.IsResolved} )?.Distinct();
                 var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
                 var values = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.Value)?.Distinct();
 
-                if (custIDs.Any() || trackingInfo != null)
+                if (rawCustIds.Any() || trackingInfo != null)
                 {
+                    var custIDs = rawCustIds.Select(c => c.CustID).Distinct();
+
                     switch (issueTypeID)
                     {
                         case JobMonitor_IssueType.NewCustomer_NullCategory:
@@ -119,7 +122,23 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                message += $"\r\n🆘 Missing customer {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))}\r\n";
+                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c=>c.CustID).Distinct();
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved).Select(c => c.CustID).Distinct();
+                                if(corrected.Any()) message += $"\r\n✅ Inserted missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                if(uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.ReactivatedCustomer_Missing:
+                            {
+                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c => c.CustID).Distinct();
+                                var uncorrected = rawCustIds.Where(c => !c.IsResolved).Select(c => c.CustID).Distinct();
+                                if (corrected.Any()) message += $"\r\n✅ Inserted missing reactivated-customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                if (uncorrected.Any()) message += $"\r\n🆘 Missing reactivated-customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.NewCustomer_TotalUnresolvedMissingCustomers:
+                            {
+                                message += $"\r\n🆘 Total missing customers so far  {{Total custid: {trackingInfo.Value}}} \r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:
@@ -132,11 +151,25 @@
                                 message += $"\r\n🆘 Incorrect customer category {{Total custid: {custIDs.Count()}}} {string.Join(',', custIDs.Take(50))} \r\n";
                                 break;
                             }
-                        case JobMonitor_IssueType.Classification_GeneralPoolStatus:
-                        case JobMonitor_IssueType.Classification_BySportPoolStatus:
+                        case JobMonitor_IssueType.Classification_ExcessiveGeneralPool:
+                        case JobMonitor_IssueType.Classification_ExcessiveBySportPool:
                             {
-                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_GeneralPoolStatus ? "General" : "BySport";
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_ExcessiveGeneralPool ? "General" : "BySport";
                                 message += $"\r\n⚠️ {issueTypeConvertToString} Classification Pool exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.Classification_ExcessiveGerneralNormalInsert:
+                        case JobMonitor_IssueType.Classification_ExcessiveBySportNormalInsert:
+                            {
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Classification_ExcessiveGerneralNormalInsert ? "General" : "BySport";
+                                message += $"\r\n⚠️ {issueTypeConvertToString} Normal Insert exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.Realtime_ExcessiveGerneralChanges:
+                        case JobMonitor_IssueType.Realtime_ExcessiveBySportChanges:
+                            {
+                                var issueTypeConvertToString = issueTypeID == JobMonitor_IssueType.Realtime_ExcessiveGerneralChanges ? "General" : "BySport";
+                                message += $"\r\n⚠️ {issueTypeConvertToString} Realtime Check-Changes exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.DCSTransaction_LastLoginProcessStatus:

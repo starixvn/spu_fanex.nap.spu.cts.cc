@@ -28,9 +28,15 @@
         }
 
         [HttpPost("NewCustomerMonitoring")]
-        public async Task<bool> MonitorNewCustomer([FromForm] int batchSize, [FromForm] int externalSize)
+        public async Task<bool> MonitorNewCustomer([FromForm] int batchSize, [FromForm] int externalSize, [FromForm] int addMinute)
         {
-            return await customerJobMonitorService.ScanMissingCustomer(batchSize, externalSize);
+            return await customerJobMonitorService.ScanMissingCustomer(batchSize, externalSize, addMinute);
+        }
+
+        [HttpPost("ReactivatedCustomerMonitoring")]
+        public async Task<bool> MonitorReactivatedCustomer([FromForm] int batchSize, [FromForm] int addMinute)
+        {
+            return await customerJobMonitorService.ScanMissingReactivatedCustomer(batchSize, addMinute);
         }
 
         [HttpPost("CustomerInfoMonitoring")]
@@ -45,10 +51,10 @@
             return await classificationJobMonitorJobService.MonitorRealtimeInactiveCategory(batchSize);
         }
 
-        [HttpPost("NormalClassificationPoolMonitoring")]
-        public async Task<bool> MonitorNormalClassificationPool([FromForm] int threshold)
+        [HttpPost("NormalPoolMonitoring")]
+        public async Task<bool> MonitorNormalPools([FromForm] int threshold)
         {
-            return await classificationJobMonitorJobService.MonitorNormalClassificationPool(threshold);
+            return await classificationJobMonitorJobService.MonitorNormalPools(threshold);
         }
 
         [HttpPost("IncorrectDataMonitoringNotification")]

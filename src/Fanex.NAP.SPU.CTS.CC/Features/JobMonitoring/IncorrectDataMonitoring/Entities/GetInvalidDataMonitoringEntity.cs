@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class GetMonitoringEntity
+    public class GetInvalidDataMonitoringEntity
     {
         public Int64 ID { get; set; }
 
@@ -13,6 +13,8 @@
         public int? CustID { get; set; }
 
         public long? Value { get; set; }
+
+        public bool IsResolved { get; set; }
 
         public bool IsIssueTypeValid { get; set; }
 

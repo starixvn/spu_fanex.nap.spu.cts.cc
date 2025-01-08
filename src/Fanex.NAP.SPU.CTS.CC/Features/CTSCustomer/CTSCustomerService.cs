@@ -50,6 +50,15 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
         string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
+        #region Insert Missing Customers
+
+        IEnumerable<MissingCustomerModel> GetMissingCustomers();
+
+        public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds);
+
+        void CompleteMissingCustomer(string resolvedIDs);
+
+        #endregion
 
         #region  Update UserName2
 
@@ -64,7 +73,7 @@
 
         #endregion
 
-        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate);
+        IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate, DateTime? nextScannedDate);
 
         IEnumerable<long> CheckExistCTSArchiveCustomer(IEnumerable<ReactivatedCustModel> reactivedCusts);
 
@@ -249,6 +258,37 @@
         }
 
         #endregion Insert New Customers
+
+        #region Insert Missing Customers
+
+        public IEnumerable<MissingCustomerModel> GetMissingCustomers()
+        {
+            return dataAccess.GetMissingCustomers();
+        }
+
+        public void CompleteMissingCustomer(string resolvedIDs)
+        {
+            dataAccess.CompleteMissingCustomer(resolvedIDs);
+        }
+
+        public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds)
+        {
+            var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
+
+            if (CustIds != null && CustIds.Any())
+            {
+                var custToString = string.Join(",", CustIds.Select(c => c).Distinct());
+                var mainCusts = GetCustomerFromMainDBForUpdate(custToString, Constants.UpdateCustomer.ForNewCustomer);
+                var subCusts = GetCustSubFromMainDBByCustIDs(custToString);
+
+                custInfo.CustomerInfos.AddRange(mainCusts);
+                custInfo.CustomerInfos.AddRange(subCusts);
+            }
+
+            return custInfo;
+        }
+
+        #endregion
 
         #region Update Customers Info
 
@@ -520,11 +560,11 @@
 
         #region Insert Reactivated Customers
 
-        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate)
+        public IEnumerable<ReactivatedCustModel> GetReactivatedCustomers(DateTime? lastScannedDate, DateTime? nextScannedDate)
         {
             if (lastScannedDate != null)
             {
-                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value);
+                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value, nextScannedDate);
             }
 
             return Enumerable.Empty<ReactivatedCustModel>();
