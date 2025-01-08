@@ -153,7 +153,7 @@
 
                 if (notMissingCusts.Any())
                 {
-                    ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID)));
+                    ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID).Distinct()));
                 }
 
                 return Task.FromResult(isSuccess);

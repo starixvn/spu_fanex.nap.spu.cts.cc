@@ -134,7 +134,7 @@
 
                         foreach (var custBatch in customerChunks)
                         {
-                            var input = custBatch.Select(x => new MonitoringNewCustomerEntity(x));
+                            var input = custBatch.Select(c => new MonitoringNewCustomerEntity { CustID = c.CustID, CustSubID = 0 });
 
                             missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(input));
                         }
