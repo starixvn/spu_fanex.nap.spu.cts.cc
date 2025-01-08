@@ -358,7 +358,7 @@
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCategoryID);
                     systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCustID);
 
-                    Thread.Sleep(300);
+                    Thread.Sleep(150);
 
                 } while (isContinue);
 
