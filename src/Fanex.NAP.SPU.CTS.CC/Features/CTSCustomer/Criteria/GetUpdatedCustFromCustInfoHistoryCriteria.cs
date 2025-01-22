@@ -15,6 +15,9 @@
         [SpParam(SqlParamName = "rowSize")]
         public int RowSize { get; set; }
 
+        [SpParam(SqlParamName = "waitTime")]
+        public int WaitTime { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_CustInfoHistory_GetUpdatedCustID";

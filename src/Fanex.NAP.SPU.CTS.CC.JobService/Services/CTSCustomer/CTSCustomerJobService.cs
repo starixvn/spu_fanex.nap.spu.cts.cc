@@ -23,7 +23,7 @@
 
         Task<bool> InsertMissingCustomer(int batchSize);
 
-        Task<bool> UpdateCTSCustomerInfo(int packageSize);
+        Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime);
 
         Task<bool> UpdateUsername2ForCustMain(int batchSize);
 
@@ -170,7 +170,7 @@
             }
         }
 
-        public Task<bool> UpdateCTSCustomerInfo(int packageSize)
+        public Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime)
         {
             TranformCustModel updatedCustFromCustInfo;
             TranformCustModel updatedCustFromCustomer;
@@ -180,9 +180,9 @@
             {
                 var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
                 var output = ctscustomerService.GetLastUpdatedTime();
-                updatedCustFromCustInfo = ctscustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize);
-                updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize);
-                updatedCustFromProductStatus = ctscustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize);
+                updatedCustFromCustInfo = ctscustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize, waitTime);
+                updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize, waitTime);
+                updatedCustFromProductStatus = ctscustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize, waitTime);
 
                 if (ctscustomerService.IsValidData(updatedCustFromCustomer)
                     || ctscustomerService.IsValidData(updatedCustFromCustInfo)

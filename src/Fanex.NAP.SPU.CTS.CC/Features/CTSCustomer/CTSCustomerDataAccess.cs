@@ -39,11 +39,11 @@
 
         LastUpdateValueModel GetLastUpdatedTime();
 
-        TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
+        TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime);
 
-        TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
+        TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime);
 
-        TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount);
+        TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime);
 
         IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
 
@@ -235,13 +235,14 @@
 
         #region Update Customers Info
 
-        public TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
+        public TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
             var criteria = new GetUpdatedCustFromCustInfoHistoryCriteria
             {
                 LastUpdateTime = lastUpdatedTime,
                 LastCustId = lastUpdatedCustId,
                 RowSize = numOfAccount,
+                WaitTime = waitTime
             };
 
             var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
@@ -254,13 +255,14 @@
             };
         }
 
-        public TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
+        public TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
             var criteria = new GetUpdatedCustFromCustomerHistoryCriteria
             {
                 LastUpdateTime = lastUpdatedTime,
                 LastCustId = lastUpdatedCustId,
                 RowSize = numOfAccount,
+                WaitTime = waitTime
             };
 
             var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
@@ -273,13 +275,14 @@
             };
         }
 
-        public TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount)
+        public TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
             var criteria = new GetUpdatedCustFromProductStatusHistoryCriteria
             {
                 LastUpdateTime = lastUpdatedTime,
                 LastCustId = lastUpdatedCustId,
                 RowSize = numOfAccount,
+                WaitTime = waitTime
             };
 
             var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);

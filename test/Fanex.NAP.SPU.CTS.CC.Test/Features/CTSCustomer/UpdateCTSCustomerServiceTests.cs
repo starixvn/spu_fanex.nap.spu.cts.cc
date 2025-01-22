@@ -56,8 +56,8 @@
                 LastUpdatedTime = DateTime.Now.AddMinutes(-3)
             };
             var inputDateTime = DateTime.Now;
-            dataAccess.GetUpdatedCustFromCustInfoHistory(inputDateTime, 1, 100).Returns(expectedResult);
-            var result = ctsCustomerService.GetUpdatedCustFromCustInfoHistory(inputDateTime, 1, 100);
+            dataAccess.GetUpdatedCustFromCustInfoHistory(inputDateTime, 1, 100, 60).Returns(expectedResult);
+            var result = ctsCustomerService.GetUpdatedCustFromCustInfoHistory(inputDateTime, 1, 100, 60);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -72,8 +72,8 @@
                 LastUpdatedTime = DateTime.Now.AddMinutes(-3)
             };
             var inputDateTime = DateTime.Now;
-            dataAccess.GetUpdatedCustFromCustomerHistory(inputDateTime, 1, 100).Returns(expectedResult);
-            var result = ctsCustomerService.GetUpdatedCustFromCustomerHistory(inputDateTime, 1, 100);
+            dataAccess.GetUpdatedCustFromCustomerHistory(inputDateTime, 1, 100, 60).Returns(expectedResult);
+            var result = ctsCustomerService.GetUpdatedCustFromCustomerHistory(inputDateTime, 1, 100, 60);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -89,8 +89,8 @@
             };
 
             var inputDateTime = DateTime.Now;
-            dataAccess.GetUpdatedCustFromProductStatus(inputDateTime, 1, 100).Returns(expectedResult);
-            var result = ctsCustomerService.GetUpdatedCustFromProductStatusHistory(inputDateTime, 1, 100);
+            dataAccess.GetUpdatedCustFromProductStatus(inputDateTime, 1, 100, 60).Returns(expectedResult);
+            var result = ctsCustomerService.GetUpdatedCustFromProductStatusHistory(inputDateTime, 1, 100, 60);
 
             result.Should().BeEquivalentTo(expectedResult);
         }

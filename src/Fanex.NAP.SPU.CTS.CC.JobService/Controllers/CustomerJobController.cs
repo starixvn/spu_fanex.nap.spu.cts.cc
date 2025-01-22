@@ -30,9 +30,9 @@
         }
 
         [HttpPost("UpdateCTSCustomerInfo")]
-        public async Task<bool> UpdateCTSCustomerInfo([FromForm] int batchSize)
+        public async Task<bool> UpdateCTSCustomerInfo([FromForm] int batchSize, [FromForm] int waitTime)
         {
-            return await ctsCustomerJobService.UpdateCTSCustomerInfo(batchSize);
+            return await ctsCustomerJobService.UpdateCTSCustomerInfo(batchSize, waitTime);
         }
 
         [HttpPost("UpdateUsername2ForCustMain")]
