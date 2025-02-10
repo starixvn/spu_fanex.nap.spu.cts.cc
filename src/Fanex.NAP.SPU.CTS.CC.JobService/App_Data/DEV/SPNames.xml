@@ -96,14 +96,14 @@
 		<Setting Key="CTS_DC_CustInfo_GetLastUpdateTime" SpName="CTS_DC_CustInfo_GetLastUpdateTime" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_CustomerHistory_GetUpdatedCustID" SpName="CTS_CustomerHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustInfo_GetByCustIDs" SpName="CTS_DC_CustInfo_GetByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList_xtest" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustInfo_GetLastInsertCust" SpName="CTS_DC_CustInfo_GetLastInsertCust" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo_xtest" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_InsertComplete" SpName="CTS_DC_CustInfo_InsertComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 
@@ -147,7 +147,7 @@
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_GetRescanNewCust" SpName="CTS_DC_CustClassification_GetRescanNewCust_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetRescanNewCust" SpName="CTS_DC_CustClassification_GetRescanNewCust" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Category_GetByCategoryTypeName" SpName="CTS_DC_Category_GetByCategoryTypeName" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 
@@ -181,7 +181,7 @@
 
 	<Function name="AssociatedGroupMonitor">
 		<Setting Key="CTS_DC_AssociatedGroup_Account_Add" SpName="CTS_DC_AssociatedGroup_Account_Add" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_AssociatedGroup_Scan" SpName="CTS_DC_AssociatedGroup_Scan_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_AssociatedGroup_Scan" SpName="CTS_DC_AssociatedGroup_Scan" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="JobMonitoring">
