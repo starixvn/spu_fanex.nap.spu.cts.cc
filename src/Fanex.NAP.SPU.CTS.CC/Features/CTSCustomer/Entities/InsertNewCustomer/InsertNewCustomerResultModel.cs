@@ -2,7 +2,7 @@
 {
     public class InsertNewCustomerResultModel
     {
-        public int CTSCustID { get; set; }
+        public long CTSCustID { get; set; }
 
         public long CustID { get; set; }
 
