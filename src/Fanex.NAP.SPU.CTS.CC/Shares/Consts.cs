@@ -28,9 +28,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2148:Underscores should be used to make large numbers readable", Justification = "<Pending>")]
         public const int StarixITId = 10278938;
 
-        public const string MicrosoftTeams_GroupId_Local = "19:00af2ff331b64d39adf13b428aa49c6e@thread.tacv2";
-
-        public const string MicrosoftTeams_JobMonitor_GroupId_Pro = "19:3537f2795b2a49aabc926b3275583615@thread.tacv2";
         public const string DangerousScoreRemark = "Detection Date: {0} - Dangerous Score: {1}%";
         public const string TWInitialGBMissSport = "Soccer/Basketball";
         public const string TWInitialSmartRemark = "Detection Date: {0} - Probability Threshold: {1}";
