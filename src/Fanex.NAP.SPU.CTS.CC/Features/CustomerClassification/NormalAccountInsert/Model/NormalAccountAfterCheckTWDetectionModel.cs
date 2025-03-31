@@ -1,20 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
     using System;
 
     public class NormalAccountAfterCheckTWDetectionModel
     {
-        public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust)
-        {
-            MappingGetNormalAccount(cust);
-        }
-
         public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, TWTaggedCustEntity tWTaggedCust)
         {
             MappingGetNormalAccount(cust);
 
-            if (tWTaggedCust != null && tWTaggedCust.TaggingID != 0)
+            if (tWTaggedCust.IsTWTaggedCustValid())
             {
                 this.TaggingID = tWTaggedCust.TaggingID;
                 this.TaggingType = tWTaggedCust.TaggingType;
@@ -22,18 +17,6 @@
                 this.TWDesktopUsageRate = tWTaggedCust.TWDesktopUsageRate;
                 this.TWGroupBettingRate = tWTaggedCust.TWGroupBettingRate;
                 this.TWTicketRejectRate = tWTaggedCust.TWTicketRejectRate;
-            }
-        }
-
-        public NormalAccountAfterCheckTWDetectionModel(GetNormalAccountEntity cust, NewTWTaggedCustEntity twGBTaggingNewCust)
-        {
-            MappingGetNormalAccount(cust);
-
-            if (twGBTaggingNewCust != null && twGBTaggingNewCust.TaggingID != 0)
-            {
-                this.TaggingID = twGBTaggingNewCust.TaggingID;
-                this.TaggingType = twGBTaggingNewCust.TaggingType;              
-                this.SportType = twGBTaggingNewCust.SportType;
             }
         }
 

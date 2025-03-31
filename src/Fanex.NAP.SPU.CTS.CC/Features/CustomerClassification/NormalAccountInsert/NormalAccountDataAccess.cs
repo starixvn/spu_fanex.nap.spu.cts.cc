@@ -1,8 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Model;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
 
     public interface INormalAccountDataAccess
     {
@@ -14,6 +19,7 @@
 
         void CompleteNormalAccountInsert(long scannedMaxId);
 
+        IEnumerable<TWTaggedExcludeEntity> CheckTWTaggingExclude(IEnumerable<TWTaggedExcludeModel> taggedEntities);
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -72,5 +78,19 @@
             repository.Execute(criteria);
         }        
        
+        public IEnumerable<TWTaggedExcludeEntity> CheckTWTaggingExclude(IEnumerable<TWTaggedExcludeModel> taggedEntities)
+        {
+            if (taggedEntities.IsNullOrEmpty())
+            {
+                return Enumerable.Empty<TWTaggedExcludeEntity>();
+            }
+
+            var criteria = new CheckTWTaggingExcludeCriteria
+            {
+                JsonData = JsonSerializer.Serialize(taggedEntities)
+            };
+
+            return repository.Fetch<TWTaggedExcludeEntity>(criteria);
+        }
     }
 }
