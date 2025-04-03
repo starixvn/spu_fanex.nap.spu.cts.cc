@@ -135,7 +135,7 @@
             {
                 Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
 
-                Utilities.NotifyTeamsMessage(ex.Message, "TWGB.CountTotalTicket", appSettings.EvironmentName, appSettings.EvironmentName == "LOCAL" ? MicrosoftTeams_GroupId_Local : MicrosoftTeams_JobMonitor_GroupId_Pro);
+                Utilities.NotifyChannelMessage(ex.Message, "TWGB.CountTotalTicket", appSettings.EvironmentName, appSettings.NotificationChannelConfig.JobMonitoringGroupChannelId);
 
                 return Task.FromResult(false);
             }

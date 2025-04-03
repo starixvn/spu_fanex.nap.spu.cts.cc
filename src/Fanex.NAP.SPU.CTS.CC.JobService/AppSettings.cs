@@ -54,6 +54,8 @@
         bool NormalAccountBySportIsWriteLog { get; }
 
         APIHelperConfig APIHelperConfig { get; }
+
+        NotificationChannelConfig NotificationChannelConfig { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -71,6 +73,7 @@
         private readonly string insertBAURL;
         private readonly string agencyApiUrl;    
         private readonly APIHelperConfig apiHelperConfig;
+        private readonly NotificationChannelConfig notificationChannelConfig;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -89,6 +92,10 @@
             apiHelperConfig = new APIHelperConfig
             {
                 Proxy = GetValue<string>("APIHelperConfig:Proxy")
+            };
+            notificationChannelConfig = new NotificationChannelConfig
+            {
+                JobMonitoringGroupChannelId = GetValue<string>("NotificationChannel:JobMonitoringGroupChannelId")
             };
         }
 
@@ -155,6 +162,8 @@
         public bool NormalAccountBySportIsWriteLog => GetValue<bool>("NormalAccountBySportIsWriteLog:IsWriteLog");
 
         public APIHelperConfig APIHelperConfig => apiHelperConfig;
+
+        public NotificationChannelConfig NotificationChannelConfig => notificationChannelConfig;
         #endregion Variables
 
         #region Methods

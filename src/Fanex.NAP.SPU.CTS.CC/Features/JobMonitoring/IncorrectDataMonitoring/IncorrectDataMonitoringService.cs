@@ -15,7 +15,7 @@
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
-        void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment);
+        void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId);
     }
 
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
@@ -73,7 +73,7 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
-        public void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment)
+        public void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId)
         {
             if (incorrectList == null || !incorrectList.Any())
             {
@@ -92,7 +92,7 @@
             }
             message += "</pre>";
 
-            Utilities.NotifyTeamsMessage(message, "Job Monitoring", environment, environment == "LOCAL" ? MicrosoftTeams_GroupId_Local : MicrosoftTeams_JobMonitor_GroupId_Pro);
+            Utilities.NotifyChannelMessage(message, "Job Monitoring", environment, groupId);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
