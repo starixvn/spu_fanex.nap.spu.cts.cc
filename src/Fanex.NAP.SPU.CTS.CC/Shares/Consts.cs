@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-
-namespace Fanex.NAP.SPU.CTS.Shares
+﻿namespace Fanex.NAP.SPU.CTS.Shares
 {
+    using System.ComponentModel;
+
     public static class Constants
     {
         public const int RetryPushCCToExternal = 3;

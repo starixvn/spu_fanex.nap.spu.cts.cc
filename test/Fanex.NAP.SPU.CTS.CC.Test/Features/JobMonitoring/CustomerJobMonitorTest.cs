@@ -5,8 +5,6 @@ using NSubstitute.ExceptionExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
@@ -99,23 +97,44 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         #endregion
 
         #region CheckMissingCustomer
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void CheckMissingCustomer_WhenSuccess(bool isReturnData)
+        [Fact]
+        public void CheckMissingCustomer_WhenSuccess_ReturnData()
         {
             // Arrange
-            var data = new List<MonitoringNewCustomerEntity>();
+            var data = new List<MonitoringNewCustomerEntity>
+            {
+                new MonitoringNewCustomerEntity { CustID = 1 }
+            };
 
             // Act
-            _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Returns(isReturnData ? new List<MissingCustomerCompareEntity>() : null);
+            _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Returns(new List<MissingCustomerCompareEntity>());
 
             var result = _service.CheckMissingCustomer(data);
 
             // Assert
             _customerJobMonitorDataAccess.Received(1).CheckMissingCustomer(Arg.Any<string>());
-
             Assert.NotNull(result);
+            Assert.IsType<List<MissingCustomerCompareEntity>>(result);
+        }
+
+        [Fact]
+        public void CheckMissingCustomer_WhenSuccess_ReturnNull()
+        {
+            // Arrange
+            var data = new List<MonitoringNewCustomerEntity>
+            {
+                new MonitoringNewCustomerEntity { CustID = 1 }
+            };
+
+            // Act
+            _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Returns((List<MissingCustomerCompareEntity>)null);
+
+            var result = _service.CheckMissingCustomer(data);
+
+            // Assert
+            _customerJobMonitorDataAccess.Received(1).CheckMissingCustomer(Arg.Any<string>());
+            Assert.NotNull(result);
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -128,7 +147,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
 
             // Assert
             _customerJobMonitorDataAccess.Received(0).CheckMissingCustomer(Arg.Any<string>());
-
             Assert.NotNull(result);
         }
 
@@ -136,7 +154,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
         public void CheckMissingCustomer_ThrowException()
         {
             // Arrange
-            var data = new List<MonitoringNewCustomerEntity>();
+            var data = new List<MonitoringNewCustomerEntity>
+            {
+                new MonitoringNewCustomerEntity { CustID = 1 }
+            };
 
             // Act
             _customerJobMonitorDataAccess.CheckMissingCustomer(Arg.Any<string>()).Throws<Exception>();
@@ -144,9 +165,8 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.JobMonitoring
             Action action = () => _service.CheckMissingCustomer(data);
 
             // Assert
-            _customerJobMonitorDataAccess.Received(0).CheckMissingCustomer(Arg.Any<string>());
-
             Assert.Throws<Exception>(action);
+            _customerJobMonitorDataAccess.Received(1).CheckMissingCustomer(Arg.Any<string>());
         }
         #endregion
 

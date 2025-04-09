@@ -10,8 +10,6 @@
 
         public const string MergeWithCTSTaggedCust = "MergeWithCTSTaggedCust";
 
-        public const string MergeWithTWTaggedCustAndNewTWCust = "MergeWithTWTaggedCustAndNewTWCust";
-
         public const string GetNewTWGroupBetting = "GetNewTWGroupBetting";
     }
 }

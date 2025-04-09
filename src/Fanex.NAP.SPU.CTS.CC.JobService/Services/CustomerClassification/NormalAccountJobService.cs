@@ -94,7 +94,7 @@
 
         private void InsertNormalAccount(IEnumerable<GetNormalAccountEntity> custs, int batchExternalSize, ConcurrentBag<bool> failedThreads)
         {
-            var finalNormalAcc = _normalAccountService.MergeWithTWTaggedCustAndCTSTaggedCust(custs);
+            var finalNormalAcc = _normalAccountService.MergeWithTaggedNormalTaggingFlow(custs);
 
             var result = _normalAccountService.InsertNormalAccount(finalNormalAcc, _serviceName, _appSettings.NormalAccountIsWriteLog);
 

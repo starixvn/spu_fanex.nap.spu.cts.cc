@@ -14,6 +14,7 @@
 		<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="600" />
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustClassification_TWTagging_Exclude" SpName="CTS_DC_CustClassification_TWTagging_Exclude" DbName="MySQL.SLAVE.CTS_DataCenter.ctsService" />
 	</Function>
 	<Function Name="DailyNormalClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
