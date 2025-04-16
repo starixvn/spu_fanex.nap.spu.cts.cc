@@ -87,7 +87,8 @@
             NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
             NormalDangerousAssociationScan_LastScannedID = 184,
             JobMonitoring_ReactivatedCustomerLastScannedTime = 185,
-            ScanLatencyCustomer_FromCustID = 188
+            ScanLatencyCustomer_FromCustID = 188,
+            ScanReactivatedLatencyCustomer_LastLogTime = 189
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]

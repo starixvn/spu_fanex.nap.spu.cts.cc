@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -57,6 +56,12 @@
         public async Task<bool> UpdateUsername2ForCustSub([FromForm] int batchSize)
         {
             return await ctsCustomerJobService.UpdateUsername2ForCustSub(batchSize);
+        }
+
+        [HttpPost("ScanReactivatedLatencyCustomer")]
+        public async Task<bool> ScanReactivatedLatencyCustomer([FromForm] int batchSize, [FromForm] int scannedSecondTime)
+        {
+            return await ctsCustomerJobService.ScanReactivatedLatencyCustomers(batchSize, scannedSecondTime);
         }
 
         [HttpPost("InsertReactivatedCustomer")]

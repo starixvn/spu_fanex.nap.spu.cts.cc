@@ -34,6 +34,8 @@
 
         Task<bool> UpdateUsername2ForCustSub(int batchSize);
 
+        Task<bool> ScanReactivatedLatencyCustomers(int batchSize, int scannedSecondTime);
+
         Task<bool> InsertReactivatedCustomers();
 
         Task<bool> InactivateNewCustomers(int batchSize);
@@ -42,7 +44,7 @@
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
         private readonly ICTSCustomerService _ctsCustomerService;
-        private readonly ISystemParameterServices systemParameterServices;
+        private readonly ISystemParameterServices _systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
         private readonly ISentryClient sentryClient;
@@ -59,7 +61,7 @@
             _ctsCustomerService = ctscustomerService;
             this.custClassToMainDBService = custClassToMainDBService;
             this.rescanCustClassificationService = rescanCustClassificationService;
-            this.systemParameterServices = systemParameterServices;
+            this._systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
         }
 
@@ -127,8 +129,8 @@
             {
                 var isSuccess = true;
 
-                var fromCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
-                var toCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
+                var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
+                var toCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
                 var nextFromCustID = _ctsCustomerService.GetLastScannedCustID((int)fromCustID, (int)toCustID, scanSecondTime);
 
                 var customers = new List<int>();
@@ -149,7 +151,7 @@
 
                 } while (customers.IsNotNullOrEmpty());
 
-                systemParameterServices.UpdateTimingExecution(nextFromCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
+                _systemParameterServices.UpdateTimingExecution(nextFromCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
 
                 return Task.FromResult(isSuccess);
             }
@@ -330,11 +332,11 @@
         {
             try
             {
-                UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
+                UInt64 lastCTSCustId = _systemParameterServices.GetLastScannedId2(CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 _ctsCustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
 
-                systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
+                _systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
                 return Task.FromResult(true);
             }
@@ -382,6 +384,55 @@
 
         #endregion Update UserName2
 
+        #region ScanReactivatedLatencyCustomers
+        public Task<bool> ScanReactivatedLatencyCustomers(int batchSize, int scannedSecondTime)
+        {
+            try
+            {
+                var isSuccess = true;
+
+                var lastLogTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
+
+                var reactivatedCustomers = _ctsCustomerService.GetReactivatedCustomers(lastLogTime, null);
+
+                var updateNextLogTime = default(DateTime?);
+
+                if (reactivatedCustomers.IsNotNullOrEmpty())
+                {
+                    var minLastLogTimeAfterScannedSecondTime = reactivatedCustomers.Min(x => x.LogTime).AddSeconds(-scannedSecondTime);
+
+                    updateNextLogTime = (lastLogTime == null || minLastLogTimeAfterScannedSecondTime > lastLogTime)
+                        ? minLastLogTimeAfterScannedSecondTime
+                        : lastLogTime;
+
+                    foreach (var reactivatedCustomersWithBatch in reactivatedCustomers.Chunk(batchSize))
+                    {
+                        var missingCustomers = _ctsCustomerService.CheckMissingCustomer(reactivatedCustomersWithBatch.Select(x => (int)x.CustID));
+                        _ctsCustomerService.InsertMissingCustomerLatencyToQueue(missingCustomers);
+                    }
+                }
+                else
+                {
+                    updateNextLogTime = lastLogTime;
+                }
+
+                _systemParameterServices.UpdateTimingExecution(updateNextLogTime.ToString(), CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+        #endregion
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
         public Task<bool> InsertReactivatedCustomers()
         {
@@ -389,7 +440,7 @@
             {
                 var isSuccess = true;
 
-                var lastScannedTime = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                var lastScannedTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
 
                 var maxLogTime = DateTime.MaxValue;
                 var custInfoTime = DateTime.MaxValue;
@@ -408,7 +459,7 @@
                     if (isInsertReactivedCust)
                     {
                         maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                        isSuccess = _systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
                     }
                 }
 
@@ -471,8 +522,8 @@
                         isContinue = false;
                     }
 
-                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCategoryID);
-                    systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCustID);
+                    _systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCategoryID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCategoryID);
+                    _systemParameterServices.UpdateTimingExecution(inactivateCusts.LastCustID.ToString(), CTS_SystemParameters.InactiveNewMember_LastCustID);
 
                     Thread.Sleep(150);
 
