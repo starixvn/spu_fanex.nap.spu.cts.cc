@@ -29,6 +29,12 @@
             return await ctsCustomerJobService.ScanLatencyCustomer(batchSize, scannedSecondTime);
         }
 
+        [HttpPost("InsertLatencyCustomer")]
+        public async Task<bool> InsertLatencyCustomer([FromForm] int batchSize)
+        {
+            return await ctsCustomerJobService.InsertLatencyCustomer(batchSize);
+        }
+
         [HttpPost("InsertMissingCustomer")]
         public async Task<bool> InsertMissingCustomer([FromForm] int batchSize)
         {

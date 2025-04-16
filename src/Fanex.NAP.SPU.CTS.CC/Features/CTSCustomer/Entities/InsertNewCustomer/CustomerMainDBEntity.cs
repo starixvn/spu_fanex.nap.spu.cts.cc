@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class CustomerMainDBModel
+    public class CustomerMainDBEntity
     {
         private DateTime createdDate;
 

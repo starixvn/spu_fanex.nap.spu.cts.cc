@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -18,13 +19,13 @@
     {
         LastScannedCustModel GetLastInsertCust();
 
-        InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
+        InsertCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds);
+        IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByCustIDs(string custIds);
 
-        bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras);
+        bool InsertNewCustomer(bool isNewCustomer, InsertCustomerModel data, InsertNewCustRescanEntity paras);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -38,9 +39,11 @@
 
         void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog);
 
-        IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
+        InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds);
 
-        IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
+        IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
+
+        IEnumerable<CustomerMainDBEntity> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
@@ -49,13 +52,13 @@
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
-        string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB, IEnumerable<CustomerMainDBModel> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
+        string CompareCustomerInfo(IEnumerable<CustomerMainDBEntity> custInfoFromMainDB, IEnumerable<CustomerMainDBEntity> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
         #region Insert Missing Customers
 
         IEnumerable<MissingCustomerModel> GetMissingCustomers();
 
-        public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds);
+        public InsertCustomerModel GetMissingCustInfo(IEnumerable<long> CustIds);
 
         void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds);
 
@@ -91,11 +94,17 @@
 
         IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs);
         #endregion
+
+        #region InsertLatencyCustomer
+        IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize);
+
+        void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds);
+        #endregion
     }
 
     public class CTSCustomerService : ICTSCustomerService
     {
-        private readonly ICTSCustomerDataAccess dataAccess;
+        private readonly ICTSCustomerDataAccess _dataAccess;
         private readonly ISentryClient sentryClient;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly string serviceName = "CTSCustomerService";
@@ -104,35 +113,35 @@
             ISentryClient sentryClient,
             ICustClassToMainDBService custClassToMainDBService)
         {
-            this.dataAccess = dataAccess;
+            this._dataAccess = dataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
         }
 
         public LastUpdateValueModel GetLastUpdatedTime()
         {
-            return dataAccess.GetLastUpdatedTime();
+            return _dataAccess.GetLastUpdatedTime();
         }
 
         #region Insert New Customers
 
         public LastScannedCustModel GetLastInsertCust()
         {
-            return dataAccess.GetLastInsertCust();
+            return _dataAccess.GetLastInsertCust();
         }
 
-        public InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID)
+        public InsertCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID)
         {
-            return dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
+            return _dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID)
         {
-            return dataAccess.GetCustSubFromMainDBByLastCustSub(numOfAccount, lastScannedCustID);
+            return _dataAccess.GetCustSubFromMainDBByLastCustSub(numOfAccount, lastScannedCustID);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
-        public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerViewModel data, InsertNewCustRescanEntity paras)
+        public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerModel data, InsertNewCustRescanEntity paras)
         {
             if (data == null && data.CustomerInfos.IsNullOrEmpty())
             {
@@ -143,7 +152,7 @@
 
             foreach (var batchCust in chunkCusts)
             {
-                var customers = dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
+                var customers = _dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
 
                 if (customers.IsNotNullOrEmpty())
                 {
@@ -194,7 +203,7 @@
         {
             if (custIdList != null && custIdList.Any())
             {
-                dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
+                _dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
             }
 
             return true;
@@ -214,13 +223,13 @@
 
                 var custInfoJson = JsonConvert.SerializeObject(custList);
 
-                dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
+                _dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
             }
 
             return true;
         }
 
-        private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBModel> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
+        private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBEntity> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
         {
             if (customer != null && customer.Any())
             {
@@ -274,7 +283,7 @@
 
         public IEnumerable<MissingCustomerModel> GetMissingCustomers()
         {
-            return dataAccess.GetMissingCustomers();
+            return _dataAccess.GetMissingCustomers();
         }
 
         public void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds)
@@ -282,18 +291,18 @@
             if (custIds.IsNotNullOrEmpty())
             {
                 var custIdToString = string.Join(",", custIds);
-                dataAccess.InsertMissingCustomerLatencyToQueue(custIdToString);
+                _dataAccess.InsertMissingCustomerLatencyToQueue(custIdToString);
             }
         }
 
         public void CompleteMissingCustomer(string resolvedIDs)
         {
-            dataAccess.CompleteMissingCustomer(resolvedIDs);
+            _dataAccess.CompleteMissingCustomer(resolvedIDs);
         }
 
-        public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds)
+        public InsertCustomerModel GetMissingCustInfo(IEnumerable<long> CustIds)
         {
-            var custInfo = new InsertCustomerViewModel { CustomerInfos = new List<CustomerMainDBModel>(), LastInsertCustID = null };
+            var custInfo = new InsertCustomerModel { CustomerInfos = new List<CustomerMainDBEntity>(), LastInsertCustID = null };
 
             if (CustIds != null && CustIds.Any())
             {
@@ -363,8 +372,8 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "<Pending>")]
-        public string CompareCustomerInfo(IEnumerable<CustomerMainDBModel> custInfoFromMainDB
-            , IEnumerable<CustomerMainDBModel> custInfoFromCTS
+        public string CompareCustomerInfo(IEnumerable<CustomerMainDBEntity> custInfoFromMainDB
+            , IEnumerable<CustomerMainDBEntity> custInfoFromCTS
             , UpdateCustomer sourceType
             , out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
         {
@@ -454,29 +463,41 @@
             }
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
+        public InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds)
         {
-            return dataAccess.GetCustomerFromMainDBForUpdate(custIds, sourceType) ?? Enumerable.Empty<CustomerMainDBModel>();
+            if (custIds.IsNotNullOrEmpty())
+            {
+                var custIdToString = string.Join(",", custIds);
+
+                return _dataAccess.CheckCustomerInfoFromMainDB(custIdToString);
+            }
+
+            return new InsertCustomerModel();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType)
+        public IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
         {
-            return dataAccess.GetCustomerFromCTSForUpdate(custIds, sourceType);
+            return _dataAccess.GetCustomerFromMainDBForUpdate(custIds, sourceType) ?? Enumerable.Empty<CustomerMainDBEntity>();
+        }
+
+        public IEnumerable<CustomerMainDBEntity> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType)
+        {
+            return _dataAccess.GetCustomerFromCTSForUpdate(custIds, sourceType);
         }
 
         public TranformCustModel GetUpdatedCustFromCustInfoHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
-            return dataAccess.GetUpdatedCustFromCustInfoHistory(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
+            return _dataAccess.GetUpdatedCustFromCustInfoHistory(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
         }
 
         public TranformCustModel GetUpdatedCustFromCustomerHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
-            return dataAccess.GetUpdatedCustFromCustomerHistory(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
+            return _dataAccess.GetUpdatedCustFromCustomerHistory(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
         }
 
         public TranformCustModel GetUpdatedCustFromProductStatusHistory(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime)
         {
-            return dataAccess.GetUpdatedCustFromProductStatus(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
+            return _dataAccess.GetUpdatedCustFromProductStatus(lastUpdatedTime, lastUpdatedCustId, numOfAccount, waitTime);
         }
 
         private void UpdateAssociationCustomerForRollback(IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks)
@@ -485,7 +506,7 @@
             {
                 var custInfoJson = JsonConvert.SerializeObject(assCustForRollbacks);
 
-                dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
+                _dataAccess.UpdateAssociationCustomerForRollback(custInfoJson);
             }
         }
 
@@ -495,17 +516,17 @@
             {
                 case Constants.UpdateCustomer.FromCustInfo:
                     {
-                        dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        _dataAccess.UpdateCustInfoComplete(customers, lastUpdateTime, lastUpdateCustID);
                         break;
                     }
                 case Constants.UpdateCustomer.FromCustomer:
                     {
-                        dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        _dataAccess.UpdateCustomerComplete(customers, lastUpdateTime, lastUpdateCustID);
                         break;
                     }
                 case Constants.UpdateCustomer.FromProductStatus:
                     {
-                        dataAccess.UpdateCustomerStatusComplete(customers, lastUpdateTime, lastUpdateCustID);
+                        _dataAccess.UpdateCustomerStatusComplete(customers, lastUpdateTime, lastUpdateCustID);
                         break;
                     }
                 default:
@@ -561,19 +582,19 @@
 
         public ScannedCustModel GetCustWithNullUserName2(int rowSize, UInt64 lastCTSCustId, bool isCustSub)
         {
-            return dataAccess.GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
+            return _dataAccess.GetCustWithNullUserName2(rowSize, lastCTSCustId, isCustSub);
         }
 
         public IEnumerable<CustNullUserName2Model> GetCustWithHavingUserName2(IEnumerable<CustNullUserName2Model> custs, bool isCustSub)
         {
-            return dataAccess.GetCustWithHavingUserName2(custs, isCustSub);
+            return _dataAccess.GetCustWithHavingUserName2(custs, isCustSub);
         }
 
         public void UpdateUsername2(IEnumerable<CustNullUserName2Model> customerList)
         {
             if (customerList != null && customerList.Any())
             {
-                dataAccess.UpdateUsername2(customerList);
+                _dataAccess.UpdateUsername2(customerList);
             }
         }
 
@@ -585,7 +606,7 @@
         {
             if (lastScannedDate != null)
             {
-                return dataAccess.GetReactivatedCustomers(lastScannedDate.Value, nextScannedDate);
+                return _dataAccess.GetReactivatedCustomers(lastScannedDate.Value, nextScannedDate);
             }
 
             return Enumerable.Empty<ReactivatedCustModel>();
@@ -595,20 +616,20 @@
         {
             if (reactivedCusts != null && reactivedCusts.Any())
             {
-                return dataAccess.CheckExistCTSArchiveCustomer(JsonConvert.SerializeObject(reactivedCusts));
+                return _dataAccess.CheckExistCTSArchiveCustomer(JsonConvert.SerializeObject(reactivedCusts));
             }
 
             return Enumerable.Empty<long>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds)
+        public IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByCustIDs(string custIds)
         {
-            return dataAccess.GetCustSubFromMainDBByCustIDs(custIds) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return _dataAccess.GetCustSubFromMainDBByCustIDs(custIds) ?? Enumerable.Empty<CustomerMainDBEntity>();
         }
 
         public void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime)
         {
-            dataAccess.InsertReactivedCustomerLog(lastScanTime, requestTime, maxLogTime, custInfoTime);
+            _dataAccess.InsertReactivedCustomerLog(lastScanTime, requestTime, maxLogTime, custInfoTime);
         }
 
         #endregion Insert Reactivated Customers
@@ -617,7 +638,7 @@
 
         public InactivateNewCustomer GetInactivateNewCustomers()
         {
-            return dataAccess.GetInactivateNewCustomers();
+            return _dataAccess.GetInactivateNewCustomers();
         }
 
         #endregion Inactivate New Customers
@@ -625,12 +646,12 @@
         #region ScanLatencyCustomer
         public int GetLastScannedCustID(int scannedTime)
         {
-            return dataAccess.GetLastScannedCustID(scannedTime);
+            return _dataAccess.GetLastScannedCustID(scannedTime);
         }
 
         public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
         {
-            return dataAccess.ScanLatencyCustomer(lastCustID, nextCustID);
+            return _dataAccess.ScanLatencyCustomer(lastCustID, nextCustID);
         }
 
         public IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs)
@@ -638,10 +659,26 @@
             if (custIDs.IsNotNullOrEmpty())
             {
                 var custIDToString = string.Join(",", custIDs);
-                return dataAccess.CheckMissingCustomer(custIDToString);
+                return _dataAccess.CheckMissingCustomer(custIDToString);
             }
 
             return Enumerable.Empty<int>();
+        }
+        #endregion
+
+        #region InsertLatencyCustomer
+        public IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize)
+        {
+            return _dataAccess.GetLatencyCustomerFromQueue(batchSize);
+        }
+
+        public void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds)
+        {
+            if (custIds.IsNotNullOrEmpty())
+            {
+                var custIdToString = string.Join(",", custIds);
+                _dataAccess.CompleteLatencyCustomerFromQueue(custIdToString);
+            }
         }
         #endregion
     }

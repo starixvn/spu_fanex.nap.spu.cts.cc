@@ -45,7 +45,7 @@
         [Fact]
         public void GetCustSubFromMainDB_WhenSuccess_ReturnData()
         {
-            var dataFromDB = new List<CustomerMainDBModel>()
+            var dataFromDB = new List<CustomerMainDBEntity>()
             {
                 CreateSampleCustomerMainDBModel(),
                 CreateSampleCustomerMainDBModel()
@@ -77,10 +77,10 @@
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
-        private CustomerMainDBModel CreateSampleCustomerMainDBModel()
+        private CustomerMainDBEntity CreateSampleCustomerMainDBModel()
         {
             var rd = new Random();
-            var data = new CustomerMainDBModel
+            var data = new CustomerMainDBEntity
             {
                 CreatedDate = DateTime.Now,
                 Currency = "RM",

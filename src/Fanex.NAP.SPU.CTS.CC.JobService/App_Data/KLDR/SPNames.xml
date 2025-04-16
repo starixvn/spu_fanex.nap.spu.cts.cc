@@ -113,6 +113,9 @@
 		<Setting Key="CTS_DC_CustomerLatency_GetLastScannedCustID" SpName="CTS_DC_CustomerLatency_GetLastScannedCustID" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_CustomerLatency_Scan" SpName="CTS_CustomerLatency_Scan" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustomerLatency_CheckMissingCust" SpName="CTS_DC_CustomerLatency_CheckMissingCust" DbName="MySQL.CTS_DataCenter.ctsService" />
+
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Get" SpName="CTS_DC_CustomerLatency_Queue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Complete" SpName="CTS_DC_CustomerLatency_Queue_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="CTSCustomer-NullUserName2">

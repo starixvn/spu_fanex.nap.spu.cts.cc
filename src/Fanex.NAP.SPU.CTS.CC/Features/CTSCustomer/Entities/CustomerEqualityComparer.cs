@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
 
-    public class CustomerEqualityComparer : IEqualityComparer<CustomerMainDBModel>
+    public class CustomerEqualityComparer : IEqualityComparer<CustomerMainDBEntity>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1067:Expressions should not be too complex", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S121:Control structures should use curly braces", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
-        public bool Equals(CustomerMainDBModel x, CustomerMainDBModel y)
+        public bool Equals(CustomerMainDBEntity x, CustomerMainDBEntity y)
         {
             if (x.CustID == y.CustID
                 && string.Equals(x.UserName, y.UserName)
@@ -25,7 +25,7 @@
             return false;
         }
 
-        public int GetHashCode(CustomerMainDBModel obj)
+        public int GetHashCode(CustomerMainDBEntity obj)
         {
             return obj.GetHashCode();
         }

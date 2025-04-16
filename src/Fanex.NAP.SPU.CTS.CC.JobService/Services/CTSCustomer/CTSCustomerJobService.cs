@@ -3,6 +3,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models.ArchiveCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -23,6 +24,8 @@
 
         Task<bool> ScanLatencyCustomer(int batchSize, int scanSecondTime);
 
+        Task<bool> InsertLatencyCustomer(int batchSize);
+
         Task<bool> InsertMissingCustomer(int batchSize);
 
         Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime);
@@ -38,7 +41,7 @@
 
     public class CTSCustomerJobService : ICTSCustomerJobService
     {
-        private readonly ICTSCustomerService ctscustomerService;
+        private readonly ICTSCustomerService _ctsCustomerService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
@@ -53,7 +56,7 @@
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
-            this.ctscustomerService = ctscustomerService;
+            _ctsCustomerService = ctscustomerService;
             this.custClassToMainDBService = custClassToMainDBService;
             this.rescanCustClassificationService = rescanCustClassificationService;
             this.systemParameterServices = systemParameterServices;
@@ -66,22 +69,22 @@
             try
             {
                 var isSuccess = true;
-                var customers = new InsertCustomerViewModel();
-                var newSubCustomers = Enumerable.Empty<CustomerMainDBModel>();
+                var customers = new InsertCustomerModel();
+                var newSubCustomers = Enumerable.Empty<CustomerMainDBEntity>();
 
-                var lastScanned = ctscustomerService.GetLastInsertCust();
+                var lastScanned = _ctsCustomerService.GetLastInsertCust();
 
 
                 Parallel.Invoke(
                     () => { customers = GetNewCustomerFromMainDBAndHandleMissingCustomer(batchSize, lastScanned.LastCustID); },
-                    () => { newSubCustomers = ctscustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID); });
+                    () => { newSubCustomers = _ctsCustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID); });
 
 
                 if (customers?.CustomerInfos != null)
                 {
                     customers.CustomerInfos.AddRange(newSubCustomers);
 
-                    isSuccess = ctscustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
+                    isSuccess = _ctsCustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
                     {
                         InternalBatchSize = batchSize,
                         ExternalBatchSize = batchSize,
@@ -107,11 +110,11 @@
             }
         }
 
-        private InsertCustomerViewModel GetNewCustomerFromMainDBAndHandleMissingCustomer(int numOfAccount, Int64 lastScannedCustID)
+        private InsertCustomerModel GetNewCustomerFromMainDBAndHandleMissingCustomer(int numOfAccount, Int64 lastScannedCustID)
         {
-            var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
+            var customers = _ctsCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
 
-            ctscustomerService.InsertMissingCustomerLatencyToQueue(customers.MissingCustIds);
+            _ctsCustomerService.InsertMissingCustomerLatencyToQueue(customers.MissingCustIds);
 
             return customers;
         }
@@ -125,21 +128,21 @@
                 var isSuccess = true;
 
                 var lastCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_LastCustID);
-                var nexCustID = ctscustomerService.GetLastScannedCustID(scanSecondTime);
+                var nexCustID = _ctsCustomerService.GetLastScannedCustID(scanSecondTime);
 
                 var customers = new List<int>();
 
                 do
                 {
-                    var scanCustomer = ctscustomerService.ScanLatencyCustomer((int)lastCustID, nexCustID);
+                    var scanCustomer = _ctsCustomerService.ScanLatencyCustomer((int)lastCustID, nexCustID);
                     lastCustID = scanCustomer.NextScannedCustID;
 
                     if (customers.IsNotNullOrEmpty())
                     {
-                        foreach(var customerWithBatch in customers.Chunk(batchSize))
+                        foreach (var customerWithBatch in customers.Chunk(batchSize))
                         {
-                            var missingCusts = ctscustomerService.CheckMissingCustomer(customerWithBatch);
-                            ctscustomerService.InsertMissingCustomerLatencyToQueue(missingCusts);
+                            var missingCusts = _ctsCustomerService.CheckMissingCustomer(customerWithBatch);
+                            _ctsCustomerService.InsertMissingCustomerLatencyToQueue(missingCusts);
                         }
                     }
 
@@ -162,14 +165,63 @@
         }
         #endregion
 
+        #region InsertLatencyCustomer
+        public Task<bool> InsertLatencyCustomer(int batchSize)
+        {
+            try
+            {
+                var isSuccess = true;
+
+                var customers = _ctsCustomerService.GetLatencyCustomerFromQueue(batchSize);
+
+                var completeCustomers = Enumerable.Empty<int>();
+
+                if (customers.IsNotNullOrEmpty())
+                {
+                    var custInfoCheckMissing = _ctsCustomerService.CheckCustomerInfoFromMainDB(customers);
+
+                    isSuccess = _ctsCustomerService.InsertNewCustomer(true, custInfoCheckMissing, new InsertNewCustRescanEntity
+                    {
+                        InternalBatchSize = batchSize,
+                        ExternalBatchSize = batchSize,
+                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
+                        IsInsertMissingCust = false,
+                        InsertVIPURL = appSettings.InsertVIPURL,
+                        InsertBAURL = appSettings.InsertBAURL,
+                        serviceName = "InsertLatencyCustomer"
+                    });
+
+                    completeCustomers = custInfoCheckMissing.CustomerInfos?.Select(x => x.CustID);
+                }
+
+                if (isSuccess)
+                {
+                    _ctsCustomerService.CompleteLatencyCustomerFromQueue(completeCustomers);
+                }
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
+        }
+        #endregion
+
         public Task<bool> InsertMissingCustomer(int batchSize)
         {
             try
             {
                 var isSuccess = true;
-                var custInfo = new InsertCustomerViewModel();
+                var custInfo = new InsertCustomerModel();
 
-                var data = ctscustomerService.GetMissingCustomers();
+                var data = _ctsCustomerService.GetMissingCustomers();
 
                 if (data == null || !data.Any())
                 {
@@ -187,11 +239,11 @@
                     {
                         var custIds = batchCust.Select(c => c.CustID).Distinct();
 
-                        custInfo = ctscustomerService.GetMissingCustInfo(custIds);
+                        custInfo = _ctsCustomerService.GetMissingCustInfo(custIds);
 
                         if (custInfo.CustomerInfos.Any())
                         {
-                            isSuccess = ctscustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                            isSuccess = _ctsCustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
                             {
                                 InternalBatchSize = batchSize,
                                 ExternalBatchSize = batchSize,
@@ -204,7 +256,7 @@
 
                             if (isSuccess)
                             {
-                                ctscustomerService.CompleteMissingCustomer(string.Join(',', batchCust.Select(c => c.ID).Distinct()));
+                                _ctsCustomerService.CompleteMissingCustomer(string.Join(',', batchCust.Select(c => c.ID).Distinct()));
                             }
                             else
                             {
@@ -216,7 +268,7 @@
 
                 if (notMissingCusts.Any())
                 {
-                    ctscustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID).Distinct()));
+                    _ctsCustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID).Distinct()));
                 }
 
                 return Task.FromResult(isSuccess);
@@ -242,18 +294,18 @@
             try
             {
                 var isWriteLog = appSettings.TransformCTSCustomerIsWriteLog;
-                var output = ctscustomerService.GetLastUpdatedTime();
-                updatedCustFromCustInfo = ctscustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize, waitTime);
-                updatedCustFromCustomer = ctscustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize, waitTime);
-                updatedCustFromProductStatus = ctscustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize, waitTime);
+                var output = _ctsCustomerService.GetLastUpdatedTime();
+                updatedCustFromCustInfo = _ctsCustomerService.GetUpdatedCustFromCustInfoHistory(output.LastUpdateTimeCustInfo, output.LastUpdateCustIDCustInfo, packageSize, waitTime);
+                updatedCustFromCustomer = _ctsCustomerService.GetUpdatedCustFromCustomerHistory(output.LastUpdateTimeCustomer, output.LastUpdateCustIDCustomer, packageSize, waitTime);
+                updatedCustFromProductStatus = _ctsCustomerService.GetUpdatedCustFromProductStatusHistory(output.LastUpdateTimeCustProductStatus, output.LastUpdateCustIDCustProductStatus, packageSize, waitTime);
 
-                if (ctscustomerService.IsValidData(updatedCustFromCustomer)
-                    || ctscustomerService.IsValidData(updatedCustFromCustInfo)
-                    || ctscustomerService.IsValidData(updatedCustFromProductStatus))
+                if (_ctsCustomerService.IsValidData(updatedCustFromCustomer)
+                    || _ctsCustomerService.IsValidData(updatedCustFromCustInfo)
+                    || _ctsCustomerService.IsValidData(updatedCustFromProductStatus))
                 {
-                    ctscustomerService.UpdateCustomer(updatedCustFromCustInfo, UpdateCustomer.FromCustInfo, isWriteLog);
-                    ctscustomerService.UpdateCustomer(updatedCustFromCustomer, UpdateCustomer.FromCustomer, isWriteLog);
-                    ctscustomerService.UpdateCustomer(updatedCustFromProductStatus, UpdateCustomer.FromProductStatus, isWriteLog);
+                    _ctsCustomerService.UpdateCustomer(updatedCustFromCustInfo, UpdateCustomer.FromCustInfo, isWriteLog);
+                    _ctsCustomerService.UpdateCustomer(updatedCustFromCustomer, UpdateCustomer.FromCustomer, isWriteLog);
+                    _ctsCustomerService.UpdateCustomer(updatedCustFromProductStatus, UpdateCustomer.FromProductStatus, isWriteLog);
                 }
 
                 return Task.FromResult(true);
@@ -279,7 +331,7 @@
             {
                 UInt64 lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
-                ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
+                _ctsCustomerService.UpdateUserName2Package(ref lastCTSCustId, false, batchSize);
 
                 systemParameterServices.UpdateTimingExecution(lastCTSCustId.ToString(), CTS_SystemParameters.CustomerNullUsername2_LastCTSCustID);
 
@@ -308,7 +360,7 @@
 
                 do
                 {
-                    isContinue = ctscustomerService.UpdateUserName2Package(ref lastCTSCustId, true, batchSize);
+                    isContinue = _ctsCustomerService.UpdateUserName2Package(ref lastCTSCustId, true, batchSize);
 
                 } while (isContinue);
 
@@ -342,7 +394,7 @@
                 var custInfoTime = DateTime.MaxValue;
                 var requestTime = DateTime.Now;
 
-                var custToReactive = ctscustomerService.GetReactivatedCustomers(lastScannedTime, null);
+                var custToReactive = _ctsCustomerService.GetReactivatedCustomers(lastScannedTime, null);
 
                 var ctsArchiveCustIDs = CheckExistCTSArchiveCustomerAndPushCC(custToReactive);
 
@@ -359,7 +411,7 @@
                     }
                 }
 
-                ctscustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
+                _ctsCustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
 
                 return Task.FromResult(isSuccess);
             }
@@ -384,7 +436,7 @@
 
                 do
                 {
-                    var inactivateCusts = ctscustomerService.GetInactivateNewCustomers();
+                    var inactivateCusts = _ctsCustomerService.GetInactivateNewCustomers();
 
                     if (inactivateCusts.CustInfos != null && inactivateCusts.CustInfos.Any())
                     {
@@ -463,7 +515,7 @@
                 return new CheckExistCTSArchiveCustModel();
             }
 
-            var exitedCTSArchiveCustIDs = ctscustomerService.CheckExistCTSArchiveCustomer(reactivedCusts);
+            var exitedCTSArchiveCustIDs = _ctsCustomerService.CheckExistCTSArchiveCustomer(reactivedCusts);
 
             return new CheckExistCTSArchiveCustModel
             {
@@ -484,9 +536,9 @@
             // sleep for latency
             Thread.Sleep(2000);
 
-            var custInfo = ctscustomerService.GetMissingCustInfo(insertNewCusts);
+            var custInfo = _ctsCustomerService.GetMissingCustInfo(insertNewCusts);
 
-            return ctscustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
+            return _ctsCustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
             {
                 InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                 ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,

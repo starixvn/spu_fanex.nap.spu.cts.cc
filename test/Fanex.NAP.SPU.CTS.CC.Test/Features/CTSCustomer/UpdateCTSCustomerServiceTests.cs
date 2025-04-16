@@ -98,7 +98,7 @@
         [Fact]
         public void GetCustomerFromMainDBForUpdate_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<CustomerMainDBModel>
+            var expectedResult = new List<CustomerMainDBEntity>
             {
                 CreateSampleCustomerMainDBModel()
             };
@@ -112,7 +112,7 @@
         [Fact]
         public void GetCustomerFromCTSForUpdate_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<CustomerMainDBModel>
+            var expectedResult = new List<CustomerMainDBEntity>
             {
                 CreateSampleCustomerMainDBModel()
             };
@@ -126,9 +126,9 @@
         [Fact]
         public void CompareCustomerInfo_WhenSuccess_ReturnData()
         {
-            var custFromCTS = new List<CustomerMainDBModel>
+            var custFromCTS = new List<CustomerMainDBEntity>
             {
-                new CustomerMainDBModel
+                new CustomerMainDBEntity
                 {
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
@@ -150,9 +150,9 @@
                 }
             };
 
-            var custFromMain = new List<CustomerMainDBModel>
+            var custFromMain = new List<CustomerMainDBEntity>
             {
-                new CustomerMainDBModel
+                new CustomerMainDBEntity
                 {
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
@@ -193,10 +193,10 @@
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        private CustomerMainDBModel CreateSampleCustomerMainDBModel()
+        private CustomerMainDBEntity CreateSampleCustomerMainDBModel()
         {
             var rd = new Random();
-            var data = new CustomerMainDBModel
+            var data = new CustomerMainDBEntity
             {
                 CreatedDate = DateTime.Now,
                 Currency = "RM",

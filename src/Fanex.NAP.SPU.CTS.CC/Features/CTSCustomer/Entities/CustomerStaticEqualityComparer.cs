@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class CustomerStaticEqualityComparer : IEqualityComparer<CustomerMainDBModel>
+    public class CustomerStaticEqualityComparer : IEqualityComparer<CustomerMainDBEntity>
     {
-        public bool Equals(CustomerMainDBModel x, CustomerMainDBModel y)
+        public bool Equals(CustomerMainDBEntity x, CustomerMainDBEntity y)
         {
             if (x.CustID == y.CustID && x.CustStatusID == y.CustStatusID)
             {
@@ -14,7 +14,7 @@
             return false;
         }
 
-        public int GetHashCode(CustomerMainDBModel obj)
+        public int GetHashCode(CustomerMainDBEntity obj)
         {
             return obj.GetHashCode();
         }

@@ -4,9 +4,11 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InsertLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InsertMissingCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.ScanLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -16,19 +18,20 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.AccessControl;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerDataAccess
     {
         LastScannedCustModel GetLastInsertCust();
 
-        InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
+        InsertCustomerModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID);
+        IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID);
 
-        IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds);
+        IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByCustIDs(string custIds);
 
-        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo, bool isNewCustomer);
+        IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBEntity> customerInfo, bool isNewCustomer);
 
         void UpdateAssociationCustomerForArchive(string custInfoJson);
 
@@ -48,9 +51,11 @@
 
         TranformCustModel GetUpdatedCustFromProductStatus(DateTime lastUpdatedTime, Int64 lastUpdatedCustId, int numOfAccount, int waitTime);
 
-        IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
+        InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds);
 
-        IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
+        IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
+
+        IEnumerable<CustomerMainDBEntity> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType);
 
         #region Insert Missing Customers
 
@@ -89,15 +94,21 @@
 
         IEnumerable<int> CheckMissingCustomer(string custIDs);
         #endregion
+
+        #region InsertLatencyCustomer
+        IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize);
+
+        void CompleteLatencyCustomerFromQueue(string custIds);
+        #endregion
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
     {
-        private readonly IDynamicRepository repository;
+        private readonly IDynamicRepository _repository;
 
         public CTSCustomerDataAccess()
         {
-            repository = new DynamicRepository();
+            _repository = new DynamicRepository();
         }
 
         public LastUpdateValueModel GetLastUpdatedTime()
@@ -142,7 +153,7 @@
             };
         }
 
-        public InsertCustomerViewModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID)
+        public InsertCustomerModel GetCustomerFromMainDBForInsertNew(int quantityPerBatch, Int64 lastScannedCustID)
         {
             var criteria = new GetCustomersFromMainDbCriteria
             {
@@ -150,17 +161,17 @@
                 RowSize = quantityPerBatch,
             };
 
-            (var customers, var missingCustIds, var lastCustID) = repository.FetchMultiple<CustomerMainDBModel, int, Int64>(criteria);
+            (var customers, var missingCustIds, var lastCustID) = _repository.FetchMultiple<CustomerMainDBEntity, int, Int64>(criteria);
 
-            return new InsertCustomerViewModel
+            return new InsertCustomerModel
             {
-                CustomerInfos = customers?.ToList() ?? new List<CustomerMainDBModel>(),
+                CustomerInfos = customers?.ToList() ?? new List<CustomerMainDBEntity>(),
                 MissingCustIds = missingCustIds?.ToList() ?? new List<int>(),
                 LastInsertCustID = lastCustID?.FirstOrDefault()
             };
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID)
+        public IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int quantityPerBatch, Int64 lastScannedCustID)
         {
             var criteria = new GetCustSubFromMainDbCriteria
             {
@@ -170,10 +181,10 @@
                 CustIdList = ""
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return _repository.Fetch<CustomerMainDBEntity>(criteria) ?? Enumerable.Empty<CustomerMainDBEntity>();
         }
 
-        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBModel> customerInfo, bool isNewCustomer)
+        public IEnumerable<InsertNewCustomerResultModel> InsertNewCTSCustomer(IEnumerable<CustomerMainDBEntity> customerInfo, bool isNewCustomer)
         {
             if (customerInfo != null && customerInfo.Any())
             {
@@ -183,7 +194,7 @@
                     IsNewCustomer = isNewCustomer
                 };
 
-                return repository.Fetch<InsertNewCustomerResultModel>(criteria) ?? Enumerable.Empty<InsertNewCustomerResultModel>();
+                return _repository.Fetch<InsertNewCustomerResultModel>(criteria) ?? Enumerable.Empty<InsertNewCustomerResultModel>();
             }
 
             return Enumerable.Empty<InsertNewCustomerResultModel>();
@@ -196,7 +207,7 @@
                 CustInfoJson = custInfoJson
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         public void UpdateAssociationCustomerForRollback(string custInfoJson)
@@ -206,7 +217,7 @@
                 CustInfoJson = custInfoJson
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         public void UpdateCompleteAndRetranCustomer(string jsonData, long? lastCustID, bool isInsertMissingCust)
@@ -218,7 +229,7 @@
                 IsInsertMissingCust = isInsertMissingCust
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         #endregion Insert New Customers
@@ -229,7 +240,7 @@
         {
             var criteria = new GetMissingCustomerCriteria();
 
-            return repository.Fetch<MissingCustomerModel>(criteria);
+            return _repository.Fetch<MissingCustomerModel>(criteria);
         }
 
         public void InsertMissingCustomerLatencyToQueue(string custIds)
@@ -239,7 +250,7 @@
                 CustIDs = custIds
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         public void CompleteMissingCustomer(string resolvedIDs)
@@ -249,7 +260,7 @@
                 ResolvedIDs = resolvedIDs
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         #endregion
@@ -266,7 +277,7 @@
                 WaitTime = waitTime
             };
 
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
+            var (firstResultSet, secondResultSet) = _repository.FetchMultiple<TranformCustModel, string>(criteria);
 
             return new TranformCustModel
             {
@@ -286,7 +297,7 @@
                 WaitTime = waitTime
             };
 
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
+            var (firstResultSet, secondResultSet) = _repository.FetchMultiple<TranformCustModel, string>(criteria);
 
             return new TranformCustModel
             {
@@ -306,7 +317,7 @@
                 WaitTime = waitTime
             };
 
-            var (firstResultSet, secondResultSet) = repository.FetchMultiple<TranformCustModel, string>(criteria);
+            var (firstResultSet, secondResultSet) = _repository.FetchMultiple<TranformCustModel, string>(criteria);
 
             return new TranformCustModel
             {
@@ -325,7 +336,7 @@
                 LastUpdateTime = lastUpdateTime
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         public void UpdateCustInfoComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
@@ -337,7 +348,7 @@
                 LastUpdateTime = lastUpdateTime
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         public void UpdateCustomerStatusComplete(string customers, DateTime? lastUpdateTime, Int64? lastUpdateCustID)
@@ -349,10 +360,27 @@
                 LastUpdateTime = lastUpdateTime
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
+        public InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds)
+        {
+            var criteria = new GetCustomerInfoFromMainDBCriteria
+            {
+                CustIds = custIds,
+                SourceType = (int)UpdateCustomer.ForNewCustomer
+            };
+
+            (var custInfos, var missingCusts) = _repository.FetchMultiple<CustomerMainDBEntity, int>(criteria);
+
+            return new InsertCustomerModel
+            {
+                CustomerInfos = custInfos?.ToList() ?? new List<CustomerMainDBEntity>(),
+                MissingCustIds = missingCusts?.ToList() ?? new List<int>()
+            };
+        }
+
+        public IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
         {
             var criteria = new GetCustomerInfoFromMainDBCriteria
             {
@@ -360,12 +388,12 @@
                 SourceType = (int)sourceType
             };
 
-            var custInfos = repository.Fetch<CustomerMainDBModel>(criteria);
+            var custInfos = _repository.Fetch<CustomerMainDBEntity>(criteria);
 
             return custInfos;
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType)
+        public IEnumerable<CustomerMainDBEntity> GetCustomerFromCTSForUpdate(string custIds, UpdateCustomer sourceType)
         {
             var criteria = new GetCustomerInfoFromCTSCriteria
             {
@@ -373,7 +401,7 @@
                 SourceType = (int)sourceType
             };
 
-            var custInfos = repository.Fetch<CustomerMainDBModel>(criteria);
+            var custInfos = _repository.Fetch<CustomerMainDBEntity>(criteria);
 
             return custInfos;
         }
@@ -391,11 +419,11 @@
                 IsCustSub = isCustSub
             };
 
-            var data = repository.Fetch<CustNullUserName2Model>(criteria);
+            var data = _repository.Fetch<CustNullUserName2Model>(criteria);
 
             return new ScannedCustModel
             {
-                CustList = data ?? Enumerable.Empty< CustNullUserName2Model>(),
+                CustList = data ?? Enumerable.Empty<CustNullUserName2Model>(),
                 LastCTSCustID = criteria.LastCTSCustID
             };
         }
@@ -408,7 +436,7 @@
                 IsCustSub = isCustSub
             };
 
-            return repository.Fetch<CustNullUserName2Model>(criteria);
+            return _repository.Fetch<CustNullUserName2Model>(criteria);
         }
 
         public void UpdateUsername2(IEnumerable<CustNullUserName2Model> custInfo)
@@ -418,7 +446,7 @@
                 CustomerJson = JsonConvert.SerializeObject(custInfo)
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         #endregion Update UserName2
@@ -433,7 +461,7 @@
                 NextScannedDate = nextScannedDate
             };
 
-            return repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();
+            return _repository.Fetch<ReactivatedCustModel>(criteria) ?? Enumerable.Empty<ReactivatedCustModel>();
         }
 
         public IEnumerable<long> CheckExistCTSArchiveCustomer(string custJson)
@@ -443,10 +471,10 @@
                 CustJson = custJson
             };
 
-            return repository.Fetch<long>(criteria) ?? Enumerable.Empty<long>();
+            return _repository.Fetch<long>(criteria) ?? Enumerable.Empty<long>();
         }
 
-        public IEnumerable<CustomerMainDBModel> GetCustSubFromMainDBByCustIDs(string custIds)
+        public IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByCustIDs(string custIds)
         {
             var criteria = new GetCustSubFromMainDbCriteria
             {
@@ -454,7 +482,7 @@
                 QueryType = (int)QueryType.GetByCustId
             };
 
-            return repository.Fetch<CustomerMainDBModel>(criteria) ?? Enumerable.Empty<CustomerMainDBModel>();
+            return _repository.Fetch<CustomerMainDBEntity>(criteria) ?? Enumerable.Empty<CustomerMainDBEntity>();
         }
 
         public void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime)
@@ -467,7 +495,7 @@
                 CustInfoTime = custInfoTime
             };
 
-            repository.Execute(criteria);
+            _repository.Execute(criteria);
         }
 
         #endregion Insert Reactivated Customers
@@ -479,7 +507,7 @@
             var data = new InactivateNewCustomer();
             var criteria = new GetInactivateNewCustomerCriteria();
 
-            data.CustInfos = repository.Fetch<RescanCategoryDailyModel>(criteria) ?? Enumerable.Empty<RescanCategoryDailyModel>();
+            data.CustInfos = _repository.Fetch<RescanCategoryDailyModel>(criteria) ?? Enumerable.Empty<RescanCategoryDailyModel>();
             data.LastCustID = criteria.LastCustID;
             data.LastCategoryID = criteria.LastCategoryID;
 
@@ -496,7 +524,7 @@
                 ScannedTime = scannedTime
             };
 
-            return repository.Fetch<int>(criteria).First();
+            return _repository.Fetch<int>(criteria).First();
         }
 
         public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
@@ -507,7 +535,7 @@
                 NextCustID = nextCustID
             };
 
-            var result = repository.Fetch<int>(criteria);
+            var result = _repository.Fetch<int>(criteria);
 
             return new ScanLatencyCustomerEntity
             {
@@ -523,7 +551,29 @@
                 CustIDs = custIDs
             };
 
-            return repository.Fetch<int>(criteria);
+            return _repository.Fetch<int>(criteria);
+        }
+        #endregion
+
+        #region InsertLatencyCustomer
+        public IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize)
+        {
+            var criteria = new GetLatencyCustomerFromQueueCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return _repository.Fetch<int>(criteria);
+        }
+
+        public void CompleteLatencyCustomerFromQueue(string custIds)
+        {
+            var criteria = new CompleteLatencyCustomerFromQueueCriteria
+            {
+                CustIds = custIds
+            };
+
+            _repository.Execute(criteria);
         }
         #endregion
     }

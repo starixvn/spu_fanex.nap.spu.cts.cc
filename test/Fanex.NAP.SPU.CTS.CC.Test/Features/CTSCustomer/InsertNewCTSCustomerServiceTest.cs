@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
@@ -31,7 +31,7 @@
         [Fact]
         public void GetCustSubFromMainDb_WhenSuccess_ReturnData()
         {
-            var dataFromDB = new List<CustomerMainDBModel>()
+            var dataFromDB = new List<CustomerMainDBEntity>()
             {
                 CreateSampleCustomerMainDBModel()
             };
@@ -60,9 +60,9 @@
         [Fact]
         public void GetCustomerFromMainDBForInsertNew_WhenSuccess_ReturnData()
         {
-            var dataFromDB = new InsertCustomerViewModel()
+            var dataFromDB = new InsertCustomerModel()
             {
-                CustomerInfos = new List<CustomerMainDBModel>
+                CustomerInfos = new List<CustomerMainDBEntity>
                 {
                     CreateSampleCustomerMainDBModel()
                 },
@@ -75,10 +75,10 @@
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
-        private CustomerMainDBModel CreateSampleCustomerMainDBModel()
+        private CustomerMainDBEntity CreateSampleCustomerMainDBModel()
         {
             var rd = new Random();
-            var data = new CustomerMainDBModel
+            var data = new CustomerMainDBEntity
             {
                 CreatedDate = DateTime.Now,
                 Currency = "RM",
