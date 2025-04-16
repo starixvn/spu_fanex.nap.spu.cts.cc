@@ -22,7 +22,7 @@
     {
         Task<bool> InsertNewCustomer(int batchSize);
 
-        Task<bool> ScanLatencyCustomer(int batchSize, int scanSecondTime);
+        Task<bool> ScanLatencyCustomer(int externalBatchSize, int internalBatchSize, int scanSecondTime);
 
         Task<bool> InsertLatencyCustomer(int batchSize);
 
@@ -121,25 +121,26 @@
         #endregion
 
         #region ScanLatencyCustomer
-        public Task<bool> ScanLatencyCustomer(int batchSize, int scanSecondTime)
+        public Task<bool> ScanLatencyCustomer(int externalBatchSize, int internalBatchSize, int scanSecondTime)
         {
             try
             {
                 var isSuccess = true;
 
-                var lastCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_LastCustID);
-                var nexCustID = _ctsCustomerService.GetLastScannedCustID(scanSecondTime);
+                var fromCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
+                var toCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
+                var nextFromCustID = _ctsCustomerService.GetLastScannedCustID((int)fromCustID, (int)toCustID, scanSecondTime);
 
                 var customers = new List<int>();
 
                 do
                 {
-                    var scanCustomer = _ctsCustomerService.ScanLatencyCustomer((int)lastCustID, nexCustID);
-                    lastCustID = scanCustomer.NextScannedCustID;
+                    var scanCustomer = _ctsCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
+                    fromCustID = scanCustomer.NextScannedCustID;
 
                     if (customers.IsNotNullOrEmpty())
                     {
-                        foreach (var customerWithBatch in customers.Chunk(batchSize))
+                        foreach (var customerWithBatch in customers.Chunk(internalBatchSize))
                         {
                             var missingCusts = _ctsCustomerService.CheckMissingCustomer(customerWithBatch);
                             _ctsCustomerService.InsertMissingCustomerLatencyToQueue(missingCusts);
@@ -148,7 +149,7 @@
 
                 } while (customers.IsNotNullOrEmpty());
 
-                systemParameterServices.UpdateTimingExecution(nexCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_LastCustID);
+                systemParameterServices.UpdateTimingExecution(nextFromCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
 
                 return Task.FromResult(isSuccess);
             }

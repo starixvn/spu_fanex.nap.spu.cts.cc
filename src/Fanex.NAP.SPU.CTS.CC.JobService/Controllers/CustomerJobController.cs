@@ -24,9 +24,9 @@
         }
 
         [HttpPost("ScanLatencyCustomer")]
-        public async Task<bool> ScanLatencyCustomer([FromForm] int batchSize, [FromForm] int scannedSecondTime)
+        public async Task<bool> ScanLatencyCustomer([FromForm] int externalBatchSize, [FromForm] int internalBatchSize, [FromForm] int scannedSecondTime)
         {
-            return await ctsCustomerJobService.ScanLatencyCustomer(batchSize, scannedSecondTime);
+            return await ctsCustomerJobService.ScanLatencyCustomer(externalBatchSize, internalBatchSize, scannedSecondTime);
         }
 
         [HttpPost("InsertLatencyCustomer")]

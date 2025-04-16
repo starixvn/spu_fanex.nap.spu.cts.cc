@@ -88,9 +88,9 @@
         void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
 
         #region ScanLatencyCustomer
-        int GetLastScannedCustID(int scannedTime);
+        int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime);
 
-        ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID);
+        ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
         IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs);
         #endregion
@@ -644,14 +644,14 @@
         #endregion Inactivate New Customers
 
         #region ScanLatencyCustomer
-        public int GetLastScannedCustID(int scannedTime)
+        public int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime)
         {
-            return _dataAccess.GetLastScannedCustID(scannedTime);
+            return _dataAccess.GetLastScannedCustID(fromCustID, toCustID, scannedTime);
         }
 
-        public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
+        public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
         {
-            return _dataAccess.ScanLatencyCustomer(lastCustID, nextCustID);
+            return _dataAccess.ScanLatencyCustomer(fromCustID, toCustID, batchSize);
         }
 
         public IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs)

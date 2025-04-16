@@ -88,9 +88,9 @@
         void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
 
         #region ScanLatencyCustomer
-        int GetLastScannedCustID(int scannedTime);
+        int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime);
 
-        ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID);
+        ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
         IEnumerable<int> CheckMissingCustomer(string custIDs);
         #endregion
@@ -517,22 +517,25 @@
         #endregion Inactive New Customers
 
         #region ScanLatencyCustomer
-        public int GetLastScannedCustID(int scannedTime)
+        public int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime)
         {
             var criteria = new GetLastScannedCustIDCriteria
             {
+                FromCustID = fromCustID,
+                ToCustID = toCustID,
                 ScannedTime = scannedTime
             };
 
             return _repository.Fetch<int>(criteria).First();
         }
 
-        public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
+        public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
         {
             var criteria = new ScanLatencyCustomerCriteria
             {
-                LastCustID = lastCustID,
-                NextCustID = nextCustID
+                FromCustID = fromCustID,
+                ToCustID = toCustID,
+                BatchSize = batchSize
             };
 
             var result = _repository.Fetch<int>(criteria);
@@ -540,7 +543,7 @@
             return new ScanLatencyCustomerEntity
             {
                 CustIDs = result,
-                NextScannedCustID = criteria.NextScannedCustID
+                NextScannedCustID = result.Max()
             };
         }
 

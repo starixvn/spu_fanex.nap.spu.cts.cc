@@ -37,12 +37,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             var data = 999;
 
             // Act
-            dataAccess.GetLastScannedCustID(Arg.Any<int>()).Returns(data);
+            dataAccess.GetLastScannedCustID(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(data);
 
-            var result = ctsCustomerService.GetLastScannedCustID(scannedSecondTime);
+            var result = ctsCustomerService.GetLastScannedCustID(0, 999, scannedSecondTime);
 
             // Assert
-            dataAccess.Received(1).GetLastScannedCustID(Arg.Any<int>());
+            dataAccess.Received(1).GetLastScannedCustID(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
             Assert.Equal(data, result);
         }
 
@@ -54,12 +54,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             // Arrange
 
             // Act
-            dataAccess.GetLastScannedCustID(Arg.Any<int>()).Throws<Exception>();
+            dataAccess.GetLastScannedCustID(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Throws<Exception>();
 
-            Action action = () => ctsCustomerService.GetLastScannedCustID(scannedSecondTime);
+            Action action = () => ctsCustomerService.GetLastScannedCustID(0, 999, scannedSecondTime);
 
             // Assert
-            dataAccess.Received(0).GetLastScannedCustID(Arg.Any<int>());
+            dataAccess.Received(0).GetLastScannedCustID(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
             Assert.Throws<Exception>(action);
         }
 
@@ -70,15 +70,15 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             var data = new List<int>();
 
             // Act
-            dataAccess.ScanLatencyCustomer(123, 456).Returns(new ScanLatencyCustomerEntity
+            dataAccess.ScanLatencyCustomer(123, 456, 500).Returns(new ScanLatencyCustomerEntity
             {
                 CustIDs = data
             });
 
-            var result = ctsCustomerService.ScanLatencyCustomer(123, 456);
+            var result = ctsCustomerService.ScanLatencyCustomer(123, 456, 500);
 
             // Assert
-            dataAccess.Received(1).ScanLatencyCustomer(123, 456);
+            dataAccess.Received(1).ScanLatencyCustomer(123, 456, 500);
             Assert.Equal(data, result.CustIDs);
         }
 

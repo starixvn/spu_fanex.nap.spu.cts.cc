@@ -43,6 +43,7 @@
         {
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
+            CTSCustomer_LastInsertCustID = 7,
             MatchMonitorLastScannedTrans = 20,
             JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
@@ -86,7 +87,7 @@
             NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
             NormalDangerousAssociationScan_LastScannedID = 184,
             JobMonitoring_ReactivatedCustomerLastScannedTime = 185,
-            ScanLatencyCustomer_LastCustID = 188
+            ScanLatencyCustomer_FromCustID = 188
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]

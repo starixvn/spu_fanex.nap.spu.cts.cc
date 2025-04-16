@@ -5,11 +5,11 @@
     public class ScanLatencyCustomerCriteria : CriteriaBase
     {
 
-        public int LastCustID { get; set; }
+        public int FromCustID { get; set; }
 
-        public int NextCustID { get; set; }
+        public int ToCustID { get; set; }
 
-        public int NextScannedCustID { get; set; }
+        public int BatchSize { get; set; }
 
         public override string GetSettingKey()
         {
