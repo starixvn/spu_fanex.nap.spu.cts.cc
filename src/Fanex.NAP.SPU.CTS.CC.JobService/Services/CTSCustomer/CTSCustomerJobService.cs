@@ -3,6 +3,8 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models.ArchiveCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
@@ -20,12 +22,6 @@
 
     public interface ICTSCustomerJobService
     {
-        Task<bool> InsertNewCustomer(int batchSize);
-
-        Task<bool> ScanLatencyCustomer(int externalBatchSize, int internalBatchSize, int scanSecondTime);
-
-        Task<bool> InsertLatencyCustomer(int batchSize);
-
         Task<bool> InsertMissingCustomer(int batchSize);
 
         Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime);
@@ -33,8 +29,6 @@
         Task<bool> UpdateUsername2ForCustMain(int batchSize);
 
         Task<bool> UpdateUsername2ForCustSub(int batchSize);
-
-        Task<bool> ScanReactivatedLatencyCustomers(int batchSize, int scannedSecondTime);
 
         Task<bool> InsertReactivatedCustomers();
 
@@ -47,6 +41,8 @@
         private readonly ISystemParameterServices _systemParameterServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IRescanCustClassificationService rescanCustClassificationService;
+        private readonly IInsertNewCustomerService _insertNewCustomerService;
+        private readonly IMissingCustomerService _missingCustomerService;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
@@ -55,7 +51,9 @@
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IRescanCustClassificationService rescanCustClassificationService,
-            IAppSettings appSettings)
+            IAppSettings appSettings,
+            IInsertNewCustomerService insertNewCustomerService,
+            IMissingCustomerService missingCustomerService)
         {
             this.sentryClient = sentryClient;
             _ctsCustomerService = ctscustomerService;
@@ -63,159 +61,9 @@
             this.rescanCustClassificationService = rescanCustClassificationService;
             this._systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
+            _insertNewCustomerService = insertNewCustomerService;
+            _missingCustomerService = missingCustomerService;
         }
-
-        #region InsertNewCustomer
-        public Task<bool> InsertNewCustomer(int batchSize)
-        {
-            try
-            {
-                var isSuccess = true;
-                var customers = new InsertCustomerModel();
-                var newSubCustomers = Enumerable.Empty<CustomerMainDBEntity>();
-
-                var lastScanned = _ctsCustomerService.GetLastInsertCust();
-
-
-                Parallel.Invoke(
-                    () => { customers = GetNewCustomerFromMainDBAndHandleMissingCustomer(batchSize, lastScanned.LastCustID); },
-                    () => { newSubCustomers = _ctsCustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID); });
-
-
-                if (customers?.CustomerInfos != null)
-                {
-                    customers.CustomerInfos.AddRange(newSubCustomers);
-
-                    isSuccess = _ctsCustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
-                    {
-                        InternalBatchSize = batchSize,
-                        ExternalBatchSize = batchSize,
-                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        IsInsertMissingCust = false,
-                        InsertVIPURL = appSettings.InsertVIPURL,
-                        InsertBAURL = appSettings.InsertBAURL,
-                        serviceName = "InsertNewCustomer"
-                    });
-                }
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
-
-        private InsertCustomerModel GetNewCustomerFromMainDBAndHandleMissingCustomer(int numOfAccount, Int64 lastScannedCustID)
-        {
-            var customers = _ctsCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-
-            _ctsCustomerService.InsertMissingCustomerLatencyToQueue(customers.MissingCustIds);
-
-            return customers;
-        }
-        #endregion
-
-        #region ScanLatencyCustomer
-        public Task<bool> ScanLatencyCustomer(int externalBatchSize, int internalBatchSize, int scanSecondTime)
-        {
-            try
-            {
-                var isSuccess = true;
-
-                var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
-                var toCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
-                var nextFromCustID = _ctsCustomerService.GetLastScannedCustID((int)fromCustID, (int)toCustID, scanSecondTime);
-
-                var customers = new List<int>();
-
-                do
-                {
-                    var scanCustomer = _ctsCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
-                    fromCustID = scanCustomer.NextScannedCustID;
-
-                    if (customers.IsNotNullOrEmpty())
-                    {
-                        foreach (var customerWithBatch in customers.Chunk(internalBatchSize))
-                        {
-                            var missingCusts = _ctsCustomerService.CheckMissingCustomer(customerWithBatch);
-                            _ctsCustomerService.InsertMissingCustomerLatencyToQueue(missingCusts);
-                        }
-                    }
-
-                } while (customers.IsNotNullOrEmpty());
-
-                _systemParameterServices.UpdateTimingExecution(nextFromCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
-        #endregion
-
-        #region InsertLatencyCustomer
-        public Task<bool> InsertLatencyCustomer(int batchSize)
-        {
-            try
-            {
-                var isSuccess = true;
-
-                var customers = _ctsCustomerService.GetLatencyCustomerFromQueue(batchSize);
-
-                var completeCustomers = Enumerable.Empty<int>();
-
-                if (customers.IsNotNullOrEmpty())
-                {
-                    var custInfoCheckMissing = _ctsCustomerService.CheckCustomerInfoFromMainDB(customers);
-
-                    isSuccess = _ctsCustomerService.InsertNewCustomer(true, custInfoCheckMissing, new InsertNewCustRescanEntity
-                    {
-                        InternalBatchSize = batchSize,
-                        ExternalBatchSize = batchSize,
-                        IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                        IsInsertMissingCust = false,
-                        InsertVIPURL = appSettings.InsertVIPURL,
-                        InsertBAURL = appSettings.InsertBAURL,
-                        serviceName = "InsertLatencyCustomer"
-                    });
-
-                    completeCustomers = custInfoCheckMissing.CustomerInfos?.Select(x => x.CustID);
-                }
-
-                if (isSuccess)
-                {
-                    _ctsCustomerService.CompleteLatencyCustomerFromQueue(completeCustomers);
-                }
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
-        #endregion
 
         public Task<bool> InsertMissingCustomer(int batchSize)
         {
@@ -246,7 +94,7 @@
 
                         if (custInfo.CustomerInfos.Any())
                         {
-                            isSuccess = _ctsCustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
+                            isSuccess = _insertNewCustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
                             {
                                 InternalBatchSize = batchSize,
                                 ExternalBatchSize = batchSize,
@@ -383,55 +231,6 @@
         }
 
         #endregion Update UserName2
-
-        #region ScanReactivatedLatencyCustomers
-        public Task<bool> ScanReactivatedLatencyCustomers(int batchSize, int scannedSecondTime)
-        {
-            try
-            {
-                var isSuccess = true;
-
-                var lastLogTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
-
-                var reactivatedCustomers = _ctsCustomerService.GetReactivatedCustomers(lastLogTime, null);
-
-                var updateNextLogTime = default(DateTime?);
-
-                if (reactivatedCustomers.IsNotNullOrEmpty())
-                {
-                    var minLastLogTimeAfterScannedSecondTime = reactivatedCustomers.Min(x => x.LogTime).AddSeconds(-scannedSecondTime);
-
-                    updateNextLogTime = (lastLogTime == null || minLastLogTimeAfterScannedSecondTime > lastLogTime)
-                        ? minLastLogTimeAfterScannedSecondTime
-                        : lastLogTime;
-
-                    foreach (var reactivatedCustomersWithBatch in reactivatedCustomers.Chunk(batchSize))
-                    {
-                        var missingCustomers = _ctsCustomerService.CheckMissingCustomer(reactivatedCustomersWithBatch.Select(x => (int)x.CustID));
-                        _ctsCustomerService.InsertMissingCustomerLatencyToQueue(missingCustomers);
-                    }
-                }
-                else
-                {
-                    updateNextLogTime = lastLogTime;
-                }
-
-                _systemParameterServices.UpdateTimingExecution(updateNextLogTime.ToString(), CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
-        #endregion
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
         public Task<bool> InsertReactivatedCustomers()
@@ -590,7 +389,7 @@
 
             var custInfo = _ctsCustomerService.GetMissingCustInfo(insertNewCusts);
 
-            return _ctsCustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
+            return _insertNewCustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
             {
                 InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
                 ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,

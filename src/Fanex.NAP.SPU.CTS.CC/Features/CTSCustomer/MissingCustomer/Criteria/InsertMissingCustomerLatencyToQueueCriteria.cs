@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InsertMissingCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer.Criteria
 {
     using Fanex.Data.Repository;
 

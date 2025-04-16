@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -12,20 +12,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSCustomerService
     {
-        LastScannedCustModel GetLastInsertCust();
-
-        InsertCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID);
-
-        IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID);
-
         IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByCustIDs(string custIds);
-
-        bool InsertNewCustomer(bool isNewCustomer, InsertCustomerModel data, InsertNewCustRescanEntity paras);
 
         LastUpdateValueModel GetLastUpdatedTime();
 
@@ -38,8 +29,6 @@
         bool IsValidData(TranformCustModel data);
 
         void UpdateCustomer(TranformCustModel custs, UpdateCustomer sourceType, bool isWriteLog);
-
-        InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds);
 
         IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType);
 
@@ -59,8 +48,6 @@
         IEnumerable<MissingCustomerModel> GetMissingCustomers();
 
         public InsertCustomerModel GetMissingCustInfo(IEnumerable<long> CustIds);
-
-        void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds);
 
         void CompleteMissingCustomer(string resolvedIDs);
 
@@ -86,20 +73,6 @@
         InactivateNewCustomer GetInactivateNewCustomers();
 
         void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
-
-        #region ScanLatencyCustomer
-        int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime);
-
-        ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
-
-        IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs);
-        #endregion
-
-        #region InsertLatencyCustomer
-        IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize);
-
-        void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds);
-        #endregion
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -113,7 +86,7 @@
             ISentryClient sentryClient,
             ICustClassToMainDBService custClassToMainDBService)
         {
-            this._dataAccess = dataAccess;
+            _dataAccess = dataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
             this.sentryClient = sentryClient;
         }
@@ -124,159 +97,6 @@
         }
 
         #region Insert New Customers
-
-        public LastScannedCustModel GetLastInsertCust()
-        {
-            return _dataAccess.GetLastInsertCust();
-        }
-
-        public InsertCustomerModel GetCustomerFromMainDBForInsertNew(int numOfAccount, Int64 lastScannedCustID)
-        {
-            return _dataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-        }
-
-        public IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID)
-        {
-            return _dataAccess.GetCustSubFromMainDBByLastCustSub(numOfAccount, lastScannedCustID);
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S4462:Calls to \"async\" methods should not be blocking", Justification = "<Pending>")]
-        public bool InsertNewCustomer(bool isNewCustomer, InsertCustomerModel data, InsertNewCustRescanEntity paras)
-        {
-            if (data == null && data.CustomerInfos.IsNullOrEmpty())
-            {
-                return true;
-            }
-
-            var chunkCusts = data.CustomerInfos.Distinct().Chunk(paras.InternalBatchSize);
-
-            foreach (var batchCust in chunkCusts)
-            {
-                var customers = _dataAccess.InsertNewCTSCustomer(batchCust.ToList(), isNewCustomer);
-
-                if (customers.IsNotNullOrEmpty())
-                {
-                    var isUpdateCompleteAndRetranCustomer =
-                            PushExternalPackageByCustId(customers, RoleGroupType.Agency, paras)
-                        .FlatMap(() =>
-                            PushExternalPackageByCustId(customers, RoleGroupType.Member, paras))
-                        .FlatMap(() =>
-                            UpdateAssociationCustomerForArchive(customers))
-                        .FlatMap(() =>
-                            InsertVIP_BAClassificationAsync(batchCust, paras.InsertVIPURL, paras.InsertBAURL, paras.serviceName).Result)
-                        .FlatMap(() =>
-                            UpdateComleteAndRetranCustomer(customers, data.LastInsertCustID, paras.IsInsertMissingCust));
-
-                    if (!isUpdateCompleteAndRetranCustomer)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        private bool PushExternalPackageByCustId(IEnumerable<InsertNewCustomerResultModel> customers, RoleGroupType roleGroup, InsertNewCustRescanEntity paras)
-        {
-            var custIds = customers
-                            .WhereIf(roleGroup == RoleGroupType.Agency, customer => customer.RoleID > (int)CustomerRole.Member)
-                            .WhereIf(roleGroup == RoleGroupType.Member, customer => customer.RoleID == (int)CustomerRole.Member)
-                            .Select(customer => customer.CustID)
-                            .Distinct();
-
-            var result = custClassToMainDBService.PushExternalPackageByCustId(
-                            custIds,
-                            new PushDataToExternalEntity
-                            {
-                                ExternalBatchSize = paras.ExternalBatchSize,
-                                IsUpdateDangerToMainDB = false,
-                                IsWriteLog = false,
-                                ServiceName = serviceName,
-                                RoleGroup = roleGroup
-                            });
-
-            return result;
-        }
-
-        private bool UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
-        {
-            if (custIdList != null && custIdList.Any())
-            {
-                _dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
-            }
-
-            return true;
-        }
-
-        private bool UpdateAssociationCustomerForArchive(IEnumerable<InsertNewCustomerResultModel> customerList)
-        {
-            if (customerList != null && customerList.Any())
-            {
-                var custList = customerList.Select(x => new UpdateAssociationCustomerForArchiveModel
-                {
-                    CustID = x.CustID,
-                    CTSCustID = x.CTSCustID,
-                    CustSubID = x.CustSubID,
-                    RoleID = x.RoleID
-                });
-
-                var custInfoJson = JsonConvert.SerializeObject(custList);
-
-                _dataAccess.UpdateAssociationCustomerForArchive(custInfoJson);
-            }
-
-            return true;
-        }
-
-        private async Task<bool> InsertVIP_BAClassificationAsync(IEnumerable<CustomerMainDBEntity> customer, string insertVIPUrl, string insertBAUrl, string serviceName)
-        {
-            if (customer != null && customer.Any())
-            {
-                var custIdsToInsertVIP = customer.Where(c => c.IsLicenseeVIP).Select(c => c.CustID);
-                var custIdsToInsertBA = customer.Where(c => c.IsLicenseeBA).Select(c => c.CustID);
-
-                try
-                {
-                    if (custIdsToInsertVIP.IsNotNullOrEmpty())
-                    {
-                        await CallAPIInsertVIPBA(custIdsToInsertVIP, insertVIPUrl);
-                    }
-
-                    if (custIdsToInsertBA.IsNotNullOrEmpty())
-                    {
-                        await CallAPIInsertVIPBA(custIdsToInsertBA, insertBAUrl);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA }, ex, sentryClient);
-
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        private static async Task<string> CallAPIInsertVIPBA(IEnumerable<int> custIds, string url)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                var para = new
-                {
-                    CustIDs = string.Join(",", custIds.Distinct()),
-                    CreatedBy = StarixITId,
-                    IsFromExternal = false
-                };
-
-                return await ApiHelper.Post<string>(url, para, 300);
-            }
-
-            return string.Empty;
-        }
-
         #endregion Insert New Customers
 
         #region Insert Missing Customers
@@ -284,15 +104,6 @@
         public IEnumerable<MissingCustomerModel> GetMissingCustomers()
         {
             return _dataAccess.GetMissingCustomers();
-        }
-
-        public void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds)
-        {
-            if (custIds.IsNotNullOrEmpty())
-            {
-                var custIdToString = string.Join(",", custIds);
-                _dataAccess.InsertMissingCustomerLatencyToQueue(custIdToString);
-            }
         }
 
         public void CompleteMissingCustomer(string resolvedIDs)
@@ -463,18 +274,6 @@
             }
         }
 
-        public InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds)
-        {
-            if (custIds.IsNotNullOrEmpty())
-            {
-                var custIdToString = string.Join(",", custIds);
-
-                return _dataAccess.CheckCustomerInfoFromMainDB(custIdToString);
-            }
-
-            return new InsertCustomerModel();
-        }
-
         public IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
         {
             return _dataAccess.GetCustomerFromMainDBForUpdate(custIds, sourceType) ?? Enumerable.Empty<CustomerMainDBEntity>();
@@ -642,44 +441,5 @@
         }
 
         #endregion Inactivate New Customers
-
-        #region ScanLatencyCustomer
-        public int GetLastScannedCustID(int fromCustID, int toCustID, int scannedTime)
-        {
-            return _dataAccess.GetLastScannedCustID(fromCustID, toCustID, scannedTime);
-        }
-
-        public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
-        {
-            return _dataAccess.ScanLatencyCustomer(fromCustID, toCustID, batchSize);
-        }
-
-        public IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs)
-        {
-            if (custIDs.IsNotNullOrEmpty())
-            {
-                var custIDToString = string.Join(",", custIDs);
-                return _dataAccess.CheckMissingCustomer(custIDToString);
-            }
-
-            return Enumerable.Empty<int>();
-        }
-        #endregion
-
-        #region InsertLatencyCustomer
-        public IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize)
-        {
-            return _dataAccess.GetLatencyCustomerFromQueue(batchSize);
-        }
-
-        public void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds)
-        {
-            if (custIds.IsNotNullOrEmpty())
-            {
-                var custIdToString = string.Join(",", custIds);
-                _dataAccess.CompleteLatencyCustomerFromQueue(custIdToString);
-            }
-        }
-        #endregion
     }
 }

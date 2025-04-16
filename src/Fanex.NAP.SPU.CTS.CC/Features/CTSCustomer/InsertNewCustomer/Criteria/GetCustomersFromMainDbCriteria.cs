@@ -1,13 +1,12 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Criteria
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class GetCustomersFromMainDbCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "lastCustId")]
-        public Int64 LastCustId { get; set; }
+        public long LastCustId { get; set; }
 
         [SpParam(SqlParamName = "rowSize")]
         public int RowSize { get; set; }

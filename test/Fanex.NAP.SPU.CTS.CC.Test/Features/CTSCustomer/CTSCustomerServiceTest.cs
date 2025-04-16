@@ -1,10 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
@@ -62,51 +61,6 @@
         }
 
         [Fact]
-        public void GetLastInsertCust_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var expectedData = new LastScannedCustModel();
-
-            // Act
-            ctsCustomerDataAccess.GetLastInsertCust().Returns(expectedData);
-            var result = ctsCustomerService.GetLastInsertCust();
-
-            // Assert
-            result.Equals(expectedData);
-        }
-
-        [Fact]
-        public void GetLastInsertCust_WhenException_ThrowException()
-        {
-            // Arrange
-
-            // Act
-            ctsCustomerDataAccess.GetLastInsertCust().Throws<Exception>();
-
-            Action action = () => ctsCustomerService.GetLastInsertCust();
-
-            // Assert
-            Assert.Throws<Exception>(action);
-        }
-
-        [Fact]
-        public void GetCustomerFromMainDBForInsertNew_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var numOfAccount = 1;
-            var lastScannedCustID = 1;
-            var expectedData = new InsertCustomerModel();
-
-            // Act
-            ctsCustomerDataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID).Returns(expectedData);
-
-            var result = ctsCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-
-            // Assert
-            result.Equals(expectedData);
-        }
-
-        [Fact]
         public void GetCustSubFromMainDB_WhenSuccess_ReturnData()
         {
             // Arrange
@@ -120,47 +74,6 @@
 
             // Assert
             result.Equals(expectedData);
-        }
-
-        [Fact]
-        public void InsertNewCustomer_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var data = new InsertCustomerModel
-            {
-                CustomerInfos = new List<CustomerMainDBEntity>() { new CustomerMainDBEntity { CustID = 1 } },
-                LastInsertCustID = 1
-            };
-
-            var paras = new InsertNewCustRescanEntity
-            {
-                InternalBatchSize = 50,
-                ExternalBatchSize = 50,
-                IsWriteLog = true,
-                IsInsertMissingCust = false,
-                InsertVIPURL = string.Empty,
-                InsertBAURL = string.Empty,
-                serviceName = "InsertNewCustomer"
-            };
-
-            var expectedData = new List<InsertNewCustomerResultModel>()
-            {
-                new InsertNewCustomerResultModel
-                {
-                     CustID = 1, CTSCustID = 1, RoleID = 1
-                }
-            };
-
-            // Act
-            ctsCustomerDataAccess.InsertNewCTSCustomer(Arg.Any<IEnumerable<CustomerMainDBEntity>>(), true).Returns(expectedData);
-
-            custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), Arg.Any<PushDataToExternalEntity>()).Returns(true);
-
-            var result = ctsCustomerService.InsertNewCustomer(true, data, paras);
-
-
-            // Assert
-            result.Should().BeTrue();
         }
 
         [Fact]
@@ -250,57 +163,6 @@
 
             // Assert
             action.Should().NotThrow<Exception>();
-        }
-
-        [Fact]
-        public void CheckMissingCustomerFromMainDB_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var data = new List<int> { 1, 2, 3 };
-            var expectedData = new InsertCustomerModel
-            {
-                CustomerInfos = new List<CustomerMainDBEntity> { new CustomerMainDBEntity { CustID = 1 } },
-                MissingCustIds = new List<int> { 2, 3 }
-            };
-
-            // Act
-            ctsCustomerDataAccess.CheckCustomerInfoFromMainDB(Arg.Any<string>()).Returns(expectedData);
-
-            var result = ctsCustomerService.CheckCustomerInfoFromMainDB(data);
-
-            // Assert
-            ctsCustomerDataAccess.Received(1).CheckCustomerInfoFromMainDB(Arg.Any<string>());
-            Assert.Equal(expectedData, result);
-        }
-
-        [Fact]
-        public void CheckMissingCustomerFromMainDB_WhenSuccess_ParamsNoData()
-        {
-            // Arrange
-            var data = new List<int>();
-
-            // Act
-            var result = ctsCustomerService.CheckCustomerInfoFromMainDB(data);
-
-            // Assert
-            ctsCustomerDataAccess.Received(0).CheckCustomerInfoFromMainDB(Arg.Any<string>());
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public void CheckMissingCustomerFromMainDB_ThrowException()
-        {
-            // Arrange
-            var data = new List<int> { 1, 2, 3 };
-
-            // Act
-            ctsCustomerDataAccess.CheckCustomerInfoFromMainDB(Arg.Any<string>()).Throws<Exception>();
-
-            Action action = () => ctsCustomerService.CheckCustomerInfoFromMainDB(data);
-
-            // Assert
-            ctsCustomerDataAccess.Received(0).CheckCustomerInfoFromMainDB(Arg.Any<string>());
-            Assert.Throws<Exception>(action);
         }
     }
 }

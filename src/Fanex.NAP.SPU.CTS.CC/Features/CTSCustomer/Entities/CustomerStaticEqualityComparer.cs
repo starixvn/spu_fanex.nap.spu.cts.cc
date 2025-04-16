@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using System.Collections.Generic;
 
     public class CustomerStaticEqualityComparer : IEqualityComparer<CustomerMainDBEntity>

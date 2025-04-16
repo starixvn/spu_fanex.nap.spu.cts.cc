@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities
 {
     using System.Collections.Generic;
 

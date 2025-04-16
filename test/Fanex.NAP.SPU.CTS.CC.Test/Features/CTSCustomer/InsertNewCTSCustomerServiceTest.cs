@@ -1,12 +1,16 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using Sentry;
     using System;
     using System.Collections.Generic;
@@ -14,18 +18,19 @@
 
     public class InsertNewCTSCustomerServiceTest
     {
-        private readonly ICTSCustomerService ctsCustomerService;
-        private readonly ICTSCustomerDataAccess dataAccess;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISentryClient sentryClient;
+        private readonly IInsertNewCustomerDataAccess _dataAccess;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
+        private readonly ISentryClient _sentryClient;
+
+        private readonly IInsertNewCustomerService _service;
 
         public InsertNewCTSCustomerServiceTest()
         {
-            dataAccess = Substitute.For<ICTSCustomerDataAccess>();
-            sentryClient = Substitute.For<ISentryClient>();
-            custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _dataAccess = Substitute.For<IInsertNewCustomerDataAccess>();
+            _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _sentryClient = Substitute.For<ISentryClient>();
 
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService);
+            _service = new InsertNewCustomerService(_dataAccess, _custClassToMainDBService, _sentryClient);
         }
 
         [Fact]
@@ -36,9 +41,9 @@
                 CreateSampleCustomerMainDBModel()
             };
 
-            dataAccess.GetCustSubFromMainDBByLastCustSub(100, 1).Returns(dataFromDB);
+            _dataAccess.GetCustSubFromMainDBByLastCustSub(100, 1).Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetCustSubFromMainDBByLastCustSub(100, 1);
+            var realData = _dataAccess.GetCustSubFromMainDBByLastCustSub(100, 1);
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
@@ -51,10 +56,24 @@
                 LastCustSubID = 2222
             };
 
-            dataAccess.GetLastInsertCust().Returns(dataFromDB);
+            _dataAccess.GetLastInsertCust().Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetLastInsertCust();
+            var realData = _dataAccess.GetLastInsertCust();
             realData.Should().BeEquivalentTo(dataFromDB);
+        }
+
+        [Fact]
+        public void GetLastInsertCust_WhenException_ThrowException()
+        {
+            // Arrange
+
+            // Act
+            _dataAccess.GetLastInsertCust().Throws<Exception>();
+
+            Action action = () => _service.GetLastInsertCust();
+
+            // Assert
+            Assert.Throws<Exception>(action);
         }
 
         [Fact]
@@ -69,9 +88,9 @@
                 LastInsertCustID = 1111
             };
 
-            dataAccess.GetCustomerFromMainDBForInsertNew(100, 1).Returns(dataFromDB);
+            _dataAccess.GetCustomerFromMainDBForInsertNew(100, 1).Returns(dataFromDB);
 
-            var realData = ctsCustomerService.GetCustomerFromMainDBForInsertNew(100, 1);
+            var realData = _dataAccess.GetCustomerFromMainDBForInsertNew(100, 1);
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
@@ -103,29 +122,44 @@
         }
 
         [Fact]
-        public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithNotEmpty()
+        public void InsertNewCustomer_WhenSuccess_ReturnData()
         {
             // Arrange
-            var data = new List<int> { 1, 2, 3 };
+            var data = new InsertCustomerModel
+            {
+                CustomerInfos = new List<CustomerMainDBEntity>() { new CustomerMainDBEntity { CustID = 1 } },
+                LastInsertCustID = 1
+            };
+
+            var paras = new InsertNewCustRescanEntity
+            {
+                InternalBatchSize = 50,
+                ExternalBatchSize = 50,
+                IsWriteLog = true,
+                IsInsertMissingCust = false,
+                InsertVIPURL = string.Empty,
+                InsertBAURL = string.Empty,
+                serviceName = "InsertNewCustomer"
+            };
+
+            var expectedData = new List<InsertNewCustomerResultModel>()
+            {
+                new InsertNewCustomerResultModel
+                {
+                     CustID = 1, CTSCustID = 1, RoleID = 1
+                }
+            };
 
             // Act
-            ctsCustomerService.InsertMissingCustomerLatencyToQueue(data);
+            _dataAccess.InsertNewCTSCustomer(Arg.Any<IEnumerable<CustomerMainDBEntity>>(), true).Returns(expectedData);
+
+            _custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), Arg.Any<PushDataToExternalEntity>()).Returns(true);
+
+            var result = _service.InsertNewCustomer(true, data, paras);
+
 
             // Assert
-            dataAccess.Received(1).InsertMissingCustomerLatencyToQueue(Arg.Any<string>());
-        }
-
-        [Fact]
-        public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithEmpty()
-        {
-            // Arrange
-            var data = new List<int> { };
-
-            // Act
-            ctsCustomerService.InsertMissingCustomerLatencyToQueue(data);
-
-            // Assert
-            dataAccess.Received(0).InsertMissingCustomerLatencyToQueue(Arg.Any<string>());
+            result.Should().BeTrue();
         }
     }
 }

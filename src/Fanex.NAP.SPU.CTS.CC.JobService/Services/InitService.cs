@@ -6,6 +6,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownline;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
@@ -214,6 +216,16 @@
             services.AddSingleton<ICTSCustomerDataAccess, CTSCustomerDataAccess>();
             services.AddSingleton<ICTSCustomerService, CTSCustomerService>();
             services.AddSingleton<ICTSCustomerJobService, CTSCustomerJobService>();
+
+            services.AddSingleton<IMissingCustomerDataAccess, MissingCustomerDataAccess>();
+            services.AddSingleton<IMissingCustomerService, MissingCustomerService>();
+            services.AddSingleton<ICTSLatencyCustomerJobService, CTSLatencyCustomerJobService>();
+
+            services.AddSingleton<IInsertNewCustomerDataAccess, InsertNewCustomerDataAccess>();
+            services.AddSingleton<IInsertNewCustomerService, InsertNewCustomerService>();
+            services.AddSingleton<ICTSNewCustomerJobService, CTSNewCustomerJobService>();
+
+            services.AddSingleton<ICTSReactivatedCustomerJobService, CTSReactivatedCustomerJobService>();
         }
 
         private static void RegisterDataAccesLayer(this IServiceCollection services)
