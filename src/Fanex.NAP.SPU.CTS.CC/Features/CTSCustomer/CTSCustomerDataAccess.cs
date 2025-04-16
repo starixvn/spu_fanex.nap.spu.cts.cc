@@ -4,6 +4,7 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InsertMissingCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -52,6 +53,8 @@
         #region Insert Missing Customers
 
         public IEnumerable<MissingCustomerModel> GetMissingCustomers();
+
+        void InsertMissingCustomerLatencyToQueue(string custIds);
 
         void CompleteMissingCustomer(string resolvedIDs);
 
@@ -137,15 +140,13 @@
                 RowSize = quantityPerBatch,
             };
 
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            using var result = db.QueryMultiple(criteria);
-            var customers = result?.Read<CustomerMainDBModel>();
-            var LastCustID = result?.Read<Int64?>();
+            (var customers, var missingCustIds, var lastCustID) = repository.FetchMultiple<CustomerMainDBModel, int, Int64>(criteria);
 
             return new InsertCustomerViewModel
             {
                 CustomerInfos = customers?.ToList() ?? new List<CustomerMainDBModel>(),
-                LastInsertCustID = LastCustID?.FirstOrDefault()
+                MissingCustIds = missingCustIds?.ToList() ?? new List<int>(),
+                LastInsertCustID = lastCustID?.FirstOrDefault()
             };
         }
 
@@ -219,6 +220,16 @@
             var criteria = new GetMissingCustomerCriteria();
 
             return repository.Fetch<MissingCustomerModel>(criteria);
+        }
+
+        public void InsertMissingCustomerLatencyToQueue(string custIds)
+        {
+            var criteria = new InsertMissingCustomerLatencyToQueueCriteria
+            {
+                CustIDs = custIds
+            };
+
+            repository.Execute(criteria);
         }
 
         public void CompleteMissingCustomer(string resolvedIDs)

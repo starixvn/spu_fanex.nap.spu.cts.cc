@@ -56,6 +56,8 @@
 
         public InsertCustomerViewModel GetMissingCustInfo(IEnumerable<long> CustIds);
 
+        void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds);
+
         void CompleteMissingCustomer(string resolvedIDs);
 
         #endregion
@@ -266,6 +268,15 @@
             return dataAccess.GetMissingCustomers();
         }
 
+        public void InsertMissingCustomerLatencyToQueue(IEnumerable<int> custIds)
+        {
+            if (custIds.IsNotNullOrEmpty())
+            {
+                var custIdToString = string.Join(",", custIds);
+                dataAccess.InsertMissingCustomerLatencyToQueue(custIdToString);
+            }
+        }
+
         public void CompleteMissingCustomer(string resolvedIDs)
         {
             dataAccess.CompleteMissingCustomer(resolvedIDs);
@@ -278,6 +289,7 @@
             if (CustIds != null && CustIds.Any())
             {
                 var custToString = string.Join(",", CustIds.Select(c => c).Distinct());
+                //// Impact CTS_Customer_GetInfoByCustIdList SourceType 0
                 var mainCusts = GetCustomerFromMainDBForUpdate(custToString, Constants.UpdateCustomer.ForNewCustomer);
                 var subCusts = GetCustSubFromMainDBByCustIDs(custToString);
 

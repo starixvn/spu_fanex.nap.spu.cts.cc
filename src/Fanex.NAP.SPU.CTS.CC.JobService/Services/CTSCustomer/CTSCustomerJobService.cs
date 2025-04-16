@@ -58,20 +58,26 @@
             this.appSettings = appSettings;
         }
 
+        #region InsertNewCustomer
         public Task<bool> InsertNewCustomer(int batchSize)
         {
             try
             {
                 var isSuccess = true;
+                var customers = new InsertCustomerViewModel();
+                var newSubCustomers = Enumerable.Empty<CustomerMainDBModel>();
 
                 var lastScanned = ctscustomerService.GetLastInsertCust();
-                var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(batchSize, lastScanned.LastCustID);
 
-                if (customers?.CustomerInfos != null && customers.CustomerInfos.Any())
+
+                Parallel.Invoke(
+                    () => { customers = GetNewCustomerFromMainDBAndHandleMissingCustomer(batchSize, lastScanned.LastCustID); },
+                    () => { newSubCustomers = ctscustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID); });
+
+
+                if (customers?.CustomerInfos != null)
                 {
-                    var custSubs = ctscustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID);
-
-                    customers.CustomerInfos.AddRange(custSubs);
+                    customers.CustomerInfos.AddRange(newSubCustomers);
 
                     isSuccess = ctscustomerService.InsertNewCustomer(true, customers, new InsertNewCustRescanEntity
                     {
@@ -93,11 +99,21 @@
                       .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
                       .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
-                 
+
                 sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
             }
         }
+
+        private InsertCustomerViewModel GetNewCustomerFromMainDBAndHandleMissingCustomer(int numOfAccount, Int64 lastScannedCustID)
+        {
+            var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
+            
+            ctscustomerService.InsertMissingCustomerLatencyToQueue(customers.MissingCustIds);
+
+            return customers;
+        }
+        #endregion
 
         public Task<bool> InsertMissingCustomer(int batchSize)
         {
@@ -112,11 +128,11 @@
                 {
                     return Task.FromResult(isSuccess);
                 }
-            
+
                 var missingCusts = data.Where(c => c.IsMissingCust);
                 var notMissingCusts = data.Where(c => !c.IsMissingCust);
 
-                if (missingCusts.Any()) 
+                if (missingCusts.Any())
                 {
                     var chunkCusts = missingCusts.Distinct().Chunk(batchSize);
 

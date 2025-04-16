@@ -101,5 +101,31 @@
 
             return data;
         }
+
+        [Fact]
+        public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithNotEmpty()
+        {
+            // Arrange
+            var data = new List<int> { 1, 2, 3 };
+
+            // Act
+            ctsCustomerService.InsertMissingCustomerLatencyToQueue(data);
+
+            // Assert
+            dataAccess.Received(1).InsertMissingCustomerLatencyToQueue(Arg.Any<string>());
+        }
+
+        [Fact]
+        public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithEmpty()
+        {
+            // Arrange
+            var data = new List<int> { };
+
+            // Act
+            ctsCustomerService.InsertMissingCustomerLatencyToQueue(data);
+
+            // Assert
+            dataAccess.Received(0).InsertMissingCustomerLatencyToQueue(Arg.Any<string>());
+        }
     }
 }

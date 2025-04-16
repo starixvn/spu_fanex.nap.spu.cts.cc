@@ -6,6 +6,8 @@
     {
         public List<CustomerMainDBModel> CustomerInfos { get; set; }
 
+        public List<int> MissingCustIds { get; set; }
+
         public long? LastInsertCustID { get; set; }
     }
 }
