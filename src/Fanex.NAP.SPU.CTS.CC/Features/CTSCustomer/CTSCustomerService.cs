@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -82,6 +83,14 @@
         InactivateNewCustomer GetInactivateNewCustomers();
 
         void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
+
+        #region ScanLatencyCustomer
+        int GetLastScannedCustID(int scannedTime);
+
+        ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID);
+
+        IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs);
+        #endregion
     }
 
     public class CTSCustomerService : ICTSCustomerService
@@ -612,5 +621,28 @@
         }
 
         #endregion Inactivate New Customers
+
+        #region ScanLatencyCustomer
+        public int GetLastScannedCustID(int scannedTime)
+        {
+            return dataAccess.GetLastScannedCustID(scannedTime);
+        }
+
+        public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
+        {
+            return dataAccess.ScanLatencyCustomer(lastCustID, nextCustID);
+        }
+
+        public IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs)
+        {
+            if (custIDs.IsNotNullOrEmpty())
+            {
+                var custIDToString = string.Join(",", custIDs);
+                return dataAccess.CheckMissingCustomer(custIDToString);
+            }
+
+            return Enumerable.Empty<int>();
+        }
+        #endregion
     }
 }

@@ -5,6 +5,8 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.InsertMissingCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Criteria.ScanLatencyCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Entities.ScanLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
@@ -79,6 +81,14 @@
         InactivateNewCustomer GetInactivateNewCustomers();
 
         void InsertReactivedCustomerLog(DateTime? lastScanTime, DateTime? requestTime, DateTime? maxLogTime, DateTime? custInfoTime);
+
+        #region ScanLatencyCustomer
+        int GetLastScannedCustID(int scannedTime);
+
+        ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID);
+
+        IEnumerable<int> CheckMissingCustomer(string custIDs);
+        #endregion
     }
 
     public class CTSCustomerDataAccess : ICTSCustomerDataAccess
@@ -477,5 +487,44 @@
         }
 
         #endregion Inactive New Customers
+
+        #region ScanLatencyCustomer
+        public int GetLastScannedCustID(int scannedTime)
+        {
+            var criteria = new GetLastScannedCustIDCriteria
+            {
+                ScannedTime = scannedTime
+            };
+
+            return repository.Fetch<int>(criteria).First();
+        }
+
+        public ScanLatencyCustomerEntity ScanLatencyCustomer(int lastCustID, int nextCustID)
+        {
+            var criteria = new ScanLatencyCustomerCriteria
+            {
+                LastCustID = lastCustID,
+                NextCustID = nextCustID
+            };
+
+            var result = repository.Fetch<int>(criteria);
+
+            return new ScanLatencyCustomerEntity
+            {
+                CustIDs = result,
+                NextScannedCustID = criteria.NextScannedCustID
+            };
+        }
+
+        public IEnumerable<int> CheckMissingCustomer(string custIDs)
+        {
+            var criteria = new CheckMissingCustCriteria
+            {
+                CustIDs = custIDs
+            };
+
+            return repository.Fetch<int>(criteria);
+        }
+        #endregion
     }
 }

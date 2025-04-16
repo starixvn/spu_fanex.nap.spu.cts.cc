@@ -21,6 +21,8 @@
     {
         Task<bool> InsertNewCustomer(int batchSize);
 
+        Task<bool> ScanLatencyCustomer(int batchSize, int scanSecondTime);
+
         Task<bool> InsertMissingCustomer(int batchSize);
 
         Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime);
@@ -108,10 +110,55 @@
         private InsertCustomerViewModel GetNewCustomerFromMainDBAndHandleMissingCustomer(int numOfAccount, Int64 lastScannedCustID)
         {
             var customers = ctscustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-            
+
             ctscustomerService.InsertMissingCustomerLatencyToQueue(customers.MissingCustIds);
 
             return customers;
+        }
+        #endregion
+
+        #region ScanLatencyCustomer
+        public Task<bool> ScanLatencyCustomer(int batchSize, int scanSecondTime)
+        {
+            try
+            {
+                var isSuccess = true;
+
+                var lastCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_LastCustID);
+                var nexCustID = ctscustomerService.GetLastScannedCustID(scanSecondTime);
+
+                var customers = new List<int>();
+
+                do
+                {
+                    var scanCustomer = ctscustomerService.ScanLatencyCustomer((int)lastCustID, nexCustID);
+                    lastCustID = scanCustomer.NextScannedCustID;
+
+                    if (customers.IsNotNullOrEmpty())
+                    {
+                        foreach(var customerWithBatch in customers.Chunk(batchSize))
+                        {
+                            var missingCusts = ctscustomerService.CheckMissingCustomer(customerWithBatch);
+                            ctscustomerService.InsertMissingCustomerLatencyToQueue(missingCusts);
+                        }
+                    }
+
+                } while (customers.IsNotNullOrEmpty());
+
+                systemParameterServices.UpdateTimingExecution(nexCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_LastCustID);
+
+                return Task.FromResult(isSuccess);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                      .ToString();
+
+                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                return Task.FromResult(false);
+            }
         }
         #endregion
 
