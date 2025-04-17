@@ -15,7 +15,7 @@
 
         void InsertIncorrectDataMonitoring(IEnumerable<long> incorrectList, JobMonitor_IssueType issueType, int batchSize);
 
-        void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId);
+        void SendNotification(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId);
     }
 
     public class IncorrectDataMonitoringService : IIncorrectDataMonitoringService
@@ -73,7 +73,7 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
-        public void NotifyTelegram(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId)
+        public void SendNotification(IEnumerable<GetInvalidDataMonitoringEntity> incorrectList, string environment, string groupId)
         {
             if (incorrectList == null || !incorrectList.Any())
             {
@@ -180,6 +180,11 @@
                         case JobMonitor_IssueType.Classification_MissingTVSProblemAccount:
                             {
                                 message += $"\r\n🆘 Missing TVS Problem Account {{Total RequestId: {values.Count()}}} {string.Join(',', values.Take(50))}\r\n";
+                                break;
+                            }
+                        case JobMonitor_IssueType.LatencyCustomer_Missing:
+                            {
+                                message += $"\r\n🆘 Missing Latency Account exceeds {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
                                 break;
                             }
                         default:

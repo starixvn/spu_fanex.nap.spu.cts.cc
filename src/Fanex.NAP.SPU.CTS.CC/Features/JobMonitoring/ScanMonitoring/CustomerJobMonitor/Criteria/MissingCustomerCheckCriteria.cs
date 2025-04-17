@@ -16,7 +16,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_DC_Monitoring_MissingCustomer_Check";
+            return "CTS_DC_CustomerLatency_CheckMissingCust";
         }
 
         public override bool IsValid()

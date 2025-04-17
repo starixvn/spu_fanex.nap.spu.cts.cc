@@ -49,7 +49,7 @@
 
                     if (result.InvalidDataList != null && result.InvalidDataList.Any())
                     {
-                        monitoringService.NotifyTelegram(result.InvalidDataList, appSettings.EvironmentName, appSettings.NotificationChannelConfig.JobMonitoringGroupChannelId);
+                        monitoringService.SendNotification(result.InvalidDataList, appSettings.EvironmentName, appSettings.NotificationChannelConfig.JobMonitoringGroupChannelId);
 
                         var inValidIssueType = result.InvalidDataList.Where(c => c.IsIssueTypeValid == false);
 

@@ -104,7 +104,9 @@
         {
             var criteria = new CheckMissingCustCriteria
             {
-                CustIDs = custIDs
+                CustomerListJson = custIDs,
+                LastCTSCustID = null,
+                QueryTypeID = (int)CustomerMonitor_QueryType.MissingCustomer
             };
 
             return _repository.Fetch<int>(criteria);

@@ -219,6 +219,7 @@
             Classification_MissingTVSProblemAccount = 202,
             Classification_ExcessiveGerneralNormalInsert = 203,
             Classification_ExcessiveBySportNormalInsert = 204,
+            LatencyCustomer_Missing = 300,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 
