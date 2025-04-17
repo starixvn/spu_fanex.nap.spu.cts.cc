@@ -96,9 +96,9 @@
 		<Setting Key="CTS_DC_CustInfo_GetLastUpdateTime" SpName="CTS_DC_CustInfo_GetLastUpdateTime" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_CustomerHistory_GetUpdatedCustID" SpName="CTS_CustomerHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustInfo_GetByCustIDs" SpName="CTS_DC_CustInfo_GetByCustIDs" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList_xpre" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustInfo_GetLastInsertCust" SpName="CTS_DC_CustInfo_GetLastInsertCust" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo_xpre" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
@@ -107,14 +107,13 @@
 		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="SQL.bodbCustHistory.bodbSPUNet" />
 
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Insert" SpName="CTS_DC_CustomerLatency_Queue_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_GetMinCustIDByScannedTime" SpName="CTS_DC_GetMinCustIDByScannedTime_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_CustomerLatency_Scan" SpName="CTS_CustomerLatency_Scan_xpre" DbName="SQL.WASAVerse.bodbSPUNet" />
+		<Setting Key="CTS_DC_CustomerLatency_CheckMissingCust" SpName="CTS_DC_CustomerLatency_CheckMissingCust_xpre" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
 
-		<Setting Key="CTS_DC_GetMinCustIDByScannedTime" SpName="CTS_DC_GetMinCustIDByScannedTime" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_CustomerLatency_Scan" SpName="CTS_CustomerLatency_Scan" DbName="SQL.WASAVerse.bodbSPUNet" />
-		<Setting Key="CTS_DC_CustomerLatency_CheckMissingCust" SpName="CTS_DC_CustomerLatency_CheckMissingCust" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
-
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Get" SpName="CTS_DC_CustomerLatency_Queue_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Complete" SpName="CTS_DC_CustomerLatency_Queue_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Get" SpName="CTS_DC_CustomerLatency_Queue_Get_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Insert" SpName="CTS_DC_CustomerLatency_Queue_Insert_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Complete" SpName="CTS_DC_CustomerLatency_Queue_Complete_xpre" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="CTSCustomer-NullUserName2">
@@ -191,7 +190,7 @@
 
 	<Function Name="JobMonitoring">
 		<Setting Key="CTS_DC_Monitoring_IncorrectData_Insert" SpName="CTS_DC_Monitoring_IncorrectData_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get_xpre" DbName="MySQL.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_Monitoring_CustomerClassificationPool_Get" SpName="CTS_Monitoring_CustomerClassificationPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" />
