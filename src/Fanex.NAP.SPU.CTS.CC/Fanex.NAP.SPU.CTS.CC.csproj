@@ -47,7 +47,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Features\CTSCustomer\MissingCustomer\Models\" />
 	  <Folder Include="Features\CustomerClassification\NormalDangerousAssociation\NormalDangerousAssociationScan\Entities\" />
 	</ItemGroup>
 </Project>

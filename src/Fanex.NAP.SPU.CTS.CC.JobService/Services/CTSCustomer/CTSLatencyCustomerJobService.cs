@@ -30,6 +30,22 @@
         private readonly IAppSettings _appSettings;
         private readonly ISentryClient _sentryClient;
 
+        public CTSLatencyCustomerJobService(
+            IMissingCustomerService missingCustomerService,
+            IInsertNewCustomerService insertNewCustomerService,
+            ISystemParameterServices systemParameterServices,
+            IAppSettings appSettings,
+            ISentryClient sentryClient)
+        {
+            _missingCustomerService = missingCustomerService;
+            _insertNewCustomerService = insertNewCustomerService;
+            _systemParameterServices = systemParameterServices;
+            _appSettings = appSettings;
+            _sentryClient = sentryClient;
+        }
+
+
+
         #region ScanLatencyCustomer
         public Task<bool> ScanLatencyCustomer(int externalBatchSize, int internalBatchSize, int scanSecondTime)
         {
@@ -68,22 +84,22 @@
 
         private void ScanAndProcessLatencyCustomers(int fromCustID, int toCustID, int externalBatchSize, int internalBatchSize)
         {
-            var customers = new List<int>();
+            var scanResult = default(ScanLatencyCustomerEntity);
 
             do
             {
-                var scanResult = _missingCustomerService.ScanLatencyCustomer(fromCustID, toCustID, externalBatchSize);
+                scanResult = _missingCustomerService.ScanLatencyCustomer(fromCustID, toCustID, externalBatchSize);
                 fromCustID = scanResult.NextScannedCustID;
 
-                if (customers.IsNotNullOrEmpty())
+                if (scanResult.CustIDs.IsNotNullOrEmpty())
                 {
-                    ProcessCustomersInBatches(customers, internalBatchSize);
+                    ProcessCustomersInBatches(scanResult.CustIDs, internalBatchSize);
                 }
 
-            } while (customers.IsNotNullOrEmpty());
+            } while (scanResult.CustIDs.IsNotNullOrEmpty());
         }
 
-        private void ProcessCustomersInBatches(List<int> customers, int batchSize)
+        private void ProcessCustomersInBatches(IEnumerable<int> customers, int batchSize)
         {
             foreach (var customerBatch in customers.Chunk(batchSize))
             {

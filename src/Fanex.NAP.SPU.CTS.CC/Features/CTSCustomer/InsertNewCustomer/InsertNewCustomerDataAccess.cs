@@ -42,12 +42,12 @@
         {
             var criteria = new GetLastInsertCustCriteria();
 
-            (var lastCustIDs, var lastCustSubIDs) = _repository.FetchMultiple<Int64, Int64>(criteria);
+            (var lastCustIDs, var lastCustSubIDs) = _repository.FetchMultiple<string, string>(criteria);
 
             return new LastScannedCustModel
             {
-                LastCustID = lastCustIDs.FirstOrDefault(),
-                LastCustSubID = lastCustSubIDs.FirstOrDefault()
+                LastCustID = long.Parse(lastCustIDs.FirstOrDefault()),
+                LastCustSubID = long.Parse(lastCustSubIDs.FirstOrDefault())
             };
         }
 
@@ -59,7 +59,7 @@
                 RowSize = quantityPerBatch,
             };
 
-            (var customers, var missingCustIds, var lastCustID) = _repository.FetchMultiple<CustomerMainDBEntity, int, Int64>(criteria);
+            (var customers, var missingCustIds, var lastCustID) = _repository.FetchMultiple<CustomerMainDBEntity, int, int>(criteria);
 
             return new InsertCustomerModel
             {

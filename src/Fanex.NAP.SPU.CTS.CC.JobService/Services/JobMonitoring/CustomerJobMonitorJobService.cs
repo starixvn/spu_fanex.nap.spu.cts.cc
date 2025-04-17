@@ -3,6 +3,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
@@ -66,17 +67,17 @@
                 var lastCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
                 var toCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime((int)fromCustID, (int)lastCustID, addSecond);
 
-                var customers = new List<int>();
+                var scanCustomer = default(ScanLatencyCustomerEntity);
 
                 do
                 {
-                    var scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
+                    scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
                     fromCustID = scanCustomer.NextScannedCustID;
 
-                    if (customers.IsNotNullOrEmpty())
+                    if (scanCustomer.CustIDs.IsNotNullOrEmpty())
                     {
                         var missingCustomers = new List<int>();
-                        foreach (var customerWithBatch in customers.Chunk(internalBatchSize))
+                        foreach (var customerWithBatch in scanCustomer.CustIDs.Chunk(internalBatchSize))
                         {
                             var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);
                             missingCustomers.AddRange(missingCusts);
@@ -85,7 +86,7 @@
                         MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, internalBatchSize);
                     }
 
-                } while (customers.IsNotNullOrEmpty());
+                } while (scanCustomer.CustIDs.IsNotNullOrEmpty());
 
                 _systemParameterServices.UpdateTimingExecution(toCustID.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
 

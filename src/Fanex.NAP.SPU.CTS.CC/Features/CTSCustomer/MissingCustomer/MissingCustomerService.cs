@@ -1,8 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -73,8 +75,8 @@
         {
             if (custIDs.IsNotNullOrEmpty())
             {
-                var custIDToString = string.Join(",", custIDs);
-                return _dataAccess.CheckMissingCustomer(custIDToString);
+                var jsonData = JsonConvert.SerializeObject(custIDs.Select(x => new CheckMissingCustomerModel { CustID = x }));
+                return _dataAccess.CheckMissingCustomer(jsonData);
             }
 
             return Enumerable.Empty<int>();
