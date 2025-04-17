@@ -8,6 +8,7 @@ using Xunit;
 using System.Linq;
 using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
 using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
 namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
@@ -29,7 +30,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         {
             // Arrange
             var batchSize = 500;
-            var expectedData = new List<int> { 1, 2, 3 };
+            var expectedData = new List<GetLatencyCustomerFromQueueEntity> {
+                new GetLatencyCustomerFromQueueEntity { CustID = 1, DataSource = 2 },
+                new GetLatencyCustomerFromQueueEntity { CustID = 2, DataSource = 50 },
+                new GetLatencyCustomerFromQueueEntity { CustID = 3, DataSource = 2 },
+            };
 
             // Act
             _dataAccess.GetLatencyCustomerFromQueue(batchSize).Returns(expectedData);
@@ -106,10 +111,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             var data = new List<int> { 1, 2, 3 };
 
             // Act
-            _service.InsertMissingCustomerByLatencyToQueue(data);
+            _service.InsertMissingCustomerByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
 
             // Assert
-            _dataAccess.Received(1).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>());
+            _dataAccess.Received(1).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>(), JobMonitor_IssueType.NewCustomer_Missing);
         }
 
         [Fact]
@@ -119,10 +124,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             var data = new List<int> { };
 
             // Act
-            _service.InsertMissingCustomerByLatencyToQueue(data);
+            _service.InsertMissingCustomerByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
 
             // Assert
-            _dataAccess.Received(0).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>());
+            _dataAccess.Received(0).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>(), JobMonitor_IssueType.NewCustomer_Missing);
         }
 
         [Fact]

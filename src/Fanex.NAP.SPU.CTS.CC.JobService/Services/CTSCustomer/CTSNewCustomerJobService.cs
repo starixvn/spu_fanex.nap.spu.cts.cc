@@ -12,6 +12,7 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSNewCustomerJobService
     {
@@ -87,7 +88,7 @@
         {
             var customers = _insertNewCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
 
-            _missingLatencyCustomerService.InsertMissingCustomerByLatencyToQueue(customers.MissingCustIds);
+            _missingLatencyCustomerService.InsertMissingCustomerByLatencyToQueue(customers.MissingCustIds, JobMonitor_IssueType.NewCustomer_Missing);
 
             return customers;
         }

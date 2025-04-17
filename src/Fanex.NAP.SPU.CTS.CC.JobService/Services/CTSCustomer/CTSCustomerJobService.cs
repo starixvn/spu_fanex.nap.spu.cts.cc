@@ -4,6 +4,7 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models.ArchiveCustomer;
@@ -22,15 +23,11 @@
 
     public interface ICTSCustomerJobService
     {
-        Task<bool> InsertMissingCustomer(int batchSize);
-
         Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime);
 
         Task<bool> UpdateUsername2ForCustMain(int batchSize);
 
         Task<bool> UpdateUsername2ForCustSub(int batchSize);
-
-        Task<bool> InsertReactivatedCustomers();
 
         Task<bool> InactivateNewCustomers(int batchSize);
     }
@@ -63,77 +60,6 @@
             this.appSettings = appSettings;
             _insertNewCustomerService = insertNewCustomerService;
             _missingCustomerService = missingCustomerService;
-        }
-
-        public Task<bool> InsertMissingCustomer(int batchSize)
-        {
-            try
-            {
-                var isSuccess = true;
-                var custInfo = new InsertCustomerModel();
-
-                var data = _ctsCustomerService.GetMissingCustomers();
-
-                if (data == null || !data.Any())
-                {
-                    return Task.FromResult(isSuccess);
-                }
-
-                var missingCusts = data.Where(c => c.IsMissingCust);
-                var notMissingCusts = data.Where(c => !c.IsMissingCust);
-
-                if (missingCusts.Any())
-                {
-                    var chunkCusts = missingCusts.Distinct().Chunk(batchSize);
-
-                    foreach (var batchCust in chunkCusts)
-                    {
-                        var custIds = batchCust.Select(c => c.CustID).Distinct();
-
-                        custInfo = _ctsCustomerService.GetMissingCustInfo(custIds);
-
-                        if (custInfo.CustomerInfos.Any())
-                        {
-                            isSuccess = _insertNewCustomerService.InsertNewCustomer(true, custInfo, new InsertNewCustRescanEntity
-                            {
-                                InternalBatchSize = batchSize,
-                                ExternalBatchSize = batchSize,
-                                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                                IsInsertMissingCust = true,
-                                InsertVIPURL = appSettings.InsertVIPURL,
-                                InsertBAURL = appSettings.InsertBAURL,
-                                serviceName = "InsertMissingCustomer"
-                            });
-
-                            if (isSuccess)
-                            {
-                                _ctsCustomerService.CompleteMissingCustomer(string.Join(',', batchCust.Select(c => c.ID).Distinct()));
-                            }
-                            else
-                            {
-                                return Task.FromResult(isSuccess);
-                            }
-                        }
-                    }
-                }
-
-                if (notMissingCusts.Any())
-                {
-                    _ctsCustomerService.CompleteMissingCustomer(string.Join(',', notMissingCusts.Select(c => c.ID).Distinct()));
-                }
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
         }
 
         public Task<bool> UpdateCTSCustomerInfo(int packageSize, int waitTime)
@@ -232,52 +158,6 @@
 
         #endregion Update UserName2
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
-        public Task<bool> InsertReactivatedCustomers()
-        {
-            try
-            {
-                var isSuccess = true;
-
-                var lastScannedTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
-
-                var maxLogTime = DateTime.MaxValue;
-                var custInfoTime = DateTime.MaxValue;
-                var requestTime = DateTime.Now;
-
-                var custToReactive = _ctsCustomerService.GetReactivatedCustomers(lastScannedTime, null);
-
-                var ctsArchiveCustIDs = CheckExistCTSArchiveCustomerAndPushCC(custToReactive);
-
-                custInfoTime = DateTime.Now;
-
-                if (ctsArchiveCustIDs.IsPushCCSuccess)
-                {
-                    var isInsertReactivedCust = InsertNewCustFromReactivedCust(ctsArchiveCustIDs.NotExistCusts);
-
-                    if (isInsertReactivedCust)
-                    {
-                        maxLogTime = custToReactive.Select(c => c.LogTime).Max();
-                        isSuccess = _systemParameterServices.UpdateTimingExecution(custToReactive.Select(c => c.LogTime).Max().ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
-                    }
-                }
-
-                _ctsCustomerService.InsertReactivedCustomerLog(lastScannedTime, requestTime, (maxLogTime != DateTime.MaxValue) ? maxLogTime : null, (custInfoTime != DateTime.MaxValue) ? custInfoTime : null);
-
-                return Task.FromResult(isSuccess);
-            }
-            catch (Exception ex)
-            {
-                var logMessage = new LogMessage(ex.Message)
-                      .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
-
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
-                return Task.FromResult(false);
-            }
-        }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         public Task<bool> InactivateNewCustomers(int batchSize)
         {
@@ -341,65 +221,5 @@
                 return Task.FromResult(false);
             }
         }
-
-        #region Private Methods
-
-        private bool PushDataToExternal(IEnumerable<long> custIDs, string serviceName)
-        {
-            return custClassToMainDBService.PushExternalPackageByCustId(custIDs.Distinct(), new PushDataToExternalEntity
-            {
-                RoleGroup = RoleGroupType.Member,
-                ExternalBatchSize = appSettings.InsertReactivatedCustomersBatchSize,
-                IsUpdateDangerToMainDB = true,
-                IsWriteLog = appSettings.InsertReactivatedCustomersIsWriteLog,
-                ServiceName = serviceName
-            });
-        }
-
-        #endregion
-
-        #region Private Methods InsertReactivatedCustomers
-        private CheckExistCTSArchiveCustModel CheckExistCTSArchiveCustomerAndPushCC(IEnumerable<ReactivatedCustModel> reactivedCusts)
-        {
-            if (reactivedCusts.IsNullOrEmpty())
-            {
-                return new CheckExistCTSArchiveCustModel();
-            }
-
-            var exitedCTSArchiveCustIDs = _ctsCustomerService.CheckExistCTSArchiveCustomer(reactivedCusts);
-
-            return new CheckExistCTSArchiveCustModel
-            {
-                ExistCusts = exitedCTSArchiveCustIDs,
-                NotExistCusts = reactivedCusts.Select(x => x.CustID).Except(exitedCTSArchiveCustIDs),
-                IsPushCCSuccess = PushDataToExternal(exitedCTSArchiveCustIDs, "InsertReactivatedCustomers")
-            };
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
-        private bool InsertNewCustFromReactivedCust(IEnumerable<long> insertNewCusts)
-        {
-            if (insertNewCusts.IsNullOrEmpty())
-            {
-                return true;
-            }
-
-            // sleep for latency
-            Thread.Sleep(2000);
-
-            var custInfo = _ctsCustomerService.GetMissingCustInfo(insertNewCusts);
-
-            return _insertNewCustomerService.InsertNewCustomer(false, custInfo, new InsertNewCustRescanEntity
-            {
-                InternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                ExternalBatchSize = appSettings.TransformCTSCustomerBatchSize,
-                IsWriteLog = appSettings.TransformCTSCustomerIsWriteLog,
-                IsInsertMissingCust = false,
-                InsertVIPURL = appSettings.InsertVIPURL,
-                InsertBAURL = appSettings.InsertBAURL,
-                serviceName = "ReactivatedCustomer"
-            });
-        }
-        #endregion Private Methods
     }
 }

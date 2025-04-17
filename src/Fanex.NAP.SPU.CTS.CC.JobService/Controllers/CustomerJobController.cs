@@ -43,12 +43,6 @@
             return await _latencyCustomerJobService.InsertLatencyCustomer(batchSize);
         }
 
-        [HttpPost("InsertMissingCustomer")]
-        public async Task<bool> InsertMissingCustomer([FromForm] int batchSize)
-        {
-            return await _ctsCustomerJobService.InsertMissingCustomer(batchSize);
-        }
-
         [HttpPost("UpdateCTSCustomerInfo")]
         public async Task<bool> UpdateCTSCustomerInfo([FromForm] int batchSize, [FromForm] int waitTime)
         {
@@ -76,7 +70,7 @@
         [HttpPost("InsertReactivatedCustomer")]
         public async Task<bool> InsertReactivatedCustomer()
         {
-            return await _ctsCustomerJobService.InsertReactivatedCustomers();
+            return await _reactivatedCustomerJobService.InsertReactivatedCustomers();
         }
 
         [HttpPost("InactivateNewCustomers")]

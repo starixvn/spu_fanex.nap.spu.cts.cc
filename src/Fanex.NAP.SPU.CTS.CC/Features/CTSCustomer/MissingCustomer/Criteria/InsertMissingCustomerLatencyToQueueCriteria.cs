@@ -6,6 +6,8 @@
     {
         public string CustIDs { get; set; }
 
+        public int DataSource { get; set; }
+
         public override string GetSettingKey()
         {
             return "CTS_DC_CustomerLatency_Queue_Insert";

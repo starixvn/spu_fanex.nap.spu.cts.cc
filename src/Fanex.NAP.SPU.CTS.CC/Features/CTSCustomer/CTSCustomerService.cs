@@ -43,16 +43,6 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
         string CompareCustomerInfo(IEnumerable<CustomerMainDBEntity> custInfoFromMainDB, IEnumerable<CustomerMainDBEntity> custInfoFromCTS, UpdateCustomer sourceType, out IEnumerable<UpdateAssociationCustomerForRollbackModel> assCustForRollbacks);
 
-        #region Insert Missing Customers
-
-        IEnumerable<MissingCustomerModel> GetMissingCustomers();
-
-        public InsertCustomerModel GetMissingCustInfo(IEnumerable<long> CustIds);
-
-        void CompleteMissingCustomer(string resolvedIDs);
-
-        #endregion
-
         #region  Update UserName2
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3874:\"out\" and \"ref\" parameters should not be used", Justification = "<Pending>")]
@@ -95,41 +85,6 @@
         {
             return _dataAccess.GetLastUpdatedTime();
         }
-
-        #region Insert New Customers
-        #endregion Insert New Customers
-
-        #region Insert Missing Customers
-
-        public IEnumerable<MissingCustomerModel> GetMissingCustomers()
-        {
-            return _dataAccess.GetMissingCustomers();
-        }
-
-        public void CompleteMissingCustomer(string resolvedIDs)
-        {
-            _dataAccess.CompleteMissingCustomer(resolvedIDs);
-        }
-
-        public InsertCustomerModel GetMissingCustInfo(IEnumerable<long> CustIds)
-        {
-            var custInfo = new InsertCustomerModel { CustomerInfos = new List<CustomerMainDBEntity>(), LastInsertCustID = null };
-
-            if (CustIds != null && CustIds.Any())
-            {
-                var custToString = string.Join(",", CustIds.Select(c => c).Distinct());
-                //// Impact CTS_Customer_GetInfoByCustIdList SourceType 0
-                var mainCusts = GetCustomerFromMainDBForUpdate(custToString, Constants.UpdateCustomer.ForNewCustomer);
-                var subCusts = GetCustSubFromMainDBByCustIDs(custToString);
-
-                custInfo.CustomerInfos.AddRange(mainCusts);
-                custInfo.CustomerInfos.AddRange(subCusts);
-            }
-
-            return custInfo;
-        }
-
-        #endregion
 
         #region Update Customers Info
 

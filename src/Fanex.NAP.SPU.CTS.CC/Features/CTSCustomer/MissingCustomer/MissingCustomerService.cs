@@ -5,10 +5,11 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IMissingCustomerService
     {
-        void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds);
+        void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType);
 
         InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds);
 
@@ -21,7 +22,7 @@
         #endregion
 
         #region InsertLatencyCustomer
-        IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize);
+        IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize);
 
         void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds);
         #endregion
@@ -36,12 +37,12 @@
             _dataAccess = dataAccess;
         }
 
-        public void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds)
+        public void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType)
         {
             if (custIds.IsNotNullOrEmpty())
             {
                 var custIdToString = string.Join(",", custIds);
-                _dataAccess.InsertMissingCustomerByLatencyToQueue(custIdToString);
+                _dataAccess.InsertMissingCustomerByLatencyToQueue(custIdToString, jobMonitor_IssueType);
             }
         }
 
@@ -81,7 +82,7 @@
         #endregion
 
         #region InsertLatencyCustomer
-        public IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize)
+        public IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize)
         {
             return _dataAccess.GetLatencyCustomerFromQueue(batchSize);
         }

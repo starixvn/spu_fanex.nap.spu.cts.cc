@@ -13,7 +13,7 @@
 
     public interface IMissingCustomerDataAccess
     {
-        void InsertMissingCustomerByLatencyToQueue(string custIds);
+        void InsertMissingCustomerByLatencyToQueue(string custIds, JobMonitor_IssueType jobMonitor_IssueType);
 
         InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds);
 
@@ -26,7 +26,7 @@
         #endregion
 
         #region InsertLatencyCustomer
-        IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize);
+        IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize);
 
         void CompleteLatencyCustomerFromQueue(string custIds);
         #endregion
@@ -41,11 +41,12 @@
             _repository = new DynamicRepository();
         }
 
-        public void InsertMissingCustomerByLatencyToQueue(string custIds)
+        public void InsertMissingCustomerByLatencyToQueue(string custIds, JobMonitor_IssueType jobMonitor_IssueType)
         {
             var criteria = new InsertMissingCustomerLatencyToQueueCriteria
             {
-                CustIDs = custIds
+                CustIDs = custIds,
+                DataSource = (int)jobMonitor_IssueType
             };
 
             _repository.Execute(criteria);
@@ -111,14 +112,14 @@
         #endregion
 
         #region InsertLatencyCustomer
-        public IEnumerable<int> GetLatencyCustomerFromQueue(int batchSize)
+        public IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize)
         {
             var criteria = new GetLatencyCustomerFromQueueCriteria
             {
                 BatchSize = batchSize
             };
 
-            return _repository.Fetch<int>(criteria);
+            return _repository.Fetch<GetLatencyCustomerFromQueueEntity>(criteria);
         }
 
         public void CompleteLatencyCustomerFromQueue(string custIds)

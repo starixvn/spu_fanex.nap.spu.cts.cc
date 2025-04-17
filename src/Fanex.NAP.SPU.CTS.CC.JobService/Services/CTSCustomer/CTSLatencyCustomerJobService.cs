@@ -13,6 +13,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
 
     public interface ICTSLatencyCustomerJobService
     {
@@ -34,43 +35,62 @@
         {
             try
             {
-                var isSuccess = true;
-
                 var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
                 var toCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
-                var nextFromCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime((int)fromCustID, (int)toCustID, scanSecondTime);
+                var nextFromCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
+                    (int)fromCustID, 
+                    (int)toCustID, 
+                    scanSecondTime);
 
-                var customers = new List<int>();
+                ScanAndProcessLatencyCustomers(
+                    (int)fromCustID, 
+                    (int)toCustID, 
+                    externalBatchSize, 
+                    internalBatchSize);
 
-                do
-                {
-                    var scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
-                    fromCustID = scanCustomer.NextScannedCustID;
+                _systemParameterServices.UpdateTimingExecution(
+                    nextFromCustID.ToString(), 
+                    CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
 
-                    if (customers.IsNotNullOrEmpty())
-                    {
-                        foreach (var customerWithBatch in customers.Chunk(internalBatchSize))
-                        {
-                            var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);
-                            _missingCustomerService.InsertMissingCustomerByLatencyToQueue(missingCusts);
-                        }
-                    }
-
-                } while (customers.IsNotNullOrEmpty());
-
-                _systemParameterServices.UpdateTimingExecution(nextFromCustID.ToString(), CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
-
-                return Task.FromResult(isSuccess);
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
+                  .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                  .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                  .ToString();
 
                 _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
+            }
+        }
+
+        private void ScanAndProcessLatencyCustomers(int fromCustID, int toCustID, int externalBatchSize, int internalBatchSize)
+        {
+            var customers = new List<int>();
+
+            do
+            {
+                var scanResult = _missingCustomerService.ScanLatencyCustomer(fromCustID, toCustID, externalBatchSize);
+                fromCustID = scanResult.NextScannedCustID;
+
+                if (customers.IsNotNullOrEmpty())
+                {
+                    ProcessCustomersInBatches(customers, internalBatchSize);
+                }
+
+            } while (customers.IsNotNullOrEmpty());
+        }
+
+        private void ProcessCustomersInBatches(List<int> customers, int batchSize)
+        {
+            foreach (var customerBatch in customers.Chunk(batchSize))
+            {
+                var missingCustomers = _missingCustomerService.CheckMissingCustomer(customerBatch);
+                _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
+                    missingCustomers, 
+                    JobMonitor_IssueType.NewCustomer_Missing);
             }
         }
         #endregion
@@ -84,29 +104,31 @@
 
                 var customers = _missingCustomerService.GetLatencyCustomerFromQueue(batchSize);
 
-                var completeCustomers = Enumerable.Empty<int>();
-
                 if (customers.IsNotNullOrEmpty())
                 {
-                    var custInfoCheckMissing = _missingCustomerService.CheckCustomerInfoFromMainDB(customers);
+                    var newCustomerIds = customers
+                        .Where(x => x.DataSource == (int)JobMonitor_IssueType.NewCustomer_Missing)
+                        .Select(x => x.CustID);
 
-                    isSuccess = _insertNewCustomerService.InsertNewCustomer(true, custInfoCheckMissing, new InsertNewCustRescanEntity
+                    var reactivatedCustomerIds = customers
+                        .Where(x => x.DataSource == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing)
+                        .Select(x => x.CustID);
+
+                    var newCustomerResult = (Enumerable.Empty<int>(), true);
+                    var reactivatedCustomerResult = (Enumerable.Empty<int>(), true);
+
+                    Parallel.Invoke(
+                        () => newCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(true, batchSize, newCustomerIds),
+                        () => reactivatedCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(false, batchSize, reactivatedCustomerIds)
+                    );
+
+                    isSuccess = newCustomerResult.Item2 && reactivatedCustomerResult.Item2;
+
+                    if (isSuccess)
                     {
-                        InternalBatchSize = batchSize,
-                        ExternalBatchSize = batchSize,
-                        IsWriteLog = _appSettings.TransformCTSCustomerIsWriteLog,
-                        IsInsertMissingCust = false,
-                        InsertVIPURL = _appSettings.InsertVIPURL,
-                        InsertBAURL = _appSettings.InsertBAURL,
-                        serviceName = "InsertLatencyCustomer"
-                    });
-
-                    completeCustomers = custInfoCheckMissing.CustomerInfos?.Select(x => x.CustID);
-                }
-
-                if (isSuccess)
-                {
-                    _missingCustomerService.CompleteLatencyCustomerFromQueue(completeCustomers);
+                        var processedCustomerIds = newCustomerResult.Item1.Concat(reactivatedCustomerResult.Item1).ToList();
+                        _missingCustomerService.CompleteLatencyCustomerFromQueue(processedCustomerIds);
+                    }
                 }
 
                 return Task.FromResult(isSuccess);
@@ -114,13 +136,39 @@
             catch (Exception ex)
             {
                 var logMessage = new LogMessage(ex.Message)
-                      .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                      .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
-                      .ToString();
+                  .AddSection(Constants.DataInfo, DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                  .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
+                  .ToString();
 
                 _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
             }
+        }
+
+        private (IEnumerable<int>, bool) CheckInfoAndInsertCustomerToCTSSystem(bool isNewCustomer, int batchSize, IEnumerable<int> customers)
+        {
+            if (customers.IsNullOrEmpty())
+            {
+                return (Enumerable.Empty<int>(), true);
+            }
+
+            var customerInfo = _missingCustomerService.CheckCustomerInfoFromMainDB(customers);
+
+            var insertConfig = new InsertNewCustRescanEntity
+            {
+                InternalBatchSize = batchSize,
+                ExternalBatchSize = batchSize,
+                IsWriteLog = _appSettings.TransformCTSCustomerIsWriteLog,
+                IsInsertMissingCust = false,
+                InsertVIPURL = _appSettings.InsertVIPURL,
+                InsertBAURL = _appSettings.InsertBAURL,
+                serviceName = "InsertLatencyCustomer"
+            };
+
+            var isSuccess = _insertNewCustomerService.InsertNewCustomer(isNewCustomer, customerInfo, insertConfig);
+            var processedCustomerIds = customerInfo.CustomerInfos?.Select(x => x.CustID) ?? Enumerable.Empty<int>();
+
+            return (processedCustomerIds, isSuccess);
         }
         #endregion
     }

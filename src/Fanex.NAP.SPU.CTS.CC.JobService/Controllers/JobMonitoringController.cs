@@ -28,15 +28,15 @@
         }
 
         [HttpPost("NewCustomerMonitoring")]
-        public async Task<bool> MonitorNewCustomer([FromForm] int batchSize, [FromForm] int externalSize, [FromForm] int addMinute)
+        public async Task<bool> MonitorNewCustomer([FromForm] int internalBatchSize, [FromForm] int externalBatchSize, [FromForm] int addSecond)
         {
-            return await customerJobMonitorService.ScanMissingCustomer(batchSize, externalSize, addMinute);
+            return await customerJobMonitorService.ScanMissingCustomer(internalBatchSize, externalBatchSize, addSecond);
         }
 
         [HttpPost("ReactivatedCustomerMonitoring")]
-        public async Task<bool> MonitorReactivatedCustomer([FromForm] int batchSize, [FromForm] int addMinute)
+        public async Task<bool> MonitorReactivatedCustomer([FromForm] int batchSize, [FromForm] int addSecond)
         {
-            return await customerJobMonitorService.ScanMissingReactivatedCustomer(batchSize, addMinute);
+            return await customerJobMonitorService.ScanMissingReactivatedCustomer(batchSize, addSecond);
         }
 
         [HttpPost("CustomerInfoMonitoring")]
