@@ -65,32 +65,38 @@
             {
                 var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
                 var lastCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
-                var toCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime((int)fromCustID, (int)lastCustID, addSecond);
+                var toCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
+                    (int)fromCustID, 
+                    (int)lastCustID, 
+                    addSecond);
 
-                var scanCustomer = default(ScanLatencyCustomerEntity);
-
-                do
+                if (toCustID.HasValue)
                 {
-                    scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
+                    var scanCustomer = default(ScanLatencyCustomerEntity);
 
-                    if (scanCustomer.CustIDs.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
+                    do
                     {
-                        fromCustID = scanCustomer.NextScannedCustID.Value;
+                        scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
 
-                        var missingCustomers = new List<int>();
-
-                        foreach (var customerWithBatch in scanCustomer.CustIDs.Chunk(internalBatchSize))
+                        if (scanCustomer.CustIDs.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
                         {
-                            var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);
-                            missingCustomers.AddRange(missingCusts);
+                            fromCustID = scanCustomer.NextScannedCustID.Value;
+
+                            var missingCustomers = new List<int>();
+
+                            foreach (var customerWithBatch in scanCustomer.CustIDs.Chunk(internalBatchSize))
+                            {
+                                var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);
+                                missingCustomers.AddRange(missingCusts);
+                            }
+
+                            MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, internalBatchSize);
                         }
 
-                        MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, internalBatchSize);
-                    }
+                    } while (scanCustomer.CustIDs.IsNotNullOrEmpty());
 
-                } while (scanCustomer.CustIDs.IsNotNullOrEmpty());
-
-                _systemParameterServices.UpdateTimingExecution(toCustID.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                    _systemParameterServices.UpdateTimingExecution(toCustID.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                }
 
                 return Task.FromResult(true);
             }

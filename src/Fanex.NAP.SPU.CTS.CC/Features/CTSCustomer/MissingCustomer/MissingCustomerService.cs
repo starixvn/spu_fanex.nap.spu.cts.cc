@@ -16,7 +16,7 @@
         InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds);
 
         #region ScanLatencyCustomer
-        int GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
+        int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
 
         ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
@@ -61,7 +61,7 @@
         }
 
         #region ScanLatencyCustomer
-        public int GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime)
+        public int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime)
         {
             return _dataAccess.GetLastScannedCustIDByScannedSecondTime(fromCustID, toCustID, scannedTime);
         }

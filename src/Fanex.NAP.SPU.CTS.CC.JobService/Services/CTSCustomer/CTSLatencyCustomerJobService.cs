@@ -53,21 +53,24 @@
             try
             {
                 var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
-                var toCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
-                var nextFromCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
+                var lastCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
+                var toCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
                     (int)fromCustID,
-                    (int)toCustID,
+                    (int)lastCustID,
                     scanSecondTime);
 
-                ScanAndProcessLatencyCustomers(
-                    (int)fromCustID,
-                    (int)toCustID,
-                    externalBatchSize,
-                    internalBatchSize);
+                if (toCustID.HasValue)
+                {
+                    ScanAndProcessLatencyCustomers(
+                        (int)fromCustID,
+                        (int)lastCustID,
+                        externalBatchSize,
+                        internalBatchSize);
 
-                _systemParameterServices.UpdateTimingExecution(
-                    nextFromCustID.ToString(),
-                    CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
+                    _systemParameterServices.UpdateTimingExecution(
+                        toCustID.Value.ToString(),
+                        CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
+                }
 
                 return Task.FromResult(true);
             }

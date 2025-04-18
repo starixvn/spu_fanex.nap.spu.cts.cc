@@ -19,7 +19,7 @@
         InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds);
 
         #region ScanLatencyCustomer
-        int GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
+        int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
 
         ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
@@ -71,7 +71,7 @@
         }
 
         #region ScanLatencyCustomer
-        public int GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime)
+        public int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime)
         {
             var criteria = new GetLastScannedCustIDCriteria
             {
@@ -80,7 +80,9 @@
                 ScannedTime = scannedTime
             };
 
-            return _repository.Fetch<int>(criteria).First();
+            var result = _repository.Fetch<int>(criteria);
+
+            return result.IsNotNullOrEmpty() ? result.FirstOrDefault() : null;
         }
 
         public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
