@@ -104,7 +104,7 @@
 
             if (data.Any())
             {
-                var rawCustIds = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => new { c.CustID, c.IsResolved} )?.Distinct();
+                var rawCustIds = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => new { c.CustID, c.IsResolved })?.Distinct();
                 var trackingInfo = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.OrderByDescending(c => c.ID).FirstOrDefault();
                 var values = data.Where(c => c.IssueTypeID == (int)issueTypeID)?.Select(c => c.Value)?.Distinct();
 
@@ -122,10 +122,10 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_Missing:
                             {
-                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c=>c.CustID).Distinct();
+                                var corrected = rawCustIds.Where(c => c.IsResolved).Select(c => c.CustID).Distinct();
                                 var uncorrected = rawCustIds.Where(c => !c.IsResolved).Select(c => c.CustID).Distinct();
-                                if(corrected.Any()) message += $"\r\n✅ Inserted missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
-                                if(uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
+                                if (corrected.Any()) message += $"\r\n✅ Inserted missing customer {{Total custid: {corrected.Count()}}} {string.Join(',', corrected.Take(50))}\r\n";
+                                if (uncorrected.Any()) message += $"\r\n🆘 Missing customer {{Total custid: {uncorrected.Count()}}} {string.Join(',', uncorrected.Take(50))}\r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.ReactivatedCustomer_Missing:
@@ -138,7 +138,7 @@
                             }
                         case JobMonitor_IssueType.NewCustomer_TotalUnresolvedMissingCustomers:
                             {
-                                message += $"\r\n🆘 Total missing customers so far  {{Total custid: {trackingInfo.Value}}} \r\n";
+                                message += $"\r\n🆘 Total missing customers so far  {{Total custid: {trackingInfo?.Value}}} \r\n";
                                 break;
                             }
                         case JobMonitor_IssueType.NewCustomer_IncorrectCustInfo:

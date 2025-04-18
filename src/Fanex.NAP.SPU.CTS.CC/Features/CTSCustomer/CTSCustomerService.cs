@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
-    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -68,8 +67,7 @@
     public class CTSCustomerService : ICTSCustomerService
     {
         private readonly ICTSCustomerDataAccess _dataAccess;
-        private readonly ISentryClient sentryClient;
-        private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly ISentryClient _sentryClient;
         private readonly string serviceName = "CTSCustomerService";
 
         public CTSCustomerService(ICTSCustomerDataAccess dataAccess,
@@ -77,8 +75,7 @@
             ICustClassToMainDBService custClassToMainDBService)
         {
             _dataAccess = dataAccess;
-            this.custClassToMainDBService = custClassToMainDBService;
-            this.sentryClient = sentryClient;
+            _sentryClient = sentryClient;
         }
 
         public LastUpdateValueModel GetLastUpdatedTime()
@@ -106,7 +103,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "UpdateCustomer has an error", custs, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, "UpdateCustomer has an error", custs, ex, _sentryClient);
             }
         }
 
@@ -123,8 +120,8 @@
                 var custInfoFromMainDB = GetCustomerFromMainDBForUpdate(custs.CustIdList, sourceType);
                 var custInfoFromCTS = GetCustomerFromCTSForUpdate(custs.CustIdList, sourceType);
 
-                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from MainDB", custInfoFromMainDB, isWriteLog, sentryClient);
-                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from CTS", custInfoFromCTS, isWriteLog, sentryClient);
+                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from MainDB", custInfoFromMainDB, isWriteLog, _sentryClient);
+                Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Get info from CTS", custInfoFromCTS, isWriteLog, _sentryClient);
 
                 if (custInfoFromMainDB != null && custInfoFromCTS != null)
                 {
@@ -132,7 +129,7 @@
                 }
             }
 
-            Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Cust to update data:", custInfoToUpdate, isWriteLog, sentryClient);
+            Utilities.LogSentryInfo(serviceName, $"Healing {sourceType} - Cust to update data:", custInfoToUpdate, isWriteLog, _sentryClient);
 
             return custInfoToUpdate;
         }
