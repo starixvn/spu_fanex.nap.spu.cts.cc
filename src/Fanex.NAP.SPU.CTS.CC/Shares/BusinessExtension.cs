@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Shares
 {
+    using System;
+    using System.Linq;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-    using System;
 
     public static class BusinessExtension
     {
@@ -30,6 +32,21 @@
                 RoleGroupType.Member => customer.IsMember(),
                 _ => false
             };
+        }
+
+        public static Func<GetLatencyCustomerFromQueueEntity, bool> MatchLatencyNewCustomer()
+        {
+            return customer => NewCustomerLatencyTypes.Contains(customer.LatencyType);
+        }
+
+        private static readonly int[] NewCustomerLatencyTypes = new[] {
+            (int)JobMonitor_IssueType.NewCustomer_Missing,
+            (int)JobMonitor_IssueType.NewCustomer_IncorrectCustInfo
+        };
+
+        public static Func<GetLatencyCustomerFromQueueEntity, bool> MatchLatencyReactivatedCustomer()
+        {
+            return customer => customer.LatencyType == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing;
         }
     }
 }

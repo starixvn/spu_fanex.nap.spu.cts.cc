@@ -9,11 +9,12 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSLatencyCustomerJobService
     {
@@ -54,18 +55,18 @@
                 var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
                 var toCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
                 var nextFromCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
-                    (int)fromCustID, 
-                    (int)toCustID, 
+                    (int)fromCustID,
+                    (int)toCustID,
                     scanSecondTime);
 
                 ScanAndProcessLatencyCustomers(
-                    (int)fromCustID, 
-                    (int)toCustID, 
-                    externalBatchSize, 
+                    (int)fromCustID,
+                    (int)toCustID,
+                    externalBatchSize,
                     internalBatchSize);
 
                 _systemParameterServices.UpdateTimingExecution(
-                    nextFromCustID.ToString(), 
+                    nextFromCustID.ToString(),
                     CTS_SystemParameters.ScanLatencyCustomer_FromCustID);
 
                 return Task.FromResult(true);
@@ -105,7 +106,7 @@
             {
                 var missingCustomers = _missingCustomerService.CheckMissingCustomer(customerBatch);
                 _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
-                    missingCustomers, 
+                    missingCustomers,
                     JobMonitor_IssueType.NewCustomer_Missing);
             }
         }
@@ -116,35 +117,37 @@
         {
             try
             {
-                var isSuccess = true;
-
                 var customers = _missingCustomerService.GetLatencyCustomerFromQueue(batchSize);
 
-                if (customers.IsNotNullOrEmpty())
+                if (customers.IsNullOrEmpty())
                 {
-                    var newCustomerIds = customers
-                        .Where(x => x.LatencyType == (int)JobMonitor_IssueType.NewCustomer_Missing)
-                        .Select(x => x.CustID);
+                    return Task.FromResult(true);
+                }
 
-                    var reactivatedCustomerIds = customers
-                        .Where(x => x.LatencyType == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing)
-                        .Select(x => x.CustID);
+                var newCustomerIds = customers
+                    .Where(BusinessExtension.MatchLatencyNewCustomer())
+                    .Select(x => x.CustID)
+                    .ToArray();
 
-                    var newCustomerResult = (Enumerable.Empty<int>(), true);
-                    var reactivatedCustomerResult = (Enumerable.Empty<int>(), true);
+                var reactivatedCustomerIds = customers
+                    .Where(BusinessExtension.MatchLatencyReactivatedCustomer())
+                    .Select(x => x.CustID)
+                    .ToArray();
 
-                    Parallel.Invoke(
-                        () => newCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(true, batchSize, newCustomerIds),
-                        () => reactivatedCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(false, batchSize, reactivatedCustomerIds)
-                    );
+                var newCustomerResult = (Enumerable.Empty<int>(), true);
+                var reactivatedCustomerResult = (Enumerable.Empty<int>(), true);
 
-                    isSuccess = newCustomerResult.Item2 && reactivatedCustomerResult.Item2;
+                Parallel.Invoke(
+                    () => newCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(true, batchSize, newCustomerIds),
+                    () => reactivatedCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(false, batchSize, reactivatedCustomerIds)
+                );
 
-                    if (isSuccess)
-                    {
-                        var processedCustomerIds = newCustomerResult.Item1.Concat(reactivatedCustomerResult.Item1).ToList();
-                        _missingCustomerService.CompleteLatencyCustomerFromQueue(processedCustomerIds);
-                    }
+                var isSuccess = newCustomerResult.Item2 && reactivatedCustomerResult.Item2;
+
+                if (isSuccess)
+                {
+                    var processedCustomerIds = newCustomerResult.Item1.Concat(reactivatedCustomerResult.Item1).ToList();
+                    _missingCustomerService.CompleteLatencyCustomerFromQueue(processedCustomerIds);
                 }
 
                 return Task.FromResult(isSuccess);
@@ -161,14 +164,14 @@
             }
         }
 
-        private (IEnumerable<int>, bool) CheckInfoAndInsertCustomerToCTSSystem(bool isNewCustomer, int batchSize, IEnumerable<int> customers)
+        private (IEnumerable<int>, bool) CheckInfoAndInsertCustomerToCTSSystem(bool isNewCustomer, int batchSize, IEnumerable<int> customerIds)
         {
-            if (customers.IsNullOrEmpty())
+            if (customerIds.IsNullOrEmpty())
             {
                 return (Enumerable.Empty<int>(), true);
             }
 
-            var customerInfo = _missingCustomerService.CheckCustomerInfoFromMainDB(customers);
+            var customerInfo = _missingCustomerService.CheckCustomerInfoFromMainDB(customerIds);
 
             var insertConfig = new InsertNewCustRescanEntity
             {
