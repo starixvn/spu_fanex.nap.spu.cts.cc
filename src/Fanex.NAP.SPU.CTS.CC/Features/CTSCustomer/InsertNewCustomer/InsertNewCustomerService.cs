@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System;
@@ -11,8 +12,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Sentry;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IInsertNewCustomerService
     {
@@ -93,8 +94,7 @@
         private bool PushExternalPackageByCustId(IEnumerable<InsertNewCustomerResultModel> customers, RoleGroupType roleGroup, InsertNewCustRescanEntity paras)
         {
             var custIds = customers
-                            .WhereIf(roleGroup == RoleGroupType.Agency, customer => customer.RoleID > (int)CustomerRole.Member)
-                            .WhereIf(roleGroup == RoleGroupType.Member, customer => customer.RoleID == (int)CustomerRole.Member)
+                            .Where(BusinessExtension.MatchRoleGroup(roleGroup))
                             .Select(customer => customer.CustID)
                             .Distinct();
 
