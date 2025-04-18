@@ -4,6 +4,6 @@
     {
         public int CustID { get; set; }
 
-        public int DataSource { get; set; }
+        public int LatencyType { get; set; }
     }
 }

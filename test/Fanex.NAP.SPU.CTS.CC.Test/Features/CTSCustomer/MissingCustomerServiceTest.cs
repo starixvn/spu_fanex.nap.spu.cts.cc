@@ -31,9 +31,9 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
             // Arrange
             var batchSize = 500;
             var expectedData = new List<GetLatencyCustomerFromQueueEntity> {
-                new GetLatencyCustomerFromQueueEntity { CustID = 1, DataSource = 2 },
-                new GetLatencyCustomerFromQueueEntity { CustID = 2, DataSource = 50 },
-                new GetLatencyCustomerFromQueueEntity { CustID = 3, DataSource = 2 },
+                new GetLatencyCustomerFromQueueEntity { CustID = 1, LatencyType = 2 },
+                new GetLatencyCustomerFromQueueEntity { CustID = 2, LatencyType = 50 },
+                new GetLatencyCustomerFromQueueEntity { CustID = 3, LatencyType = 2 },
             };
 
             // Act

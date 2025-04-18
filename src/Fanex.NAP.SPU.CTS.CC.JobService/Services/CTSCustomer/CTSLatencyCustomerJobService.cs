@@ -123,11 +123,11 @@
                 if (customers.IsNotNullOrEmpty())
                 {
                     var newCustomerIds = customers
-                        .Where(x => x.DataSource == (int)JobMonitor_IssueType.NewCustomer_Missing)
+                        .Where(x => x.LatencyType == (int)JobMonitor_IssueType.NewCustomer_Missing)
                         .Select(x => x.CustID);
 
                     var reactivatedCustomerIds = customers
-                        .Where(x => x.DataSource == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing)
+                        .Where(x => x.LatencyType == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing)
                         .Select(x => x.CustID);
 
                     var newCustomerResult = (Enumerable.Empty<int>(), true);
