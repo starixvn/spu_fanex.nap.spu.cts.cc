@@ -1,24 +1,24 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.Logging.Extensions;
     using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Threading;
+    using System.Collections.Generic;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.Shares;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models.ArchiveCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using System.Collections.Generic;
-    using System.Threading;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICTSReactivatedCustomerJobService
     {
@@ -92,7 +92,7 @@
                     updateNextLogTime = lastLogTime;
                 }
 
-                _systemParameterServices.UpdateTimingExecution(updateNextLogTime.ToString(), CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
+                _systemParameterServices.UpdateTimingExecution(updateNextLogTime.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
 
                 return Task.FromResult(isSuccess);
             }
