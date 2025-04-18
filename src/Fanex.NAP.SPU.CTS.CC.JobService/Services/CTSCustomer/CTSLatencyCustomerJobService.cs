@@ -90,10 +90,10 @@
             do
             {
                 scanResult = _missingCustomerService.ScanLatencyCustomer(fromCustID, toCustID, externalBatchSize);
-                fromCustID = scanResult.NextScannedCustID;
 
-                if (scanResult.CustIDs.IsNotNullOrEmpty())
+                if (scanResult.CustIDs.IsNotNullOrEmpty() && scanResult.NextScannedCustID.HasValue)
                 {
+                    fromCustID = scanResult.NextScannedCustID.Value;
                     ProcessCustomersInBatches(scanResult.CustIDs, internalBatchSize);
                 }
 

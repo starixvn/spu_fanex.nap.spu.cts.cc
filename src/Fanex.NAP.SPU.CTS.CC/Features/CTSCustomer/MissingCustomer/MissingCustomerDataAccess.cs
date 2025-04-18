@@ -7,6 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -96,7 +97,7 @@
             return new ScanLatencyCustomerEntity
             {
                 CustIDs = result,
-                NextScannedCustID = result.Max()
+                NextScannedCustID = result.IsNotNullOrEmpty() ? result.Max() : null
             };
         }
 

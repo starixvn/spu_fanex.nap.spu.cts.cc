@@ -72,11 +72,13 @@
                 do
                 {
                     scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
-                    fromCustID = scanCustomer.NextScannedCustID;
 
-                    if (scanCustomer.CustIDs.IsNotNullOrEmpty())
+                    if (scanCustomer.CustIDs.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
                     {
+                        fromCustID = scanCustomer.NextScannedCustID.Value;
+
                         var missingCustomers = new List<int>();
+
                         foreach (var customerWithBatch in scanCustomer.CustIDs.Chunk(internalBatchSize))
                         {
                             var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);

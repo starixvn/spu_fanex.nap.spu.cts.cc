@@ -6,6 +6,6 @@
     {
         public IEnumerable<int> CustIDs { get; set; }
         
-        public int NextScannedCustID { get; set; }
+        public int? NextScannedCustID { get; set; }
     }
 }
