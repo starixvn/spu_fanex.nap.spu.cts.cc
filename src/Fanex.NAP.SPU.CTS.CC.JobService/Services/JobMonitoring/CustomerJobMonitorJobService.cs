@@ -119,9 +119,9 @@
             try
             {
                 var fromDate = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
-                var toDate = fromDate?.AddMinutes(addSecond);
+                var toDate = fromDate?.AddSeconds(addSecond);
 
-                if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-addSecond))
+                if (fromDate != null && toDate <= DateTime.Now.AddSeconds(-addSecond))
                 {
                     var custToReactive = _ctscustomerService.GetReactivatedCustomers(fromDate, toDate);
 
