@@ -10,7 +10,8 @@ WORKDIR "/src/Fanex.NAP.SPU.CTS.CC.JobService"
 
 RUN dotnet nuget add source http://nuget.nexdev.net/api/v2
 
-RUN dotnet restore -v n
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet restore -v n -r linux-x64
 
 COPY ./src/Fanex.NAP.SPU.CTS.CC.JobService .
 
