@@ -65,36 +65,36 @@
         {
             try
             {
-                var isSuccess = true;
-
-                var lastLogTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
-
-                var reactivatedCustomers = _ctsCustomerService.GetReactivatedCustomers(lastLogTime, null);
-
-                var updateNextLogTime = default(DateTime?);
-
-                if (reactivatedCustomers.IsNotNullOrEmpty())
+                var toLogTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ReactivatedCustomerLastScannedDate);
+                if (toLogTime == null)
                 {
-                    var minLastLogTimeAfterScannedSecondTime = reactivatedCustomers.Min(x => x.LogTime).AddSeconds(-scannedSecondTime);
-
-                    updateNextLogTime = (lastLogTime == null || minLastLogTimeAfterScannedSecondTime > lastLogTime)
-                        ? minLastLogTimeAfterScannedSecondTime
-                        : lastLogTime;
-
-                    foreach (var reactivatedCustomersWithBatch in reactivatedCustomers.Chunk(batchSize))
-                    {
-                        var missingCustomers = _missingCustomerService.CheckMissingCustomer(reactivatedCustomersWithBatch.Select(x => (int)x.CustID));
-                        _missingCustomerService.InsertMissingCustomerByLatencyToQueue(missingCustomers, JobMonitor_IssueType.ReactivatedCustomer_Missing);
-                    }
-                }
-                else
-                {
-                    updateNextLogTime = lastLogTime;
+                    return Task.FromResult(true);
                 }
 
-                _systemParameterServices.UpdateTimingExecution(updateNextLogTime.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
+                var fromLogTime = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime) 
+                    ?? toLogTime.Value.AddSeconds(-scannedSecondTime);
 
-                return Task.FromResult(isSuccess);
+                var reactivatedCustomers = _ctsCustomerService.GetReactivatedCustomers(fromLogTime, toLogTime);
+                if (reactivatedCustomers.IsNullOrEmpty())
+                {
+                    return Task.FromResult(true);
+                }
+
+                var latestLogTime = reactivatedCustomers.Max(x => x.LogTime);
+                var nextFromLogTime = latestLogTime.AddSeconds(-scannedSecondTime);
+                
+                if (nextFromLogTime <= fromLogTime)
+                {
+                    nextFromLogTime = fromLogTime;
+                }
+
+                ProcessScanReactivatedLatencyCustomers(reactivatedCustomers, batchSize);
+
+                _systemParameterServices.UpdateTimingExecution(
+                    nextFromLogTime.ToString(CONVERT_TO_SQL_DATETIME), 
+                    CTS_SystemParameters.ScanReactivatedLatencyCustomer_LastLogTime);
+
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
@@ -105,6 +105,18 @@
 
                 _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
+            }
+        }
+
+        private void ProcessScanReactivatedLatencyCustomers(IEnumerable<ReactivatedCustModel> customers, int batchSize)
+        {
+            foreach (var batch in customers.Chunk(batchSize))
+            {
+                var customerIds = batch.Select(x => (int)x.CustID);
+                var missingCustomers = _missingCustomerService.CheckMissingCustomer(customerIds);
+                _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
+                    missingCustomers, 
+                    JobMonitor_IssueType.ReactivatedCustomer_Missing);
             }
         }
         #endregion
@@ -201,16 +213,27 @@
 
         private InsertCustomerModel GetMissingCustInfo(IEnumerable<long> custIds)
         {
-            var custInfo = new InsertCustomerModel { CustomerInfos = new List<CustomerMainDBEntity>(), LastInsertCustID = null };
+            var custInfo = new InsertCustomerModel { 
+                CustomerInfos = new List<CustomerMainDBEntity>(), 
+                LastInsertCustID = null 
+            };
 
-            if (custIds != null && custIds.Any())
+            if (custIds.IsNotNullOrEmpty())
             {
-                var custToString = string.Join(",", custIds.Select(c => c).Distinct());
-                var mainCusts = _missingCustomerService.CheckCustomerInfoFromMainDB(custIds.Distinct().Select(x => (int)x));
-                var subCusts = _ctsCustomerService.GetCustSubFromMainDBByCustIDs(custToString);
+                var distinctCustomerIds = custIds.Distinct().ToList();
+                var customerIdsString = string.Join(",", distinctCustomerIds);
+                
+                var mainDbCustomers = _missingCustomerService.CheckCustomerInfoFromMainDB(
+                    distinctCustomerIds.Select(id => (int)id));
+                
+                _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
+                    mainDbCustomers.MissingCustIds, 
+                    JobMonitor_IssueType.ReactivatedCustomer_IncorrectCustInfo);
+                
+                var subDbCustomers = _ctsCustomerService.GetCustSubFromMainDBByCustIDs(customerIdsString);
 
-                custInfo.CustomerInfos.AddRange(mainCusts.CustomerInfos);
-                custInfo.CustomerInfos.AddRange(subCusts);
+                custInfo.CustomerInfos.AddRange(mainDbCustomers.CustomerInfos);
+                custInfo.CustomerInfos.AddRange(subDbCustomers);
             }
 
             return custInfo;

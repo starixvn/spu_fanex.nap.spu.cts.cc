@@ -210,6 +210,7 @@
             NewCustomer_IncorrectCustInfo = 3,
             NewCustomer_TotalUnresolvedMissingCustomers = 4,
             ReactivatedCustomer_Missing = 50,
+            ReactivatedCustomer_IncorrectCustInfo = 51,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
             Realtime_ExcessiveGerneralChanges = 102,

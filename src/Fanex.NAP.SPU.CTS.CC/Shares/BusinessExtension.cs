@@ -46,7 +46,12 @@
 
         public static Func<GetLatencyCustomerFromQueueEntity, bool> MatchLatencyReactivatedCustomer()
         {
-            return customer => customer.LatencyType == (int)JobMonitor_IssueType.ReactivatedCustomer_Missing;
+            return customer => ReactivatedCustomerLatencyTypes.Contains(customer.LatencyType);
         }
+
+        private static readonly int[] ReactivatedCustomerLatencyTypes = new[] {
+            (int)JobMonitor_IssueType.ReactivatedCustomer_Missing,
+            (int)JobMonitor_IssueType.ReactivatedCustomer_IncorrectCustInfo
+        };
     }
 }
