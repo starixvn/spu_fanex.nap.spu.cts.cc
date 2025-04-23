@@ -9,6 +9,7 @@ using System.Linq;
 using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
 using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
 using static Fanex.NAP.SPU.CTS.Shares.Constants;
+using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Models;
 
 namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
@@ -66,7 +67,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void CompleteLatencyCustomerFromQueue_WhenSuccess_WithDataNotEmpty()
         {
             // Arrange
-            var data = new List<int> { 1, 2, 3 };
+            var data = new List<ComplateLatencyCustomerModel> {
+                new ComplateLatencyCustomerModel { CustID = 1 },
+                new ComplateLatencyCustomerModel { CustID = 2 },
+                new ComplateLatencyCustomerModel { CustID = 3 },
+            };
 
             // Act
             _service.CompleteLatencyCustomerFromQueue(data);
@@ -79,7 +84,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void CompleteLatencyCustomerFromQueue_WhenSuccess_WithDataEmpty()
         {
             // Arrange
-            var data = new List<int> { };
+            var data = new List<ComplateLatencyCustomerModel> { };
 
             // Act
             _service.CompleteLatencyCustomerFromQueue(data);
@@ -92,7 +97,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void CompleteLatencyCustomerFromQueue_ThrowException()
         {
             // Arrange
-            var data = new List<int> { 1, 2, 3 };
+            var data = new List<ComplateLatencyCustomerModel> {
+                new ComplateLatencyCustomerModel { CustID = 1 },
+                new ComplateLatencyCustomerModel { CustID = 2 },
+                new ComplateLatencyCustomerModel { CustID = 3 },
+            };
 
             // Act
             _dataAccess.When(x => x.CompleteLatencyCustomerFromQueue(Arg.Any<string>())).Throw<Exception>();
@@ -108,7 +117,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithNotEmpty()
         {
             // Arrange
-            var data = new List<int> { 1, 2, 3 };
+            var data = new List<ScanLatencyCustomerEntity> {
+                new ScanLatencyCustomerEntity { CustID = 1 },
+                new ScanLatencyCustomerEntity { CustID = 2 },
+                new ScanLatencyCustomerEntity { CustID = 3 },
+            };
 
             // Act
             _service.InsertMissingCustomerByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
@@ -121,10 +134,36 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void InsertMissingCustomerLatencyToQueue_WhenSuccess_WithEmpty()
         {
             // Arrange
-            var data = new List<int> { };
+            var data = new List<ScanLatencyCustomerEntity> { };
 
             // Act
             _service.InsertMissingCustomerByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
+
+            // Assert
+            _dataAccess.Received(0).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>(), JobMonitor_IssueType.NewCustomer_Missing);
+        }
+
+        [Fact]
+        public void InsertMissingCustIdsLatencyToQueue_WhenSuccess_WithNotEmpty()
+        {
+            // Arrange
+            var data = new List<int> { 1, 2, 3 };
+
+            // Act
+            _service.InsertMissingCustIdByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
+
+            // Assert
+            _dataAccess.Received(1).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>(), JobMonitor_IssueType.NewCustomer_Missing);
+        }
+
+        [Fact]
+        public void InsertMissingCustIdsLatencyToQueue_WhenSuccess_WithEmpty()
+        {
+            // Arrange
+            var data = new List<int> { };
+
+            // Act
+            _service.InsertMissingCustIdByLatencyToQueue(data, JobMonitor_IssueType.NewCustomer_Missing);
 
             // Assert
             _dataAccess.Received(0).InsertMissingCustomerByLatencyToQueue(Arg.Any<string>(), JobMonitor_IssueType.NewCustomer_Missing);
@@ -220,19 +259,19 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
         public void ScanLatencyCustomer_WhenSuccess_ReturnData()
         {
             // Arrange
-            var data = new List<int>();
+            var data = new List<ScanLatencyCustomerEntity>();
 
             // Act
-            _dataAccess.ScanLatencyCustomer(123, 456, 500).Returns(new ScanLatencyCustomerEntity
+            _dataAccess.ScanLatencyCustomer(123, 456, 500).Returns(new ScanLatencyCustomerModel
             {
-                CustIDs = data
+                ScanLatencyCustomers = data
             });
 
             var result = _service.ScanLatencyCustomer(123, 456, 500);
 
             // Assert
             _dataAccess.Received(1).ScanLatencyCustomer(123, 456, 500);
-            Assert.Equal(data, result.CustIDs);
+            Assert.Equal(data, result.ScanLatencyCustomers);
         }
 
         [Fact]

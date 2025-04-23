@@ -5,8 +5,8 @@
 
     public class InsertMissingCustomerLatencyToQueueCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_Customer")]
+        public string CustomerJson { get; set; }
 
         [SpParam(SqlParamName = "ip_LatencyType")]
         public int DataSource { get; set; }

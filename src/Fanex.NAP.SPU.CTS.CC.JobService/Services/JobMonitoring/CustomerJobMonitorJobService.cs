@@ -72,28 +72,28 @@
 
                 if (toCustID.HasValue)
                 {
-                    var scanCustomer = default(ScanLatencyCustomerEntity);
+                    var scanCustomer = default(ScanLatencyCustomerModel);
 
                     do
                     {
                         scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
 
-                        if (scanCustomer.CustIDs.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
+                        if (scanCustomer.ScanLatencyCustomers.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
                         {
                             fromCustID = scanCustomer.NextScannedCustID.Value;
 
                             var missingCustomers = new List<int>();
 
-                            foreach (var customerWithBatch in scanCustomer.CustIDs.Chunk(internalBatchSize))
+                            foreach (var customerWithBatch in scanCustomer.ScanLatencyCustomers.Chunk(internalBatchSize))
                             {
-                                var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch);
+                                var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch.Select(x => x.CustID));
                                 missingCustomers.AddRange(missingCusts);
                             }
 
                             MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, internalBatchSize);
                         }
 
-                    } while (scanCustomer.CustIDs.IsNotNullOrEmpty());
+                    } while (scanCustomer.ScanLatencyCustomers.IsNotNullOrEmpty());
 
                     _systemParameterServices.UpdateTimingExecution(toCustID.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
                 }

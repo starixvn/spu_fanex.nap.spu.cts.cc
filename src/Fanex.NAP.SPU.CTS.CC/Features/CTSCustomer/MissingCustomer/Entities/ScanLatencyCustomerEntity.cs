@@ -1,11 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities
 {
-    using System.Collections.Generic;
+    using Newtonsoft.Json;
+    using System;
 
     public class ScanLatencyCustomerEntity
     {
-        public IEnumerable<int> CustIDs { get; set; }
-        
-        public int? NextScannedCustID { get; set; }
+        public int CustID { get; set; }
+
+        [JsonProperty("CustomerRepUpdateTime")]
+        public DateTime? RepUpdateTime { get; set; }
     }
 }

@@ -21,7 +21,7 @@
         #region ScanLatencyCustomer
         int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
 
-        ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
+        ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
         IEnumerable<int> CheckMissingCustomer(string custIDs);
         #endregion
@@ -29,7 +29,7 @@
         #region InsertLatencyCustomer
         IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize);
 
-        void CompleteLatencyCustomerFromQueue(string custIds);
+        void CompleteLatencyCustomerFromQueue(string customerJson);
         #endregion
     }
 
@@ -46,7 +46,7 @@
         {
             var criteria = new InsertMissingCustomerLatencyToQueueCriteria
             {
-                CustIDs = custIds,
+                CustomerJson = custIds,
                 DataSource = (int)jobMonitor_IssueType
             };
 
@@ -85,7 +85,7 @@
             return result.IsNotNullOrEmpty() ? result.FirstOrDefault() : null;
         }
 
-        public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
+        public ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
         {
             var criteria = new ScanLatencyCustomerCriteria
             {
@@ -94,12 +94,12 @@
                 BatchSize = batchSize
             };
 
-            var result = _repository.Fetch<int>(criteria);
+            var result = _repository.Fetch<ScanLatencyCustomerEntity>(criteria);
 
-            return new ScanLatencyCustomerEntity
+            return new ScanLatencyCustomerModel
             {
-                CustIDs = result,
-                NextScannedCustID = result.IsNotNullOrEmpty() ? result.Max() : null
+                ScanLatencyCustomers = result,
+                NextScannedCustID = result.IsNotNullOrEmpty() ? result.Select(x => x.CustID).Max() : null
             };
         }
 
@@ -127,11 +127,11 @@
             return _repository.Fetch<GetLatencyCustomerFromQueueEntity>(criteria);
         }
 
-        public void CompleteLatencyCustomerFromQueue(string custIds)
+        public void CompleteLatencyCustomerFromQueue(string customerJson)
         {
             var criteria = new CompleteLatencyCustomerFromQueueCriteria
             {
-                CustIds = custIds
+                CustomerJson = customerJson
             };
 
             _repository.Execute(criteria);

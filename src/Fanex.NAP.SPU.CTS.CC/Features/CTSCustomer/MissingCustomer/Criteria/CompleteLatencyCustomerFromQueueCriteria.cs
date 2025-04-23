@@ -5,8 +5,8 @@
 
     public class CompleteLatencyCustomerFromQueueCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIds { get; set; }
+        [SpParam(SqlParamName = "ip_Customer")]
+        public string CustomerJson { get; set; }
 
         public override string GetSettingKey()
         {

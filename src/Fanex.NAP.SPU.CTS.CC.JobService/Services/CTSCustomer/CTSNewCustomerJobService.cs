@@ -88,7 +88,7 @@
         {
             var customers = _insertNewCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
 
-            _missingLatencyCustomerService.InsertMissingCustomerByLatencyToQueue(customers.MissingCustIds, JobMonitor_IssueType.NewCustomer_IncorrectCustInfo);
+            _missingLatencyCustomerService.InsertMissingCustIdByLatencyToQueue(customers.MissingCustIds, JobMonitor_IssueType.NewCustomer_IncorrectCustInfo);
 
             return customers;
         }

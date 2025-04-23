@@ -11,14 +11,16 @@
 
     public interface IMissingCustomerService
     {
-        void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType);
+        void InsertMissingCustomerByLatencyToQueue(IEnumerable<ScanLatencyCustomerEntity> scanLatencyCustomers, JobMonitor_IssueType jobMonitor_IssueType);
+
+        void InsertMissingCustIdByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType);
 
         InsertCustomerModel CheckCustomerInfoFromMainDB(IEnumerable<int> custIds);
 
         #region ScanLatencyCustomer
         int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
 
-        ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
+        ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
 
         IEnumerable<int> CheckMissingCustomer(IEnumerable<int> custIDs);
         #endregion
@@ -26,7 +28,7 @@
         #region InsertLatencyCustomer
         IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize);
 
-        void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds);
+        void CompleteLatencyCustomerFromQueue(IEnumerable<ComplateLatencyCustomerModel> customers);
         #endregion
     }
 
@@ -39,12 +41,21 @@
             _dataAccess = dataAccess;
         }
 
-        public void InsertMissingCustomerByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType)
+        public void InsertMissingCustomerByLatencyToQueue(IEnumerable<ScanLatencyCustomerEntity> scanLatencyCustomers, JobMonitor_IssueType jobMonitor_IssueType)
+        {
+            if (scanLatencyCustomers.IsNotNullOrEmpty())
+            {
+                var custJson = JsonConvert.SerializeObject(scanLatencyCustomers);
+                _dataAccess.InsertMissingCustomerByLatencyToQueue(custJson, jobMonitor_IssueType);
+            }
+        }
+
+        public void InsertMissingCustIdByLatencyToQueue(IEnumerable<int> custIds, JobMonitor_IssueType jobMonitor_IssueType)
         {
             if (custIds.IsNotNullOrEmpty())
             {
-                var custIdToString = string.Join(",", custIds);
-                _dataAccess.InsertMissingCustomerByLatencyToQueue(custIdToString, jobMonitor_IssueType);
+                var customers = custIds.Select(id => new ScanLatencyCustomerEntity { CustID = id });
+                InsertMissingCustomerByLatencyToQueue(customers, jobMonitor_IssueType);
             }
         }
 
@@ -66,7 +77,7 @@
             return _dataAccess.GetLastScannedCustIDByScannedSecondTime(fromCustID, toCustID, scannedTime);
         }
 
-        public ScanLatencyCustomerEntity ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
+        public ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
         {
             return _dataAccess.ScanLatencyCustomer(fromCustID, toCustID, batchSize);
         }
@@ -89,12 +100,12 @@
             return _dataAccess.GetLatencyCustomerFromQueue(batchSize);
         }
 
-        public void CompleteLatencyCustomerFromQueue(IEnumerable<int> custIds)
+        public void CompleteLatencyCustomerFromQueue(IEnumerable<ComplateLatencyCustomerModel> customers)
         {
-            if (custIds.IsNotNullOrEmpty())
+            if (customers.IsNotNullOrEmpty())
             {
-                var custIdToString = string.Join(",", custIds);
-                _dataAccess.CompleteLatencyCustomerFromQueue(custIdToString);
+                var customerJson = JsonConvert.SerializeObject(customers);
+                _dataAccess.CompleteLatencyCustomerFromQueue(customerJson);
             }
         }
         #endregion

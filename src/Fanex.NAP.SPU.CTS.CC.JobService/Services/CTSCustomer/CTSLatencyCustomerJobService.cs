@@ -15,6 +15,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Models;
 
     public interface ICTSLatencyCustomerJobService
     {
@@ -88,26 +89,28 @@
 
         private void ScanAndProcessLatencyCustomers(int fromCustID, int toCustID, int externalBatchSize, int internalBatchSize)
         {
-            var scanResult = default(ScanLatencyCustomerEntity);
+            var scanResult = default(ScanLatencyCustomerModel);
 
             do
             {
                 scanResult = _missingCustomerService.ScanLatencyCustomer(fromCustID, toCustID, externalBatchSize);
 
-                if (scanResult.CustIDs.IsNotNullOrEmpty() && scanResult.NextScannedCustID.HasValue)
+                if (scanResult.ScanLatencyCustomers.IsNotNullOrEmpty() && scanResult.NextScannedCustID.HasValue)
                 {
                     fromCustID = scanResult.NextScannedCustID.Value;
-                    ProcessCustomersInBatches(scanResult.CustIDs, internalBatchSize);
+                    ProcessCustomersInBatches(scanResult.ScanLatencyCustomers, internalBatchSize);
                 }
 
-            } while (scanResult.CustIDs.IsNotNullOrEmpty());
+            } while (scanResult.ScanLatencyCustomers.IsNotNullOrEmpty());
         }
 
-        private void ProcessCustomersInBatches(IEnumerable<int> customers, int batchSize)
+        private void ProcessCustomersInBatches(IEnumerable<ScanLatencyCustomerEntity> customers, int batchSize)
         {
             foreach (var customerBatch in customers.Chunk(batchSize))
             {
-                var missingCustomers = _missingCustomerService.CheckMissingCustomer(customerBatch);
+                var missingCustIds = _missingCustomerService.CheckMissingCustomer(customerBatch.Select(x => x.CustID)).ToHashSet();
+                var missingCustomers = customerBatch.Where(x => missingCustIds.Contains(x.CustID));
+
                 _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
                     missingCustomers,
                     JobMonitor_IssueType.NewCustomer_Missing);
@@ -137,8 +140,8 @@
                     .Select(x => x.CustID)
                     .ToArray();
 
-                var newCustomerResult = (Enumerable.Empty<int>(), true);
-                var reactivatedCustomerResult = (Enumerable.Empty<int>(), true);
+                var newCustomerResult = (Enumerable.Empty<ComplateLatencyCustomerModel>(), true);
+                var reactivatedCustomerResult = (Enumerable.Empty<ComplateLatencyCustomerModel>(), true);
 
                 Parallel.Invoke(
                     () => newCustomerResult = CheckInfoAndInsertCustomerToCTSSystem(true, batchSize, newCustomerIds),
@@ -167,11 +170,11 @@
             }
         }
 
-        private (IEnumerable<int>, bool) CheckInfoAndInsertCustomerToCTSSystem(bool isNewCustomer, int batchSize, IEnumerable<int> customerIds)
+        private (IEnumerable<ComplateLatencyCustomerModel>, bool) CheckInfoAndInsertCustomerToCTSSystem(bool isNewCustomer, int batchSize, IEnumerable<int> customerIds)
         {
             if (customerIds.IsNullOrEmpty())
             {
-                return (Enumerable.Empty<int>(), true);
+                return (Enumerable.Empty<ComplateLatencyCustomerModel>(), true);
             }
 
             var customerInfo = _missingCustomerService.CheckCustomerInfoFromMainDB(customerIds);
@@ -188,9 +191,9 @@
             };
 
             var isSuccess = _insertNewCustomerService.InsertNewCustomer(isNewCustomer, customerInfo, insertConfig);
-            var processedCustomerIds = customerInfo.CustomerInfos?.Select(x => x.CustID) ?? Enumerable.Empty<int>();
+            var processedCustomers = customerInfo.CustomerInfos?.Select(x => new ComplateLatencyCustomerModel(x)) ?? Enumerable.Empty<ComplateLatencyCustomerModel>();
 
-            return (processedCustomerIds, isSuccess);
+            return (processedCustomers, isSuccess);
         }
         #endregion
     }

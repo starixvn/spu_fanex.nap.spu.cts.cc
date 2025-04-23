@@ -114,7 +114,7 @@
             {
                 var customerIds = batch.Select(x => (int)x.CustID);
                 var missingCustomers = _missingCustomerService.CheckMissingCustomer(customerIds);
-                _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
+                _missingCustomerService.InsertMissingCustIdByLatencyToQueue(
                     missingCustomers, 
                     JobMonitor_IssueType.ReactivatedCustomer_Missing);
             }
@@ -226,7 +226,7 @@
                 var mainDbCustomers = _missingCustomerService.CheckCustomerInfoFromMainDB(
                     distinctCustomerIds.Select(id => (int)id));
                 
-                _missingCustomerService.InsertMissingCustomerByLatencyToQueue(
+                _missingCustomerService.InsertMissingCustIdByLatencyToQueue(
                     mainDbCustomers.MissingCustIds, 
                     JobMonitor_IssueType.ReactivatedCustomer_IncorrectCustInfo);
                 

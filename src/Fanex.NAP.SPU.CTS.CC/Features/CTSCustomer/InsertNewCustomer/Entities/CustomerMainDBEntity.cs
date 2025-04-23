@@ -57,5 +57,13 @@
         public bool IsLicenseeVIP { get; set; }
 
         public bool IsLicenseeBA { get; set; }
+
+        public DateTime? CustInfoRepUpdateTime { get; set; }
+
+        public DateTime? DepCustSuperRepUpdateTime { get; set; }
+
+        public DateTime? SiteRepUpdateTime { get; set; }
+
+        public DateTime? CustProductStatusRepUpdateTime { get; set; }
     }
 }
