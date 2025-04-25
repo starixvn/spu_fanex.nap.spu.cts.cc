@@ -24,6 +24,8 @@
         IEnumerable<CustomerMainDBEntity> GetCustSubFromMainDBByLastCustSub(int numOfAccount, Int64 lastScannedCustID);
 
         bool InsertNewCustomer(bool isNewCustomer, InsertCustomerModel data, InsertNewCustRescanEntity paras);
+
+        bool UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust);
     }
 
     public class InsertNewCustomerService : IInsertNewCustomerService
@@ -112,12 +114,9 @@
             return result;
         }
 
-        private bool UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
+        public bool UpdateComleteAndRetranCustomer(IEnumerable<InsertNewCustomerResultModel> custIdList, long? lastCustID, bool isInsertMissingCust)
         {
-            if (custIdList != null && custIdList.Any())
-            {
-                _dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
-            }
+            _dataAccess.UpdateCompleteAndRetranCustomer(JsonConvert.SerializeObject(custIdList), lastCustID, isInsertMissingCust);
 
             return true;
         }

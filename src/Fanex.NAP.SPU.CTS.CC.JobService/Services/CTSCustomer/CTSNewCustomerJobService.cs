@@ -13,6 +13,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using System.Collections.Generic;
 
     public interface ICTSNewCustomerJobService
     {
@@ -28,7 +29,7 @@
 
         public CTSNewCustomerJobService(
             IInsertNewCustomerService insertNewCustomerService,
-            IMissingCustomerService missingLatencyCustomerService, 
+            IMissingCustomerService missingLatencyCustomerService,
             IAppSettings appSettings,
             ISentryClient sentryClient)
         {
@@ -53,8 +54,14 @@
                     () => { customers = GetNewCustomerFromMainDBAndHandleMissingCustomer(batchSize, lastScanned.LastCustID); },
                     () => { newSubCustomers = _insertNewCustomerService.GetCustSubFromMainDBByLastCustSub(batchSize, lastScanned.LastCustSubID); });
 
-
-                if (customers?.CustomerInfos != null)
+                if (customers.CustomerInfos.IsNullOrEmpty() && newSubCustomers.IsNullOrEmpty())
+                {
+                    _insertNewCustomerService.UpdateComleteAndRetranCustomer(
+                    custIdList: new List<InsertNewCustomerResultModel>(),
+                    lastCustID: customers.LastInsertCustID,
+                    isInsertMissingCust: false);
+                }
+                else
                 {
                     customers.CustomerInfos.AddRange(newSubCustomers);
 
