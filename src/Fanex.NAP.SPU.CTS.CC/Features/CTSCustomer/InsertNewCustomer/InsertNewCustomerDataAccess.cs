@@ -56,7 +56,7 @@
                 RowSize = quantityPerBatch,
             };
 
-            (var customers, var missingCustIds, var lastCustID) = _repository.FetchMultiple<CustomerMainDBEntity, int, int>(criteria);
+            (var customers, var missingCustIds, var lastCustID) = _repository.FetchMultiple<CustomerMainDBEntity, int, int?>(criteria);
 
             return new InsertCustomerModel
             {
