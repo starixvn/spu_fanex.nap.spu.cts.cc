@@ -194,6 +194,7 @@
             _repository.Execute(criteria);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "<Pending>")]
         public IEnumerable<CustomerMainDBEntity> GetCustomerFromMainDBForUpdate(string custIds, UpdateCustomer sourceType)
         {
             var criteria = new GetCustomerInfoFromMainDBCriteria
