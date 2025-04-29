@@ -87,7 +87,9 @@
                     SourceType = sourceType
                 };
 
-                return repository.Fetch<CustomerInfoMainDBEntity>(criteria);
+                (var custInfos, var missingCusts) = repository.FetchMultiple<CustomerInfoMainDBEntity, int>(criteria);
+
+                return custInfos;
             }
             catch (Exception ex)
             {

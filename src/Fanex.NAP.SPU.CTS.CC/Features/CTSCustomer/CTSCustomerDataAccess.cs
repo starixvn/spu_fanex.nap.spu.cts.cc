@@ -202,7 +202,7 @@
                 SourceType = (int)sourceType
             };
 
-            var custInfos = _repository.Fetch<CustomerMainDBEntity>(criteria);
+            (var custInfos, var missingCusts) = _repository.FetchMultiple<CustomerMainDBEntity, int>(criteria);
 
             return custInfos;
         }
