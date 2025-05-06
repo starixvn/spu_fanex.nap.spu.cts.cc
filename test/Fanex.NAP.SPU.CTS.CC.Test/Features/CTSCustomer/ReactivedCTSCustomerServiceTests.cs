@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
@@ -45,7 +46,7 @@
         [Fact]
         public void GetCustSubFromMainDB_WhenSuccess_ReturnData()
         {
-            var dataFromDB = new List<CustomerMainDBModel>()
+            var dataFromDB = new List<CustomerMainDBEntity>()
             {
                 CreateSampleCustomerMainDBModel(),
                 CreateSampleCustomerMainDBModel()
@@ -77,10 +78,10 @@
             realData.Should().BeEquivalentTo(dataFromDB);
         }
 
-        private CustomerMainDBModel CreateSampleCustomerMainDBModel()
+        private CustomerMainDBEntity CreateSampleCustomerMainDBModel()
         {
             var rd = new Random();
-            var data = new CustomerMainDBModel
+            var data = new CustomerMainDBEntity
             {
                 CreatedDate = DateTime.Now,
                 Currency = "RM",

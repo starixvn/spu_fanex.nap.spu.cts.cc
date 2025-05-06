@@ -1,7 +1,7 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.Accounts.Criteria
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Criteria
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
+    using Fanex.Data;
 
     public class UpdateCompleteAndRetranCustomerCriteria : NonQueryCommand
     {

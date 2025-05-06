@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
@@ -27,7 +27,7 @@
             sentryClient = Substitute.For<ISentryClient>();
             ctsCustomerDataAccess = Substitute.For<ICTSCustomerDataAccess>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            
+
             ctsCustomerService = new CTSCustomerService(ctsCustomerDataAccess, sentryClient, custClassToMainDBService);
         }
 
@@ -61,56 +61,11 @@
         }
 
         [Fact]
-        public void GetLastInsertCust_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var expectedData = new LastScannedCustModel();
-
-            // Act
-            ctsCustomerDataAccess.GetLastInsertCust().Returns(expectedData);
-            var result = ctsCustomerService.GetLastInsertCust();
-
-            // Assert
-            result.Equals(expectedData);
-        }
-
-        [Fact]
-        public void GetLastInsertCust_WhenException_ThrowException()
-        {
-            // Arrange
-
-            // Act
-            ctsCustomerDataAccess.GetLastInsertCust().Throws<Exception>();
-
-            Action action = () => ctsCustomerService.GetLastInsertCust();
-
-            // Assert
-            Assert.Throws<Exception>(action);
-        }
-
-        [Fact]
-        public void GetCustomerFromMainDBForInsertNew_WhenSuccess_ReturnData()
-        {
-            // Arrange
-            var numOfAccount = 1;
-            var lastScannedCustID = 1;
-            var expectedData = new InsertCustomerViewModel();
-
-            // Act
-            ctsCustomerDataAccess.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID).Returns(expectedData);
-
-            var result = ctsCustomerService.GetCustomerFromMainDBForInsertNew(numOfAccount, lastScannedCustID);
-
-            // Assert
-            result.Equals(expectedData);
-        }
-
-        [Fact]
         public void GetCustSubFromMainDB_WhenSuccess_ReturnData()
         {
             // Arrange
             var custIDs = "1,2";
-            var expectedData = new List<CustomerMainDBModel>();
+            var expectedData = new List<CustomerMainDBEntity>();
 
             // Act
             ctsCustomerDataAccess.GetCustSubFromMainDBByCustIDs(custIDs).Returns(expectedData);
@@ -122,51 +77,11 @@
         }
 
         [Fact]
-        public void InsertNewCustomer_WhenSuccess_ReturnData()
+        public void UpdateCustomer_WhenSuccess_ReturnNotException()
         {
             // Arrange
-            var data = new InsertCustomerViewModel
+            var custs = new TranformCustModel
             {
-                CustomerInfos = new List<CustomerMainDBModel>() { new CustomerMainDBModel { CustID = 1 } },
-                LastInsertCustID = 1
-            };
-
-            var paras = new InsertNewCustRescanEntity 
-            {
-                InternalBatchSize = 50,
-                ExternalBatchSize = 50,
-                IsWriteLog = true,
-                IsInsertMissingCust = false,
-                InsertVIPURL = string.Empty,
-                InsertBAURL = string.Empty,
-                serviceName = "InsertNewCustomer"
-            };
-
-            var expectedData = new List<InsertNewCustomerResultModel>()
-            {
-                new InsertNewCustomerResultModel 
-                {
-                     CustID = 1, CTSCustID = 1, RoleID = 1
-                }
-            };
-
-            // Act
-            ctsCustomerDataAccess.InsertNewCTSCustomer(Arg.Any<IEnumerable<CustomerMainDBModel>>(), true).Returns(expectedData);
-
-            custClassToMainDBService.PushExternalPackageByCustId(Arg.Any<IEnumerable<long>>(), Arg.Any<PushDataToExternalEntity>()).Returns(true);
-
-            var result = ctsCustomerService.InsertNewCustomer(true, data, paras);
-
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [Fact]
-        public void UpdateCustomer_WhenSuccess_ReturnNotException()
-        {           
-            // Arrange
-            var custs = new TranformCustModel {
                 CustIdList = "1,2",
                 LastCustId = 2,
                 LastUpdatedTime = DateTime.Now
@@ -202,8 +117,8 @@
         {
             // Arrange
             var custInfos = new List<CustNullUserName2Model>()
-            { 
-                new CustNullUserName2Model { CustID = 1, CTSCustID = 1, CustSubID = 0, UserName2 = "abc"} 
+            {
+                new CustNullUserName2Model { CustID = 1, CTSCustID = 1, CustSubID = 0, UserName2 = "abc"}
             };
 
             // Act
@@ -220,10 +135,12 @@
             ulong lastCTSCustId = 1;
             var isCustSub = true;
             var rowSize = 50;
-            var expectedData = new ScannedCustModel() { CustList = new List<CustNullUserName2Model>()
-            { 
+            var expectedData = new ScannedCustModel()
+            {
+                CustList = new List<CustNullUserName2Model>()
+            {
                 new CustNullUserName2Model {  CustID = 1} },
-                LastCTSCustID = 2 
+                LastCTSCustID = 2
             };
 
             // Act

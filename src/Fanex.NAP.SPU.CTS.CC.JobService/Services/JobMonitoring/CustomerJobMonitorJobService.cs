@@ -3,6 +3,8 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -16,9 +18,9 @@
 
     public interface ICustomerJobMonitorJobService
     {
-        Task<bool> ScanMissingCustomer(int batchSize, int externalSize, int addMinute);
+        Task<bool> ScanMissingCustomer(int internalBatchSize, int externalBatchSize, int addSecond);
 
-        Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addMinute);
+        Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addSecond);
 
         Task<bool> ScanIncorrectCustomerInfo(int batchSize);
     }
@@ -28,24 +30,27 @@
     {
         //private readonly string serviceName;
 
-        private readonly ICTSCustomerService ctscustomerService;
-        private readonly ISentryClient sentryClient;
-        private readonly IIncorrectDataMonitoringService incorrectDataMonitoringService;
-        private readonly ICustomerJobMonitorService customerJobMonitorService;
-        private readonly ISystemParameterServices systemParameterServices;
+        private readonly ICTSCustomerService _ctscustomerService;
+        private readonly ISentryClient _sentryClient;
+        private readonly IIncorrectDataMonitoringService _incorrectDataMonitoringService;
+        private readonly ICustomerJobMonitorService _customerJobMonitorService;
+        private readonly IMissingCustomerService _missingCustomerService;
+        private readonly ISystemParameterServices _systemParameterServices;
 
         public CustomerJobMonitorJobService(
             ISentryClient sentryClient,
             IIncorrectDataMonitoringService incorrectDataMonitoringService,
             ICustomerJobMonitorService customerJobMonitorService,
             ISystemParameterServices systemParameterServices,
-            ICTSCustomerService ctscustomerService)
+            ICTSCustomerService ctscustomerService,
+            IMissingCustomerService missingCustomerService)
         {
-            this.sentryClient = sentryClient;
-            this.incorrectDataMonitoringService = incorrectDataMonitoringService;
-            this.customerJobMonitorService = customerJobMonitorService;
-            this.systemParameterServices = systemParameterServices;
-            this.ctscustomerService = ctscustomerService;
+            _sentryClient = sentryClient;
+            _incorrectDataMonitoringService = incorrectDataMonitoringService;
+            _customerJobMonitorService = customerJobMonitorService;
+            _systemParameterServices = systemParameterServices;
+            _ctscustomerService = ctscustomerService;
+            _missingCustomerService = missingCustomerService;
             //this.serviceName = "CustomerJobMonitor";
         }
 
@@ -54,48 +59,43 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2971:LINQ expressions should be simplified", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S109:Magic numbers should not be used", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "<Pending>")]
-        public Task<bool> ScanMissingCustomer(int batchSize, int externalSize, int addMinute)
+        public Task<bool> ScanMissingCustomer(int internalBatchSize, int externalBatchSize, int addSecond)
         {
             try
             {
-                int addTime = (addMinute == 0) ? 15 : addMinute;
-                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
-                var toDate = fromDate?.AddMinutes(addMinute);
+                var fromCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
+                var lastCustID = _systemParameterServices.GetLastScannedId(CTS_SystemParameters.CTSCustomer_LastInsertCustID);
+                var toCustID = _missingCustomerService.GetLastScannedCustIDByScannedSecondTime(
+                    (int)fromCustID, 
+                    (int)lastCustID, 
+                    addSecond);
 
-                if (fromDate != null && toDate <= DateTime.Now.AddMinutes(-addMinute))
+                if (toCustID.HasValue)
                 {
-                    var lastScannedCustID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
-                    var lastScannedCustSubID = systemParameterServices.GetLastScannedId(CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
+                    var scanCustomer = default(ScanLatencyCustomerModel);
 
-                    var mainCusts = customerJobMonitorService.GetCustInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustID);
-                    var custSubs = customerJobMonitorService.GetCustSubInfoFromMainDBForMonitor(externalSize, toDate.Value, lastScannedCustSubID);
-                    var customers = mainCusts.NewCustomers?.ToList().Concat(custSubs.NewCustomers);
-
-                    if (customers != null && customers.Any())
+                    do
                     {
-                        var missingCustomers = new List<MissingCustomerCompareEntity>();
+                        scanCustomer = _missingCustomerService.ScanLatencyCustomer((int)fromCustID, (int)toCustID, externalBatchSize);
 
-                        var customerChunks = customers.Chunk(batchSize);
-
-                        foreach (var custBatch in customerChunks)
+                        if (scanCustomer.ScanLatencyCustomers.IsNotNullOrEmpty() && scanCustomer.NextScannedCustID.HasValue)
                         {
-                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(custBatch));
+                            fromCustID = scanCustomer.NextScannedCustID.Value;
+
+                            var missingCustomers = new List<int>();
+
+                            foreach (var customerWithBatch in scanCustomer.ScanLatencyCustomers.Chunk(internalBatchSize))
+                            {
+                                var missingCusts = _missingCustomerService.CheckMissingCustomer(customerWithBatch.Select(x => x.CustID));
+                                missingCustomers.AddRange(missingCusts);
+                            }
+
+                            MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.NewCustomer_Missing, internalBatchSize);
                         }
 
-                        MonitorNewCustomers(new InsertMissingCustomerModel
-                        {
-                            CustomerInfo = customers,
-                            MissingCustomers = missingCustomers,
-                            MissingCustomerIssueType = JobMonitor_IssueType.NewCustomer_Missing
-                        }, batchSize);
+                    } while (scanCustomer.ScanLatencyCustomers.IsNotNullOrEmpty());
 
-                        UpdateLastScanCustomer(mainCusts.MaxScannedCustomerID, custSubs.MaxScannedCustomerID);
-                    }
-
-                    if (customers != null && !customers.Any() && lastScannedCustID != 0 && lastScannedCustSubID != 0)
-                    {
-                        systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedTime);
-                    }
+                    _systemParameterServices.UpdateTimingExecution(toCustID.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
                 }
 
                 return Task.FromResult(true);
@@ -107,47 +107,38 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
 
                 return Task.FromResult(false);
             }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1854:Unused assignments should be removed", Justification = "<Pending>")]
-        public Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addMinute)
+        public Task<bool> ScanMissingReactivatedCustomer(int batchSize, int addSecond)
         {
             try
             {
-                int addTime = (addMinute == 0) ? 60 : addMinute;
-                var fromDate = systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
-                var toDate = fromDate?.AddMinutes(addMinute);
+                var fromDate = _systemParameterServices.GetLastScannedDateTime(CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
+                var toDate = fromDate?.AddSeconds(addSecond);
 
-                if (fromDate != null && toDate != null && toDate <= DateTime.Now.AddMinutes(-addMinute))
+                if (fromDate != null && toDate <= DateTime.Now.AddSeconds(-addSecond))
                 {
-                    var custToReactive = ctscustomerService.GetReactivatedCustomers(fromDate, toDate);
+                    var custToReactive = _ctscustomerService.GetReactivatedCustomers(fromDate, toDate);
 
-                    if (custToReactive != null && custToReactive.Any())
+                    if (custToReactive.IsNotNullOrEmpty())
                     {
-                        var missingCustomers = new List<MissingCustomerCompareEntity>();
+                        var missingCustomers = new List<int>();
 
-                        var customerChunks = custToReactive.Chunk(batchSize);
-
-                        foreach (var custBatch in customerChunks)
+                        foreach (var custToReactiveWithBatch in custToReactive.Chunk(batchSize))
                         {
-                            var input = custBatch.Select(c => new MonitoringNewCustomerEntity { CustID = c.CustID, CustSubID = 0 });
-
-                            missingCustomers.AddRange(customerJobMonitorService.CheckMissingCustomer(input));
+                            var missingCust = _missingCustomerService.CheckMissingCustomer(custToReactiveWithBatch.Select(x => (int)x.CustID));
+                            missingCustomers.AddRange(missingCust);
                         }
 
-                        MonitorNewCustomers(new InsertMissingCustomerModel
-                        {
-                            CustomerInfo = Enumerable.Empty<MonitoringNewCustomerEntity>(),
-                            MissingCustomers = missingCustomers,
-                            MissingCustomerIssueType = JobMonitor_IssueType.ReactivatedCustomer_Missing
-                        }, batchSize);
+                        MonitorMissingCustomers(missingCustomers, JobMonitor_IssueType.ReactivatedCustomer_Missing, batchSize);
                     }
 
-                    systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
+                    _systemParameterServices.UpdateTimingExecution(toDate.Value.ToString(CONVERT_TO_SQL_DATETIME), CTS_SystemParameters.JobMonitoring_ReactivatedCustomerLastScannedTime);
                 }
 
                 return Task.FromResult(true);
@@ -159,7 +150,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
                 return Task.FromResult(false);
             }
         }
@@ -170,11 +161,11 @@
         {
             try
             {
-                var lastCTSCustId = systemParameterServices.GetLastScannedId2(CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                var lastCTSCustId = _systemParameterServices.GetLastScannedId2(CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
 
                 if (lastCTSCustId > 0)
                 {
-                    var result = customerJobMonitorService.CheckIncorrectCustomerInfo(lastCTSCustId);
+                    var result = _customerJobMonitorService.CheckIncorrectCustomerInfo(lastCTSCustId);
 
                     if (result != null)
                     {
@@ -187,7 +178,7 @@
                             && result.NextScannedCTSCustId > 0
                             && result.NextScannedCTSCustId > lastCTSCustId)
                         {
-                            systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
+                            _systemParameterServices.UpdateTimingExecution(result.NextScannedCTSCustId.ToString(), CTS_SystemParameters.JobMonitoring_NewCustomer_LastCTSCustID);
                         }
                     }
                 }
@@ -201,31 +192,18 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
 
                 return Task.FromResult(false);
             }
         }
 
         #region Private Methods
-
-        private void MonitorNewCustomers(InsertMissingCustomerModel newCustomers, int batchSize)
+        private void MonitorMissingCustomers(IEnumerable<int> missingsCustomer, JobMonitor_IssueType missingCustomerIssueType, int batchSize)
         {
-            if (newCustomers.MissingCustomers.Any())
+            if (missingsCustomer.IsNotNullOrEmpty())
             {
-                InsertMissingCustomer(newCustomers, batchSize);
-            }
-
-            InsertNullCategoryCustomer(newCustomers, batchSize);
-        }
-
-        private void InsertMissingCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
-        {
-            if (newCustomers.MissingCustomers.Any())
-            {
-                var missingCustomers = newCustomers.MissingCustomers.Select(c => c.CustID).Distinct();
-
-                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomers, newCustomers.MissingCustomerIssueType, batchSize);
+                _incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingsCustomer.Distinct().Select(x => (long)x), missingCustomerIssueType, batchSize);
             }
         }
 
@@ -233,53 +211,9 @@
         {
             if (missingCustomerInfo.Any())
             {
-                incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomerInfo.Distinct(), JobMonitor_IssueType.NewCustomer_IncorrectCustInfo, batchSize);
+                _incorrectDataMonitoringService.InsertIncorrectDataMonitoring(missingCustomerInfo.Distinct(), JobMonitor_IssueType.NewCustomer_IncorrectCustInfo, batchSize);
             }
         }
-
-        private void InsertNullCategoryCustomer(InsertMissingCustomerModel newCustomers, int batchSize)
-        {
-            if (newCustomers.CustomerInfo.Any())
-            {
-                var custToCheckCategory = newCustomers.CustomerInfo.Where(c => c.RoleID == 1
-                                                                           && !(newCustomers.MissingCustomers.Select(a => a.CustID).Contains(c.CustID)
-                                                                           && newCustomers.MissingCustomers.Select(a => a.CustSubID).Contains(c.CustSubID)));
-                if (custToCheckCategory.Any())
-                {
-                    var nullCategory = GetNullCategoryCustomers(custToCheckCategory.Select(c => (long)c.CustID).Distinct(), batchSize);
-
-                    incorrectDataMonitoringService.InsertIncorrectDataMonitoring(nullCategory, JobMonitor_IssueType.NewCustomer_NullCategory, batchSize);
-                }
-            }
-        }
-
-        private IEnumerable<long> GetNullCategoryCustomers(IEnumerable<long> custIds, int batchSize)
-        {
-            if (custIds != null && custIds.Any())
-            {
-                var custCategories = customerJobMonitorService.GetCustomerCategoryToMonitor(custIds, batchSize);
-
-                var nullCategories = custCategories.Where(c => c.CurrentCategoryID == null);
-
-                return nullCategories.Any() ? nullCategories.Select(c => c.CustID) : Enumerable.Empty<long>();
-            }
-
-            return Enumerable.Empty<long>();
-        }
-
-        private void UpdateLastScanCustomer(long? maxScannedCustId, long? maxScannedCustSubId)
-        {
-            if (maxScannedCustId != null)
-            {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustId.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustID);
-            }
-
-            if (maxScannedCustSubId != null)
-            {
-                systemParameterServices.UpdateTimingExecution(maxScannedCustSubId.ToString(), CTS_SystemParameters.JobMonitor_NewCustomerLastScannedCustSubID);
-            }
-        }
-
         #endregion Private Methods
     }
 }

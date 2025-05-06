@@ -1,8 +1,8 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities
 {
     using System;
 
-    public class CustomerMainDBModel
+    public class CustomerMainDBEntity
     {
         private DateTime createdDate;
 
@@ -57,5 +57,13 @@
         public bool IsLicenseeVIP { get; set; }
 
         public bool IsLicenseeBA { get; set; }
+
+        public DateTime? CustInfoRepUpdateTime { get; set; }
+
+        public DateTime? DepCustSuperRepUpdateTime { get; set; }
+
+        public DateTime? SiteRepUpdateTime { get; set; }
+
+        public DateTime? CustProductStatusRepUpdateTime { get; set; }
     }
 }

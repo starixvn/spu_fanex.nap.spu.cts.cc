@@ -18,7 +18,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustIds) && SourceType >= 0;
+            return true;
         }
     }
 }

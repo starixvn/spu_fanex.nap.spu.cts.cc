@@ -43,6 +43,7 @@
         {
             TVS_LastScanDateTime = 2,
             RobotAccountLastScannedTime = 3,
+            CTSCustomer_LastInsertCustID = 7,
             MatchMonitorLastScannedTrans = 20,
             JobMonitor_NewCustomerLastScannedTime = 67,
             ReactivatedCustomerLastScannedDate = 76,
@@ -85,7 +86,9 @@
             SabaDangerLevel_Agency_LastHistoryID = 181,
             NormalDangerousAssociationCheck_LastCTSAssDevID = 183,
             NormalDangerousAssociationScan_LastScannedID = 184,
-            JobMonitoring_ReactivatedCustomerLastScannedTime = 185
+            JobMonitoring_ReactivatedCustomerLastScannedTime = 185,
+            ScanLatencyCustomer_FromCustID = 188,
+            ScanReactivatedLatencyCustomer_LastLogTime = 189
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -207,6 +210,7 @@
             NewCustomer_IncorrectCustInfo = 3,
             NewCustomer_TotalUnresolvedMissingCustomers = 4,
             ReactivatedCustomer_Missing = 50,
+            ReactivatedCustomer_IncorrectCustInfo = 51,
             Realtime_NewPlaceBetInactiveCategory = 100,
             Realtime_NullCategory = 101,
             Realtime_ExcessiveGerneralChanges = 102,
@@ -216,6 +220,7 @@
             Classification_MissingTVSProblemAccount = 202,
             Classification_ExcessiveGerneralNormalInsert = 203,
             Classification_ExcessiveBySportNormalInsert = 204,
+            LatencyCustomer_Missing = 300,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 

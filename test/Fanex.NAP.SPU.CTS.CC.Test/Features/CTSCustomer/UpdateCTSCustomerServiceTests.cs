@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.Transform.CTSCustomer
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
@@ -98,7 +99,7 @@
         [Fact]
         public void GetCustomerFromMainDBForUpdate_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<CustomerMainDBModel>
+            var expectedResult = new List<CustomerMainDBEntity>
             {
                 CreateSampleCustomerMainDBModel()
             };
@@ -112,7 +113,7 @@
         [Fact]
         public void GetCustomerFromCTSForUpdate_WhenSuccess_ReturnData()
         {
-            var expectedResult = new List<CustomerMainDBModel>
+            var expectedResult = new List<CustomerMainDBEntity>
             {
                 CreateSampleCustomerMainDBModel()
             };
@@ -126,9 +127,9 @@
         [Fact]
         public void CompareCustomerInfo_WhenSuccess_ReturnData()
         {
-            var custFromCTS = new List<CustomerMainDBModel>
+            var custFromCTS = new List<CustomerMainDBEntity>
             {
-                new CustomerMainDBModel
+                new CustomerMainDBEntity
                 {
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
@@ -150,9 +151,9 @@
                 }
             };
 
-            var custFromMain = new List<CustomerMainDBModel>
+            var custFromMain = new List<CustomerMainDBEntity>
             {
-                new CustomerMainDBModel
+                new CustomerMainDBEntity
                 {
                     CreatedDate = DateTime.Now,
                     Currency = "RM",
@@ -193,10 +194,10 @@
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        private CustomerMainDBModel CreateSampleCustomerMainDBModel()
+        private CustomerMainDBEntity CreateSampleCustomerMainDBModel()
         {
             var rd = new Random();
-            var data = new CustomerMainDBModel
+            var data = new CustomerMainDBEntity
             {
                 CreatedDate = DateTime.Now,
                 Currency = "RM",

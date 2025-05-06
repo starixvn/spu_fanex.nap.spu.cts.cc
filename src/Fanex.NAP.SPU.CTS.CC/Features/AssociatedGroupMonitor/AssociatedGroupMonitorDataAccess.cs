@@ -77,6 +77,7 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "<Pending>")]
         public IEnumerable<CustomerInfoMainDBEntity> GetCustomerInfoMainDB(string custIdList, int sourceType)
         {
             try
@@ -87,7 +88,9 @@
                     SourceType = sourceType
                 };
 
-                return repository.Fetch<CustomerInfoMainDBEntity>(criteria);
+                (var custInfos, var missingCusts) = repository.FetchMultiple<CustomerInfoMainDBEntity, int>(criteria);
+
+                return custInfos;
             }
             catch (Exception ex)
             {

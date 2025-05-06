@@ -1,0 +1,141 @@
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer
+{
+    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.MissingLatencyCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
+    using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Criteria;
+    using Fanex.NAP.SPU.CTS.Shares;
+    using System.Collections.Generic;
+    using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
+
+    public interface IMissingCustomerDataAccess
+    {
+        void InsertMissingCustomerByLatencyToQueue(string custIds, JobMonitor_IssueType jobMonitor_IssueType);
+
+        InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds);
+
+        #region ScanLatencyCustomer
+        int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime);
+
+        ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize);
+
+        IEnumerable<int> CheckMissingCustomer(string custIDs);
+        #endregion
+
+        #region InsertLatencyCustomer
+        IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize);
+
+        void CompleteLatencyCustomerFromQueue(string customerJson);
+        #endregion
+    }
+
+    public class MissingCustomerDataAccess : IMissingCustomerDataAccess
+    {
+        private readonly IDynamicRepository _repository;
+
+        public MissingCustomerDataAccess()
+        {
+            _repository = new DynamicRepository();
+        }
+
+        public void InsertMissingCustomerByLatencyToQueue(string custIds, JobMonitor_IssueType jobMonitor_IssueType)
+        {
+            var criteria = new InsertMissingCustomerLatencyToQueueCriteria
+            {
+                CustomerJson = custIds,
+                DataSource = (int)jobMonitor_IssueType
+            };
+
+            _repository.Execute(criteria);
+        }
+
+        public InsertCustomerModel CheckCustomerInfoFromMainDB(string custIds)
+        {
+            var criteria = new GetCustomerInfoFromMainDBCriteria
+            {
+                CustIds = custIds,
+                SourceType = (int)UpdateCustomer.ForNewCustomer
+            };
+
+            (var custInfos, var missingCusts) = _repository.FetchMultiple<CustomerMainDBEntity, int>(criteria);
+
+            return new InsertCustomerModel
+            {
+                CustomerInfos = custInfos?.ToList() ?? new List<CustomerMainDBEntity>(),
+                MissingCustIds = missingCusts?.ToList() ?? new List<int>()
+            };
+        }
+
+        #region ScanLatencyCustomer
+        public int? GetLastScannedCustIDByScannedSecondTime(int fromCustID, int toCustID, int scannedTime)
+        {
+            var criteria = new GetLastScannedCustIDCriteria
+            {
+                FromCustID = fromCustID,
+                ToCustID = toCustID,
+                ScannedTime = scannedTime
+            };
+
+            var result = _repository.Fetch<int>(criteria);
+
+            return result.IsNotNullOrEmpty() ? result.FirstOrDefault() : null;
+        }
+
+        public ScanLatencyCustomerModel ScanLatencyCustomer(int fromCustID, int toCustID, int batchSize)
+        {
+            var criteria = new ScanLatencyCustomerCriteria
+            {
+                FromCustID = fromCustID,
+                ToCustID = toCustID,
+                BatchSize = batchSize
+            };
+
+            var result = _repository.Fetch<ScanLatencyCustomerEntity>(criteria);
+
+            return new ScanLatencyCustomerModel
+            {
+                ScanLatencyCustomers = result,
+                NextScannedCustID = result.IsNotNullOrEmpty() ? result.Select(x => x.CustID).Max() : null
+            };
+        }
+
+        public IEnumerable<int> CheckMissingCustomer(string custIDs)
+        {
+            var criteria = new CheckMissingCustCriteria
+            {
+                CustomerListJson = custIDs,
+                LastCTSCustID = null,
+                QueryTypeID = (int)CustomerMonitor_QueryType.MissingCustomer
+            };
+
+            return _repository.Fetch<int>(criteria);
+        }
+        #endregion
+
+        #region InsertLatencyCustomer
+        public IEnumerable<GetLatencyCustomerFromQueueEntity> GetLatencyCustomerFromQueue(int batchSize)
+        {
+            var criteria = new GetLatencyCustomerFromQueueCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return _repository.Fetch<GetLatencyCustomerFromQueueEntity>(criteria);
+        }
+
+        public void CompleteLatencyCustomerFromQueue(string customerJson)
+        {
+            var criteria = new CompleteLatencyCustomerFromQueueCriteria
+            {
+                CustomerJson = customerJson
+            };
+
+            _repository.Execute(criteria);
+        }
+        #endregion
+    }
+}
