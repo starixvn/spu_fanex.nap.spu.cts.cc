@@ -7,26 +7,16 @@
 
     public interface ITWClassificationJobService
     {
-<<<<<<< .mine
         Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize);
-=======
+
         Task<bool> TWResponseHaifaService();
->>>>>>> .theirs
     }
 
     public class TWClassificationJobService : ITWClassificationJobService
-    {
-<<<<<<< .mine
-        private readonly string serviceName;
+    {        
         private readonly ISentryClient _sentryClient;
         private readonly IAppSettings _appSettings;
         private readonly ITWClassificationService _twClassificationService;
-=======
-        private readonly ITWClassificationService twClassificationService;
-
-
-
->>>>>>> .theirs
 
         public TWClassificationJobService(ISentryClient sentryClient,
             IAppSettings appSettings,
@@ -34,12 +24,11 @@
         {            
             _sentryClient = sentryClient;
             _appSettings = appSettings;
-            _twClassificationService = twClassificationService;
-            serviceName = "TWClassification";
+            _twClassificationService = twClassificationService;         
         }
         public Task<bool> TWResponseHaifaService()
         {
-            return twClassificationService.SendDataToTW();
+            return _twClassificationService.SendDataToTW();
         }
 
         public Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize)

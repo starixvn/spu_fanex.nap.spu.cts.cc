@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Entities
+﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
     using System;
 

@@ -1,19 +1,20 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ITWClassificationService
     {
-        IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize);
-        Task<bool> SendDataToTW();
+        IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize);        
 
         void PreprocessSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs);
 
         void CompleteSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs);
+
+        Task<bool> SendDataToTW();
     }
 
     public class TWClassificationService : ITWClassificationService
@@ -49,11 +50,7 @@
 
                 _twClassificationDataAccess.CompleteSpecialLicSubCCScan(ids);
             }            
-        }
-        public TWClassificationService(ITWClassificationDataAccess twClassificationDataAccess)
-        {
-            this._twClassificationDataAccess = twClassificationDataAccess;
-        }
+        }       
 
         public async Task<bool> SendDataToTW()
         {

@@ -1,22 +1,17 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
-    using Fanex.Data.Repository;    
+    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Criteria;
     using System.Collections.Generic;
-<<<<<<< .mine
-
-=======
-    using Data.Repository;
->>>>>>> .theirs
 
     public interface ITWClassificationDataAccess
     {
-<<<<<<< .mine
         IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize);
 
-=======
         IEnumerable<TWCustomerResponse> GetSpecialLicSubCCs();
+
         void UpdateCustomerResponseStatus(long id, int processStatus, int responseHttpCode);
->>>>>>> .theirs
+
         void PreprocessSpecialLicSubCCScan(string custIdList);
 
         void CompleteSpecialLicSubCCScan(string ids);
@@ -29,7 +24,6 @@
         {
             repository = new DynamicRepository();
         }
-        private readonly IDynamicRepository repository;
 
         public IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize)
         {
@@ -53,7 +47,14 @@
 
         public void CompleteSpecialLicSubCCScan(string ids)
         {
-            var criteria = new SpecialLicSubCCScanCompleteCriteria()
+            var criteria = new SpecialLicSubCCScanCompleteCriteria()             
+            {
+                IDs = ids
+            };
+
+            repository.Execute(criteria);
+        }
+
         public IEnumerable<TWCustomerResponse> GetSpecialLicSubCCs()
         {
             var criteria = new GetSpecialLicSubCCCriteria();
@@ -68,12 +69,6 @@
                 ID = id,
                 ProcessStatus = processStatus,
                 ResponseHttpCode = responseHttpCode
-            };
-
-            repository.Execute(criteria);
-        }
-            {
-                IDs = ids
             };
 
             repository.Execute(criteria);
