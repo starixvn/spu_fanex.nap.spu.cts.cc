@@ -1,19 +1,55 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ITWClassificationService
     {
+        IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize);
         Task<bool> SendDataToTW();
+
+        void PreprocessSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs);
+
+        void CompleteSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs);
     }
 
     public class TWClassificationService : ITWClassificationService
     {
         private readonly ITWClassificationDataAccess _twClassificationDataAccess;
 
+
+        public TWClassificationService(ITWClassificationDataAccess twClassificationDataAccess)
+        {
+            this._twClassificationDataAccess = twClassificationDataAccess;
+        }
+
+        public IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize)
+        {
+            return _twClassificationDataAccess.GetSpecialLicSubCCScan(batchSize);
+        }
+
+        public void PreprocessSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs)
+        {
+            if (custLicSubs.Any())
+            {
+                var custIdList = string.Join(",", custLicSubs.Select(x => x.CustID).Distinct());
+
+                _twClassificationDataAccess.PreprocessSpecialLicSubCCScan(custIdList);
+            }
+        }
+
+        public void CompleteSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs)
+        {
+            if (custLicSubs.Any())
+            {
+                var ids = string.Join(",", custLicSubs.Select(x => x.ID));
+
+                _twClassificationDataAccess.CompleteSpecialLicSubCCScan(ids);
+            }            
+        }
         public TWClassificationService(ITWClassificationDataAccess twClassificationDataAccess)
         {
             this._twClassificationDataAccess = twClassificationDataAccess;

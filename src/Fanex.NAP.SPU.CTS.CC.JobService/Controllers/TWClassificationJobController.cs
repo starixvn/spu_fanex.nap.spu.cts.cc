@@ -1,28 +1,47 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
+<<<<<<< .mine
+    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Microsoft.AspNetCore.Mvc;
+    using Sentry;
+    using System.Threading.Tasks;
+
+    [ApiController]
+=======
     using System.Threading.Tasks;
     using Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
 
     [ApiController]
-    [Route("api/twclassification")]
+>>>>>>> .theirs
+    [Route("api/twClassificationJob")]
+<<<<<<< .mine
     public class TWClassificationJobController : ControllerBase
+=======
+    public class TWClassificationJobController : ControllerBase
+>>>>>>> .theirs
     {
-        private readonly ISentryClient sentryClient;
-        private readonly ITWClassificationJobService twClassificationJobService;
+        private readonly ISentryClient _sentryClient;
+        private readonly ITWClassificationJobService _twClassificationJobService;
 
         public TWClassificationJobController(ISentryClient sentryClient,
-            ITWClassificationJobService twClassificationJobService)
+            ITWClassificationJobService twClassificationJobService) 
         {
-            this.sentryClient = sentryClient;
-            this.twClassificationJobService = twClassificationJobService;
+            _sentryClient = sentryClient;
+            _twClassificationJobService = twClassificationJobService;
         }
 
+        [HttpPost("ScanTWSpecialLicSubCC")]
+        public async Task<bool> ScanTWSpecialLicSubCC([FromForm] int batchInternalSize)
+        {
+            return await _twClassificationJobService.ScanTWSpecialLicSubCC(batchInternalSize);
+        }
         [HttpPost("TWResponseHaifaService")]
         public async Task<bool> TWResponseHaifaService()
         {
-            return await this.twClassificationJobService.TWResponseHaifaService();
+            return await _twClassificationJobService.TWResponseHaifaService();
         }
+
     }
 }
