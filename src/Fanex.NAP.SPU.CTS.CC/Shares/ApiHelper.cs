@@ -65,6 +65,60 @@
             }
         }
 
+        public static async Task<APIHelperModel<TResult>> PostWithResponseHttpCode<TResult>(string url, object param, double timeOutbySeconds = 120)
+        {
+            using (var web = new HttpClient())
+            {
+                var content = JsonConvert.SerializeObject(param);
+
+                var buffer = Encoding.UTF8.GetBytes(content);
+
+                var byteContent = new ByteArrayContent(buffer);
+
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                web.Timeout = TimeSpan.FromSeconds(timeOutbySeconds);
+
+                var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
+
+                string responseString =
+                    response.IsSuccessStatusCode
+                        ? await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                        : string.Empty;
+
+                return new APIHelperModel<TResult>
+                {
+                    Data = response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<TResult>(responseString) : default,
+                    StatusCode = response.StatusCode,
+                    IsSuccess = response.IsSuccessStatusCode
+                };
+            }
+        }
+
+        public static async Task<APIHelperModel> PostWithResponseHttpCode(string url, object param, double timeOutbySeconds = 120)
+        {
+            using (var web = new HttpClient())
+            {
+                var content = JsonConvert.SerializeObject(param);
+
+                var buffer = Encoding.UTF8.GetBytes(content);
+
+                var byteContent = new ByteArrayContent(buffer);
+
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                web.Timeout = TimeSpan.FromSeconds(timeOutbySeconds);
+
+                var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
+
+                return new APIHelperModel
+                {
+                    StatusCode = response.StatusCode,
+                    IsSuccess = response.IsSuccessStatusCode
+                };
+            }
+        }
+
         public static async Task<TResult> PostWithProxy<TResult>(string url, object param)
         {
             var proxy = new WebProxy
