@@ -292,5 +292,13 @@
             Member = 1,
             Agency = 2
         }
+
+        public enum TWClassification
+        {
+            ProcessStatus_ResponseFail = 3,
+            ProcessStatus_ResponseComplete = 4,
+            HttpSuccessCode = 200,
+            HttpFailCode = 400
+        }
     }
 }
