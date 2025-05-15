@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Controllers
 {
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
+    using Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System.Threading.Tasks;
@@ -24,6 +24,7 @@
         {
             return await _twClassificationJobService.ScanTWSpecialLicSubCC(batchInternalSize);
         }
+
         [HttpPost("TWResponseHaifaService")]
         public async Task<bool> TWResponseHaifaService()
         {

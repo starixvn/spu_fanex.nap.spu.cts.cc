@@ -4,6 +4,8 @@
     using System;
     using System.Threading.Tasks;
     using Features.TWClassification;
+    using System.Linq;
+    using Fanex.NAP.SPU.CTS.Shares;
 
     public interface ITWClassificationJobService
     {
@@ -13,19 +15,19 @@
     }
 
     public class TWClassificationJobService : ITWClassificationJobService
-    {        
-        private readonly ISentryClient _sentryClient;
-        private readonly IAppSettings _appSettings;
+    {
+        private readonly string serviceName;
+        private readonly ISentryClient _sentryClient;        
         private readonly ITWClassificationService _twClassificationService;
 
-        public TWClassificationJobService(ISentryClient sentryClient,
-            IAppSettings appSettings,
+        public TWClassificationJobService(ISentryClient sentryClient,          
             ITWClassificationService twClassificationService)
         {            
-            _sentryClient = sentryClient;
-            _appSettings = appSettings;
-            _twClassificationService = twClassificationService;         
+            _sentryClient = sentryClient;            
+            _twClassificationService = twClassificationService;
+            serviceName = "TWClassification";
         }
+
         public Task<bool> TWResponseHaifaService()
         {
             return _twClassificationService.SendDataToTW();
@@ -35,11 +37,25 @@
         {
             try
             {
-                
+                bool isContinue;
+
+                do
+                {
+                    var custLicSubs = _twClassificationService.GetSpecialLicSubCCScan(batchInternalSize);
+
+                    isContinue = custLicSubs != null && custLicSubs.Any();
+
+                    if (isContinue)
+                    {
+                        _twClassificationService.PreprocessSpecialLicSubCCScan(custLicSubs);
+
+                        _twClassificationService.CompleteSpecialLicSubCCScan(custLicSubs);
+                    }
+                } while (isContinue);                
             }
             catch (Exception ex)
             {
-                _sentryClient.CaptureException(ex);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, _sentryClient);
 
                 return Task.FromResult(false);
             }

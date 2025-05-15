@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Criteria;
+    using Criteria;
     using System.Collections.Generic;
 
     public interface ITWClassificationDataAccess
