@@ -46,6 +46,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer;
@@ -133,6 +134,15 @@
             RegisterNormalDangerousAssociationCheck(services);
 
             RegisterNormalDangerousAssociationScan(services);
+
+            RegisterTWClassification(services);
+        }
+
+        private static void RegisterTWClassification(IServiceCollection services)
+        {
+            services.AddSingleton<ITWClassificationDataAccess, TWClassificationDataAccess>();
+            services.AddSingleton<ITWClassificationService, TWClassificationService>();
+            services.AddSingleton<ITWClassificationJobService, TWClassificationJobService>();
         }
 
         private static void RegisterNormalDangerousAssociationScan(IServiceCollection services)

@@ -48,5 +48,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\CustomerClassification\NormalDangerousAssociation\NormalDangerousAssociationScan\Entities\" />
+	  <Folder Include="Features\TWClassification\Criteria\" />
+	  <Folder Include="Features\TWClassification\Entities\" />
 	</ItemGroup>
 </Project>
