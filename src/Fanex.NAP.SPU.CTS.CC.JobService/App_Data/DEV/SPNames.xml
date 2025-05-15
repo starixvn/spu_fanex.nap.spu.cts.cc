@@ -260,4 +260,9 @@
 		<Setting Key="CTS_DC_CustClassification_DgrAssociation_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_Insert" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
+
+	<Function name="TWClassification">
+		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
 </Functions>
