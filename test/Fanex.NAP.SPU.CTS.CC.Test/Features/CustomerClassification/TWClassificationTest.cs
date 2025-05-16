@@ -19,6 +19,7 @@
             _twClassificationService = new TWClassificationService(_twClassificationDataAccess);
         }
 
+        #region ScanTWSpecialLicSubCC
         [Fact]        
         public void GetSpecialLicSubCCScan_WhenSuccess()
         {
@@ -148,5 +149,129 @@
             var exception = Assert.Throws<Exception>(() => _twClassificationService.CompleteSpecialLicSubCCScan(custLicSubs));
             Assert.Equal(expectedException.Message, exception.Message);
         }
+        #endregion
+
+        #region TWResponseHaifa
+        [Fact]
+        public void GetSpecialLicSubCCResponse_WhenSuccess()
+        {
+            // Arrange
+            var batchSize = 2;
+            var expected = new List<SpecialLicSubCCResponseGetEntity>
+            {
+                new SpecialLicSubCCResponseGetEntity
+                {
+                    ID = 1,
+                    CustID = 1001,
+                    APICustomerClass = 1,
+                    LatestCustomerClass = 1,
+                    StatusCode = 0,
+                    ItemNameDisplay = "OK",
+                    ResponseTime = DateTime.Now,
+                    ResponseHttpCode = 200
+                },
+                new SpecialLicSubCCResponseGetEntity
+                {
+                    ID = 2,
+                    CustID = 1002,
+                    APICustomerClass = 2,
+                    LatestCustomerClass = 2,
+                    StatusCode = 1,
+                    ItemNameDisplay = "Error",
+                    ResponseTime = DateTime.Now,
+                    ResponseHttpCode = 500
+                }
+            };
+
+            _twClassificationDataAccess.GetSpecialLicSubCCResponse(batchSize).Returns(expected);
+
+            // Act
+            var result = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(expected.Count, result.Count());
+            Assert.Equal(expected[0].ID, result.First().ID);
+            Assert.Equal(expected[1].ID, result.Last().ID);
+        }
+
+        [Fact]
+        public void GetSpecialLicSubCCResponse_ThrowException()
+        {
+            // Arrange
+            var batchSize = 10;
+            var expectedException = new Exception("Database error");
+            _twClassificationDataAccess.GetSpecialLicSubCCResponse(batchSize).Returns(x => throw expectedException);
+
+            // Act & Assert
+            var ex = Assert.Throws<Exception>(() => _twClassificationService.GetSpecialLicSubCCResponse(batchSize));
+            Assert.Equal(expectedException.Message, ex.Message);
+        }
+
+        [Fact]
+        public void CompleteSpecialLicSubCCResponse_WhenSuccess()
+        {
+            // Arrange
+            var responseInfo = "[{\"ID\":1,\"ResponseStatus\":1}]";
+            string capturedResponseInfo = null;
+
+            _twClassificationDataAccess
+                .When(x => x.CompleteSpecialLicSubCCResponse(Arg.Any<string>()))
+                .Do(x => capturedResponseInfo = x.Arg<string>());
+
+            // Act
+            _twClassificationService.CompleteSpecialLicSubCCResponse(responseInfo);
+
+            // Assert
+            Assert.Equal(responseInfo, capturedResponseInfo);
+            _twClassificationDataAccess.Received(1).CompleteSpecialLicSubCCResponse(responseInfo);
+        }
+
+        [Fact]
+        public void CompleteSpecialLicSubCCResponse_ThrowException()
+        {
+            // Arrange
+            var responseInfo = "[{\"ID\":1,\"ResponseStatus\":1}]";
+            var expectedException = new Exception("Update failed");
+
+            _twClassificationDataAccess
+                .When(x => x.CompleteSpecialLicSubCCResponse(Arg.Any<string>()))
+                .Do(x => throw expectedException);
+
+            // Act & Assert
+            var ex = Assert.Throws<Exception>(() => _twClassificationService.CompleteSpecialLicSubCCResponse(responseInfo));
+            Assert.Equal(expectedException.Message, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void GetSpecialLicSubCCResponse_BatchSizeZeroOrNegative(int batchSize)
+        {
+            // Arrange
+            _twClassificationDataAccess.GetSpecialLicSubCCResponse(batchSize).Returns(new List<SpecialLicSubCCResponseGetEntity>());
+
+            // Act
+            var result = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void GetSpecialLicSubCCResponse_NullResult()
+        {
+            // Arrange
+            var batchSize = 5;
+            _twClassificationDataAccess.GetSpecialLicSubCCResponse(batchSize).Returns((IEnumerable<SpecialLicSubCCResponseGetEntity>)null);
+
+            // Act
+            var result = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
+
+            // Assert
+            Assert.Null(result);
+        }
+        #endregion
     }
 }
