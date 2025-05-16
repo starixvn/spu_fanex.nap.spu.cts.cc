@@ -28,7 +28,7 @@
 
         public IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize)
         {
-            var criteria = new SpecialLicSubCCScanGetCriteria() 
+            var criteria = new SpecialLicSubCCScanGetCriteria
             {
                 BatchSize = batchSize 
             };
@@ -38,7 +38,7 @@
 
         public void PreprocessSpecialLicSubCCScan(string custIdList)
         {
-            var criteria = new LicSubTaggingPreprocessCriteria()
+            var criteria = new LicSubTaggingPreprocessCriteria
             {
                 ListCustId = custIdList
             };
@@ -48,7 +48,7 @@
         
         public void CompleteSpecialLicSubCCScan(string ids)
         {
-            var criteria = new SpecialLicSubCCScanCompleteCriteria()             
+            var criteria = new SpecialLicSubCCScanCompleteCriteria     
             {
                 IDs = ids
             };

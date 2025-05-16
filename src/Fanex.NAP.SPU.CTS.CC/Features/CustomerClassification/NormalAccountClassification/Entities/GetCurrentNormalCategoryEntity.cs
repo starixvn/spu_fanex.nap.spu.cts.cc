@@ -9,5 +9,7 @@
         public bool IsNewCreated { get; set; }
 
         public bool IsProbationLastDay { get; set; }
+
+        public bool IsSpecialLicSubCC { get; set; } 
     }
 }

@@ -93,8 +93,10 @@
                                                       CategoryId = custCTS.CategoryID,
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
+                                                      IsSpecialLicSubCC = custCTS.IsSpecialLicSubCC,
                                                       IsRealtimeOnly = custMain.IsRealtimeOnly,                                                     
-                                                      ScanTaggingType = custMain.ScanTaggingType
+                                                      ScanTaggingType = custMain.ScanTaggingType,
+                                                      ScanSpecialLicSubType = custMain.ScanSpecialLicSubType
                                                   });
 
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())

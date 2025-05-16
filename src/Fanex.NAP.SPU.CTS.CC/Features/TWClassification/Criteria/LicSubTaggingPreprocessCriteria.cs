@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
 
     public class LicSubTaggingPreprocessCriteria : NonQueryCommand

@@ -51,7 +51,8 @@
             // Arrange
             var custInfos = new List<GetCurrentCustomerCategoryModel>() {
                 new GetCurrentCustomerCategoryModel {
-                     CustId = 1, CategoryId = 1, IsRealtimeOnly = true, IsNewCreated = false
+                     CustId = 1, CategoryId = 1, IsRealtimeOnly = true, IsNewCreated = false, ScanSpecialLicSubType = 1,
+                     IsSpecialLicSubCC = true, IsProbationLastDay = false, ScanTaggingType = 1
                 }
             };
            
