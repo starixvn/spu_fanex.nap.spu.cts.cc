@@ -8,9 +8,9 @@
     {
         IEnumerable<SpecialLicSubCCScanGetEntity> GetSpecialLicSubCCScan(int batchSize);
 
-        IEnumerable<TWCustomerResponse> GetSpecialLicSubCCs();
+        IEnumerable<SpecialLicSubCCResponseGetEntity> GetSpecialLicSubCCResponse(int batchSize);
 
-        void UpdateCustomerResponseStatus(long id, int processStatus, int responseHttpCode);
+        void CompleteSpecialLicSubCCResponse(string responseInfo);
 
         void PreprocessSpecialLicSubCCScan(string custIdList);
 
@@ -44,7 +44,7 @@
 
             repository.Execute(criteria);
         }
-
+        
         public void CompleteSpecialLicSubCCScan(string ids)
         {
             var criteria = new SpecialLicSubCCScanCompleteCriteria()             
@@ -55,20 +55,21 @@
             repository.Execute(criteria);
         }
 
-        public IEnumerable<TWCustomerResponse> GetSpecialLicSubCCs()
+        public IEnumerable<SpecialLicSubCCResponseGetEntity> GetSpecialLicSubCCResponse(int batchSize)
         {
-            var criteria = new GetSpecialLicSubCCCriteria();
+            var criteria = new SpecialLicSubCCResponseGetCriteria
+            {
+                BatchSize = batchSize
+            };
 
-            return repository.Fetch<TWCustomerResponse>(criteria);
+            return repository.Fetch<SpecialLicSubCCResponseGetEntity>(criteria);
         }
 
-        public void UpdateCustomerResponseStatus(long id, int processStatus, int responseHttpCode)
+        public void CompleteSpecialLicSubCCResponse(string responseInfo)
         {
-            var criteria = new CompleteSpecialLicSubCCCriteria
+            var criteria = new SpecialLicSubCCResponseCompleteCriteria
             {
-                ID = id,
-                ProcessStatus = processStatus,
-                ResponseHttpCode = responseHttpCode
+                ResponseInfo = responseInfo
             };
 
             repository.Execute(criteria);

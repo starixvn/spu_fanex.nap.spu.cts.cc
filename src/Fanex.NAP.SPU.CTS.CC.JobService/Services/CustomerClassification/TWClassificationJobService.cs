@@ -4,6 +4,8 @@
     using System;
     using System.Threading.Tasks;
     using Features.TWClassification;
+    using Fanex.NAP.SPU.CTS.Shares;
+    using System.ServiceProcess;
     using System.Linq;
     using Fanex.NAP.SPU.CTS.Shares;
 
@@ -11,7 +13,7 @@
     {
         Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize);
 
-        Task<bool> TWResponseHaifaService();
+        Task<bool> TWResponseHaifa(int batchSize);
     }
 
     public class TWClassificationJobService : ITWClassificationJobService
@@ -28,9 +30,27 @@
             serviceName = "TWClassification";
         }
 
-        public Task<bool> TWResponseHaifaService()
+        public Task<bool> TWResponseHaifa(int batchSize)
         {
-            return _twClassificationService.SendDataToTW();
+            try
+            {
+                if (batchSize > 0)
+                {
+                    _twClassificationService.SendDataToTW(batchSize);
+                }
+                //else
+                //{
+                //    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new Exception(), sentryClient);
+                //}
+            }
+            catch (Exception ex)
+            {
+                _sentryClient.CaptureException(ex);
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
         }
 
         public Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize)

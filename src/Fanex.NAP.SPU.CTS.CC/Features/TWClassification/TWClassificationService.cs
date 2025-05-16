@@ -3,8 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Newtonsoft.Json;
+    using System.Net.Http.Json;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Models;
 
     public interface ITWClassificationService
     {
@@ -14,7 +17,7 @@
 
         void CompleteSpecialLicSubCCScan(IEnumerable<SpecialLicSubCCScanGetEntity> custLicSubs);
 
-        Task<bool> SendDataToTW();
+        Task<bool> SendDataToTW(int batchSize);
     }
 
     public class TWClassificationService : ITWClassificationService
@@ -50,65 +53,48 @@
 
                 _twClassificationDataAccess.CompleteSpecialLicSubCCScan(ids);
             }            
-        }       
-
-        public async Task<bool> SendDataToTW()
+        }
+      
+        public async Task<bool> SendDataToTW(int batchSize)
         {
-            var customers = _twClassificationDataAccess.GetSpecialLicSubCCs();
-          
+            var customers = _twClassificationDataAccess.GetSpecialLicSubCCResponse(batchSize);
+            var completeResponses = new List<SpecialLicSubCCResponseCompleteModel>();
+
             foreach (var customer in customers)
             {
-                var isSuccess = await RetryPushToTWApi(customer, RetryPushCCToExternal);
-
-                if (!isSuccess)
+                var request = new SpecialLicSubCCRequestModel
                 {
-                    _twClassificationDataAccess.UpdateCustomerResponseStatus(
-                        customer.ID,
-                        (int)TWClassification.ProcessStatus_ResponseFail,
-                        (int)TWClassification.HttpFailCode); 
-                }
+                    CustID = customer.CustID,
+                    SpecialCustomerClass = customer.APICustomerClass,
+                    ResponseDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
+                    ErrorCode = customer.StatusCode,
+                    ErrorMessage = customer.ItemNameDisplay,
+                    HttpStatusCode = 200
+                };
+
+                var response = await CallApiTW(request);
+
+                completeResponses.Add(new SpecialLicSubCCResponseCompleteModel
+                {
+                    ID = customer.ID,
+                    ResponseStatus = response.ErrorCode,
+                    ResponseHttpCode = response.HttpStatusCode,
+                    ResponseTime = request.ResponseDateTime
+                });
             }
+
+            var responseJson = JsonConvert.SerializeObject(completeResponses);
+            _twClassificationDataAccess.CompleteSpecialLicSubCCResponse(responseJson);
 
             return true;
         }
 
-        #region Private methods
-        private async Task<bool> RetryPushToTWApi(TWCustomerResponse customer, int maxRetries)
+        #region Private method
+        private async Task<SpecialLicSubCCRequestModel> CallApiTW(SpecialLicSubCCRequestModel request)
         {
-            // delays for retry attempts (10s for 1st retry, 30s for 2nd retry)
-            var delays = new[] { 10000, 30000 };
-            var attempt = 0;
+            request.HttpStatusCode = 200;
 
-            while (attempt <= maxRetries)
-            {
-                var responseCode = await FakePostApi(customer);
-
-                if (responseCode == (int)TWClassification.HttpSuccessCode)
-                {
-                    _twClassificationDataAccess.UpdateCustomerResponseStatus(
-                        customer.ID,
-                        (int)TWClassification.ProcessStatus_ResponseComplete,
-                        responseCode);
-
-                    return true;
-                }
-
-                if (attempt == maxRetries)
-                {
-                    return false;
-                }
-
-                await Task.Delay(delays[Math.Min(attempt, delays.Length - 1)]);
-                attempt++;
-            }
-
-            return false;
-        }
-
-        private static async Task<int> FakePostApi(TWCustomerResponse data)
-        {
-            await Task.Delay(100);
-            return (int)TWClassification.HttpSuccessCode;
+            return request;
         }
         #endregion
     }
