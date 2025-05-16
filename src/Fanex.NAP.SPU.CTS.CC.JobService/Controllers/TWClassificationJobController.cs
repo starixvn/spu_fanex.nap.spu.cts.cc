@@ -30,6 +30,5 @@
         {
             return await _twClassificationJobService.TWResponseHaifa(batchSize);
         }
-
     }
 }

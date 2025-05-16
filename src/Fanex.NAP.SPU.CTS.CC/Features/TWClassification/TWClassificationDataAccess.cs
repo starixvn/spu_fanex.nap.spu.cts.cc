@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
-    using Fanex.Data.Repository;
+    using Data.Repository;
     using Criteria;
     using System.Collections.Generic;
 
@@ -20,6 +20,7 @@
     public class TWClassificationDataAccess : ITWClassificationDataAccess
     {        
         private readonly IDynamicRepository repository;
+
         public TWClassificationDataAccess()
         {
             repository = new DynamicRepository();
