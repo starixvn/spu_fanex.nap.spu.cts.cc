@@ -9,6 +9,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using static Fanex.NAP.SPU.CTS.Shares.IEnumerableExtention;
 
     public interface INormalAccountService
     {
@@ -19,6 +20,8 @@
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
         IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
+
+        void CompleteSpecialLicSubClassificationComplete(IEnumerable<InsertNormalAccountEntity> custs);
     }
 
     public class NormalAccountService : BaseCustomerClassificationService, INormalAccountService
@@ -68,16 +71,30 @@
                 return Enumerable.Empty<InsertNormalAccountEntity>();
             }
 
-            var custAfterProcessTWTagged = ProcessTWTaggedCust(custs);
+            var processTaggingCusts = custs.Select(x => new ProcessTaggingModel(x)).ToList();
+
+            var custAfterProcessTWTagged = ProcessTWTaggedCust(processTaggingCusts);
 
             var custAfterProcessAssWithPA = ProcessAssWithPACust(custAfterProcessTWTagged);
 
-            return custAfterProcessAssWithPA;
+            var custAfterCheckTWTaggedSpecialLicSub = ProcessTWTaggedSpecialLicSubCust(custAfterProcessAssWithPA);
+
+            var result = custAfterCheckTWTaggedSpecialLicSub.Select(x => new InsertNormalAccountEntity(x));
+            return result;
+        }
+
+        public void CompleteSpecialLicSubClassificationComplete(IEnumerable<InsertNormalAccountEntity> custs)
+        {
+            if (custs.IsNotNullOrEmpty())
+            {
+                var custIds = string.Join(",", custs.Where(x => x.ScanSpecialLicSubType == 1).Select(x => x.CustID).Distinct());
+                dataAccess.CompleteSpecialLicSubClassificationComplete(custIds);
+            }
         }
 
         #region private method
 
-        private IEnumerable<NormalAccountAfterCheckTWDetectionModel> ProcessTWTaggedCust(IEnumerable<GetNormalAccountEntity> custs)
+        private IEnumerable<ProcessTaggingModel> ProcessTWTaggedCust(IEnumerable<ProcessTaggingModel> custs)
         {
             var twTaggedCusts = GetGroupBettingAndRejectCustomer(custs.Where(x => x.ScanTaggingTWType == 1));
 
@@ -87,26 +104,39 @@
             var hashSetExcludedCustIds = new HashSet<int>(excludedCustIds);
             var twTaggedMeetConditions = twTaggedCusts.Where(x => hashSetExcludedCustIds.Contains(x.CustID));
 
-            var custAfterCheckTWTagged = MergeWithTWTaggedCust(custs, twTaggedMeetConditions);
+            var custAfterCheckTWTagged =
+                MergeWithOtherEnumerable(custs, twTaggedMeetConditions, (source, other) => source.MergeTWTaggedCust(other));
 
             return custAfterCheckTWTagged;
         }
 
-        private IEnumerable<InsertNormalAccountEntity> ProcessAssWithPACust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custAfterCheckTWTagged)
+        private IEnumerable<ProcessTaggingModel> ProcessAssWithPACust(IEnumerable<ProcessTaggingModel> custAfterCheckTWTagged)
         {
             var custCheckAssWithPA = string.Join(",", custAfterCheckTWTagged.Where(x => x.TaggingID == 0).Select(x => x.CustId).Distinct());
 
             var custAssWithPA = GetCustomerAssociationProblemAccount(custCheckAssWithPA);
 
-            var custAfterCheckAssWithPA = MergeWithCTSTaggedCust(custAfterCheckTWTagged, custAssWithPA);
+            var custAfterCheckAssWithPA = MergeWithOtherEnumerable(custAfterCheckTWTagged, custAssWithPA, (source, other) => source.MergeCTSTaggedCust(other));
 
             return custAfterCheckAssWithPA;
+        }
+
+        private IEnumerable<ProcessTaggingModel> ProcessTWTaggedSpecialLicSubCust(IEnumerable<ProcessTaggingModel> custs)
+        {
+            var custCheckSpecialLicSub = custs.Where(x => x.TaggingID == 0 && x.ScanSpecialLicSubType == 1);
+
+            var specialLicSubCusts = GetTWTaggedCustBySpecialLicSub(custCheckSpecialLicSub);
+
+            var custAfterCheckTWTaggedSpecialLicSub =
+                MergeWithOtherEnumerable(custs, specialLicSubCusts, (source, other) => source.MergeTWTaggedSpecialLicSubCust(other));
+
+            return custAfterCheckTWTaggedSpecialLicSub;
         }
 
         /// <summary>
         /// Expect at momment, 1 cust has only 1 categoryid and 1 tw tagging
         /// </summary>
-        private IEnumerable<TWTaggedExcludeModel> CreateExcludeModelFromTWTaggedAndCTSCust(IEnumerable<GetNormalAccountEntity> ctsCusts, IEnumerable<TWTaggedCustEntity> twTaggedCusts)
+        private IEnumerable<TWTaggedExcludeModel> CreateExcludeModelFromTWTaggedAndCTSCust(IEnumerable<ProcessTaggingModel> ctsCusts, IEnumerable<TWTaggedCustEntity> twTaggedCusts)
         {
             return twTaggedCusts
                 .Where(twCust => twCust.IsTWTaggedCustValid())
@@ -129,7 +159,7 @@
             return dataAccess.GetCustsAssociationProblemAccount(custIdList);
         }
 
-        private IEnumerable<TWTaggedCustEntity> GetGroupBettingAndRejectCustomer(IEnumerable<GetNormalAccountEntity> custs)
+        private IEnumerable<TWTaggedCustEntity> GetGroupBettingAndRejectCustomer(IEnumerable<ProcessTaggingModel> custs)
         {
             if (custs != null && custs.Any())
             {
@@ -141,36 +171,17 @@
             return new List<TWTaggedCustEntity>();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "<Pending>")]
-        private IEnumerable<NormalAccountAfterCheckTWDetectionModel> MergeWithTWTaggedCust(IEnumerable<GetNormalAccountEntity> custs, IEnumerable<TWTaggedCustEntity> twTaggedCust)
+        private IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(IEnumerable<ProcessTaggingModel> custs)
         {
-            var custsMapping = custs ?? new List<GetNormalAccountEntity>();
-            var twTaggedCustMapping = twTaggedCust ?? new List<TWTaggedCustEntity>();
+            if (custs.IsNullOrEmpty())
+            {
+                var custIds = string.Join(",", custs.Select(x => x.CustId).Distinct());
 
-            return custsMapping.GroupJoin(twTaggedCustMapping,
-                               custClass => custClass.CustId,
-                               taggedCust => taggedCust.CustID,
-                               (custClass, taggedCusts) => new { custClass, taggedCusts })
-                               .SelectMany(
-                                    group => group.taggedCusts.DefaultIfEmpty(),
-                                    (group, temp) => new NormalAccountAfterCheckTWDetectionModel(group.custClass, temp));
+                return dataAccess.GetTWTaggedCustBySpecialLicSub(custIds);
+            }
+
+            return new List<CTSTaggedCustEntity>();
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "<Pending>")]
-        private IEnumerable<InsertNormalAccountEntity> MergeWithCTSTaggedCust(IEnumerable<NormalAccountAfterCheckTWDetectionModel> custs, IEnumerable<CTSTaggedCustEntity> ctsTaggedCust)
-        {
-            var custsMapping = custs ?? new List<NormalAccountAfterCheckTWDetectionModel>();
-            var ctsTaggedCustMapping = ctsTaggedCust ?? new List<CTSTaggedCustEntity>();
-
-            return custsMapping.GroupJoin(ctsTaggedCustMapping,
-                               custClass => custClass.CustId,
-                               taggedCust => taggedCust.CustID,
-                               (custClass, taggedCusts) => new { custClass, taggedCusts })
-                               .SelectMany(
-                                    group => group.taggedCusts.DefaultIfEmpty(),
-                                    (group, temp) => new InsertNormalAccountEntity(group.custClass, temp));
-        }
-
         #endregion
     }
 }

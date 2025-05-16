@@ -120,6 +120,10 @@
                 }),
                 () =>
                 {
+                    _normalAccountService.CompleteSpecialLicSubClassificationComplete(finalNormalAcc);
+                },
+                () =>
+                {
                     PreprocessDangerousAssociation(result.CustInfos);
                 },
                 () =>

@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert
-{   
-    public class TWTaggedCustEntity
-    {
-        public int CustID { get; set; }
+{
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
 
+    public class TWTaggedCustEntity : BaseCustTaggedEntity
+    {
         public int TaggingID { get; set; }
 
         public int TaggingType { get; set; }

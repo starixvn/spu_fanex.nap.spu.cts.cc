@@ -13,6 +13,8 @@
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.bodb02.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustClassification_TWTagging_Exclude" SpName="CTS_DC_CustClassification_TWTagging_Exclude" DbName="MySQL.SLAVE.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" SpName="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" DbName="MySQL.SLAVE.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_SpecialLicSubCC_Classify_Complete" SpName="CTS_DC_SpecialLicSubCC_Classify_Complete" DbName="MySQL.SLAVE.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="DailyNormalClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="600" />
