@@ -16,7 +16,7 @@
     {
         Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize);
 
-        Task<bool> TWResponseHaifa(int batchSize);
+        Task<bool> TWResponseHaifa(int batchSize, bool isResponse);
     }
 
     public class TWClassificationJobService : ITWClassificationJobService
@@ -66,7 +66,7 @@
             return Task.FromResult(true);
         }
 
-        public async Task<bool> TWResponseHaifa(int batchSize)
+        public async Task<bool> TWResponseHaifa(int batchSize, bool isResponse)
         {
             try
             {
@@ -80,7 +80,7 @@
 
                 foreach (var customer in customers)
                 {
-                    var completeResponse = await ProcessCustomerAsync(customer);
+                    var completeResponse = await ProcessCustomerAsync(customer, isResponse);
                     completeResponses.Add(completeResponse);
                 }
 
@@ -99,9 +99,13 @@
         }
 
         #region Private Methods
-        private async Task<APIHelperModel> SendSpecialLicSubCCToTWApi(SpecialLicSubCCRequestModel request)
+        private async Task<APIHelperModel> SendSpecialLicSubCCToTWApi(SpecialLicSubCCRequestModel request, bool isResponse)
         {
-            //return await ApiHelper.PostWithResponseHttpCode(string.Empty, request);
+            if (isResponse)
+            {
+                return await ApiHelper.PostWithResponseHttpCode(string.Empty, request);
+            }
+            
             return new APIHelperModel
             {
                 IsSuccess = true,
@@ -109,11 +113,11 @@
             };
         }
 
-        private async Task<SpecialLicSubCCResponseCompleteModel> ProcessCustomerAsync(SpecialLicSubCCResponseGetEntity customer)
+        private async Task<SpecialLicSubCCResponseCompleteModel> ProcessCustomerAsync(SpecialLicSubCCResponseGetEntity customer, bool isResponse)
         {
             var request = CreateSpecialLicSubCCRequest(customer);
 
-            var response = await SendSpecialLicSubCCToTWApi(request);
+            var response = await SendSpecialLicSubCCToTWApi(request, isResponse);
 
             return new SpecialLicSubCCResponseCompleteModel
             {
@@ -136,8 +140,6 @@
                 HttpStatusCode = (int)HttpStatusCode.OK
             };
         }
-
-
         #endregion Private Methods
     }
 }

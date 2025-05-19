@@ -26,9 +26,9 @@
         }
 
         [HttpPost("TWResponseHaifa")]
-        public async Task<bool> TWResponseHaifa([FromForm] int batchSize)
+        public async Task<bool> TWResponseHaifa([FromForm] int batchSize, [FromForm] bool isResponse)
         {
-            return await _twClassificationJobService.TWResponseHaifa(batchSize);
+            return await _twClassificationJobService.TWResponseHaifa(batchSize, isResponse);
         }
     }
 }
