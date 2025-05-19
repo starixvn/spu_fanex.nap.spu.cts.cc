@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
@@ -65,9 +64,9 @@
         }
 
 
-        public void CompleteSpecialLicSubClassification(string custInfos)
+        public void CompleteSpecialLicSubClassification(string custInfo)
         {
-            _twClassificationDataAccess.CompleteSpecialLicSubClassification(custInfos);
+            _twClassificationDataAccess.CompleteSpecialLicSubClassification(custInfo);
         }
     }
 }

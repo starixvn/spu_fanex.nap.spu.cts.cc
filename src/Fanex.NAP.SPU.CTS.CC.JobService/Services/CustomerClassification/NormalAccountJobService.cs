@@ -7,7 +7,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.TWClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Models;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Concurrent;
@@ -124,7 +126,7 @@
                 }),
                 () =>
                 {
-                    CompleteSpecialLicSubClassification(custs);
+                    CompleteSpecialLicSubClassification(custs, custIDs);
                 },
                 () =>
                 {
@@ -150,12 +152,24 @@
             _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
         }
 
-        private void CompleteSpecialLicSubClassification(IEnumerable<GetNormalAccountEntity> custs)
+        private void CompleteSpecialLicSubClassification(IEnumerable<GetNormalAccountEntity> customers, IEnumerable<long> successfulCustomerIds)
         {
-            if (custs.IsNotNullOrEmpty())
+            var filterCustomers = customers.Where(x => x.ScanSpecialLicSubType == 1);
+
+            if (filterCustomers.IsNotNullOrEmpty())
             {
-                var custIds = string.Join(",", custs.Where(x => x.ScanSpecialLicSubType == 1).Select(x => x.CustId).Distinct());
-                _twClassificationService.CompleteSpecialLicSubClassification(custIds);
+                var successfulCustomerSet = successfulCustomerIds.IsNotNullOrEmpty() 
+                    ? new HashSet<long>(successfulCustomerIds) 
+                    : new HashSet<long>();
+
+                var classificationModels = filterCustomers.Select(x => new CompleteSpecialLicSubClassificationModel
+                {
+                    CustID = x.CustId,
+                    CategoryID = successfulCustomerSet.Contains(x.CustId) ? x.CategoryId : null,
+                });
+
+                var customerJson = JsonConvert.SerializeObject(classificationModels);
+                _twClassificationService.CompleteSpecialLicSubClassification(customerJson);
             }
         }
     }

@@ -5,8 +5,8 @@
 
     public class CompleteSpecialLicSubClassifyCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_CustID")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_CustInfo")]
+        public string CustInfo { get; set; }
 
         public override string GetSettingKey()
         {

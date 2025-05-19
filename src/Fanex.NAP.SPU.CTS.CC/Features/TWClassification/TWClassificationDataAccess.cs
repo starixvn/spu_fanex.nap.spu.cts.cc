@@ -17,7 +17,7 @@
 
         void CompleteSpecialLicSubCCScan(string ids);
 
-        void CompleteSpecialLicSubClassification(string custIdList);
+        void CompleteSpecialLicSubClassification(string custInfo);
     }
 
     public class TWClassificationDataAccess : ITWClassificationDataAccess
@@ -79,11 +79,11 @@
             repository.Execute(criteria);
         }
 
-        public void CompleteSpecialLicSubClassification(string custIdList)
+        public void CompleteSpecialLicSubClassification(string custInfo)
         {
             var criteria = new CompleteSpecialLicSubClassifyCriteria
             {
-                CustIDs = custIdList
+                CustInfo = custInfo
             };
 
             repository.Execute(criteria);
