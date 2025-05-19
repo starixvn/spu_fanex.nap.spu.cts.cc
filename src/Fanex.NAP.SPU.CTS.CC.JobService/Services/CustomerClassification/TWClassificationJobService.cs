@@ -74,31 +74,14 @@
                 {
                     batchSize = 1000;
                 }
-
+              
                 var customers = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
                 var completeResponses = new List<SpecialLicSubCCResponseCompleteModel>();
 
                 foreach (var customer in customers)
                 {
-                    var request = new SpecialLicSubCCRequestModel
-                    {
-                        CustID = customer.CustID,
-                        SpecialCustomerClass = customer.APICustomerClass,
-                        ResponseDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                        ErrorCode = customer.StatusCode,
-                        ErrorMessage = customer.ItemNameDisplay,
-                        HttpStatusCode = (int)HttpStatusCode.OK
-                    };
-
-                    var response = await SendSpecialLicSubCCToTWApi(request);
-
-                    completeResponses.Add(new SpecialLicSubCCResponseCompleteModel
-                    {
-                        ID = customer.ID,
-                        ResponseStatus = response.IsSuccess ? 1 : 0,
-                        ResponseHttpCode = (int)response.StatusCode,
-                        ResponseTime = request.ResponseDateTime
-                    });
+                    var completeResponse = await ProcessCustomerAsync(customer);
+                    completeResponses.Add(completeResponse);
                 }
 
                 var responseJson = JsonConvert.SerializeObject(completeResponses);
@@ -125,6 +108,36 @@
                 StatusCode = HttpStatusCode.OK
             };
         }
+
+        private async Task<SpecialLicSubCCResponseCompleteModel> ProcessCustomerAsync(SpecialLicSubCCResponseGetEntity customer)
+        {
+            var request = CreateSpecialLicSubCCRequest(customer);
+
+            var response = await SendSpecialLicSubCCToTWApi(request);
+
+            return new SpecialLicSubCCResponseCompleteModel
+            {
+                ID = customer.ID,
+                ResponseStatus = response.IsSuccess ? 1 : 0,
+                ResponseHttpCode = (int)response.StatusCode,
+                ResponseTime = request.ResponseDateTime
+            };
+        }
+
+        private SpecialLicSubCCRequestModel CreateSpecialLicSubCCRequest(SpecialLicSubCCResponseGetEntity customer)
+        {
+            return new SpecialLicSubCCRequestModel
+            {
+                CustID = customer.CustID,
+                SpecialCustomerClass = customer.LatestCustomerClass,
+                ResponseDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
+                ErrorCode = customer.StatusCode,
+                ErrorMessage = customer.ItemNameDisplay,
+                HttpStatusCode = (int)HttpStatusCode.OK
+            };
+        }
+
+
         #endregion Private Methods
     }
 }
