@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification;
     using Fanex.NAP.SPU.CTS.Shares;
     using Sentry;
     using System;
@@ -29,21 +30,24 @@
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IAntiFraudCenterServices _antiFraudCenterServices;
         private readonly INormalDangerousAssociationCheckService _normalDangerousAssociationCheckService;
+        private readonly ITWClassificationService _twClassificationService;
 
         public NormalAccountJobService(ISentryClient sentryClient,
             IAppSettings appSettings,
             INormalAccountService normalAccountService,
             ICustClassToMainDBService pushDataToExternalService,
             IAntiFraudCenterServices antiFraudCenterServices,
-            INormalDangerousAssociationCheckService normalDangerousAssociationCheckService)
+            INormalDangerousAssociationCheckService normalDangerousAssociationCheckService,
+            ITWClassificationService twClassificationService)
         {
             _sentryClient = sentryClient;
             _normalAccountService = normalAccountService;
             _custClassToMainDBService = pushDataToExternalService;
             _appSettings = appSettings;
             _antiFraudCenterServices = antiFraudCenterServices;
-            _serviceName = "NormalAccountInsert";
             _normalDangerousAssociationCheckService = normalDangerousAssociationCheckService;
+            _twClassificationService = twClassificationService;
+            _serviceName = "NormalAccountInsert";
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize, bool isLogData)
@@ -120,7 +124,7 @@
                 }),
                 () =>
                 {
-                    _normalAccountService.CompleteSpecialLicSubClassificationComplete(finalNormalAcc);
+                    CompleteSpecialLicSubClassification(custs);
                 },
                 () =>
                 {
@@ -144,6 +148,15 @@
                                             });
 
             _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
+        }
+
+        private void CompleteSpecialLicSubClassification(IEnumerable<GetNormalAccountEntity> custs)
+        {
+            if (custs.IsNotNullOrEmpty())
+            {
+                var custIds = string.Join(",", custs.Where(x => x.ScanSpecialLicSubType == 1).Select(x => x.CustId).Distinct());
+                _twClassificationService.CompleteSpecialLicSubClassification(custIds);
+            }
         }
     }
 }

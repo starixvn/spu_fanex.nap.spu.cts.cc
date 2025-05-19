@@ -20,8 +20,6 @@
         void CompleteNormalAccountInsert(long scannedMaxId, bool isSuccess);
 
         IEnumerable<InsertNormalAccountEntity> MergeWithTaggedNormalTaggingFlow(IEnumerable<GetNormalAccountEntity> custs);
-
-        void CompleteSpecialLicSubClassificationComplete(IEnumerable<InsertNormalAccountEntity> custs);
     }
 
     public class NormalAccountService : BaseCustomerClassificationService, INormalAccountService
@@ -83,15 +81,6 @@
             return result;
         }
 
-        public void CompleteSpecialLicSubClassificationComplete(IEnumerable<InsertNormalAccountEntity> custs)
-        {
-            if (custs.IsNotNullOrEmpty())
-            {
-                var custIds = string.Join(",", custs.Where(x => x.ScanSpecialLicSubType == 1).Select(x => x.CustID).Distinct());
-                dataAccess.CompleteSpecialLicSubClassificationComplete(custIds);
-            }
-        }
-
         #region private method
 
         private IEnumerable<ProcessTaggingModel> ProcessTWTaggedCust(IEnumerable<ProcessTaggingModel> custs)
@@ -123,7 +112,7 @@
 
         private IEnumerable<ProcessTaggingModel> ProcessTWTaggedSpecialLicSubCust(IEnumerable<ProcessTaggingModel> custs)
         {
-            var custCheckSpecialLicSub = custs.Where(x => x.TaggingID == 0 && x.ScanSpecialLicSubType == 1);
+            var custCheckSpecialLicSub = custs.Where(x => x.TaggingID == 0).Select(x => new TWTaggedSpecialLicSubModel { CustId = x.CustId, ScanSpecialLicSubType = x.ScanSpecialLicSubType });
 
             var specialLicSubCusts = GetTWTaggedCustBySpecialLicSub(custCheckSpecialLicSub);
 
@@ -171,13 +160,13 @@
             return new List<TWTaggedCustEntity>();
         }
 
-        private IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(IEnumerable<ProcessTaggingModel> custs)
+        private IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(IEnumerable<TWTaggedSpecialLicSubModel> custInfos)
         {
-            if (custs.IsNullOrEmpty())
+            if (custInfos.IsNotNullOrEmpty())
             {
-                var custIds = string.Join(",", custs.Select(x => x.CustId).Distinct());
+                var customerJson = JsonConvert.SerializeObject(custInfos);
 
-                return dataAccess.GetTWTaggedCustBySpecialLicSub(custIds);
+                return dataAccess.GetTWTaggedCustBySpecialLicSub(customerJson);
             }
 
             return new List<CTSTaggedCustEntity>();

@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.TWClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert;
+    using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,6 +16,8 @@
         IEnumerable<SpecialLicSubCCResponseGetEntity> GetSpecialLicSubCCResponse(int batchSize);
 
         void CompleteSpecialLicSubCCResponse(string responseInfo);
+
+        void CompleteSpecialLicSubClassification(string custInfo);
     }
 
     public class TWClassificationService : ITWClassificationService
@@ -58,6 +62,12 @@
         public void CompleteSpecialLicSubCCResponse(string responseInfo)
         {
             _twClassificationDataAccess.CompleteSpecialLicSubCCResponse(responseInfo);
+        }
+
+
+        public void CompleteSpecialLicSubClassification(string custInfos)
+        {
+            _twClassificationDataAccess.CompleteSpecialLicSubClassification(custInfos);
         }
     }
 }

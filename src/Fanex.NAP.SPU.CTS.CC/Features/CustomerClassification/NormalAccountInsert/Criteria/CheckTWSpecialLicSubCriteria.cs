@@ -5,8 +5,8 @@
 
     public class CheckTWSpecialLicSubCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIds { get; set; }
+        [SpParam(SqlParamName = "ip_CustJson")]
+        public string CustomerJson { get; set; }
 
         public override string GetSettingKey()
         {

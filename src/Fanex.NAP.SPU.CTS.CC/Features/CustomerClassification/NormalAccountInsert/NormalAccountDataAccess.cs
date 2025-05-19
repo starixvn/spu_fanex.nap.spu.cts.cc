@@ -21,9 +21,7 @@
 
         IEnumerable<TWTaggedExcludeEntity> CheckTWTaggingExclude(IEnumerable<TWTaggedExcludeModel> taggedEntities);
 
-        IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string custIdList);
-
-        void CompleteSpecialLicSubClassificationComplete(string custIdList);
+        IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string customerJson);
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -97,24 +95,14 @@
             return repository.Fetch<TWTaggedExcludeEntity>(criteria);
         }
 
-        public IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string custIdList)
+        public IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string customerJson)
         {
             var criteria = new CheckTWSpecialLicSubCriteria
             {
-                CustIds = custIdList
+                CustomerJson = customerJson
             };
 
             return repository.Fetch<CTSTaggedCustEntity>(criteria);
-        }
-
-        public void CompleteSpecialLicSubClassificationComplete(string custIdList)
-        {
-            var criteria = new CompleteSpecialLicSubClassifyCriteria
-            {
-                CustIDs = custIdList
-            };
-
-            repository.Execute(criteria);
         }
     }
 }

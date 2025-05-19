@@ -3,6 +3,7 @@
     using Data.Repository;
     using Criteria;
     using System.Collections.Generic;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Criteria;
 
     public interface ITWClassificationDataAccess
     {
@@ -15,6 +16,8 @@
         void PreprocessSpecialLicSubCCScan(string custIdList);
 
         void CompleteSpecialLicSubCCScan(string ids);
+
+        void CompleteSpecialLicSubClassification(string custIdList);
     }
 
     public class TWClassificationDataAccess : ITWClassificationDataAccess
@@ -71,6 +74,16 @@
             var criteria = new SpecialLicSubCCResponseCompleteCriteria
             {
                 ResponseInfo = responseInfo
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void CompleteSpecialLicSubClassification(string custIdList)
+        {
+            var criteria = new CompleteSpecialLicSubClassifyCriteria
+            {
+                CustIDs = custIdList
             };
 
             repository.Execute(criteria);
