@@ -8,7 +8,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_GeneralNormalClassification_LicSubTagging_Preprocess";
+            return "CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess";
         }
 
         public override bool IsValid()

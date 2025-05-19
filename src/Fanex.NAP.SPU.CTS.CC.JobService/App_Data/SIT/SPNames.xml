@@ -265,7 +265,7 @@
 	<Function name="TWClassification">
 	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Get" SpName="CTS_DC_SpecialLicSubCC_Scan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Complete" SpName="CTS_DC_SpecialLicSubCC_Scan_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	    <Setting Key="CTS_GeneralNormalClassification_LicSubTagging_Preprocess" SpName="CTS_GeneralNormalClassification_LicSubTagging_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+	    <Setting Key="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess" SpName="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
 	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
 	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
