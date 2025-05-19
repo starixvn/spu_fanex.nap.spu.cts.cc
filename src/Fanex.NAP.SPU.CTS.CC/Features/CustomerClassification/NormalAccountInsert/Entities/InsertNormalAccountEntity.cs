@@ -24,6 +24,7 @@
             TWGroupBettingRate = cust.TWGroupBettingRate;
             TWTicketRejectRate = cust.TWTicketRejectRate;
             ScanTaggingType = cust.ScanTaggingType;
+            ScanSpecialLicSubType = cust.ScanSpecialLicSubType;
         }
 
         public DateTime CreatedTime { get; set; }
@@ -42,5 +43,6 @@
 
         public int ScanTaggingType { get; set; }
 
+        public int ScanSpecialLicSubType { get; set; }
     }
 }

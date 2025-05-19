@@ -112,7 +112,7 @@
 
         private IEnumerable<ProcessTaggingModel> ProcessTWTaggedSpecialLicSubCust(IEnumerable<ProcessTaggingModel> custs)
         {
-            var custCheckSpecialLicSub = custs.Where(x => x.TaggingID == 0).Select(x => new TWTaggedSpecialLicSubModel { CustId = x.CustId, ScanSpecialLicSubType = x.ScanSpecialLicSubType });
+            var custCheckSpecialLicSub = custs.Where(x => x.TaggingID == 0).Select(x => new TWTaggedSpecialLicSubModel { CustID = x.CustId, ScanSpecialLicSubType = x.ScanSpecialLicSubType });
 
             var specialLicSubCusts = GetTWTaggedCustBySpecialLicSub(custCheckSpecialLicSub);
 

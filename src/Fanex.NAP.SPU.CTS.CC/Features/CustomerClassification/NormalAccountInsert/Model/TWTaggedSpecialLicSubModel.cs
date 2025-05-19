@@ -2,7 +2,7 @@
 {
     public class TWTaggedSpecialLicSubModel
     {
-        public long CustId { get; set; }
+        public long CustID { get; set; }
 
         public int ScanSpecialLicSubType { get; set; }
     }
