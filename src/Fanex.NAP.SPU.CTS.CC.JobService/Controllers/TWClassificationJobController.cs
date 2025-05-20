@@ -2,20 +2,16 @@
 {
     using Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
     using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/twClassificationJob")]
     public class TWClassificationJobController : ControllerBase
     {
-        private readonly ISentryClient _sentryClient;
         private readonly ITWClassificationJobService _twClassificationJobService;
 
-        public TWClassificationJobController(ISentryClient sentryClient,
-            ITWClassificationJobService twClassificationJobService) 
+        public TWClassificationJobController(ITWClassificationJobService twClassificationJobService) 
         {
-            _sentryClient = sentryClient;
             _twClassificationJobService = twClassificationJobService;
         }
 

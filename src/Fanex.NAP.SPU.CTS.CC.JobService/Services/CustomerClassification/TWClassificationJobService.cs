@@ -25,6 +25,8 @@
         private readonly ISentryClient _sentryClient;        
         private readonly ITWClassificationService _twClassificationService;
         private readonly IAppSettings _appSettings;
+        private const int HttpCodeNotCalled = 999;
+        private const int DefaultBatchSize = 1000;
 
         public TWClassificationJobService(ISentryClient sentryClient,          
             ITWClassificationService twClassificationService,
@@ -70,17 +72,19 @@
         {
             try
             {
+                var completeResponses = new List<SpecialLicSubCCResponseCompleteModel>();
+
                 if (batchSize <= 0)
                 {
-                    batchSize = 1000;
+                    batchSize = DefaultBatchSize;
                 }
               
                 var customers = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
-                var completeResponses = new List<SpecialLicSubCCResponseCompleteModel>();
 
                 foreach (var customer in customers)
                 {
                     var completeResponse = await ProcessCustomerAsync(customer, isResponse);
+
                     completeResponses.Add(completeResponse);
                 }
 
@@ -103,13 +107,12 @@
         {
             if (isResponse)
             {
-                return await ApiHelper.PostWithResponseHttpCode(string.Empty, request);
+                return await ApiHelper.PostWithResponseHttpCode(_appSettings.TWResponseHaifaUrl, request);
             }
             
             return new APIHelperModel
             {
                 IsSuccess = true,
-                StatusCode = HttpStatusCode.OK
             };
         }
 
@@ -123,7 +126,7 @@
             {
                 ID = customer.ID,
                 ResponseStatus = response.IsSuccess ? 1 : 0,
-                ResponseHttpCode = (int)response.StatusCode,
+                ResponseHttpCode = isResponse ? (int)response.StatusCode : HttpCodeNotCalled,
                 ResponseTime = request.ResponseDateTime
             };
         }
