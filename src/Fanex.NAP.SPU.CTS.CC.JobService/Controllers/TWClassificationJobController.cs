@@ -21,10 +21,10 @@
             return await _twClassificationJobService.ScanTWSpecialLicSubCC(batchInternalSize);
         }
 
-        [HttpPost("TWResponseHaifa")]
-        public async Task<bool> TWResponseHaifa([FromForm] int batchSize, [FromForm] bool isResponse)
+        [HttpPost("ResponseTWSpecialLicSubCC")]
+        public async Task<bool> ResponseTWSpecialLicSubCC([FromForm] int batchSize, [FromForm] bool isResponse)
         {
-            return await _twClassificationJobService.TWResponseHaifa(batchSize, isResponse);
+            return await _twClassificationJobService.ResponseTWSpecialLicSubCC(batchSize, isResponse);
         }
     }
 }

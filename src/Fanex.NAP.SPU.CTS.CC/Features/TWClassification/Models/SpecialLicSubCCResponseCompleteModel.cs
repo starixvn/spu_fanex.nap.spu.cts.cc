@@ -2,7 +2,7 @@
 {
     public class SpecialLicSubCCResponseCompleteModel
     {
-        public int ID { get; set; } 
+        public long ID { get; set; } 
 
         public int ResponseStatus { get; set; }
 

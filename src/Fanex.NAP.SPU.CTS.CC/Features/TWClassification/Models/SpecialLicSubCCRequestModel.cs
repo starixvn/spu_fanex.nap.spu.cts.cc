@@ -6,11 +6,11 @@
 
         public long CustID { get; set; }
 
-        public int SpecialCustomerClass { get; set; }
+        public int? SpecialCustomerClass { get; set; }
 
         public string ErrorMessage { get; set; } 
 
-        public int ErrorCode { get; set; }
+        public int? ErrorCode { get; set; }
 
         public int HttpStatusCode { get; set; }
     }

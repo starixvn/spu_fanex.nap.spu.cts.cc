@@ -89,7 +89,7 @@
                 return new APIHelperModel<TResult>
                 {
                     Data = response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<TResult>(responseString) : default,
-                    StatusCode = response.StatusCode,
+                    StatusCode = (int)response.StatusCode,
                     IsSuccess = response.IsSuccessStatusCode
                 };
             }
@@ -113,7 +113,7 @@
 
                 return new APIHelperModel
                 {
-                    StatusCode = response.StatusCode,
+                    StatusCode = (int)response.StatusCode,
                     IsSuccess = response.IsSuccessStatusCode
                 };
             }

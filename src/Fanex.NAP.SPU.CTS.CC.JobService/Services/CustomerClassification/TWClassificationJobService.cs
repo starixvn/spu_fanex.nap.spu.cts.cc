@@ -16,7 +16,7 @@
     {
         Task<bool> ScanTWSpecialLicSubCC(int batchInternalSize);
 
-        Task<bool> TWResponseHaifa(int batchSize, bool isResponse);
+        Task<bool> ResponseTWSpecialLicSubCC(int batchSize, bool isResponse);
     }
 
     public class TWClassificationJobService : ITWClassificationJobService
@@ -25,7 +25,6 @@
         private readonly ISentryClient _sentryClient;        
         private readonly ITWClassificationService _twClassificationService;
         private readonly IAppSettings _appSettings;
-        private const int HttpCodeNotCalled = 999;
         private const int DefaultBatchSize = 1000;
 
         public TWClassificationJobService(ISentryClient sentryClient,          
@@ -68,7 +67,7 @@
             return Task.FromResult(true);
         }
 
-        public async Task<bool> TWResponseHaifa(int batchSize, bool isResponse)
+        public async Task<bool> ResponseTWSpecialLicSubCC(int batchSize, bool isResponse)
         {
             try
             {
@@ -107,7 +106,20 @@
         {
             if (isResponse)
             {
-                return await ApiHelper.PostWithResponseHttpCode(_appSettings.TWResponseHaifaUrl, request);
+                try
+                {
+                    return await ApiHelper.PostWithResponseHttpCode(_appSettings.TWResponseHaifaUrl, request);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
+
+                    return new APIHelperModel
+                    {
+                        IsSuccess = false,
+                        StatusCode = (int)Constants.HttpCode.ThrowException,
+                    };
+                }
             }
             
             return new APIHelperModel
@@ -126,7 +138,7 @@
             {
                 ID = customer.ID,
                 ResponseStatus = response.IsSuccess ? 1 : 0,
-                ResponseHttpCode = isResponse ? (int)response.StatusCode : HttpCodeNotCalled,
+                ResponseHttpCode = isResponse ? response.StatusCode : (int)Constants.HttpCode.NotCalled,
                 ResponseTime = request.ResponseDateTime
             };
         }

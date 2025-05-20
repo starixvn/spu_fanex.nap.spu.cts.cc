@@ -300,5 +300,11 @@
             [Description("Exist LicSub")]
             ExistLicSub = 1
         }
+
+        public enum HttpCode
+        {
+            ThrowException = 998,
+            NotCalled = 999
+        }
     }
 }
