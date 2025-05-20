@@ -81,16 +81,14 @@
 
                 var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
 
-                string responseString =
-                    response.IsSuccessStatusCode
-                        ? await response.Content.ReadAsStringAsync().ConfigureAwait(false)
-                        : string.Empty;
+                string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return new APIHelperModel<TResult>
                 {
                     Data = response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<TResult>(responseString) : default,
                     StatusCode = (int)response.StatusCode,
-                    IsSuccess = response.IsSuccessStatusCode
+                    IsSuccess = response.IsSuccessStatusCode,
+                    Message = response.IsSuccessStatusCode ? string.Empty : responseString
                 };
             }
         }
@@ -111,10 +109,13 @@
 
                 var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
 
+                string responseString = response.IsSuccessStatusCode ? string.Empty : await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 return new APIHelperModel
                 {
                     StatusCode = (int)response.StatusCode,
-                    IsSuccess = response.IsSuccessStatusCode
+                    IsSuccess = response.IsSuccessStatusCode,
+                    Message = responseString
                 };
             }
         }

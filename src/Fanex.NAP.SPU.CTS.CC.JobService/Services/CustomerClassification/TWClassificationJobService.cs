@@ -22,16 +22,16 @@
     public class TWClassificationJobService : ITWClassificationJobService
     {
         private readonly string _serviceName;
-        private readonly ISentryClient _sentryClient;        
+        private readonly ISentryClient _sentryClient;
         private readonly ITWClassificationService _twClassificationService;
         private readonly IAppSettings _appSettings;
         private const int DefaultBatchSize = 1000;
 
-        public TWClassificationJobService(ISentryClient sentryClient,          
+        public TWClassificationJobService(ISentryClient sentryClient,
             ITWClassificationService twClassificationService,
             IAppSettings appSettings)
-        {            
-            _sentryClient = sentryClient;            
+        {
+            _sentryClient = sentryClient;
             _twClassificationService = twClassificationService;
             _appSettings = appSettings;
             _serviceName = "TWClassification";
@@ -55,7 +55,7 @@
 
                         _twClassificationService.CompleteSpecialLicSubCCScan(custLicSubs);
                     }
-                } while (isContinue);                
+                } while (isContinue);
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@
                 {
                     batchSize = DefaultBatchSize;
                 }
-              
+
                 var customers = _twClassificationService.GetSpecialLicSubCCResponse(batchSize);
 
                 foreach (var customer in customers)
@@ -90,6 +90,8 @@
                 var responseJson = JsonConvert.SerializeObject(completeResponses);
 
                 _twClassificationService.CompleteSpecialLicSubCCResponse(responseJson);
+
+                LogSentryIfReponseFailed(completeResponses);
             }
             catch (Exception ex)
             {
@@ -112,16 +114,15 @@
                 }
                 catch (Exception ex)
                 {
-                    Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
-
                     return new APIHelperModel
                     {
                         IsSuccess = false,
                         StatusCode = (int)Constants.HttpCode.ThrowException,
+                        Message = ex.Message
                     };
                 }
             }
-            
+
             return new APIHelperModel
             {
                 IsSuccess = true
@@ -139,7 +140,8 @@
                 ID = customer.ID,
                 ResponseStatus = response.IsSuccess ? 1 : 0,
                 ResponseHttpCode = isResponse ? response.StatusCode : (int)Constants.HttpCode.NotCalled,
-                ResponseTime = request.ResponseDateTime
+                ResponseTime = request.ResponseDateTime,
+                Message = response.Message
             };
         }
 
@@ -154,6 +156,17 @@
                 ErrorMessage = customer.ItemNameDisplay,
                 HttpStatusCode = (int)HttpStatusCode.OK
             };
+        }
+
+        private void LogSentryIfReponseFailed(List<SpecialLicSubCCResponseCompleteModel> completeResponses)
+        {
+            var failedResponses = completeResponses.Where(x => x.ResponseStatus == 0);
+
+            if (failedResponses.IsNotNullOrEmpty())
+            {
+                var failedGroupByMsgDics = failedResponses.GroupBy(x => x.Message).ToDictionary(x => x.Key, x => x.ToList());
+                Utilities.LogSentryError(_serviceName, string.Empty, failedGroupByMsgDics, new Exception("ResponseTWSpecialLicSubCC failed"), _sentryClient);
+            }
         }
         #endregion Private Methods
     }
