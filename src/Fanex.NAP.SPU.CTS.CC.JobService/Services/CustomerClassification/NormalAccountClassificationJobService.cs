@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification.Model;
     using Fanex.NAP.SPU.CTS.Shares;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -81,9 +82,9 @@
 
         private void ClassifyNormalAccount(IEnumerable<GetNormalPoolCustomerEntity> normalPoolCustomers, long scannedMaxID)
         {
-            var custIDList = string.Join(",", normalPoolCustomers.Select(c => c.CustId).Distinct());
+            var custInfos = normalPoolCustomers?.Select(x => new GetCurrentCCParamModel { CustID = x.CustId, ScanSpecialLicSubType = x.ScanSpecialLicSubType });
 
-            var customerCategories = normalAccountService.GetCurrentCustomerCategory(custIDList);
+            var customerCategories = normalAccountService.GetCurrentCustomerCategory(custInfos);
 
             var customerInfos = normalPoolCustomers.Join(customerCategories, custMain => custMain.CustId,
                                                   custCTS => custCTS.CustID,
@@ -94,13 +95,15 @@
                                                       IsNewCreated = custCTS.IsNewCreated,
                                                       IsProbationLastDay = custCTS.IsProbationLastDay,
                                                       IsSpecialLicSubCC = custCTS.IsSpecialLicSubCC,
-                                                      IsRealtimeOnly = custMain.IsRealtimeOnly,                                                     
+                                                      IsRealtimeOnly = custMain.IsRealtimeOnly,
                                                       ScanTaggingType = custMain.ScanTaggingType,
                                                       ScanSpecialLicSubType = custMain.ScanSpecialLicSubType
                                                   });
 
+            var custIds = string.Join(",", normalPoolCustomers.Select(x => x.CustId).Distinct());
+
             normalAccountService.ClassifyNormalPoolCustomers(customerInfos.ToXmlString())
-                                .ClearNormalPoolCustomers(custIDList, scannedMaxID);
+                                .ClearNormalPoolCustomers(custIds, scannedMaxID);
         }
     }
 }

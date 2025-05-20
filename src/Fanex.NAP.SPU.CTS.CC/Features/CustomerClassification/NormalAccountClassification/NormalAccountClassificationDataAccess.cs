@@ -7,7 +7,7 @@
     {
         GetNormalPoolCustomerModel GetNormalPoolCustomers();
 
-        IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList);
+        IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custInfos);
 
         void ClassifyNormalPoolCustomers(string customerXML);
 
@@ -36,11 +36,11 @@
             };
         }
 
-        public IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList)
+        public IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custInfos)
         {
             var criteria = new GetCurrentNormalCategoryCriteria
             {
-                CustIDs = custIDList
+                CustInfos = custInfos
             };
 
             return repository.Fetch<GetCurrentNormalCategoryEntity>(criteria);

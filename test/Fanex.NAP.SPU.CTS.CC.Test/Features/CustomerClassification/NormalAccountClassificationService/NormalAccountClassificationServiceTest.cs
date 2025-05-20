@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.NormalAccountClassificationService
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification.Model;
     using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using Newtonsoft.Json;
@@ -36,13 +37,17 @@
         public void GetCurrentCustomerCategory_WhenSuccess()
         {
             // Arrange
-            var custIDList = "1,2";
+            var custs = new List<GetCurrentCCParamModel>
+            {
+                new GetCurrentCCParamModel {CustID = 1, ScanSpecialLicSubType = 0},
+                new GetCurrentCCParamModel {CustID = 2, ScanSpecialLicSubType = 0},
+            };
 
             // Act
-            normalAccountService.GetCurrentCustomerCategory(custIDList);
+            normalAccountService.GetCurrentCustomerCategory(custs);
 
             // Assert
-            normalAccountDataAccess.Received(1).GetCurrentCustomerCategory(custIDList);
+            normalAccountDataAccess.Received(1).GetCurrentCustomerCategory(Arg.Any<string>());
         }
 
         [Fact]
@@ -55,7 +60,7 @@
                      IsSpecialLicSubCC = true, IsProbationLastDay = false, ScanTaggingType = 1
                 }
             };
-           
+
             var custInfoXml = custInfos.ToXmlString();
 
             // Act
