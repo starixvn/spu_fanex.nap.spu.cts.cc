@@ -112,7 +112,7 @@
             
             return new APIHelperModel
             {
-                IsSuccess = true,
+                IsSuccess = true
             };
         }
 
@@ -137,7 +137,7 @@
             {
                 CustID = customer.CustID,
                 SpecialCustomerClass = customer.LatestCustomerClass,
-                ResponseDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
+                ResponseDateTime = DateTime.Now.ToString(Constants.CONVERT_TO_SQL_DATETIME),
                 ErrorCode = customer.StatusCode,
                 ErrorMessage = customer.ItemNameDisplay,
                 HttpStatusCode = (int)HttpStatusCode.OK
