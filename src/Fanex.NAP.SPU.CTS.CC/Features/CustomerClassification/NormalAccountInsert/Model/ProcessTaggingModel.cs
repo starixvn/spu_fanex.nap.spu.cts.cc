@@ -74,7 +74,7 @@
 
         public ProcessTaggingModel MergeTWTaggedSpecialLicSubCust(CTSTaggedCustEntity tWTaggedCust)
         {
-            if (tWTaggedCust.IsTWTaggedSpecialLicSubCustValid(TaggingID, ScanSpecialLicSubType))
+            if (tWTaggedCust.IsTWTaggedSpecialLicSubCustValid(TaggingID))
             {
                 TaggingID = tWTaggedCust.TaggingID;
                 TaggingType = tWTaggedCust.TaggingType;

@@ -19,9 +19,9 @@
             return taggingID == 0 && ctsTaggedCust != null && ctsTaggedCust.TaggingID != 0;
         }
 
-        public static bool IsTWTaggedSpecialLicSubCustValid(this CTSTaggedCustEntity twTaggedCust, int taggingID, int scanSpecialLicSubType)
+        public static bool IsTWTaggedSpecialLicSubCustValid(this CTSTaggedCustEntity twTaggedCust, int taggingID)
         {
-            return taggingID == 0 && scanSpecialLicSubType == 1 && twTaggedCust != null && twTaggedCust.TaggingID != 0;
+            return taggingID == 0 && twTaggedCust != null && twTaggedCust.TaggingID != 0;
         }
 
         public static bool IsAgency(this InsertNewCustomerResultModel customer)
