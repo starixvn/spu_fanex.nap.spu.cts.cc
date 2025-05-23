@@ -5,8 +5,8 @@
 
     public class GetCurrentNormalCategoryCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDList")]
-        public string CustIDs { get; set; }
+        [SpParam(SqlParamName = "ip_CustInfo")]
+        public string CustInfos { get; set; }
 
         public override string GetSettingKey()
         {

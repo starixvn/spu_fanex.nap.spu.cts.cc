@@ -11,8 +11,9 @@
     using System.Linq;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Model;
     using Xunit;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountInsert.Entities;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using static Fanex.NAP.SPU.CTS.Shares.IEnumerableExtention;
 
     public class NormalAccountServiceTest
     {
@@ -56,10 +57,10 @@
         public void GetGroupBettingAndRejectCustomer_WhenSuccess()
         {
             // Arrange
-            var custs = new List<GetNormalAccountEntity>()
+            var custs = new List<ProcessTaggingModel>()
             {
-                new GetNormalAccountEntity { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
-                new GetNormalAccountEntity { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
+                new ProcessTaggingModel { CustId = 1, ActiveDays = 1, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now },
+                new ProcessTaggingModel { CustId = 2, ActiveDays = 10, CategoryId = 1, BetCount = 1, PerformanceTime = DateTime.Now }
             };
             var custIds = "1,2";
 
@@ -89,14 +90,12 @@
         public void MergeWithTWTaggedCust_WhenSuccess_ReturnResult()
         {
             // Arrange
-            var cust = new List<GetNormalAccountEntity> { new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 } };
+            var cust = new List<ProcessTaggingModel> { new ProcessTaggingModel { CustId = 123, ActiveDays = 321 } };
             var twTaggedCust = new List<TWTaggedCustEntity> { new TWTaggedCustEntity { CustID = 123, TaggingID = 999 } };
-            var compareResult = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(cust[0], twTaggedCust[0]) };
-
-            var getMergeWithTWTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCust);
+            var compareResult = new List<ProcessTaggingModel> { cust[0].MergeTWTaggedCust(twTaggedCust[0]) };
 
             // Act
-            var result = getMergeWithTWTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggedCust });
+            var result = MergeWithOtherEnumerable(cust, twTaggedCust, (source, other) => source.MergeTWTaggedCust(other));
 
             // Assert
             Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
@@ -106,10 +105,9 @@
         public void MergeWithTWTaggedCust_WhenSuccess_ReturnNotNull()
         {
             // Arrange
-            var getMergeWithTWTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithTWTaggedCust);
 
             // Act
-            var result = getMergeWithTWTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null });
+            var result = MergeWithOtherEnumerable<ProcessTaggingModel, TWTaggedCustEntity>(null, null, (source, other) => source.MergeTWTaggedCust(other));
 
             // Assert
             Assert.NotNull(result);
@@ -119,14 +117,12 @@
         public void MergeWithCTSTaggedCust_WhenSuccess_ReturnResult()
         {
             // Arrange
-            var cust = new List<NormalAccountAfterCheckTWDetectionModel> { new NormalAccountAfterCheckTWDetectionModel(new GetNormalAccountEntity { CustId = 123, ActiveDays = 321 }, new TWTaggedCustEntity { CustID = 123, TaggingID = 999 }) };
+            var cust = new List<ProcessTaggingModel> { new ProcessTaggingModel { CustId = 123, ActiveDays = 321, TaggingID = 0 } };
             var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
-            var compareResult = new List<InsertNormalAccountEntity> { new InsertNormalAccountEntity(cust[0], twTaggedCust[0]) };
-
-            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
+            var compareResult = new List<ProcessTaggingModel> { cust[0].MergeCTSTaggedCust(twTaggedCust[0]) };
 
             // Act
-            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { cust, twTaggedCust });
+            var result = MergeWithOtherEnumerable(cust, twTaggedCust, (source, other) => source.MergeCTSTaggedCust(other));
 
             // Assert
             Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
@@ -136,10 +132,39 @@
         public void MergeWithCTSTaggedCust_WhenSuccess_ReturnNotNull()
         {
             // Arrange
-            var getMergeWithCTSTaggedCustMethod = TestExtension.GetPrivateMethod(typeof(NormalAccountService), NormalAccountInsertConsts.MergeWithCTSTaggedCust);
 
             // Act
-            var result = getMergeWithCTSTaggedCustMethod.Invoke(normalAccountService, new object[] { null, null });
+            var result = MergeWithOtherEnumerable<ProcessTaggingModel, CTSTaggedCustEntity>(null, null, (source, other) => source.MergeCTSTaggedCust(other));
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void MergeWithTWTaggedSpecialLicSubCust_WhenSuccess_ReturnResult()
+        {
+            // Arrange
+            var cust = new List<ProcessTaggingModel> {
+                new ProcessTaggingModel { CustId = 123, ActiveDays = 321, TaggingID = 0, ScanSpecialLicSubType = 1 },
+                new ProcessTaggingModel { CustId = 321, ActiveDays = 321, TaggingID = 999, ScanSpecialLicSubType = 0 }
+            };
+            var twTaggedCust = new List<CTSTaggedCustEntity> { new CTSTaggedCustEntity { CustID = 123, TaggingID = 999, TaggingType = 123 } };
+            var compareResult = new List<ProcessTaggingModel> { cust[0].MergeTWTaggedSpecialLicSubCust(twTaggedCust[0]), cust[1] };
+
+            // Act
+            var result = MergeWithOtherEnumerable(cust, twTaggedCust, (source, other) => source.MergeTWTaggedSpecialLicSubCust(other));
+
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(result), JsonConvert.SerializeObject(compareResult));
+        }
+
+        [Fact]
+        public void MergeWithTWTaggedSpecialLicSubCust_WhenSuccess_ReturnNotNull()
+        {
+            // Arrange
+
+            // Act
+            var result = MergeWithOtherEnumerable<ProcessTaggingModel, CTSTaggedCustEntity>(null, null, (source, other) => source.MergeTWTaggedSpecialLicSubCust(other));
 
             // Assert
             Assert.NotNull(result);
@@ -156,7 +181,7 @@
                     CustId = 1,
                     ScanTaggingTWType = 1,
                     ScanTaggingType = (int)NormalClasification_TaggingType.NotExist,
-                    CategoryId = 201    
+                    CategoryId = 201
                 },
                 new GetNormalAccountEntity
                 {
@@ -171,6 +196,14 @@
                     ScanTaggingTWType = 0,
                     ScanTaggingType = (int)NormalClasification_TaggingType.ExistOnly,
                     CategoryId = 203
+                },
+                new GetNormalAccountEntity
+                {
+                    CustId = 4,
+                    ScanTaggingTWType = 0,
+                    ScanTaggingType = (int)NormalClasification_TaggingType.ExistOnly,
+                    CategoryId = 203,
+                    ScanSpecialLicSubType = 1
                 }
             };
 
@@ -210,10 +243,21 @@
                 }
             };
 
+            var specialLicSubTaggedCusts = new List<CTSTaggedCustEntity>()
+            {
+                new CTSTaggedCustEntity
+                {
+                    CustID = 4,
+                    TaggingID = 777,
+                    TaggingType = 5
+                }
+            };
+
             // Act
             normalAccountDataAccess.CheckGroupBettingAndRejectCustomer(Arg.Any<string>()).Returns(twTaggedCusts);
             normalAccountDataAccess.CheckTWTaggingExclude(Arg.Any<IEnumerable<TWTaggedExcludeModel>>()).Returns(excludedCustIds);
             normalAccountDataAccess.GetCustsAssociationProblemAccount(Arg.Any<string>()).Returns(custAssWithPAResult);
+            normalAccountDataAccess.GetTWTaggedCustBySpecialLicSub(Arg.Any<string>()).Returns(specialLicSubTaggedCusts);
 
             var result = normalAccountService.MergeWithTaggedNormalTaggingFlow(getnormalAccountList);
 
@@ -227,6 +271,8 @@
                     m.CustID == 2 && m.CategoryID == 202 && m.TaggingID == 888)));
 
             normalAccountDataAccess.Received(1).GetCustsAssociationProblemAccount(Arg.Any<string>());
+
+            normalAccountDataAccess.Received(1).GetTWTaggedCustBySpecialLicSub(Arg.Any<string>());
 
             Assert.NotNull(result);
             var resultList = result.ToList();
@@ -255,6 +301,7 @@
             normalAccountDataAccess.DidNotReceive().CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
             normalAccountDataAccess.DidNotReceive().CheckTWTaggingExclude(Arg.Any<IEnumerable<TWTaggedExcludeModel>>());
             normalAccountDataAccess.DidNotReceive().GetCustsAssociationProblemAccount(Arg.Any<string>());
+            normalAccountDataAccess.DidNotReceive().GetTWTaggedCustBySpecialLicSub(Arg.Any<string>());
         }
 
         [Fact]
@@ -272,6 +319,7 @@
             normalAccountDataAccess.DidNotReceive().CheckGroupBettingAndRejectCustomer(Arg.Any<string>());
             normalAccountDataAccess.DidNotReceive().CheckTWTaggingExclude(Arg.Any<IEnumerable<TWTaggedExcludeModel>>());
             normalAccountDataAccess.DidNotReceive().GetCustsAssociationProblemAccount(Arg.Any<string>());
+            normalAccountDataAccess.DidNotReceive().GetTWTaggedCustBySpecialLicSub(Arg.Any<string>());
         }
     }
 }

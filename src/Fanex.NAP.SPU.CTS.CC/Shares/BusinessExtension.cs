@@ -14,6 +14,16 @@
             return tWTaggedCust != null && tWTaggedCust.TaggingID != 0;
         }
 
+        public static bool IsCTSTaggedCustValid(this CTSTaggedCustEntity ctsTaggedCust, int taggingID)
+        {
+            return taggingID == 0 && ctsTaggedCust != null && ctsTaggedCust.TaggingID != 0;
+        }
+
+        public static bool IsTWTaggedSpecialLicSubCustValid(this CTSTaggedCustEntity twTaggedCust, int taggingID)
+        {
+            return taggingID == 0 && twTaggedCust != null && twTaggedCust.TaggingID != 0;
+        }
+
         public static bool IsAgency(this InsertNewCustomerResultModel customer)
         {
             return customer.RoleID > (int)CustomerRole.Member;

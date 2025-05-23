@@ -20,6 +20,8 @@
         void CompleteNormalAccountInsert(long scannedMaxId);
 
         IEnumerable<TWTaggedExcludeEntity> CheckTWTaggingExclude(IEnumerable<TWTaggedExcludeModel> taggedEntities);
+
+        IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string customerJson);
     }
 
     public class NormalAccountDataAccess : INormalAccountDataAccess
@@ -91,6 +93,16 @@
             };
 
             return repository.Fetch<TWTaggedExcludeEntity>(criteria);
+        }
+
+        public IEnumerable<CTSTaggedCustEntity> GetTWTaggedCustBySpecialLicSub(string customerJson)
+        {
+            var criteria = new CheckTWSpecialLicSubCriteria
+            {
+                CustomerJson = customerJson
+            };
+
+            return repository.Fetch<CTSTaggedCustEntity>(criteria);
         }
     }
 }

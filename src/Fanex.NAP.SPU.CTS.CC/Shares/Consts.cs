@@ -292,5 +292,19 @@
             Member = 1,
             Agency = 2
         }
+
+        public enum ScanSpecialLicSubType
+        {
+            [Description("Not Exist LicSub")]
+            NotExistLicSub = 0,
+            [Description("Exist LicSub")]
+            ExistLicSub = 1
+        }
+
+        public enum HttpCode
+        {
+            ThrowException = 998,
+            NotCalled = 999
+        }
     }
 }

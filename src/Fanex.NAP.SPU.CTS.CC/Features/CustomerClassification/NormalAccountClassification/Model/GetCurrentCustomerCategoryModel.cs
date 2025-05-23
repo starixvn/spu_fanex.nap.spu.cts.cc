@@ -22,5 +22,11 @@
 
         [XName("ScanTaggingType")]
         public int ScanTaggingType { get; set; }
+
+        [XName("ScanSpecialLicSubType")]
+        public int ScanSpecialLicSubType { get; set; }
+
+        [XName("IsSpecialLicSubCC")]
+        public bool IsSpecialLicSubCC { get; set; }
     }
 }

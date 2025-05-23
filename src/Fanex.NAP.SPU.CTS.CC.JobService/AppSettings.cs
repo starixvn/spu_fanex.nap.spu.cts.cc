@@ -47,7 +47,9 @@
 
         string InsertBAURL { get; }
 
-        string AgencyApiUrl { get; }     
+        string AgencyApiUrl { get; }
+
+        string TWResponseHaifaUrl { get; }
 
         bool UpdateIsWriteLogSetting(string serviceName, bool isWriteLog);
 
@@ -71,7 +73,8 @@
         private readonly string sentryDsn;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
-        private readonly string agencyApiUrl;    
+        private readonly string agencyApiUrl;
+        private readonly string twResponseHaifaUrl;
         private readonly APIHelperConfig apiHelperConfig;
         private readonly NotificationChannelConfig notificationChannelConfig;
 
@@ -88,7 +91,8 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
-            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");          
+            agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");
+            twResponseHaifaUrl = GetValue<string>("TWResponseHaifaUrl:TWResponseHaifaUrl");
             apiHelperConfig = new APIHelperConfig
             {
                 Proxy = GetValue<string>("APIHelperConfig:Proxy")
@@ -136,7 +140,9 @@
         public string InsertBAURL => insertBAURL;
 
         public string AgencyApiUrl => agencyApiUrl;
-       
+
+        public string TWResponseHaifaUrl => twResponseHaifaUrl;
+
         public bool ProblemAccountIsWriteLog => GetValue<bool>("ProblemAccountInsert:IsWriteLog");
 
         public bool NormalAccountIsWriteLog => GetValue<bool>("NormalAccountInsert:IsWriteLog");

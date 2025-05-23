@@ -6,7 +6,10 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Models;
     using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Concurrent;
@@ -29,21 +32,24 @@
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IAntiFraudCenterServices _antiFraudCenterServices;
         private readonly INormalDangerousAssociationCheckService _normalDangerousAssociationCheckService;
+        private readonly ITWClassificationService _twClassificationService;
 
         public NormalAccountJobService(ISentryClient sentryClient,
             IAppSettings appSettings,
             INormalAccountService normalAccountService,
             ICustClassToMainDBService pushDataToExternalService,
             IAntiFraudCenterServices antiFraudCenterServices,
-            INormalDangerousAssociationCheckService normalDangerousAssociationCheckService)
+            INormalDangerousAssociationCheckService normalDangerousAssociationCheckService,
+            ITWClassificationService twClassificationService)
         {
             _sentryClient = sentryClient;
             _normalAccountService = normalAccountService;
             _custClassToMainDBService = pushDataToExternalService;
             _appSettings = appSettings;
             _antiFraudCenterServices = antiFraudCenterServices;
-            _serviceName = "NormalAccountInsert";
             _normalDangerousAssociationCheckService = normalDangerousAssociationCheckService;
+            _twClassificationService = twClassificationService;
+            _serviceName = "NormalAccountInsert";
         }
 
         public Task<bool> Execute(int batchExternalSize, int batchInternalSize, bool isLogData)
@@ -120,6 +126,10 @@
                 }),
                 () =>
                 {
+                    CompleteSpecialLicSubClassification(custs, custIDs);
+                },
+                () =>
+                {
                     PreprocessDangerousAssociation(result.CustInfos);
                 },
                 () =>
@@ -140,6 +150,27 @@
                                             });
 
             _normalDangerousAssociationCheckService.PreprocessDangerousAssociation(preprocessSRPChange);
+        }
+
+        private void CompleteSpecialLicSubClassification(IEnumerable<GetNormalAccountEntity> customers, IEnumerable<long> successfulCustomerIds)
+        {
+            var filterCustomers = customers.Where(x => x.ScanSpecialLicSubType == 1);
+
+            if (filterCustomers.IsNotNullOrEmpty())
+            {
+                var successfulCustomerSet = successfulCustomerIds.IsNotNullOrEmpty() 
+                    ? new HashSet<long>(successfulCustomerIds) 
+                    : new HashSet<long>();
+
+                var classificationModels = filterCustomers.Select(x => new CompleteSpecialLicSubClassificationModel
+                {
+                    CustID = x.CustId,
+                    CategoryID = successfulCustomerSet.Contains(x.CustId) ? x.CategoryId : null,
+                });
+
+                var customerJson = JsonConvert.SerializeObject(classificationModels);
+                _twClassificationService.CompleteSpecialLicSubClassification(customerJson);
+            }
         }
     }
 }

@@ -25,5 +25,7 @@
         public int ScanTaggingType { get; set; }
 
         public int ScanTaggingTWType { get; set; }
+
+        public int ScanSpecialLicSubType { get; set; }
     }
 }

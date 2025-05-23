@@ -1,12 +1,16 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification
 {
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification.Model;
+    using Fanex.NAP.SPU.CTS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface INormalAccountClassificationService
     {
         GetNormalPoolCustomerModel GetNormalPoolCustomers();
 
-        IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList);
+        IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(IEnumerable<GetCurrentCCParamModel> custInfos);
 
         INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML);
 
@@ -27,15 +31,22 @@
             return dataAccess.GetNormalPoolCustomers();
         }
 
-        public IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(string custIDList)
+        public IEnumerable<GetCurrentNormalCategoryEntity> GetCurrentCustomerCategory(IEnumerable<GetCurrentCCParamModel> custInfos)
         {
-            return dataAccess.GetCurrentCustomerCategory(custIDList);
+            if (custInfos.IsNotNullOrEmpty())
+            {
+                var custInfosJson = JsonConvert.SerializeObject(custInfos);
+
+                return dataAccess.GetCurrentCustomerCategory(custInfosJson);
+            }
+
+            return Enumerable.Empty<GetCurrentNormalCategoryEntity>();
         }
 
         public INormalAccountClassificationService ClassifyNormalPoolCustomers(string customerXML)
-        {            
+        {
             dataAccess.ClassifyNormalPoolCustomers(customerXML);
-            
+
             return this;
         }
 
@@ -47,6 +58,6 @@
             }
 
             return this;
-        }        
+        }
     }
 }
