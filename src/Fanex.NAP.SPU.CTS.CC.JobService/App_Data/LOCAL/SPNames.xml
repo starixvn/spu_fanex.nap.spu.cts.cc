@@ -15,8 +15,8 @@
 		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="SQL.CustDB.bodbAdminNet" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="SQL.WASAVerse.bodbSPUNet" />
 		<Setting Key="CTS_DC_CustClassification_TWTagging_Exclude" SpName="CTS_DC_CustClassification_TWTagging_Exclude" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" SpName="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_SpecialLicSubCC_Classify_Complete" SpName="CTS_DC_SpecialLicSubCC_Classify_Complete_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" SpName="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" DbName="MySQL.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_SpecialLicSubCC_Classify_Complete" SpName="CTS_DC_SpecialLicSubCC_Classify_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	<Function Name="DailyNormalClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScan_GetNormal" SpName="CTS_DC_CustClassification_DailyScan_GetNormal" DbName="MySQL.CTS_DataCenter.ctsService" />
@@ -48,14 +48,14 @@
 	</Function>
 
 	<Function Name="NormalAccountClassification">
-		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Get" SpName="CTS_GeneralNormalClassification_NormalPool_Get_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
-		<Setting Key="CTS_DC_CustClassification_Normal_GetCurrentCategory" SpName="CTS_DC_CustClassification_Normal_GetCurrentCategory_xtest" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
-		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Get" SpName="CTS_GeneralNormalClassification_NormalPool_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_DC_CustClassification_Normal_GetCurrentCategory" SpName="CTS_DC_CustClassification_Normal_GetCurrentCategory" DbName="MySQL.CTS_DataCenter.ctsService" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Classify" SpName="CTS_GeneralNormalClassification_NormalPool_Classify" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_NormalPool_Clear" SpName="CTS_GeneralNormalClassification_NormalPool_Clear" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
 	<Function Name="NormalAccount">
-		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Get" SpName="CTS_GeneralNormalClassification_NormalAccount_Get_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
+		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Get" SpName="CTS_GeneralNormalClassification_NormalAccount_Get" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 		<Setting Key="CTS_GeneralNormalClassification_NormalAccount_Complete" SpName="CTS_GeneralNormalClassification_NormalAccount_Complete" DbName="SQL.bodbVR2Model.bodbSPUNet" TimeOut="300" />
 	</Function>
 
@@ -262,10 +262,10 @@
 	</Function>
 	
 	<Function name="TWClassification">
-	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Get" SpName="CTS_DC_SpecialLicSubCC_Scan_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
-	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Complete" SpName="CTS_DC_SpecialLicSubCC_Scan_Complete_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-	    <Setting Key="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess" SpName="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess_xtest" DbName="SQL.bodbVR2Model.bodbSPUNet" />
-	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get_xtest" DbName="MySQL.CTS_DataCenter.ctsService" />
-	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete_xtest" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Get" SpName="CTS_DC_SpecialLicSubCC_Scan_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+	    <Setting Key="CTS_DC_SpecialLicSubCC_Scan_Complete" SpName="CTS_DC_SpecialLicSubCC_Scan_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+	    <Setting Key="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess" SpName="CTS_GeneralNormalClassification_SpecialLicSubCC_Preprocess" DbName="SQL.bodbVR2Model.bodbSPUNet" />
+	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get" DbName="MySQL.CTS_DataCenter.ctsService" />
+	    <Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 </Functions>
