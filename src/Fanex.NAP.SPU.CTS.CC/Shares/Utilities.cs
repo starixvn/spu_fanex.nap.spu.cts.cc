@@ -26,36 +26,36 @@ namespace Fanex.NAP.SPU.CTS.Shares
                 .Select(g => g.Select(x => x.v));
         }
 
-        public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int chunkSize)
-        {
-            return source
-                .Select((x, i) => new { Index = i, Value = x })
-                .GroupBy(x => x.Index / chunkSize)
-                .Select(x => x.Select(v => v.Value).ToList())
-                .ToList();
-        }
+        //public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int chunkSize)
+        //{
+        //    return source
+        //        .Select((x, i) => new { Index = i, Value = x })
+        //        .GroupBy(x => x.Index / chunkSize)
+        //        .Select(x => x.Select(v => v.Value).ToList())
+        //        .ToList();
+        //}
 
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
-        {
-            var q = new Queue<T>();
+        //public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
+        //{
+        //    var q = new Queue<T>();
 
-            foreach (var item in source)
-            {
-                // check if q is full
-                if (q.Count == chunksize)
-                {
-                    var ret = q;
-                    q = new Queue<T>();
+        //    foreach (var item in source)
+        //    {
+        //        // check if q is full
+        //        if (q.Count == chunksize)
+        //        {
+        //            var ret = q;
+        //            q = new Queue<T>();
 
-                    yield return ret;
-                }
+        //            yield return ret;
+        //        }
 
-                // enqueue item
-                q.Enqueue(item);
-            }
+        //        // enqueue item
+        //        q.Enqueue(item);
+        //    }
 
-            yield return q;
-        }
+        //    yield return q;
+        //}
 
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param)
         {

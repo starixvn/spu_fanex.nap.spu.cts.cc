@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationScan;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using System.Linq;
 
     public interface INormalDangerousAssociationScanJobService
     {

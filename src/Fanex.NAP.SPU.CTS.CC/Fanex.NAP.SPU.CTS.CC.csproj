@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
@@ -23,10 +23,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Fanex.Data" Version="4.2.2" />
-		<PackageReference Include="Fanex.Data.MySql" Version="4.2.2" />
-		<PackageReference Include="Fanex.Data.Repository" Version="4.2.2" />
-		<PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
+		<PackageReference Include="Fanex.Data" Version="4.3.4" />
+		<PackageReference Include="Fanex.Data.MySql" Version="4.3.4" />
+		<PackageReference Include="Fanex.Data.Repository" Version="4.3.4" />
+		<PackageReference Include="Fanex.Data.SqlServer" Version="4.3.4" />
 		<PackageReference Include="Fanex.Logging.Extensions" Version="1.0.6" />
 		<PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
 		<PackageReference Include="Fanex.Logging.Sentry" Version="1.0.6" />
