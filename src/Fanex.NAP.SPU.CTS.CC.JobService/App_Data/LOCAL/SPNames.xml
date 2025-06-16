@@ -98,9 +98,9 @@
 		<Setting Key="CTS_DC_CustInfo_GetLastUpdateTime" SpName="CTS_DC_CustInfo_GetLastUpdateTime" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_CustomerHistory_GetUpdatedCustID" SpName="CTS_CustomerHistory_GetUpdatedCustID" DbName="DBCTSC.bodb_CustHistory.wsv_cts" />
 		<Setting Key="CTS_DC_CustInfo_GetByCustIDs" SpName="CTS_DC_CustInfo_GetByCustIDs" DbName="CTSMain.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList_xpre" DbName="DBCTS.WASAVerse.wsv_cts" />
+		<Setting Key="CTS_Customer_GetInfoByCustIdList" SpName="CTS_Customer_GetInfoByCustIdList" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_DC_CustInfo_GetLastInsertCust" SpName="CTS_DC_CustInfo_GetLastInsertCust" DbName="CTSMain.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo_xpre" DbName="DBCTS.WASAVerse.wsv_cts" />
+		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
@@ -109,13 +109,13 @@
 		<Setting Key="CTS_DC_CustInfo_UpdateCustProductStatusComplete" SpName="CTS_DC_CustInfo_UpdateCustProductStatusComplete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_CustProductStatusHistory_GetUpdatedCustID" SpName="CTS_CustProductStatusHistory_GetUpdatedCustID" DbName="DBCTSC.bodb_CustHistory.wsv_cts" />
 
-		<Setting Key="CTS_DC_GetMinCustIDByScannedTime" SpName="CTS_DC_GetMinCustIDByScannedTime_xpre" DbName="CTSMain.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_CustomerLatency_Scan" SpName="CTS_CustomerLatency_Scan_xpre" DbName="DBCTS.WASAVerse.wsv_cts" />
-		<Setting Key="CTS_DC_CustomerLatency_CheckMissingCust" SpName="CTS_DC_CustomerLatency_CheckMissingCust_xpre" DbName="CTSMain.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_DC_GetMinCustIDByScannedTime" SpName="CTS_DC_GetMinCustIDByScannedTime" DbName="CTSMain.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_CustomerLatency_Scan" SpName="CTS_CustomerLatency_Scan" DbName="DBCTS.WASAVerse.wsv_cts" />
+		<Setting Key="CTS_DC_CustomerLatency_CheckMissingCust" SpName="CTS_DC_CustomerLatency_CheckMissingCust" DbName="CTSMain.CTS_DataCenter.ctsService" TimeOut="600" />
 
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Get" SpName="CTS_DC_CustomerLatency_Queue_Get_xpre" DbName="CTSMain.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Insert" SpName="CTS_DC_CustomerLatency_Queue_Insert_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustomerLatency_Queue_Complete" SpName="CTS_DC_CustomerLatency_Queue_Complete_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Get" SpName="CTS_DC_CustomerLatency_Queue_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Insert" SpName="CTS_DC_CustomerLatency_Queue_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustomerLatency_Queue_Complete" SpName="CTS_DC_CustomerLatency_Queue_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 
 	<Function Name="CTSCustomer-NullUserName2">
@@ -192,7 +192,7 @@
 
 	<Function Name="JobMonitoring">
 		<Setting Key="CTS_DC_Monitoring_IncorrectData_Insert" SpName="CTS_DC_Monitoring_IncorrectData_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get_xpre" DbName="CTSMain.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_Monitoring_IncorrectData_Get" SpName="CTS_DC_Monitoring_IncorrectData_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustSubInfo" SpName="CTS_Customer_Monitoring_GetCustSubInfo" DbName="DBCTS.bodb02.wsv_cts" />
 		<Setting Key="CTS_Customer_Monitoring_GetCustomerInfo" SpName="CTS_Customer_Monitoring_GetCustomerInfo" DbName="DBCTS.bodb02.wsv_cts" />
 		<Setting Key="CTS_Monitoring_CustomerClassificationPool_Get" SpName="CTS_Monitoring_CustomerClassificationPool_Get" DbName="DBVR2.bodb_VR2Model.wsv_cts" />

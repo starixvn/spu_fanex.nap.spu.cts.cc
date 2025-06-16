@@ -237,7 +237,7 @@
 
 		<Setting Key="CTS_DC_CustClassification_DgrAssociation_CheckAssociation" SpName="CTS_DC_CustClassification_DgrAssociation_CheckAssociation" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck" SpName="CTS_GeneralNormalClassification_DgrAssociation_PerformanceCheck" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-		<Setting Key="CTS_DC_CustClassification_DgrAssociation_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_Insert_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_DgrAssociation_Insert" SpName="CTS_DC_CustClassification_DgrAssociation_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" SpName="CTS_DC_CustClassification_DgrAssociation_DevicePool_Clear" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
 	
