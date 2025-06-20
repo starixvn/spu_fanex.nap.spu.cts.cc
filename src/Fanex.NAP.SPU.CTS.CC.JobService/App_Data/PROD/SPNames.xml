@@ -165,11 +165,11 @@
 
 	<Function name="DetectUnauthorizedLoginCustomer">
 		<Setting Key="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" SpName="CTS_DC_CustClassification_DetectUnauthorizedLoginCustomer" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="Acc_Rpt_GetCustWithFirstbetdate" SpName="Acc_Rpt_GetCustWithFirstbetdate" DbName="DBDW.bodb_dwrs.wsv_cts" />
+		<Setting Key="Acc_Rpt_GetCustWithFirstbetdate" SpName="Acc_Rpt_GetCustWithFirstbetdate" DbName="DBVR2.bodb_dwrs.wsv_cts" />
 	</Function>
 
 	<Function name="LogData">
-		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="CTSArchive.CTS_Archive.ctsServiceAdmin" />
+		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="CTSARC.CTS_Archive.ctsServiceAdmin" />
 	</Function>
 
 	<Function name="SabaDangeLevel">

@@ -163,7 +163,7 @@
 	</Function>
 
 	<Function name="LogData">
-		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="CTSArchive.CTS_Archive.ctsServiceAdmin" />
+		<Setting Key="CTS_Archive_Log_Insert" SpName="CTS_Archive_Log_Insert" DbName="CTSARC.CTS_Archive.ctsServiceAdmin" />
 	</Function>
 
 	<Function name="SabaDangeLevel">
