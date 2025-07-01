@@ -41,10 +41,6 @@
 
         int InsertReactivatedCustomersBatchSize { get; }
 
-        string SentryDsn { get; }
-
-        string SentryCategory { get; }
-
         string InsertVIPURL { get; }
 
         string InsertBAURL { get; }
@@ -72,8 +68,6 @@
         private readonly string afcInsertAccountURL;
         private readonly string afcDeleteAccountURL;
         private readonly bool isSyncAFCData;
-        private readonly string sentryDsn;
-        private readonly string sentryCategory;
         private readonly string insertVIPURL;
         private readonly string insertBAURL;
         private readonly string agencyApiUrl;
@@ -91,8 +85,6 @@
             afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
             afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
             isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
-            sentryDsn = GetValue<string>("Sentry:Dsn");
-            sentryCategory = GetValue<string>("Sentry:Category");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
             agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");
@@ -136,10 +128,6 @@
         public string AFCDeleteAccountURL => afcDeleteAccountURL;
 
         public bool IsSyncAFCData => isSyncAFCData;
-
-        public string SentryDsn => sentryDsn;
-
-        public string SentryCategory => sentryCategory;
 
         public string InsertVIPURL => insertVIPURL;
 

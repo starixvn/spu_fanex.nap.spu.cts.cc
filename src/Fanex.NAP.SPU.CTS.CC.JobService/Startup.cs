@@ -24,7 +24,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using SharpRaven;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class Startup
     {
@@ -40,6 +39,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
         {
             var appSettings = new AppSettings(Configuration);
 
+            services.AddFanexLogSentry(Configuration);
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddSingleton<INapSettings>(new NapSettings(Configuration));
 
@@ -53,8 +53,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             });
 
             services.RegisterService();
-
-            RegisterLogging(appSettings);
 
             FanexDataConfig(appSettings);
 
@@ -101,19 +99,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
               .WithMySql(Configuration)
               .UseDefaultDbSettingProvider(resourcePath: appSettings.SPName)
               .Run();
-        }
-
-        private void RegisterLogging(IAppSettings appSettings)
-        {
-            LogManager
-                .SetDefaultLogCategory(appSettings.SentryCategory)
-                .Use(new List<ILogEngine>
-                {
-                     new SentryLogging(new SentryEngineOptions {
-                        Dsn = new Dsn(appSettings.SentryDsn),
-                        Environment = "DEV"
-                     })
-                });
         }
 
         private void RegisterRemotingRef(IServiceCollection services)
