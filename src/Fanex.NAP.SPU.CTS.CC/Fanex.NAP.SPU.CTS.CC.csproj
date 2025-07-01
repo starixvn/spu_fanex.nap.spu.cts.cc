@@ -30,7 +30,6 @@
 		<PackageReference Include="Fanex.Logging.Extensions" Version="1.0.6" />
 		<PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
 		<PackageReference Include="Fanex.Logging.Sentry" Version="1.0.6" />
-		<PackageReference Include="Fanex.MailStation" Version="2.1.0" />
 		<PackageReference Include="Fanex.NAP.Client.AspNetCore" Version="1.0.0.7" />
 		<PackageReference Include="Fanex.NAP.SPU.AspNetCore.Notification" Version="1.0.10" />
 		<PackageReference Include="Fanex.RemotingRef" Version="1.5.4" />
