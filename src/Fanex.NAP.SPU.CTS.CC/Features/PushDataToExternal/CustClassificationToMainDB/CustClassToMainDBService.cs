@@ -221,7 +221,9 @@
                     CustId = c.CustID,
                     Category = c.CategoryID,
                     CustomerClass = c.CustomerClass
-                });
+                })
+                .GroupBy(c => new { c.CustId, c.CustomerClass, c.Category })
+                .Select(g => g.First());
 
                 return PushCustomerClassification(custClassification, roleGroup, Constants.RetryPushCCToExternal, serviceName);
             }
