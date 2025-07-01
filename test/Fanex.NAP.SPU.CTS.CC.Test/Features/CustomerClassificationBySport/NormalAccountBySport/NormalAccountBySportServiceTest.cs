@@ -19,7 +19,7 @@
         {
             normalAccountDataAccess = Substitute.For<INormalAccountInsertBySportDataAccess>();
             baseCustomerClassificationBySportDataAccess = Substitute.For<IBaseCustomerClassificationBySportDataAccess>();
-            normalAccountService = new NormalAccountInsertBySportService(baseCustomerClassificationBySportDataAccess, normalAccountDataAccess, null);
+            normalAccountService = new NormalAccountInsertBySportService(baseCustomerClassificationBySportDataAccess, normalAccountDataAccess);
         }
 
         [Fact]

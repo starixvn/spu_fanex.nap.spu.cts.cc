@@ -2,7 +2,6 @@
 using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
 using Fanex.NAP.SPU.CTS.Shares.Models;
 using NSubstitute;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -13,16 +12,14 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.DataLogTracking
     public class DataLogTrackingTest
     {
         private readonly IDataLogTrackingDataAccess _dataAccess;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IDataLogTrackingServices _service;
 
         public DataLogTrackingTest()
         {
             _dataAccess = Substitute.For<IDataLogTrackingDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new DataLogTrackingServices(_dataAccess, _sentryClient);
+            _service = new DataLogTrackingServices(_dataAccess);
         }
 
         #region LogInputData

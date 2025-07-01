@@ -5,6 +5,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using Fanex.Data.SqlServer;
     using Fanex.Logging;
     using Fanex.Logging.Sentry;
+    using Fanex.Logging.Sentry.RavenClient;
     using Fanex.NAP.Client;
     using Fanex.NAP.Client.AspNetCore.Configuration;
     using Fanex.NAP.Client.Configuration;
@@ -20,7 +21,7 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
-    using Sentry;
+    using SharpRaven;
     using System;
     using System.Collections.Generic;
     using System.Linq;

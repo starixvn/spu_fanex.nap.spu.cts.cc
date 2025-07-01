@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -18,17 +17,15 @@
     public class RealtimeTWInitialSmartJobService : IRealtimeTWInitialSmartJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly ITWInitialSmartService tWInitialSmartService;
         private readonly ISystemParameterServices systemParameterServices;
 
-        public RealtimeTWInitialSmartJobService(ISentryClient sentryClient
-            , IAppSettings appSettings
-            , ITWInitialSmartService tWInitialSmartService
-            , ISystemParameterServices systemParameterServices)
+        public RealtimeTWInitialSmartJobService(
+            IAppSettings appSettings,
+            ITWInitialSmartService tWInitialSmartService,
+            ISystemParameterServices systemParameterServices)
         {
-            this.sentryClient = sentryClient;
             this.tWInitialSmartService = tWInitialSmartService;
             this.appSettings = appSettings;
             this.systemParameterServices = systemParameterServices;
@@ -43,7 +40,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

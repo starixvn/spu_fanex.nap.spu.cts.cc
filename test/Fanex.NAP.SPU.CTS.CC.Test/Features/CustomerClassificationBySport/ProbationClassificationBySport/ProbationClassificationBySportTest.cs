@@ -2,7 +2,7 @@
 using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using NSubstitute;
-using Sentry;
+
 using System.Collections.Generic;
 using Xunit;
 using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.ProbationClassificationBySportConsts;

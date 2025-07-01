@@ -1,11 +1,6 @@
 ﻿using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
+using Fanex.NAP.SPU.CTS.Shares;
 using NSubstitute;
-using Sentry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -14,16 +9,15 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Base
     public class BaseCustomerClassificationBySportTest
     {
         private readonly IBaseCustomerClassificationBySportDataAccess _baseDataAccess;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IBaseCustomerClassificationBySportService _service;
 
         public BaseCustomerClassificationBySportTest()
         {
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationBySportDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new BaseCustomerClassificationBySportService(_baseDataAccess, _sentryClient);
+            _service = new BaseCustomerClassificationBySportService(_baseDataAccess);
+            LogExtension.ConfigByPassForUnitTest();
         }
 
         [Fact]

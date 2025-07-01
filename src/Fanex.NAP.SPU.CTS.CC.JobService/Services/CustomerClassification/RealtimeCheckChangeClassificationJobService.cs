@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;    
     using System.Threading.Tasks;
 
@@ -14,13 +13,11 @@
     public class RealtimeCheckChangeClassificationJobService : IRealtimeCheckChangeClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IRealtimeCheckChangeClassificationService realtimeCheckChangeServices;
 
-        public RealtimeCheckChangeClassificationJobService(ISentryClient sentryClient,
+        public RealtimeCheckChangeClassificationJobService(
             IRealtimeCheckChangeClassificationService realtimeServices)
         {
-            this.sentryClient = sentryClient;
             this.realtimeCheckChangeServices = realtimeServices;
             this.serviceName = "RealtimeCheckChangeClassification";
         }
@@ -37,7 +34,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

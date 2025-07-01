@@ -5,7 +5,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -24,11 +24,11 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         public TVSProblemAccountServices(
-            ISentryClient sentryClient,
+
             ITVSProblemAccountDataAccess tvsProblemAccountDataAccess,
             IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ICustClassToMainDBService custClassToMainDBService) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ICustClassToMainDBService custClassToMainDBService) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.tvsProblemAccountDataAccess = tvsProblemAccountDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;

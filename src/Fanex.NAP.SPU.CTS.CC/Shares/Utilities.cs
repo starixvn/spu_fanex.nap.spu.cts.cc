@@ -4,7 +4,6 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.Notification.Services;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -47,17 +46,17 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Bug", "S2955:Generic parameters not constrained to reference types should not be compared to \"null\"", Justification = "<Pending>")]
-        public static void LogSentryInfo<T>(string serviceName, string message, T data, bool isWriteLog, ISentryClient sentryClient)
+        public static void LogSentryInfo<T>(string serviceName, string message, T data, bool isWriteLog)
         {
             if (isWriteLog)
             {
                 var logMessage = $"{serviceName} - {message} {(data != null ? " - Data:" + JsonConvert.SerializeObject(data) : "")} - {DateTime.Now}";
 
-                sentryClient.CaptureMessage(logMessage);
+                logMessage.LogError();
             }
         }
 
-        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string dataType = "Data")
+        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, string dataType = "Data")
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
@@ -65,10 +64,10 @@
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                 .AddMessage($"{message} - {dataType}: {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
 
-            sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+            logMessage.LogError();
         }
 
-        public static void LogSentryError(string serviceName, string message, Exception ex, ISentryClient sentryClient)
+        public static void LogSentryError(string serviceName, string message, Exception ex)
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
@@ -76,7 +75,7 @@
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                 .AddMessage($"{message} - { DateTime.Now}").ToString();
 
-            sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+            logMessage.LogError();
         }
 
         public static string ReadTextFile(string filePath)

@@ -3,8 +3,8 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation;
+    using Fanex.NAP.SPU.CTS.Shares;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
     using System;
     using System.Threading.Tasks;
 
@@ -12,7 +12,6 @@
     [Route("api/classificationJobs")]
     public class ClassificationJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly IDailyProblemClassificationJobService dailyProblemClassificationServices;
 
         private readonly IRealtimeCheckChangeClassificationJobService realtimeCheckChangeJobService;
@@ -37,7 +36,7 @@
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
         public ClassificationJobController(
-            ISentryClient sentryClient,
+
             IDailyProblemClassificationJobService dailyProblemClassificationServices,
             IRealtimeCheckChangeClassificationJobService realtimeCheckChangeJobService,
             IRealtimeClassificationJobService realtimeJobService,
@@ -59,7 +58,6 @@
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
             IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService)
         {
-            this.sentryClient = sentryClient;
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
 
             this.realtimeCheckChangeJobService = realtimeCheckChangeJobService;
@@ -86,21 +84,21 @@
         [HttpPost("scanningDailyNormalClassification")]
         public async Task<bool> DailyScanningNormalClassification()
         {
-            sentryClient.CaptureMessage($"Daily Normal Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Daily Normal Service is running at {DateTime.Now}");
             return await this.dailyNormalClassificationJobService.Execute();
         }
 
         [HttpPost("scanningDailyProblemClassification")]
         public async Task<bool> DailyScanningProblemClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Problem Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Daily Problem Service is running at {DateTime.Now}");
             return await this.dailyProblemClassificationServices.Execute(batchSize);
         }
 
         [HttpPost("scanningDailyDangerousDepositClassification")]
         public async Task<bool> DailyScanningDangerousDepositClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Deposit Dangerous Score Classification Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Daily Deposit Dangerous Score Classification Service is running at {DateTime.Now}");
 
             return await this.dailyDangerousClassificationJobService.Execute(batchSize, true);
         }
@@ -108,7 +106,7 @@
         [HttpPost("scanningDailyDangerousCreditClassification")]
         public async Task<bool> DailyScanningDangerousCreditClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Credit Dangerous Score Classification Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Daily Credit Dangerous Score Classification Service is running at {DateTime.Now}");
 
             return await this.dailyDangerousClassificationJobService.Execute(batchSize, false);
         }
@@ -140,14 +138,14 @@
         [HttpPost("probationClassification")]
         public async Task<bool> ProbationScanningClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Probation Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Probation Service is running at {DateTime.Now}");
             return await this.probationClassificationJobService.Execute(batchSize);
         }
 
         [HttpPost("scanningDailyNormalTaggingClassification")]
         public async Task<bool> DailyScanningNormalTaggingClassification([FromForm] int batchSize)
         {
-            sentryClient.CaptureMessage($"Daily Normal Tagging Service is running at {DateTime.Now}");
+            LogExtension.LogInfo($"Daily Normal Tagging Service is running at {DateTime.Now}");
             return await this.normalTaggingClassificationJobService.Execute(batchSize);
         }
 

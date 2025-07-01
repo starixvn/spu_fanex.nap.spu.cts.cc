@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -34,7 +33,6 @@
         private readonly IInsertNewCustomerService _insertNewCustomerService;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly ISystemParameterServices _systemParameterServices;
-        private readonly ISentryClient _sentryClient;
         private readonly IAppSettings _appSettings;
 
         public CTSReactivatedCustomerJobService(
@@ -43,7 +41,7 @@
             ISystemParameterServices systemParameterServices,
             IInsertNewCustomerService insertNewCustomerService,
             ICustClassToMainDBService custClassToMainDBService,
-            ISentryClient sentryClient,
+
             IAppSettings appSettings)
         {
             _ctsCustomerService = ctsCustomerService;
@@ -51,7 +49,6 @@
             _systemParameterServices = systemParameterServices;
             _insertNewCustomerService = insertNewCustomerService;
             _custClassToMainDBService = custClassToMainDBService;
-            _sentryClient = sentryClient;
             _appSettings = appSettings;
         }
 
@@ -103,7 +100,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }
@@ -163,7 +160,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }

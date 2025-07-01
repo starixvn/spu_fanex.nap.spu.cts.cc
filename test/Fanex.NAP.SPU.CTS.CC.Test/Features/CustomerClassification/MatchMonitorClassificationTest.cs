@@ -6,7 +6,6 @@ using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainD
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -17,7 +16,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
     {
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess _problemAccountDataAccess;
-        private readonly ISentryClient _sentryClient;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IMatchMonitorClassificationDataAccess _matchDataAccess;
 
@@ -27,14 +25,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification
         {
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             _matchDataAccess = Substitute.For<IMatchMonitorClassificationDataAccess>();
 
             _service = new MatchMonitorClassificationService(
                             _baseDataAccess,
                             _problemAccountDataAccess,
-                            _sentryClient,
                             _custClassToMainDBService,
                             _matchDataAccess);
         }

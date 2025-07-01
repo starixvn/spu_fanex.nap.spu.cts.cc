@@ -4,7 +4,6 @@
     using Fanex.Logging.Extensions;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.Models;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
-    using Sentry;
     using System.Linq;
     using System;
     using System.Threading.Tasks;
@@ -25,18 +24,15 @@
         private readonly IInsertNewCustomerService _insertNewCustomerService;
         private readonly IMissingCustomerService _missingLatencyCustomerService;
         private readonly IAppSettings _appSettings;
-        private readonly ISentryClient _sentryClient;
 
         public CTSNewCustomerJobService(
             IInsertNewCustomerService insertNewCustomerService,
             IMissingCustomerService missingLatencyCustomerService,
-            IAppSettings appSettings,
-            ISentryClient sentryClient)
+            IAppSettings appSettings)
         {
             _insertNewCustomerService = insertNewCustomerService;
             _missingLatencyCustomerService = missingLatencyCustomerService;
             _appSettings = appSettings;
-            _sentryClient = sentryClient;
         }
 
         public Task<bool> InsertNewCustomer(int batchSize)
@@ -86,7 +82,7 @@
                       .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }

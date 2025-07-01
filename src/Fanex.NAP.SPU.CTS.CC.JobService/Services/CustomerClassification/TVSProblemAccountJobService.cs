@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,7 +20,6 @@
     public class TVSProblemAccountJobService : ITVSProblemAccountJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly ITVSProblemAccountServices tvsProblemAccountServices;
         private readonly ISystemParameterServices systemParameterServices;
@@ -29,14 +27,13 @@
         private readonly IIncorrectDataMonitoringService monitoringService;        
 
         public TVSProblemAccountJobService(
-            ISentryClient sentryClient,
+
             IAppSettings appSettings,
             ITVSProblemAccountServices tvsProblemAccountServices,
             ISystemParameterServices systemParameterServices,
             IDataLogTrackingServices dataLogTrackingServices,
             IIncorrectDataMonitoringService monitoringService)
         {
-            this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.tvsProblemAccountServices = tvsProblemAccountServices;
             this.systemParameterServices = systemParameterServices;
@@ -55,12 +52,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", batchSize, new Exception(), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", batchSize, new Exception());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 dataLogTrackingServices.LogErrorData(ex, serviceName);
 
@@ -103,7 +100,7 @@
 
             if (!string.IsNullOrEmpty(tvsProblemAccounts.MissingDataRequestIds))
             {
-                Utilities.LogSentryError(serviceName, "TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception("Missing TVS Problem Account"), sentryClient);
+                Utilities.LogSentryError(serviceName, "TVS RequestId(s): ", tvsProblemAccounts.MissingDataRequestIds, new Exception("Missing TVS Problem Account"));
 
                 InsertIncorrectDataMonitoring(tvsProblemAccounts.MissingDataRequestIds);
             } 

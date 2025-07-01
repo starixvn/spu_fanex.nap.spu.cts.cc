@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProbationClassification;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Threading.Tasks;
 
@@ -14,14 +13,12 @@
     public class ProbationClassificationJobService : IProbationClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IProbationClassificationServices probationClassificationServices;
 
         public ProbationClassificationJobService(
-            ISentryClient sentryClient,
+
             IProbationClassificationServices probationClassificationServices)
         {
-            this.sentryClient = sentryClient;
             this.probationClassificationServices = probationClassificationServices;
             this.serviceName = "ProbationClassification";
         }
@@ -36,12 +33,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new NullReferenceException(), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new NullReferenceException());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

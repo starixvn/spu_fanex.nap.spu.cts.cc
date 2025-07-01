@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Threading.Tasks;
 
@@ -16,14 +15,11 @@
     public class SabaDangerLevelJobService : ISabaDangerLevelJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly ISabaDangerLevelServices sabaDangerLevelServices;
 
         public SabaDangerLevelJobService(
-            ISentryClient sentryClient,
             ISabaDangerLevelServices sabaDangerLevelServices)
         {
-            this.sentryClient = sentryClient;
             this.sabaDangerLevelServices = sabaDangerLevelServices;
             this.serviceName = "SabaDangerLevelJobService";
         }
@@ -36,7 +32,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -50,7 +46,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -65,7 +61,7 @@
                                              .GetSabaDangerLevelForScanning();
 
             var isSuccess = sabaDangerLevelServices
-                                             .UpdateSabaDangerLevelToMainDB(sentryClient, serviceName, batchSize)
+                                             .UpdateSabaDangerLevelToMainDB(serviceName, batchSize)
                                              .UpdateLogSabaDangerLevel()
                                              .UpdateLastScan();
             if (isContinue && isSuccess)
@@ -81,7 +77,7 @@
             var isContinue = sabaDangerLevelServices.StartForInitialzingData()
                                                     .GetSabaDangerLevelForInitialization();
 
-            var isSuccess = sabaDangerLevelServices.UpdateSabaDangerLevelToMainDBForInitialization(sentryClient, serviceName, batchSize)
+            var isSuccess = sabaDangerLevelServices.UpdateSabaDangerLevelToMainDBForInitialization(serviceName, batchSize)
                                                    .UpdateLogSabaDangerLevelForInitialization()
                                                    .UpdateLastScanForInitialization();
 

@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -19,18 +18,16 @@
     {
         private readonly string robotAccountServiceName;
         private readonly string robotDetectionServiceName;
-        private readonly ISentryClient sentryClient;
         private readonly IRobotTWInsertServices robotAccountInsertServices;
         private readonly IRobotAIDetectionService robotDetectionService;
         private readonly IAppSettings appSettings;
 
         public RobotAccountInsertJobService(
-            ISentryClient sentryClient,
+
             IRobotTWInsertServices robotAccountInsertServices,
             IRobotAIDetectionService robotDetectionService,
             IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
             this.robotAccountInsertServices = robotAccountInsertServices;
             this.robotDetectionService = robotDetectionService;
             this.appSettings = appSettings;
@@ -50,12 +47,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(robotAccountServiceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new Exception(), sentryClient);
+                    Utilities.LogSentryError(robotAccountServiceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new Exception());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(robotAccountServiceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(robotAccountServiceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -75,12 +72,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(robotDetectionServiceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new Exception(), sentryClient);
+                    Utilities.LogSentryError(robotDetectionServiceName, "InValid Batch size", (batchExternalSize, batchInternalSize), new Exception());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(robotDetectionServiceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(robotDetectionServiceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

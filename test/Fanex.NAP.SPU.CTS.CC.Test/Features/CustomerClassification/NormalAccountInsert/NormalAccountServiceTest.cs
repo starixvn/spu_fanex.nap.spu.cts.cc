@@ -23,7 +23,7 @@
         public NormalAccountServiceTest()
         {
             normalAccountDataAccess = Substitute.For<INormalAccountDataAccess>();
-            normalAccountService = new NormalAccountService(Substitute.For<IBaseCustomerClassificationDataAccess>(), normalAccountDataAccess, null);
+            normalAccountService = new NormalAccountService(Substitute.For<IBaseCustomerClassificationDataAccess>(), normalAccountDataAccess);
         }
 
         [Fact]

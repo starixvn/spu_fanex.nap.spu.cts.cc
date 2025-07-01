@@ -6,10 +6,10 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer;
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
+    using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -20,15 +20,15 @@
         private readonly CTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess ctsCustomerDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISentryClient sentryClient;
 
         public CTSCustomerServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
             ctsCustomerDataAccess = Substitute.For<ICTSCustomerDataAccess>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
 
-            ctsCustomerService = new CTSCustomerService(ctsCustomerDataAccess, sentryClient, custClassToMainDBService);
+            ctsCustomerService = new CTSCustomerService(ctsCustomerDataAccess, custClassToMainDBService);
+
+            LogExtension.ConfigByPassForUnitTest();
         }
 
         [Fact]

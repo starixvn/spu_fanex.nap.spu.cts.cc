@@ -5,10 +5,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
-    using FluentAssertions;
+    using Fanex.NAP.SPU.CTS.Shares;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,18 +20,16 @@
     {
         private readonly ICustClassToMainDBDataAccess _dataAccess;
         private readonly IAntiFraudCenterServices _antiFraudCenterServices;
-        private readonly ISentryClient _sentryClient;
 
         private readonly ICustClassToMainDBService _service;
 
         public CustClassificationToMainDBTests()
         {
-            _sentryClient = Substitute.For<ISentryClient>();
-
             _antiFraudCenterServices = Substitute.For<IAntiFraudCenterServices>();
 
             _dataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            _service = new CustClassToMainDBService(_dataAccess, _sentryClient, _antiFraudCenterServices);
+            _service = new CustClassToMainDBService(_dataAccess, _antiFraudCenterServices);
+            LogExtension.ConfigByPassForUnitTest();
         }
 
         [Fact]

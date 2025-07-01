@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;    
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -27,7 +26,7 @@
         public RescanCustClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IRescanCustClassificationDataAccess rescanCustClassificationDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ICustClassToMainDBService custClassToMainDBService, ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ICustClassToMainDBService custClassToMainDBService) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.rescanCustClassificationDataAccess = rescanCustClassificationDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;

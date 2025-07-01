@@ -8,7 +8,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.Transform.CTSCustomer.Entities;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
     using System.Collections.Generic;
     using Xunit;
 
@@ -17,14 +16,12 @@
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
-        private readonly ISentryClient sentryClient;
 
         public UpdateUsername2ServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
-            sentryClient = Substitute.For<ISentryClient>();
             custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, custClassToMainDBService);
+            ctsCustomerService = new CTSCustomerService(dataAccess, custClassToMainDBService);
         }
 
         [Fact]

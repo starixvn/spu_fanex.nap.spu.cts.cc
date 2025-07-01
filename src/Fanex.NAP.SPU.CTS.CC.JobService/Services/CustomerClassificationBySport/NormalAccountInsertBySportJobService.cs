@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -18,17 +18,15 @@
     public class NormalAccountInsertBySportJobService : INormalAccountInsertBySportJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly INormalAccountInsertBySportService normalAccountInsertService;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
         private const int CategoryIdFromSpecialCC = -1; // for special cc cust no performance
 
-        public NormalAccountInsertBySportJobService(ISentryClient sentryClient
-            , INormalAccountInsertBySportService normalAccountInsertService
-            , ICustClassToMainDBService custClassToMainDBService)
+        public NormalAccountInsertBySportJobService(
+            INormalAccountInsertBySportService normalAccountInsertService,
+            ICustClassToMainDBService custClassToMainDBService)
         {
-            this.sentryClient = sentryClient;
             this.normalAccountInsertService = normalAccountInsertService;
             this.custClassToMainDBService = custClassToMainDBService;
             this.serviceName = "InsertNormalAccountBySport";
@@ -54,7 +52,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(this.serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(this.serviceName, ex.Message, string.Empty, ex);
                 
                 return Task.FromResult(false);
             }

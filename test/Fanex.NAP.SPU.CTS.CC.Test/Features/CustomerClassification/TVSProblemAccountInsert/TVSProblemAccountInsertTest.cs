@@ -5,12 +5,8 @@ using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInse
 using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Sentry;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -20,7 +16,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.TVSProblemA
     {
         private readonly ITVSProblemAccountDataAccess _tvsProblemAccountDataAccess;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
-        private readonly ISentryClient _sentryClient;
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess _problemAccountDataAccess;
 
@@ -30,12 +25,10 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.TVSProblemA
         {
             _tvsProblemAccountDataAccess = Substitute.For<ITVSProblemAccountDataAccess>();
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            _sentryClient = Substitute.For<ISentryClient>();
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
 
             _service = new TVSProblemAccountServices(
-                                _sentryClient,
                                 _tvsProblemAccountDataAccess,
                                 _baseDataAccess, 
                                 _problemAccountDataAccess, 

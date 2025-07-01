@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -17,13 +16,11 @@
     public class RealtimeTWInitialGroupBettingJobService : IRealtimeTWInitialGroupBettingJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly ITWInitialGroupBettingService twInitialGBService;
 
-        public RealtimeTWInitialGroupBettingJobService(ISentryClient sentryClient, IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
+        public RealtimeTWInitialGroupBettingJobService(IAppSettings appSettings, ITWInitialGroupBettingService twInitialGBService)
         {
-            this.sentryClient = sentryClient;
             this.twInitialGBService = twInitialGBService;        
             this.appSettings = appSettings;
             this.serviceName = "Realtime TW Initial Group Betting JobService";
@@ -37,7 +34,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

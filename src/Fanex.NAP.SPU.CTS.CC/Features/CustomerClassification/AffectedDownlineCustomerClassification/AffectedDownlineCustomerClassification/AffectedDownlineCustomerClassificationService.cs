@@ -11,7 +11,6 @@
     using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -48,8 +47,7 @@
             ICustClassToMainDBService custClassToMainDBService,
             ICustomerClassificationAgencyService custClassAgencyService,
             IAntiFraudCenterServices antiFraudCenterServices,
-            IRescanCustClassificationService rescanCustClassificationService,
-            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            IRescanCustClassificationService rescanCustClassificationService) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.affectedCustClassificationDataAccess = affectedCustClassificationDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;

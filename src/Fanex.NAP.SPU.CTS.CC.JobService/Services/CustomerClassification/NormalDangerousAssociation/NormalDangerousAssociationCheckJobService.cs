@@ -1,12 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification.NormalDangerousAssociation
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationCheck.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -23,13 +21,11 @@
         private const string serviceName = "NormalDangerousAssociationCheck";
         private readonly INormalDangerousAssociationCheckService _service;
         private readonly ISystemParameterServices _parameterServices;
-        private readonly ISentryClient _sentryClient;
 
-        public NormalDangerousAssociationCheckJobService(INormalDangerousAssociationCheckService service, ISystemParameterServices parameterServices, ISentryClient sentryClient)
+        public NormalDangerousAssociationCheckJobService(INormalDangerousAssociationCheckService service, ISystemParameterServices parameterServices)
         {
             _service = service;
             _parameterServices = parameterServices;
-            _sentryClient = sentryClient;
         }
 
         public Task<bool> Execute(int batchSize)
@@ -45,7 +41,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

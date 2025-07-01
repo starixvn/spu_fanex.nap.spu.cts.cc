@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CTSCustomer
 {
-    using Sentry;
+    
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -30,20 +30,17 @@
         private readonly IInsertNewCustomerService _insertNewCustomerService;
         private readonly ISystemParameterServices _systemParameterServices;
         private readonly IAppSettings _appSettings;
-        private readonly ISentryClient _sentryClient;
 
         public CTSLatencyCustomerJobService(
             IMissingCustomerService missingCustomerService,
             IInsertNewCustomerService insertNewCustomerService,
             ISystemParameterServices systemParameterServices,
-            IAppSettings appSettings,
-            ISentryClient sentryClient)
+            IAppSettings appSettings)
         {
             _missingCustomerService = missingCustomerService;
             _insertNewCustomerService = insertNewCustomerService;
             _systemParameterServices = systemParameterServices;
             _appSettings = appSettings;
-            _sentryClient = sentryClient;
         }
 
 
@@ -82,7 +79,7 @@
                   .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                   .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }
@@ -165,7 +162,7 @@
                   .AddSection(Constants.ExceptionInfo, CommonInfoGetters.GetExceptionInfo(ex))
                   .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }

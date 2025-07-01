@@ -2,20 +2,17 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
     using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/twgroupbetting")]
     public class TWGroupBettingJobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly ITWGroupBettingJobService twGroupBettingJobService;
 
-        public TWGroupBettingJobController(ISentryClient sentryClient,
+        public TWGroupBettingJobController(
             ITWGroupBettingJobService twGroupBettingJobService)
         {
-            this.sentryClient = sentryClient;
             this.twGroupBettingJobService = twGroupBettingJobService;
         }
 

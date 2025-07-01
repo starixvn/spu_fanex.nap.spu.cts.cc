@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -17,13 +16,7 @@
 
     public class AntiFraudCenterServices : IAntiFraudCenterServices
     {
-        private readonly ISentryClient sentryClient;
         private const string ServiceName = "AntiFraudCenter";
-
-        public AntiFraudCenterServices(ISentryClient sentryClient)
-        {
-            this.sentryClient = sentryClient;
-        }
 
         #region Public methods
 
@@ -38,7 +31,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Insert Accounts fail", custIds, ex, sentryClient, "CustIds");
+                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Insert Accounts fail", custIds, ex, "CustIds");
             }
         }
 
@@ -53,7 +46,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Delete Accounts fail", custIds, ex, sentryClient, "CustIds");
+                Utilities.LogSentryError(ServiceName, $" {fromFlow} - CTS.CC Service - Delete Accounts fail", custIds, ex, "CustIds");
             }
         }
 

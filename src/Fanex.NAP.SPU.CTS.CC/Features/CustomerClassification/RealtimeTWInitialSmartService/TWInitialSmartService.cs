@@ -4,8 +4,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
-    using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -25,9 +23,9 @@
 
         public TWInitialSmartService(IBaseCustomerClassificationDataAccess baseDataAccess, 
             IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient,        
+        
             ICustClassToMainDBService custClassToMainDBService,
-            ITWInitialSmartDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ITWInitialSmartDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.dataAccess = dataAccess;        
             this.custClassToMainDBService = custClassToMainDBService;

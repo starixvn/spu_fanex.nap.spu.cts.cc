@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -30,8 +29,7 @@
         public TWInitialGroupBettingService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
             ICustClassToMainDBService custClassToMainDBService,
-            ITWInitialGroupBettingDataAccess dataAccess,
-            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ITWInitialGroupBettingDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.dataAccess = dataAccess;          
             this.custClassToMainDBService = custClassToMainDBService;

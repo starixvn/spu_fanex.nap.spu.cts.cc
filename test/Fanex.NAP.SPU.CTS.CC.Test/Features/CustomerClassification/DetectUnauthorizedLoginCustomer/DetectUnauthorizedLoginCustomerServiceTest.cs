@@ -24,9 +24,9 @@
         {
             systemParameterDataAccess = Substitute.For<ISystemParameterDataAccess>();
             unAuthorizedLogindataAccess = Substitute.For<IDetectUnauthorizedLoginCustomerDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(Substitute.For<ICustClassToMainDBDataAccess>(), null, null);
+            custClassToMainDBService = new CustClassToMainDBService(Substitute.For<ICustClassToMainDBDataAccess>(), null);
             unAuthorizedLoginService = new DetectUnauthorizedLoginCustomerService(Substitute.For<IBaseCustomerClassificationDataAccess>(),
-                Substitute.For<IProblemAccountDataAccess>(), null, custClassToMainDBService, unAuthorizedLogindataAccess, systemParameterDataAccess);
+                Substitute.For<IProblemAccountDataAccess>(), custClassToMainDBService, unAuthorizedLogindataAccess, systemParameterDataAccess);
         }
 
         [Theory]

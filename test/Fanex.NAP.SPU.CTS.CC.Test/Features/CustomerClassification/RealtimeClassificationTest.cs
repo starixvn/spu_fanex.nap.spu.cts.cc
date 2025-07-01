@@ -6,7 +6,7 @@
     using Newtonsoft.Json;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using Xunit;

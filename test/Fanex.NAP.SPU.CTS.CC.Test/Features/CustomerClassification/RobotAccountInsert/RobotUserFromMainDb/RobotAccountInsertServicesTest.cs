@@ -11,7 +11,7 @@
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -28,8 +28,6 @@
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly ICustomerClassificationAgencyService _ccAgencyService;
-        private readonly ISentryClient sentryClient;
-
         private readonly IRobotTWInsertServices _service;
 
         public RobotAccountInsertServicesTest()
@@ -38,7 +36,6 @@
             systemParameterServices = Substitute.For<ISystemParameterServices>();           
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             _dataLogTrackingServices = Substitute.For<IDataLogTrackingServices>();
-            sentryClient = Substitute.For<ISentryClient>();
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             _ccAgencyService = Substitute.For<ICustomerClassificationAgencyService>();
@@ -51,7 +48,7 @@
                 , _baseDataAccess
                 , problemAccountDataAccess
                 , _ccAgencyService
-                , sentryClient);
+                );
         }
 
         [Fact]

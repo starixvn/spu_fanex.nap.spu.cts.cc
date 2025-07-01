@@ -11,7 +11,6 @@
     using FluentAssertions;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -20,7 +19,6 @@
     {
         private readonly IInsertNewCustomerDataAccess _dataAccess;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
-        private readonly ISentryClient _sentryClient;
 
         private readonly IInsertNewCustomerService _service;
 
@@ -28,9 +26,8 @@
         {
             _dataAccess = Substitute.For<IInsertNewCustomerDataAccess>();
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
-            _service = new InsertNewCustomerService(_dataAccess, _custClassToMainDBService, _sentryClient);
+            _service = new InsertNewCustomerService(_dataAccess, _custClassToMainDBService);
         }
 
         [Fact]

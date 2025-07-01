@@ -5,9 +5,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares.Models;
     using FluentAssertions;
-    using Newtonsoft.Json;
     using NSubstitute;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -19,15 +17,13 @@
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
-        private readonly ISentryClient sentryClient;
 
         public ProblemAccountServicesTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
             baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
 
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            problemAccountServices = new ProblemAccountServices(baseDataAccess, problemAccountDataAccess, sentryClient);
+            problemAccountServices = new ProblemAccountServices(baseDataAccess, problemAccountDataAccess);
         }
       
         [Fact]

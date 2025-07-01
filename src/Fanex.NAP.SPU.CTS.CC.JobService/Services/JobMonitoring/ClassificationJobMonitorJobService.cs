@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,16 +18,14 @@
     public class ClassificationJobMonitorJobService : IClassificationJobMonitorJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IClassificationJobMonitorService classificationJobMonitorService;
         private readonly ISystemParameterServices systemParameterServices;
 
         public ClassificationJobMonitorJobService(
-            ISentryClient sentryClient,
+
             IClassificationJobMonitorService classificationJobMonitorService,
             ISystemParameterServices systemParameterServices)
         {
-            this.sentryClient = sentryClient;
             this.classificationJobMonitorService = classificationJobMonitorService;
             this.systemParameterServices = systemParameterServices;
             this.serviceName = "ClassificationJobMonitor";
@@ -61,7 +58,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -89,7 +86,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

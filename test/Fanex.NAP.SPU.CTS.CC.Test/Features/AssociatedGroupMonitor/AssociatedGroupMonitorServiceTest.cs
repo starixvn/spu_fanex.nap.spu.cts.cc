@@ -7,7 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -21,21 +21,18 @@
         private readonly ICustClassToMainDBService custClassToMainDBService;
         private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
         private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
-        private readonly ISentryClient sentryClient;
 
         public AssociatedGroupMonitorServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
-
             baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess);
             
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();           
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null);
 
             associatedGroupMonitorDataAccess = Substitute.For<IAssociatedGroupMonitorDataAccess>();
             associatedGroupMonitorService = new AssociatedGroupMonitorService(baseCustomerClassificationDataAccess,
-                Substitute.For<IProblemAccountDataAccess>(), null, custClassToMainDBService, associatedGroupMonitorDataAccess);
+                Substitute.For<IProblemAccountDataAccess>(), custClassToMainDBService, associatedGroupMonitorDataAccess);
            
         }
 
