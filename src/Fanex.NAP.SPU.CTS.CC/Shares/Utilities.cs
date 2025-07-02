@@ -62,7 +62,7 @@
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - {dataType}: {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {dataType}: {JsonConvert.SerializeObject(data)} - {DateTime.Now}").ToString();
 
             logMessage.LogError();
         }
@@ -73,7 +73,7 @@
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {DateTime.Now}").ToString();
 
             logMessage.LogError();
         }
@@ -89,7 +89,7 @@
         public static void NotifyChannelMessage(string message, string systemName, string environment, string groupId)
         {
             var notificationService = new NotificationService();
-            string proxy = environment == "PROD" ? "lisasqd.nebula.prod:8801" : null;
+            string proxy = new HashSet<string> { "PROD", "KLDR" }.Contains(environment) ? "iusqd.gamora.prod:8801" : null;
             notificationService
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(systemName, DateTime.Now, environment, message))
