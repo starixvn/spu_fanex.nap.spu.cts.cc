@@ -10,6 +10,8 @@
 
         public int? DangerLevel { get; set; }
 
+        public int? Danger1 { get; set; }
+
         public int? DangerLevelType { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
+    using Fanex.NAP.SPU.CTS.CC.Features.AssociatedGroupMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
@@ -261,33 +262,50 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
-        private bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> lastestClassifications, string serviceName)
+        private bool UpdateDangerLevelToMainDB(IEnumerable<LatestCCDangerLevelEntity> latestClassifications, string serviceName)
         {
-            if (lastestClassifications != null && lastestClassifications.Any())
+            if (latestClassifications == null || !latestClassifications.Any())
             {
-                var groupDangerType = lastestClassifications.Where(c => c.DangerLevel != null).GroupBy(c => c.DangerLevelType);
+                return true;
+            }
 
-                if (groupDangerType != null && groupDangerType.Any())
-                {
-                    foreach (var dangerBatch in groupDangerType)
-                    {
-                        var updateDangerLevel = dangerBatch.Select(c => new DangerLevelEntity
-                        {
-                            CustId = c.CustID,
-                            DangerLevel = c.DangerLevel.Value
-                        });
+            if (!UpdateDangerLevelABI(latestClassifications, serviceName))
+            {
+                return false;
+            }
 
-                        var isUpdateSuccessful = PushDangerLevel(updateDangerLevel, dangerBatch.Key.Value, Constants.RetryPushCCToExternal, serviceName);
-
-                        if (!isUpdateSuccessful)
-                        {
-                            return isUpdateSuccessful;
-                        }
-                    }
-                }
+            if (!UpdateDangerLevelOri(latestClassifications, serviceName))
+            {
+                return false;
             }
 
             return true;
+        }
+
+        private bool UpdateDangerLevelABI(IEnumerable<LatestCCDangerLevelEntity> latestClassifications, string serviceName)
+        {
+            var dangerLevelABI = latestClassifications
+                .Where(c => c.DangerLevel.HasValue)
+                .Select(c => new DangerLevelEntity
+                {
+                    CustId = c.CustID,
+                    DangerLevel = c.DangerLevel.Value
+                });
+
+            return PushDangerLevel(dangerLevelABI, (int)DangerType.ABI, Constants.RetryPushCCToExternal, serviceName);
+        }
+
+        private bool UpdateDangerLevelOri(IEnumerable<LatestCCDangerLevelEntity> latestClassifications, string serviceName)
+        {
+            var dangerLevelOri = latestClassifications
+                .Where(c => c.Danger1.HasValue)
+                .Select(c => new DangerLevelEntity
+                {
+                    CustId = c.CustID,
+                    DangerLevel = c.Danger1.Value
+                });
+
+            return PushDangerLevel(dangerLevelOri, (int)DangerType.Ori, Constants.RetryPushCCToExternal, serviceName);
         }
 
         private bool PushDangerLevel(IEnumerable<DangerLevelEntity> dangerLevels, int dangerTypeId, int retryTime, string serviceName)
