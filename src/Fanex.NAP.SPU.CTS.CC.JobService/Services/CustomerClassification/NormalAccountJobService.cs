@@ -10,7 +10,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWClassification.Models;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -26,7 +25,6 @@
     public class NormalAccountJobService : INormalAccountJobService
     {
         private readonly string _serviceName;
-        private readonly ISentryClient _sentryClient;
         private readonly IAppSettings _appSettings;
         private readonly INormalAccountService _normalAccountService;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
@@ -34,7 +32,7 @@
         private readonly INormalDangerousAssociationCheckService _normalDangerousAssociationCheckService;
         private readonly ITWClassificationService _twClassificationService;
 
-        public NormalAccountJobService(ISentryClient sentryClient,
+        public NormalAccountJobService(
             IAppSettings appSettings,
             INormalAccountService normalAccountService,
             ICustClassToMainDBService pushDataToExternalService,
@@ -42,7 +40,6 @@
             INormalDangerousAssociationCheckService normalDangerousAssociationCheckService,
             ITWClassificationService twClassificationService)
         {
-            _sentryClient = sentryClient;
             _normalAccountService = normalAccountService;
             _custClassToMainDBService = pushDataToExternalService;
             _appSettings = appSettings;
@@ -69,7 +66,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

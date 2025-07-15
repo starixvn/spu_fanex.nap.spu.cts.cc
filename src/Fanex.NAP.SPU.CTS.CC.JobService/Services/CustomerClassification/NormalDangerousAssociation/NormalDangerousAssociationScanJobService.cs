@@ -3,11 +3,11 @@
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using System.Threading.Tasks;
-    using Sentry;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalDangerousAssociation.NormalDangerousAssociationScan;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using System.Linq;
 
     public interface INormalDangerousAssociationScanJobService
     {
@@ -20,12 +20,10 @@
         private readonly INormalDangerousAssociationScanService _service;
         private readonly ISystemParameterServices _parameterServices;
         private readonly IRescanCustClassificationService _rescanService;
-        private readonly ISentryClient _sentryClient;
 
-        public NormalDangerousAssociationScanJobService(INormalDangerousAssociationScanService service, ISentryClient sentryClient, ISystemParameterServices parameterServices, IRescanCustClassificationService rescanService)
+        public NormalDangerousAssociationScanJobService(INormalDangerousAssociationScanService service, ISystemParameterServices parameterServices, IRescanCustClassificationService rescanService)
         {
             _service = service;
-            _sentryClient = sentryClient;
             _parameterServices = parameterServices;
             _rescanService = rescanService;
         }
@@ -48,7 +46,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

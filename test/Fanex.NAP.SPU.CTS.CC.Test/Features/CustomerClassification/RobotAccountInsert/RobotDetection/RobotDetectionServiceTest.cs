@@ -10,7 +10,7 @@
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -24,8 +24,6 @@
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess _problemAccountDataAccess;
-        private readonly ISentryClient _sentryClient;
-
         private readonly IRobotAIDetectionService _service;
 
         public RobotDetectionServiceTest()
@@ -33,7 +31,6 @@
             _dataAccess = Substitute.For<IRobotAIDetectionDataAccess>();
             _systemParameterServices = Substitute.For<ISystemParameterServices>();
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
-            _sentryClient = Substitute.For<ISentryClient>();
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
             _service = new RobotAIDetectionService(_dataAccess
@@ -41,7 +38,7 @@
                 , _custClassToMainDBService
                 , _baseDataAccess
                 , _problemAccountDataAccess
-                , _sentryClient);
+                );
         }
 
         [Fact]

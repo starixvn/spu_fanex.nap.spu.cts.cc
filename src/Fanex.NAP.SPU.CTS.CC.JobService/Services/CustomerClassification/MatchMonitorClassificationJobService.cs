@@ -4,7 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System;    
     using System.Linq;
     using System.Threading.Tasks;
@@ -20,16 +20,14 @@
     public class MatchMonitorClassificationJobService : IMatchMonitorClassificationJobService
     {
         private readonly IMatchMonitorClassificationService mmClassificationService;     
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly string serviceName;
         private const int batchSize = 500;
 
-        public MatchMonitorClassificationJobService(ISentryClient sentryClient
-            , IAppSettings appSettings
-            , IMatchMonitorClassificationService mmClassificationService)
+        public MatchMonitorClassificationJobService(
+            IAppSettings appSettings,
+            IMatchMonitorClassificationService mmClassificationService)
         {
-            this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.serviceName = "Match Monitor Classication";
             this.mmClassificationService = mmClassificationService;         
@@ -58,7 +56,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                ex.LogError();
 
                 return Task.FromResult(false);
             }
@@ -91,7 +89,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

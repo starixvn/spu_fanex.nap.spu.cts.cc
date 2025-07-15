@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System;
     using System.Threading.Tasks;
 
@@ -14,13 +14,11 @@
     public class DailyNormalClassificationBySportJobService : IDailyNormalClassificationBySportJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IDailyNormalClassificationBySportServices dailyService;
 
-        public DailyNormalClassificationBySportJobService(ISentryClient sentryClient,
+        public DailyNormalClassificationBySportJobService(
             IDailyNormalClassificationBySportServices dailyService)
         {
-            this.sentryClient = sentryClient;
             this.dailyService = dailyService;
             this.serviceName = "DailyNormalClassificationBySport";
         }
@@ -39,7 +37,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

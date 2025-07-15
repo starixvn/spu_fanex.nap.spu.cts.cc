@@ -1,18 +1,17 @@
-﻿using Fanex.Logging.Extensions;
-using Fanex.Logging.Extensions.Database;
-using Fanex.NAP.SPU.Notification.Services;
-using Newtonsoft.Json;
-using Sentry;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-
-namespace Fanex.NAP.SPU.CTS.Shares
+﻿namespace Fanex.NAP.SPU.CTS.Shares
 {
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.Notification.Services;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Json;
+    using System.Threading.Tasks;
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Datetime Code Smell", "S6566:Prefer using DateTimeOffset instead of DateTime", Justification = "<NotHandle>")]
     public static class Utilities
     {
@@ -24,37 +23,6 @@ namespace Fanex.NAP.SPU.CTS.Shares
                 .Select((v, i) => new { v, groupIndex = i / chunkSize })
                 .GroupBy(x => x.groupIndex)
                 .Select(g => g.Select(x => x.v));
-        }
-
-        public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int chunkSize)
-        {
-            return source
-                .Select((x, i) => new { Index = i, Value = x })
-                .GroupBy(x => x.Index / chunkSize)
-                .Select(x => x.Select(v => v.Value).ToList())
-                .ToList();
-        }
-
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
-        {
-            var q = new Queue<T>();
-
-            foreach (var item in source)
-            {
-                // check if q is full
-                if (q.Count == chunksize)
-                {
-                    var ret = q;
-                    q = new Queue<T>();
-
-                    yield return ret;
-                }
-
-                // enqueue item
-                q.Enqueue(item);
-            }
-
-            yield return q;
         }
 
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param)
@@ -78,36 +46,36 @@ namespace Fanex.NAP.SPU.CTS.Shares
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Bug", "S2955:Generic parameters not constrained to reference types should not be compared to \"null\"", Justification = "<Pending>")]
-        public static void LogSentryInfo<T>(string serviceName, string message, T data, bool isWriteLog, ISentryClient sentryClient)
+        public static void LogSentryInfo<T>(string serviceName, string message, T data, bool isWriteLog)
         {
             if (isWriteLog)
             {
                 var logMessage = $"{serviceName} - {message} {(data != null ? " - Data:" + JsonConvert.SerializeObject(data) : "")} - {DateTime.Now}";
 
-                sentryClient.CaptureMessage(logMessage);
+                logMessage.LogError();
             }
         }
 
-        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string dataType = "Data")
+        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, string dataType = "Data")
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - {dataType}: {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {dataType}: {JsonConvert.SerializeObject(data)} - {DateTime.Now}").ToString();
 
-            sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+            logMessage.LogError();
         }
 
-        public static void LogSentryError(string serviceName, string message, Exception ex, ISentryClient sentryClient)
+        public static void LogSentryError(string serviceName, string message, Exception ex)
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {DateTime.Now}").ToString();
 
-            sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+            logMessage.LogError();
         }
 
         public static string ReadTextFile(string filePath)
@@ -121,7 +89,7 @@ namespace Fanex.NAP.SPU.CTS.Shares
         public static void NotifyChannelMessage(string message, string systemName, string environment, string groupId)
         {
             var notificationService = new NotificationService();
-            string proxy = environment == "PROD" ? "lisasqd.nebula.prod:8801" : null;
+            string proxy = new HashSet<string> { "PROD", "KLDR" }.Contains(environment) ? "iusqd.gamora.prod:8801" : null;
             notificationService
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(systemName, DateTime.Now, environment, message))

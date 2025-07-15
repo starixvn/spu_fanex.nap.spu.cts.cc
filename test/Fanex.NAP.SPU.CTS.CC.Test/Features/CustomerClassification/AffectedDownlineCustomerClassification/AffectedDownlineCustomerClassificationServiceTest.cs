@@ -9,7 +9,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using System.Collections.Generic;
-    using Sentry;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using static Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Consts.AffectedDownlineCustomerClassificationConsts;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.AffectedDownlineCustomerClassification;
@@ -23,24 +22,21 @@
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
         private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
         private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
-        private readonly ISentryClient sentryClient;
 
         public AffectedDownlineCustomerClassificationServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
-
             affectedDownlineCustomerClassificationDataAccess = Substitute.For<IAffectedDownlineCustomerClassificationDataAccess>();
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
 
             baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess);
 
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null);
 
             affectedDownlineCustomerClassificationService = new AffectedDownlineCustomerClassificationService(affectedDownlineCustomerClassificationDataAccess,
                 baseCustomerClassificationDataAccess, problemAccountDataAccess,
-                custClassToMainDBService, null, null, Substitute.For<IRescanCustClassificationService>(), sentryClient);
+                custClassToMainDBService, null, null, Substitute.For<IRescanCustClassificationService>());
         }
 
         [Fact]

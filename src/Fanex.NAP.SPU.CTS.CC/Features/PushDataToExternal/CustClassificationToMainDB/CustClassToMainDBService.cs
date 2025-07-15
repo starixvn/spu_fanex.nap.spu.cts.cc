@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -33,16 +32,13 @@
     {
         private readonly ICustClassToMainDBDataAccess custClassToMainDBDataAccess;
         private readonly IAntiFraudCenterServices antiFraudCenterServices;
-        private readonly ISentryClient sentryClient;
 
         public CustClassToMainDBService(
             ICustClassToMainDBDataAccess custClassToMainDBDataAccess,
-            ISentryClient sentryClient,
             IAntiFraudCenterServices antiFraudCenterServices)
         {
             this.custClassToMainDBDataAccess = custClassToMainDBDataAccess;
             this.antiFraudCenterServices = antiFraudCenterServices;
-            this.sentryClient = sentryClient;
         }
 
         #region Public methods - General
@@ -105,7 +101,7 @@
                     {
                         Utilities.LogSentryError(
                             serviceName, $"PushCustomerClassificationToMain throw exception: not existing CustIDs in mainDB with ErrorMsg: {result.ErrorMsg}",
-                            customerClassifications, new Exception("Not existing CustIDs in mainDB"), sentryClient);
+                            customerClassifications, new Exception("Not existing CustIDs in mainDB"));
                     }
 
                     if (result.ErrorCode == 200 || result.ErrorCode == 0)
@@ -117,7 +113,7 @@
                     {
                         Utilities.LogSentryError(
                             serviceName, $"PushCustomerClassificationToMain fail with error code: {result.ErrorCode}",
-                            customerClassifications, new Exception(result.ErrorMsg), sentryClient);
+                            customerClassifications, new Exception(result.ErrorMsg));
 
                         return false;
                     }
@@ -128,7 +124,7 @@
                 {
                     if (retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "PushCustomerClassificationToMain throw exception", customerClassifications, ex, sentryClient);
+                        Utilities.LogSentryError(serviceName, "PushCustomerClassificationToMain throw exception", customerClassifications, ex);
                         return false;
                     }
 
@@ -184,7 +180,7 @@
 
                         if (result.ErrorCode != 0 && retryTime == 0)
                         {
-                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB failed", custClassification, new Exception(result.ErrorMsg), sentryClient);
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB failed", custClassification, new Exception(result.ErrorMsg));
                             return false;
                         }
                         else if (result.ErrorCode != 0)
@@ -200,7 +196,7 @@
                     {
                         if (retryTime == 0)
                         {
-                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB thrown exception", custClassification, ex, sentryClient);
+                            Utilities.LogSentryError(serviceName, "UpdateCustomerClassificationBySportToMainDB thrown exception", custClassification, ex);
                             return false;
                         }
 
@@ -307,7 +303,7 @@
 
                     if (result.ErrorCode != 0 && retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain fail", (dangerLevels, dangerTypeId), new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain fail", (dangerLevels, dangerTypeId), new Exception(result.ErrorMsg));
                         return false;
                     }
                     else if (result.ErrorCode != 0)
@@ -323,7 +319,7 @@
                 {
                     if (retryTime == 0)
                     {
-                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain thrown exception", (dangerLevels, dangerTypeId), ex, sentryClient);
+                        Utilities.LogSentryError(serviceName, "UpdateDangerLevelToMain thrown exception", (dangerLevels, dangerTypeId), ex);
                         return false;
                     }
 

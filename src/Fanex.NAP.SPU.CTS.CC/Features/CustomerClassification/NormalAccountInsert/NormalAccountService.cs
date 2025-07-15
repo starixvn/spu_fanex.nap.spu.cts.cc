@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -26,7 +25,7 @@
     {
         private readonly INormalAccountDataAccess dataAccess;
 
-        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess, ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
+        public NormalAccountService(IBaseCustomerClassificationDataAccess baseDataAccess, INormalAccountDataAccess dataAccess) : base(baseDataAccess)
         {
             this.dataAccess = dataAccess;
         }

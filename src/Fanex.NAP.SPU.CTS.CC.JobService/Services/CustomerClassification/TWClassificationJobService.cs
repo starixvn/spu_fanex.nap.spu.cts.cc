@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassification
 {
-    using Sentry;
     using System;
     using System.Threading.Tasks;
     using Features.TWClassification;
@@ -22,16 +21,14 @@
     public class TWClassificationJobService : ITWClassificationJobService
     {
         private readonly string _serviceName;
-        private readonly ISentryClient _sentryClient;
         private readonly ITWClassificationService _twClassificationService;
         private readonly IAppSettings _appSettings;
         private const int DefaultBatchSize = 1000;
 
-        public TWClassificationJobService(ISentryClient sentryClient,
+        public TWClassificationJobService(
             ITWClassificationService twClassificationService,
             IAppSettings appSettings)
         {
-            _sentryClient = sentryClient;
             _twClassificationService = twClassificationService;
             _appSettings = appSettings;
             _serviceName = "TWClassification";
@@ -59,7 +56,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -95,7 +92,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(_serviceName, ex.Message, string.Empty, ex);
 
                 return await Task.FromResult(false);
             }
@@ -165,7 +162,7 @@
             if (failedResponses.IsNotNullOrEmpty())
             {
                 var failedGroupByMsgDics = failedResponses.GroupBy(x => x.Message).ToDictionary(x => x.Key, x => x.ToList());
-                Utilities.LogSentryError(_serviceName, string.Empty, failedGroupByMsgDics, new Exception("ResponseTWSpecialLicSubCC failed"), _sentryClient);
+                Utilities.LogSentryError(_serviceName, string.Empty, failedGroupByMsgDics, new Exception("ResponseTWSpecialLicSubCC failed"));
             }
         }
         #endregion Private Methods

@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -19,12 +18,10 @@
     public class BaseCustomerClassificationService : IBaseCustomerClassificationService
     {
         private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public BaseCustomerClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess, ISentryClient sentryClient)
+        public BaseCustomerClassificationService(IBaseCustomerClassificationDataAccess baseDataAccess)
         {
             this.baseDataAccess = baseDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public GetRescanCustomerClassificationModel GetRescanCustomerClassification(string custIDs)
@@ -38,7 +35,7 @@
 
             if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
-                Utilities.LogSentryError(serviceName, "InsertCustomerClassification throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
+                Utilities.LogSentryError(serviceName, "InsertCustomerClassification throw Exception", model, new Exception(result.ErrorMessage));
             }
 
             return result;
@@ -50,7 +47,7 @@
 
             if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
-                Utilities.LogSentryError(serviceName, "RemoveCustomerClassification throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
+                Utilities.LogSentryError(serviceName, "RemoveCustomerClassification throw Exception", model, new Exception(result.ErrorMessage));
             }
 
             return result;

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Sentry;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalTaggingClassification;
     using Fanex.NAP.SPU.CTS.Shares;
 
@@ -14,13 +13,11 @@
     public class NormalTaggingClassificationJobService : INormalTaggingClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient _sentryClient;
         private readonly INormalTaggingClassificationServices _normalTaggingClassificationServices;
 
-        public NormalTaggingClassificationJobService(INormalTaggingClassificationServices normalTaggingClassificationServices, ISentryClient sentryClient)
+        public NormalTaggingClassificationJobService(INormalTaggingClassificationServices normalTaggingClassificationServices)
         {
             _normalTaggingClassificationServices = normalTaggingClassificationServices;
-            _sentryClient = sentryClient;
             this.serviceName = "NormalTaggingClassification";
         }
 
@@ -34,12 +31,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", batchInternalSize, new NullReferenceException(), _sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", batchInternalSize, new NullReferenceException());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, _sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

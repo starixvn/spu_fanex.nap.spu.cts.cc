@@ -3,7 +3,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,12 +20,10 @@
     public class DataLogTrackingServices : IDataLogTrackingServices
     {
         private readonly IDataLogTrackingDataAccess dataLogTrackingDataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public DataLogTrackingServices(IDataLogTrackingDataAccess dataLogTrackingDataAccess, ISentryClient sentryClient)
+        public DataLogTrackingServices(IDataLogTrackingDataAccess dataLogTrackingDataAccess)
         {
             this.dataLogTrackingDataAccess = dataLogTrackingDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public void LogInputData(LogInputViewEntity content, FunctionId funcId, string serviceName)
@@ -40,13 +38,13 @@
 
                     if (!string.IsNullOrEmpty(result.ErrorMsg))
                     {
-                        Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), new Exception(result.ErrorMsg), sentryClient);
+                        Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), new Exception(result.ErrorMsg));
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), ex, sentryClient);
+                Utilities.LogSentryError(serviceName, "InsertInputData fail", (content, funcId), ex);
             }
         }
 
@@ -71,7 +69,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "InsertErrorData fail", exception, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, "InsertErrorData fail", exception, ex);
             }
         }
 

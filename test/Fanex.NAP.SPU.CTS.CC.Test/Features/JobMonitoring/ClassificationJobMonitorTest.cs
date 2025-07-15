@@ -3,7 +3,7 @@ using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
-using Sentry;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -4,7 +4,7 @@ using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGrou
 using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
 using FluentAssertions;
 using NSubstitute;
-using Sentry;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +21,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RealtimeTWI
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IBaseCustomerClassificationDataAccess _baseDataAccess;
         private readonly IProblemAccountDataAccess _problemAccountDataAccess;
-        private readonly ISentryClient _sentryClient;
-
         private readonly ITWInitialGroupBettingService _service;
 
         public TWInitialGroupBettingTest()
@@ -31,14 +29,12 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.RealtimeTWI
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
             _baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
             _problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
             _service = new TWInitialGroupBettingService(
                 _baseDataAccess,
                 _problemAccountDataAccess,
                 _custClassToMainDBService,
-                _dataAccess,
-                _sentryClient);
+                _dataAccess);
         }
 
         #region GetChanges

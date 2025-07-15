@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Newtonsoft.Json;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -22,8 +21,7 @@
 
         public NormalAccountInsertBySportService(
             IBaseCustomerClassificationBySportDataAccess baseDataAccess,
-            INormalAccountInsertBySportDataAccess dataAccess,
-            ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
+            INormalAccountInsertBySportDataAccess dataAccess) : base(baseDataAccess)
         {
             this.dataAccess = dataAccess;
         }

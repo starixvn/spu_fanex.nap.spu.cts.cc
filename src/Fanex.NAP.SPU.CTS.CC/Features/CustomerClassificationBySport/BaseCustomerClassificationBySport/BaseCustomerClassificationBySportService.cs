@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -15,12 +14,10 @@
     public class BaseCustomerClassificationBySportService : IBaseCustomerClassificationBySportService
     {
         private readonly IBaseCustomerClassificationBySportDataAccess baseDataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public BaseCustomerClassificationBySportService(IBaseCustomerClassificationBySportDataAccess baseDataAccess, ISentryClient sentryClient)
+        public BaseCustomerClassificationBySportService(IBaseCustomerClassificationBySportDataAccess baseDataAccess)
         {
             this.baseDataAccess = baseDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public ResultInsertClassificationBySportModel InsertCustomerClassificationBySport(CCInputFlow inputFlow, InsertCustomerClassificationBySportModel model, string serviceName)
@@ -29,7 +26,7 @@
 
             if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
-                Utilities.LogSentryError(serviceName, "InsertCustomerClassificationBySport throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
+                Utilities.LogSentryError(serviceName, "InsertCustomerClassificationBySport throw Exception", model, new Exception(result.ErrorMessage));
             }
 
             return result;
@@ -41,7 +38,7 @@
 
             if (result != null && !string.IsNullOrEmpty(result.ErrorMessage))
             {
-                Utilities.LogSentryError(serviceName, "RemoveCustomerClassificationBySport throw Exception", model, new Exception(result.ErrorMessage), sentryClient);
+                Utilities.LogSentryError(serviceName, "RemoveCustomerClassificationBySport throw Exception", model, new Exception(result.ErrorMessage));
             }
 
             return result;

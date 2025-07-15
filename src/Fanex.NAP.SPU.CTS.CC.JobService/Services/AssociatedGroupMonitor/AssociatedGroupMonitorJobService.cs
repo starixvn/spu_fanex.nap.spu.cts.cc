@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Fanex.NAP.SPU.CTS.Shares.Models;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,7 +18,6 @@
 
     public class AssociatedGroupMonitorJobService : IAssociatedGroupMonitorJobService
     {
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private const string serviceName = "Associated Group Monitor";
         private const string MarkPA_AssociatedGroup = "Associated Group";
@@ -28,12 +26,11 @@
         private readonly IAssociatedGroupMonitorService associatedGroupService;       
         private readonly ISystemParameterServices systemParameterServices;
 
-        public AssociatedGroupMonitorJobService(ISentryClient sentryClient
-            , IAppSettings appSettings
+        public AssociatedGroupMonitorJobService(
+            IAppSettings appSettings
             , IAssociatedGroupMonitorService associatedGroupService        
             , ISystemParameterServices systemParameterServices)
         {
-            this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.associatedGroupService = associatedGroupService;      
             this.systemParameterServices = systemParameterServices;
@@ -122,7 +119,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

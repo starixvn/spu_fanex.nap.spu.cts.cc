@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.TWGroupBetting.Criteria;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -20,15 +19,13 @@
     {
         private readonly string serviceName;
         private readonly ITWGroupBettingService twGroupBettingService;
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
 
         public TWGroupBettingJobService(
-            ISentryClient sentryClient,
+
             ITWGroupBettingService twGroupBettingService,
             IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
             this.twGroupBettingService = twGroupBettingService;
             this.appSettings = appSettings;
             this.serviceName = "TWGroupBetting";
@@ -67,7 +64,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
@@ -133,7 +130,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 Utilities.NotifyChannelMessage(ex.Message, "TWGB.CountTotalTicket", appSettings.EvironmentName, appSettings.NotificationChannelConfig.JobMonitoringGroupChannelId);
 

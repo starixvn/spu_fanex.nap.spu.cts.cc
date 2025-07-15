@@ -9,7 +9,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -31,21 +30,19 @@
         //private readonly string serviceName;
 
         private readonly ICTSCustomerService _ctscustomerService;
-        private readonly ISentryClient _sentryClient;
         private readonly IIncorrectDataMonitoringService _incorrectDataMonitoringService;
         private readonly ICustomerJobMonitorService _customerJobMonitorService;
         private readonly IMissingCustomerService _missingCustomerService;
         private readonly ISystemParameterServices _systemParameterServices;
 
         public CustomerJobMonitorJobService(
-            ISentryClient sentryClient,
+
             IIncorrectDataMonitoringService incorrectDataMonitoringService,
             ICustomerJobMonitorService customerJobMonitorService,
             ISystemParameterServices systemParameterServices,
             ICTSCustomerService ctscustomerService,
             IMissingCustomerService missingCustomerService)
         {
-            _sentryClient = sentryClient;
             _incorrectDataMonitoringService = incorrectDataMonitoringService;
             _customerJobMonitorService = customerJobMonitorService;
             _systemParameterServices = systemParameterServices;
@@ -107,7 +104,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
 
                 return Task.FromResult(false);
             }
@@ -150,7 +147,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
                 return Task.FromResult(false);
             }
         }
@@ -192,7 +189,7 @@
                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
                       .ToString();
 
-                _sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
+                logMessage.LogError();
 
                 return Task.FromResult(false);
             }

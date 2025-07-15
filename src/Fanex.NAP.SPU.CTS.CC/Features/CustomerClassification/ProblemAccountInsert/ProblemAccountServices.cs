@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -28,14 +27,11 @@
     public class ProblemAccountServices : BaseCustomerClassificationService, IProblemAccountServices
     {
         private readonly IProblemAccountDataAccess problemAccountDataAccess;
-        private readonly ISentryClient sentryClient;
 
         public ProblemAccountServices(IBaseCustomerClassificationDataAccess baseDataAccess,
-            IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient) : base(baseDataAccess, sentryClient)
+            IProblemAccountDataAccess problemAccountDataAccess) : base(baseDataAccess)
         {
             this.problemAccountDataAccess = problemAccountDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
@@ -179,7 +175,7 @@
 
                 if (result.ErrorCode != 0)
                 {
-                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfFlaggedCustomer", custId, new Exception(result.ErrorMsg), sentryClient);
+                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfFlaggedCustomer", custId, new Exception(result.ErrorMsg));
 
                     return false;
                 }
@@ -199,7 +195,7 @@
 
                 if (result.ErrorCode != 0)
                 {
-                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfUnflaggedCustomer", custId, new Exception(result.ErrorMsg), sentryClient);
+                    Utilities.LogSentryError(serviceName, "UpdateBetLimitOfUnflaggedCustomer", custId, new Exception(result.ErrorMsg));
 
                     return false;
                 }

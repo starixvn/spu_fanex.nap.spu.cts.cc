@@ -10,7 +10,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.Shares;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -43,7 +43,6 @@
         private readonly ICustClassToMainDBService _custClassToMainDBService;
         private readonly IDataLogTrackingServices _dataLogTrackingServices;
         private readonly ICustomerClassificationAgencyService _ccAgencyService;
-        private readonly ISentryClient _sentryClient;
         private long lastScannedTimespan;
         private TWRobotUserViewEntity robotInfo;
         private int? robotCategoryId;
@@ -55,8 +54,7 @@
             IDataLogTrackingServices dataLogTrackingServices,
             IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ICustomerClassificationAgencyService ccAgencyService,
-            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ICustomerClassificationAgencyService ccAgencyService) : base(baseDataAccess, problemAccountDataAccess)
 
         {
             this._robotAccountInsertDataAccess = robotAccountInsertDataAccess;
@@ -64,7 +62,6 @@
             this._custClassToMainDBService = custClassToMainDBService;
             this._dataLogTrackingServices = dataLogTrackingServices;
             this._ccAgencyService = ccAgencyService;
-            this._sentryClient = sentryClient;
         }
 
         public IRobotTWInsertServices Start()
@@ -128,7 +125,7 @@
 
                 if (robotCategoryId == null)
                 {
-                    Utilities.LogSentryError(serviceName, "Get Invalid RobotUser CategoryID (null value)", robotCategoryId, null, _sentryClient);
+                    Utilities.LogSentryError(serviceName, "Get Invalid RobotUser CategoryID (null value)", robotCategoryId, null);
                 }
             }
 

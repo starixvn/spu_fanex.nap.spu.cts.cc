@@ -2,7 +2,6 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -15,13 +14,10 @@
     public class ProbationClassificationBySportJobService : IProbationClassificationBySportJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IProbationClassificationBySportService probationClassificationServices;
 
-        public ProbationClassificationBySportJobService(ISentryClient sentryClient
-            , IProbationClassificationBySportService probationClassificationServices)
+        public ProbationClassificationBySportJobService(IProbationClassificationBySportService probationClassificationServices)
         {
-            this.sentryClient = sentryClient;
             this.probationClassificationServices = probationClassificationServices;
             this.serviceName = "ProbationClassificationBySport";
         }
@@ -40,7 +36,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

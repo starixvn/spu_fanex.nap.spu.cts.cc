@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassification.BaseCustomerClassification
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Fanex.NAP.SPU.CTS.Shares;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -11,13 +11,12 @@
     {
         private readonly IBaseCustomerClassificationDataAccess baseDataAccess;
         private readonly IBaseCustomerClassificationService baseService;
-        private readonly ISentryClient sentryClient;
 
         public BaseCustomerClassificationServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
             baseDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseService = new BaseCustomerClassificationService(baseDataAccess, sentryClient);
+            baseService = new BaseCustomerClassificationService(baseDataAccess);
+            LogExtension.ConfigByPassForUnitTest();
         }
 
         [Fact]

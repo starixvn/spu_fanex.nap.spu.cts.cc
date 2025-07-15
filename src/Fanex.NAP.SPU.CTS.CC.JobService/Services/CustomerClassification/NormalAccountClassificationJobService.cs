@@ -3,14 +3,10 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.NormalAccountClassification.Model;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface INormalAccountClassificationJobService
     {
@@ -20,12 +16,10 @@
     public class NormalAccountClassificationJobService : INormalAccountClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly INormalAccountClassificationService normalAccountService;
 
-        public NormalAccountClassificationJobService(ISentryClient sentryClient, INormalAccountClassificationService normalAccountService)
+        public NormalAccountClassificationJobService(INormalAccountClassificationService normalAccountService)
         {
-            this.sentryClient = sentryClient;
             this.normalAccountService = normalAccountService;
             this.serviceName = "NormalAccountClassificationService";
         }
@@ -44,7 +38,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

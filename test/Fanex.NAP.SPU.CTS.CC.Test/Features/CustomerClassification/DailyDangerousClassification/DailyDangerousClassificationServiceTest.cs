@@ -3,11 +3,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyDangerousClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;  
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
     using System.Collections.Generic;
     using Xunit;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -24,21 +22,18 @@
         private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
         private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
 
-        private readonly ISentryClient sentryClient;
-
         public DailyDangerousClassificationServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>();
           
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null);
       
             baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);           
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess);           
 
             dangerousCCDataAccess = Substitute.For<IDailyDangerousClassificationDataAccess>();
-            dailyDangerousCCService = new DailyDangerousClassificationService(dangerousCCDataAccess, problemAccountDataAccess, baseCustomerClassificationDataAccess, custClassToMainDBService, sentryClient);
+            dailyDangerousCCService = new DailyDangerousClassificationService(dangerousCCDataAccess, problemAccountDataAccess, baseCustomerClassificationDataAccess, custClassToMainDBService);
         }
 
         [Fact]

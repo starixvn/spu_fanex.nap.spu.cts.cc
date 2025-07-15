@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
+    
     using System.Threading.Tasks;
 
     [ApiController]

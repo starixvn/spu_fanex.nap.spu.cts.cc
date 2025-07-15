@@ -1,12 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.MonitorJobs.CustomerJobMonitor
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ClassificationJobMonitor;
-    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface ICustomerJobMonitorService
     {

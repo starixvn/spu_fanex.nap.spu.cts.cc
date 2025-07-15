@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading;
@@ -15,7 +14,7 @@
 
         bool GetSabaDangerLevelForScanning();
 
-        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB(ISentryClient sentryClient, string serviceName, int batchSize);
+        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB(string serviceName, int batchSize);
 
         ISabaDangerLevelServices UpdateLogSabaDangerLevel();
 
@@ -27,7 +26,7 @@
 
         bool GetSabaDangerLevelForInitialization();
 
-        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization(ISentryClient sentryClient, string serviceName, int batchSize);
+        ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization(string serviceName, int batchSize);
 
         ISabaDangerLevelServices UpdateLogSabaDangerLevelForInitialization();
 
@@ -63,7 +62,7 @@
             return sabaDangerLevel.CustSabaDangerLevel.Any();
         }
 
-        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB(ISentryClient sentryClient, string serviceName, int batchSize)
+        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDB(string serviceName, int batchSize)
         {
             if (sabaDangerLevel.CustSabaDangerLevel.Any())
             {
@@ -76,7 +75,7 @@
                     if (!sabaDangerLevel.UpdatedResult.IsSuccess)
                     {
                         Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, sabaDangerLevel.CustSabaDangerLevel, 
-                            new Exception(sabaDangerLevel.UpdatedResult.ErrMsg), sentryClient);
+                            new Exception(sabaDangerLevel.UpdatedResult.ErrMsg));
 
                         return this;
                     }
@@ -129,7 +128,7 @@
             return initSabaDangerLevel.LastCategoryID != -1;
         }
 
-        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization(ISentryClient sentryClient, string serviceName, int batchSize)
+        public ISabaDangerLevelServices UpdateSabaDangerLevelToMainDBForInitialization(string serviceName, int batchSize)
         {
             if (initSabaDangerLevel.CustSabaDangerLevel.Any())
             {
@@ -141,7 +140,7 @@
 
                     if (!initSabaDangerLevel.UpdatedResult.IsSuccess)
                     {
-                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, initSabaDangerLevel.CustSabaDangerLevel, new Exception(), sentryClient);
+                        Utilities.LogSentryError(serviceName, sabaDangerLevel.UpdatedResult.ErrMsg, initSabaDangerLevel.CustSabaDangerLevel, new Exception());
 
                         return this;
                     }

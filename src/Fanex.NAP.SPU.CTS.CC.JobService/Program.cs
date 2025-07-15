@@ -1,9 +1,10 @@
 namespace Fanex.NAP.SPU.CTS.CC.JobService
 {
+    using Fanex.NAP.SPU.CTS.Shares;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
-    using Sentry;
+    
     using System;
 
     public static class Program
@@ -14,14 +15,14 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             {
                 var host = CreateHostBuilder(args).Build();
 
-                SentrySdk.CaptureMessage(string.Format("{0} has been started at {1}", typeof(Program).FullName, DateTime.Now));
+                LogExtension.LogInfo(string.Format("{0} has been started at {1}", typeof(Program).FullName, DateTime.Now));
 
                 host.Run();
                 
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                ex.LogError();
                 Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
             }
 
@@ -45,7 +46,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
                     webBuilder.UseUrls("http://*:5000");
 
                     webBuilder
-                    .UseSentry()
                     .UseStartup<Startup>();
                 });
         }

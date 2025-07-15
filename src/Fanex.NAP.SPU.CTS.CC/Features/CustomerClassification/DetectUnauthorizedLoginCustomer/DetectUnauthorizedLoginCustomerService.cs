@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -37,10 +36,9 @@
 
         public DetectUnauthorizedLoginCustomerService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient,
             ICustClassToMainDBService custClassToMainDBService,
             IDetectUnauthorizedLoginCustomerDataAccess detectUnauthorizedDataAccess, 
-            ISystemParameterDataAccess systemDataAccess) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            ISystemParameterDataAccess systemDataAccess) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.detectUnauthorizedDataAccess = detectUnauthorizedDataAccess;
             this.systemDataAccess = systemDataAccess;

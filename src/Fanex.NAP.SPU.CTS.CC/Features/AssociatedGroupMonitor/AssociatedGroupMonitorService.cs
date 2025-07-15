@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares.Models;
-    using Sentry;
     using System.Collections.Generic;
     using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -32,9 +31,8 @@
 
         public AssociatedGroupMonitorService(IBaseCustomerClassificationDataAccess baseDataAccess,
             IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient,
             ICustClassToMainDBService custClassToMainDBService,
-            IAssociatedGroupMonitorDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            IAssociatedGroupMonitorDataAccess dataAccess) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.dataAccess = dataAccess;
             this.custClassToMainDBService = custClassToMainDBService;         

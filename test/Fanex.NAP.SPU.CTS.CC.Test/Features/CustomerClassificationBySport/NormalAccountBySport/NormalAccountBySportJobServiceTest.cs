@@ -6,7 +6,6 @@ using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,7 +16,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Norm
 {
     public class NormalAccountBySportJobServiceTest
     {
-        private readonly ISentryClient _sentryClient;
         private readonly IAppSettings _appSettings;
         private readonly INormalAccountInsertBySportService _normalAccountInsertService;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
@@ -26,12 +24,11 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.Norm
 
         public NormalAccountBySportJobServiceTest()
         {
-            _sentryClient = Substitute.For<ISentryClient>();
             _appSettings = Substitute.For<IAppSettings>();
             _normalAccountInsertService = Substitute.For<INormalAccountInsertBySportService>();
             _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
 
-            _service = new NormalAccountInsertBySportJobService(_sentryClient, _normalAccountInsertService, _custClassToMainDBService);
+            _service = new NormalAccountInsertBySportJobService(_normalAccountInsertService, _custClassToMainDBService);
         }
 
         #region InsertNormalAccount

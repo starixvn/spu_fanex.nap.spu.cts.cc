@@ -3,12 +3,10 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
-
     public interface IDailyProblemClassificationJobService
     {
         Task<bool> Execute(int batchSize);
@@ -17,16 +15,14 @@
     public class DailyProblemClassificationJobService : IDailyProblemClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IDailyProblemClassificationServices dailyProblemClassificationServices;
         private readonly IAppSettings appSettings;
 
         public DailyProblemClassificationJobService(
-            ISentryClient sentryClient,
+
             IDailyProblemClassificationServices dailyClassificationServices,
             IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
             this.dailyProblemClassificationServices = dailyClassificationServices;
             this.appSettings = appSettings;
             this.serviceName = "DailyProblemAccountProbationClassification";
@@ -42,12 +38,12 @@
                 }
                 else
                 {
-                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new Exception(), sentryClient);
+                    Utilities.LogSentryError(serviceName, "InValid Batch size", (batchSize), new Exception());
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

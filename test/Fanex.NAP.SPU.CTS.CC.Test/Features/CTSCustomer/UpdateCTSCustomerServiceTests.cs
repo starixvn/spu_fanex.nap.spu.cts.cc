@@ -10,7 +10,6 @@
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,13 +20,11 @@
     {
         private readonly ICTSCustomerService ctsCustomerService;
         private readonly ICTSCustomerDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
         public UpdateCTSCustomerServiceTests()
         {
             dataAccess = Substitute.For<ICTSCustomerDataAccess>();
-            sentryClient = Substitute.For<ISentryClient>();
-            ctsCustomerService = new CTSCustomerService(dataAccess, sentryClient, null);
+            ctsCustomerService = new CTSCustomerService(dataAccess, null);
         }
 
         [Fact]

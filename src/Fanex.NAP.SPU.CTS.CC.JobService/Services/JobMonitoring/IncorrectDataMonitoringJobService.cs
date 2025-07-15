@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.JobMonitoring.IncorrectDataMonitoring;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -17,18 +16,15 @@
     public class IncorrectDataMonitoringJobService : IIncorrectDataMonitoringJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IIncorrectDataMonitoringService monitoringService;
         private readonly ISystemParameterServices systemParameterServices;
         private readonly IAppSettings appSettings;
 
         public IncorrectDataMonitoringJobService(
-            ISentryClient sentryClient,
             IIncorrectDataMonitoringService monitoringService,
             ISystemParameterServices systemParameterServices,
             IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
             this.monitoringService = monitoringService;
             this.systemParameterServices = systemParameterServices;
             this.appSettings = appSettings;
@@ -55,7 +51,7 @@
 
                         if (inValidIssueType.Any())
                         {
-                            Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check more detail with list ID (table CTS_DataCenter.JobMonitoring_IncorrectData) : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"), sentryClient);
+                            Utilities.LogSentryError(serviceName, $"The are undefined causes of incorrect data, because of invalid IssueTypeID. Please check more detail with list ID (table CTS_DataCenter.JobMonitoring_IncorrectData) : {string.Join(",", inValidIssueType.Select(c => c.ID))}", string.Empty, new Exception("Job Monitoring - Invalid IssueType"));
                         }
 
                         var lastScannedID = result.InvalidDataList.Max(c => c.ID);
@@ -69,7 +65,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

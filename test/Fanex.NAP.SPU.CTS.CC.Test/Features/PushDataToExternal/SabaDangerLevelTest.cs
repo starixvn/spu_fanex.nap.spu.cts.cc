@@ -1,9 +1,9 @@
 ﻿using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.UpdateSabaDangerLevel;
 using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
 using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
+using Fanex.NAP.SPU.CTS.Shares;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -16,7 +16,6 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
     {
         private readonly ISabaDangerLevelDataAccess _sabaDangerLevelDataAccess;
         private readonly ISystemParameterServices _systemParameterServices;
-        private readonly ISentryClient _sentryClient;
 
         private readonly ISabaDangerLevelServices _service;
 
@@ -24,9 +23,9 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
         {
             _sabaDangerLevelDataAccess = Substitute.For<ISabaDangerLevelDataAccess>();
             _systemParameterServices = Substitute.For<ISystemParameterServices>();
-            _sentryClient = Substitute.For<ISentryClient>();
 
             _service = new SabaDangerLevelServices(_sabaDangerLevelDataAccess, _systemParameterServices);
+            LogExtension.ConfigByPassForUnitTest();
         }
 
         #region Main Action
@@ -93,7 +92,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
             // Act
             _sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>()).Returns(new SabaDangerLevelUpdateResultEntity { IsSuccess = isSuccess });
 
-            _service.UpdateSabaDangerLevelToMainDB(_sentryClient, "TEST", 1);
+            _service.UpdateSabaDangerLevelToMainDB("TEST", 1);
 
             // Assert
             _sabaDangerLevelDataAccess.Received(isSuccess ? 2 : 1).UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>());
@@ -117,7 +116,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
             // Act
             _sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>()).Throws<Exception>();
 
-            Action action = () => _service.UpdateSabaDangerLevelToMainDB(_sentryClient, "TEST", 1);
+            Action action = () => _service.UpdateSabaDangerLevelToMainDB("TEST", 1);
 
             // Assert
             _sabaDangerLevelDataAccess.Received(0).UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>());
@@ -355,7 +354,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
             // Act
             _sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>()).Returns(new SabaDangerLevelUpdateResultEntity { IsSuccess = isSuccess });
 
-            _service.UpdateSabaDangerLevelToMainDBForInitialization(_sentryClient, "TEST", 1);
+            _service.UpdateSabaDangerLevelToMainDBForInitialization("TEST", 1);
 
             // Assert
             _sabaDangerLevelDataAccess.Received(isSuccess ? 2 : 1).UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>());
@@ -380,7 +379,7 @@ namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.PushDataToExternal
             // Act
             _sabaDangerLevelDataAccess.UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>()).Throws<Exception>();
 
-            Action action = () => _service.UpdateSabaDangerLevelToMainDBForInitialization(_sentryClient, "TEST", 1);
+            Action action = () => _service.UpdateSabaDangerLevelToMainDBForInitialization("TEST", 1);
 
             // Assert
             _sabaDangerLevelDataAccess.Received(0).UpdateDabaDangerLevelToMainDB(Arg.Any<IEnumerable<SabaDangerLevelEntity>>());

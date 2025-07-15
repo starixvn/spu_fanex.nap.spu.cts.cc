@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.Shares;
     using System.Linq;
 
     public interface IRealtimeClassificationBySportServices

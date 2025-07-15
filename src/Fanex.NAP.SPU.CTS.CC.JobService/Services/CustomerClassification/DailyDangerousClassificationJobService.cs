@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
     using System;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
@@ -17,17 +16,15 @@
     public class DailyDangerousClassificationJobService : IDailyDangerousClassificationJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IDailyDangerousClassificationService dailyDangerousCCService;
         private readonly ISystemParameterServices systemParameterService;
         private readonly IAppSettings appSettings;
 
-        public DailyDangerousClassificationJobService(ISentryClient sentryClient,
+        public DailyDangerousClassificationJobService(
             IDailyDangerousClassificationService dailyDangerousClassificationService,
             ISystemParameterServices systemParameterService,
             IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
             this.dailyDangerousCCService = dailyDangerousClassificationService;
             this.systemParameterService = systemParameterService;
             this.appSettings = appSettings;
@@ -42,7 +39,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

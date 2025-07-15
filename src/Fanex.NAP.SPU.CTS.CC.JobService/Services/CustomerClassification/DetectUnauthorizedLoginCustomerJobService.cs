@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,20 +20,18 @@
     public class DetectUnauthorizedLoginCustomerJobService : IDetectUnauthorizedLoginCustomerJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
         private readonly IDetectUnauthorizedLoginCustomerService detectUnauthorizedLoginCustService;
         private readonly IProblemAccountServices problemAccountServices;
         private readonly ICustClassToMainDBService custClassToMainDBService;
 
-        public DetectUnauthorizedLoginCustomerJobService(ISentryClient sentryClient,
+        public DetectUnauthorizedLoginCustomerJobService(
             IAppSettings appSettings,
             IDetectUnauthorizedLoginCustomerService detectUnauthorizedLoginCustService, 
             IProblemAccountServices problemAccountServices,
             ICustClassToMainDBService custClassToMainDBService)
         {
             this.serviceName = "Detect Unauthorized Login Customer";
-            this.sentryClient = sentryClient;
             this.appSettings = appSettings;
             this.detectUnauthorizedLoginCustService = detectUnauthorizedLoginCustService;
             this.problemAccountServices = problemAccountServices;
@@ -58,7 +55,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }

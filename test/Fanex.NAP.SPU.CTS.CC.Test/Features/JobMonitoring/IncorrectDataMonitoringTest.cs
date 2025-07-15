@@ -3,7 +3,7 @@ using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
 using Fanex.NAP.SPU.Notification.Services;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Sentry;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

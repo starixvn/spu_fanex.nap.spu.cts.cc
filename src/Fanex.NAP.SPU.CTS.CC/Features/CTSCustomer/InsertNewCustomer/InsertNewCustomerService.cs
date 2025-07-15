@@ -11,7 +11,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Sentry;
     using Fanex.NAP.SPU.CTS.CC.Features.CTSCustomer.InsertNewCustomer.Entities;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
@@ -32,13 +31,11 @@
     {
         private readonly IInsertNewCustomerDataAccess _dataAccess;
         private readonly ICustClassToMainDBService _custClassToMainDBService;
-        private readonly ISentryClient _sentryClient;
 
-        public InsertNewCustomerService(IInsertNewCustomerDataAccess dataAccess, ICustClassToMainDBService custClassToMainDBService, ISentryClient sentryClient)
+        public InsertNewCustomerService(IInsertNewCustomerDataAccess dataAccess, ICustClassToMainDBService custClassToMainDBService)
         {
             _dataAccess = dataAccess;
             _custClassToMainDBService = custClassToMainDBService;
-            _sentryClient = sentryClient;
         }
 
         public LastScannedCustModel GetLastInsertCust()
@@ -162,7 +159,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA }, ex, _sentryClient);
+                    Utilities.LogSentryError(serviceName, $"Insert Lic VIP/BA", new { custIdsToInsertVIP, custIdsToInsertBA }, ex);
 
                     return false;
                 }

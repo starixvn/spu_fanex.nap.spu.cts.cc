@@ -7,7 +7,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.CC.Features.SystemParameter;
     using Fanex.NAP.SPU.CTS.Shares;
-    using Sentry;
+    
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -35,8 +35,7 @@
             ISystemParameterServices systemParameterServices,
             ICustClassToMainDBService custClassToMainDBService,
             IBaseCustomerClassificationDataAccess baseDataAccess,
-            IProblemAccountDataAccess problemAccountDataAccess,
-            ISentryClient sentryClient) : base(baseDataAccess, problemAccountDataAccess, sentryClient)
+            IProblemAccountDataAccess problemAccountDataAccess) : base(baseDataAccess, problemAccountDataAccess)
         {
             this.dataAccess = dataAccess;
             this.systemParameterServices = systemParameterServices;

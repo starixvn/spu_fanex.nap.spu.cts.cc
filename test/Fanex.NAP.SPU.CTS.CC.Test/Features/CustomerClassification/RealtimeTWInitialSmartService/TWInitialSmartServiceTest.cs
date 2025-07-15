@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using FluentAssertions;
     using NSubstitute;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using Xunit;
@@ -25,23 +24,19 @@
         private readonly IBaseCustomerClassificationDataAccess baseCustomerClassificationDataAccess;
         private readonly IBaseCustomerClassificationService baseCustomerClassificationService;
 
-        private readonly ISentryClient sentryClient;
-
         public TWInitialSmartServiceTest()
         {
-            sentryClient = Substitute.For<ISentryClient>();
             problemAccountDataAccess = Substitute.For<IProblemAccountDataAccess>(); 
             
             custClassToMainDBDataAccess = Substitute.For<ICustClassToMainDBDataAccess>();
-            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null, null);
+            custClassToMainDBService = new CustClassToMainDBService(custClassToMainDBDataAccess, null);
 
             baseCustomerClassificationDataAccess = Substitute.For<IBaseCustomerClassificationDataAccess>();
-            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess, sentryClient);
+            baseCustomerClassificationService = new BaseCustomerClassificationService(baseCustomerClassificationDataAccess);
 
             twInitialSmartDataAccess = Substitute.For<ITWInitialSmartDataAccess>();
             twInitialSmartService = new TWInitialSmartService(baseCustomerClassificationDataAccess,
                 problemAccountDataAccess,
-                sentryClient,
                 custClassToMainDBService,
                 twInitialSmartDataAccess);
         }

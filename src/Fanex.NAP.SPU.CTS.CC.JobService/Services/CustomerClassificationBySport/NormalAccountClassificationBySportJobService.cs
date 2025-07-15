@@ -3,7 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
-    using Sentry;
+    
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -17,12 +17,10 @@
     public class NormalAccountClassificationBySportJobService : INormalAccountClassificationBySportJobService
     {
         private readonly string serviceName;
-        private readonly ISentryClient sentryClient;
         private readonly INormalAccountClassificationBySportService normalClassifyService;
 
-        public NormalAccountClassificationBySportJobService(ISentryClient sentryClient, INormalAccountClassificationBySportService normalClassifyService)
+        public NormalAccountClassificationBySportJobService(INormalAccountClassificationBySportService normalClassifyService)
         {
-            this.sentryClient = sentryClient;
             this.normalClassifyService = normalClassifyService;
             this.serviceName = "NormalAccountClassificationBySport";
         }
@@ -38,7 +36,7 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex);
 
                 return Task.FromResult(false);
             }
