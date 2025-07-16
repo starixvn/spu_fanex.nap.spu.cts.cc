@@ -159,7 +159,7 @@
 	</Function>
 
 	<Function name="TVSProblemAccountInsert">
-		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect" SpName="TicketVoiding_CTS_ProblemCustomerSelect" DbName="DBCTS.bodb02.wsv_cts" />
+		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect" SpName="TicketVoiding_CTS_ProblemCustomerSelect" DbName="DBTXN.bodb02.wsv_cts" />
 		<Setting Key="TicketVoiding_CTS_ProblemCustomerSelect_Archive" SpName="TicketVoiding_CTS_ProblemCustomerSelect_Archive" DbName="DBCTS.bodb_Archive.wsv_cts" />
 	</Function>
 
