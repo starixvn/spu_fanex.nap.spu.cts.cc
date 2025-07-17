@@ -306,5 +306,11 @@
             ThrowException = 998,
             NotCalled = 999
         }
+
+        public enum DangerType
+        {
+            Ori = 1,
+            ABI = 2
+        };
     }
 }

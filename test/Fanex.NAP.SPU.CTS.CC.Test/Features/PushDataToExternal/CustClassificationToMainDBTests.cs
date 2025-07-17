@@ -381,19 +381,33 @@
             // Arrange
             var data = new List<LatestCCDangerLevelEntity>
             {
-                new LatestCCDangerLevelEntity() { DangerLevel = 1, DangerLevelType = 1 },
-                new LatestCCDangerLevelEntity() { DangerLevel = 1, DangerLevelType = 1 },
-                new LatestCCDangerLevelEntity() { DangerLevel = 2, DangerLevelType = 2 },
+                new LatestCCDangerLevelEntity() { CustID = 1, DangerLevel = 1 },   // for ABI
+                new LatestCCDangerLevelEntity() { CustID = 2, Danger1 = 2 },       // for Ori
+                new LatestCCDangerLevelEntity() { CustID = 3, DangerLevel = 1, Danger1 = 2 } // both
             };
 
-            var updateDangerLevelToMainDBMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.UpdateDangerLevelToMainDB);
+            var updateDangerLevelToMainDBMethod = TestExtension.GetPrivateMethod(
+                typeof(CustClassToMainDBService),
+                PrivateMethodName.UpdateDangerLevelToMainDB
+            );
+
+            _dataAccess
+                .UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>())
+                .Returns(new Shares.Models.DBResult());
 
             // Act
-            _dataAccess.UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>()).Returns(new Shares.Models.DBResult());
+            var result = updateDangerLevelToMainDBMethod.Invoke(_service, new object[] { data, "TestService" });
 
-            var result = updateDangerLevelToMainDBMethod.Invoke(_service, new object[] { data, string.Empty });
             // Assert
-            _dataAccess.Received(2).UpdateDangerLevelToMainDB(Arg.Any<IEnumerable<DangerLevelEntity>>(), Arg.Any<int>());
+            _dataAccess.Received(1).UpdateDangerLevelToMainDB(
+                Arg.Is<IEnumerable<DangerLevelEntity>>(x => x.Any(e => e.DangerLevel == 1)),
+                (int)DangerType.ABI
+            );
+
+            _dataAccess.Received(1).UpdateDangerLevelToMainDB(
+                Arg.Is<IEnumerable<DangerLevelEntity>>(x => x.Any(e => e.DangerLevel == 2)),
+                (int)DangerType.Ori
+            );
 
             Assert.True((bool)result);
         }
