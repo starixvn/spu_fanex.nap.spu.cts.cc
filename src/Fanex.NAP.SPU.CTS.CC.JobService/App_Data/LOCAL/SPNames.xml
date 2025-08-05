@@ -12,7 +12,7 @@
 		<Setting Key="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" SpName="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_NormalAccountsClassification_GetNewClassification" SpName="CTS_NormalAccountsClassification_GetNewClassification" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger_xtest" DbName="DBCUST.CustDB.wsv_nap" TimeOut="300" />
+		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="DBCUST.CustDB.wsv_nap" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_DC_CustClassification_TWTagging_Exclude" SpName="CTS_DC_CustClassification_TWTagging_Exclude" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" SpName="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" DbName="CTSMain.CTS_DataCenter.ctsService" />
@@ -147,7 +147,7 @@
 	</Function>
 
 	<Function Name="CustomerClassification">
-		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_xtest" DbName="CTSMain.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Complete" SpName="CTS_DC_CustClassification_Queue_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
