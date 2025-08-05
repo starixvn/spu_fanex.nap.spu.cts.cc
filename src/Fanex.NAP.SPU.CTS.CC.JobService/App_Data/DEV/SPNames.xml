@@ -12,7 +12,7 @@
 		<Setting Key="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" SpName="CTS_DC_CustClassification_GetTaggingByAssociationWithPA" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_NormalAccountsClassification_GetNewClassification" SpName="CTS_NormalAccountsClassification_GetNewClassification" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_NormalAccountsClassification_UpdateAppliedStatus" SpName="CTS_NormalAccountsClassification_UpdateAppliedStatus" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger_xtest" DbName="DBCUST.CustDB.wsv_nap" TimeOut="300" />
+		<Setting Key="CTS_CustomerUpdDanger" SpName="CTS_CustomerUpdDanger" DbName="DBCUST.CustDB.wsv_nap" TimeOut="300" />
 		<Setting Key="CTS_CustomerClassification_CheckGroupBettingAndReject" SpName="CTS_CustomerClassification_CheckGroupBettingAndReject" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_DC_CustClassification_TWTagging_Exclude" SpName="CTS_DC_CustClassification_TWTagging_Exclude" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" SpName="CTS_DC_CustClassification_GetTaggingBySpecialLicSubCC" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
@@ -103,7 +103,7 @@
 		<Setting Key="CTS_DC_CustInfo_GetLastInsertCust" SpName="CTS_DC_CustInfo_GetLastInsertCust" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_Customer_GetNewCustomerInfo" SpName="CTS_Customer_GetNewCustomerInfo" DbName="DBCTS.WASAVerse.wsv_cts" />
 		<Setting Key="CTS_Customer_GetNewCustSubInfo" SpName="CTS_Customer_GetNewCustSubInfo" DbName="DBCTS.WASAVerse.wsv_cts" />
-		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustInfo_Insert" SpName="CTS_DC_CustInfo_Insert" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustInfoComplete" SpName="CTS_DC_CustInfo_UpdateCustInfoComplete" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_InsertComplete" SpName="CTS_DC_CustInfo_InsertComplete" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustInfo_UpdateCustomerComplete" SpName="CTS_DC_CustInfo_UpdateCustomerComplete" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
@@ -149,11 +149,11 @@
 	</Function>
 
 	<Function Name="CustomerClassification">
-		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_GetCCAndDangerLevel" SpName="CTS_DC_CustClassification_GetCCAndDangerLevel" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Complete" SpName="CTS_DC_CustClassification_Queue_Complete" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />								
-		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
-		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
+		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
+		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_GetRescanNewCust" SpName="CTS_DC_CustClassification_GetRescanNewCust" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Category_GetByCategoryTypeName" SpName="CTS_DC_Category_GetByCategoryTypeName" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
