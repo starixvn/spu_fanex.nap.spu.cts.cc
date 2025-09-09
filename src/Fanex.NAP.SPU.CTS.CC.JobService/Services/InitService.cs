@@ -27,6 +27,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeCheckChangeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartBySportService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
@@ -129,6 +130,8 @@
 
             RegisterTWInitialSmartClassification(services);
 
+            RegisterTWInitialSmartClassificationBySport(services);
+
             RegisterWrapperCustomerClassificaton(services);
 
             RegisterNormalDangerousAssociationCheck(services);
@@ -136,6 +139,13 @@
             RegisterNormalDangerousAssociationScan(services);
 
             RegisterTWClassification(services);
+        }
+
+        private static void RegisterTWInitialSmartClassificationBySport(IServiceCollection services)
+        {
+            services.AddSingleton<ITWInitialSmartBySportDataAccess, TWInitialSmartBySportDataAccess>();
+            services.AddSingleton<ITWInitialSmartBySportService, TWInitialSmartBySportService>();
+            services.AddSingleton<IRealtimeTWInitialSmartBySportJobService, RealtimeTWInitialSmartBySportJobService>();
         }
 
         private static void RegisterTWClassification(IServiceCollection services)

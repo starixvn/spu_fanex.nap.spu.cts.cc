@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartBySportService.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert.Entities;
@@ -84,7 +85,6 @@
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;
             this.SportType = twGBCust.SportType;
-            this.SportName = twGBCust.SportName;
             this.GBTicketCount = twGBCust.GBTicketCount;
             this.DetectedDate = twGBCust.DetectedDate;
         }
@@ -104,6 +104,24 @@
             this.IsFromTVS = false;
             this.IsFromTW = true;
             this.CreatedBy = Constants.StarixITId;           
+        }
+
+        public InsertProblemAccountEntity(TWInitialSmartBySportEntity tWInitialSmartCust)
+        {
+            this.CustID = tWInitialSmartCust.CustID;
+            this.CTSCustID = tWInitialSmartCust.CTSCustID;
+            this.RoleID = tWInitialSmartCust.RoleID;
+            this.SubscriberID = tWInitialSmartCust.SubscriberID;
+            this.CategoryID = tWInitialSmartCust.CategoryID;
+            this.CategoryGroupID = tWInitialSmartCust.CategoryGroup;
+            this.IsLicensee = tWInitialSmartCust.IsLicensee;
+            this.DWSportType = tWInitialSmartCust.SportType;
+            this.IsFromAI = false;
+            this.IsMarkedDirectly = false;
+            this.IsFromCTS = false;
+            this.IsFromTVS = false;
+            this.IsFromTW = true;
+            this.CreatedBy = Constants.StarixITId;
         }
 
         public InsertProblemAccountEntity(GetRescanCustomerClassificationEntity data)
@@ -166,6 +184,8 @@
         public bool? IsParlay { get; set; }
 
         public int? SportType { get; set; }
+
+        public int DWSportType { get; set; }
 
         public string SportName { get; set; }
 
