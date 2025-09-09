@@ -20,6 +20,8 @@
 
         public int? SportType { get; set; }
 
+        public int DWSportType { get; set; }
+
         public int RoleID { get; set; }
 
         public int SubscriberID { get; set; }

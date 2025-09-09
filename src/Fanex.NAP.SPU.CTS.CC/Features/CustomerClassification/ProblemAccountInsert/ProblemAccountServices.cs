@@ -40,7 +40,7 @@
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
         {
             var custInfos = custIds?.Select(x => new PADailyScanFromQueueEntity { CustID = x });
-            
+
             return GetProblemAccountLosingClassification(custInfos, funcId);
         }
 
@@ -143,9 +143,15 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
         {
-            var custIds = problemAccounts.Select(c => c.CustID)?.Distinct();
+            var custInfos = problemAccounts
+                                .Select(c =>
+                                    new PADailyScanFromQueueEntity
+                                    {
+                                        CustID = c.CustID,
+                                        DWSportType = c.DWSportType
+                                    });
 
-            var paLosing = GetProblemAccountLosingClassification(custIds, funcId);
+            var paLosing = GetProblemAccountLosingClassification(custInfos, funcId);
 
             return MergePALosingClassification(problemAccounts, paLosing);
         }
@@ -215,13 +221,14 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1541:The Cyclomatic Complexity of this method is 11 which is greater than 10 authorized", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 return problemAccounts.GroupJoin(paLosing ?? Enumerable.Empty<ProblemAccountLosingClassificationEntity>(),
-                                                 pa => pa.CustID,
-                                                 pl => pl.CustId,
+                                                 pa => $"{pa.CustID}_{pa.DWSportType}",
+                                                 pl => $"{pl.CustId}_{pl.SportGroup}",
                                                 (pa, pl) => new { pa, pl })
                                                 .SelectMany(
                                                         group => group.pl.DefaultIfEmpty(),
@@ -247,6 +254,7 @@
                                                             IsFromTW = group.pa.IsFromTW,
                                                             TVSReasonID = group.pa.TVSReasonID,
                                                             SportType = group.pa.SportType,
+                                                            DWSportType = group.pa.DWSportType,
                                                             SportName = group.pa.SportName,
                                                             GBTicketCount = group.pa.GBTicketCount,
                                                             DetectedDate = group.pa.DetectedDate,
