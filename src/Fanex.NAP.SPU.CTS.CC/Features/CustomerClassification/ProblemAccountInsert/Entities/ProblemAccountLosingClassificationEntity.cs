@@ -8,6 +8,9 @@
         [JsonProperty("CustID")]
         public Int64 CustId { get; set; }
 
+        [JsonProperty("DWSportType")]
+        public int SportGroup { get; set; }
+
         public int WinlossStatus { get; set; }
 
         public decimal TurnoverRM { get; set; }

@@ -73,7 +73,7 @@
         {
             if (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any())
             {
-                return problemAccountServices.GetProblemAccountLosingClassification(paDailyScanFromQueue.PADailyScanCustIDs.Select(x=>(long)x), funcId);
+                return problemAccountServices.GetProblemAccountLosingClassification(paDailyScanFromQueue.PADailyScanCustIDs, funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
@@ -121,9 +121,9 @@
         {
             string custIdToString = string.Empty;
 
-            if (paDailyScanFromQueue.PADailyScanCustIDs != null && paDailyScanFromQueue.PADailyScanCustIDs.Any())
+            if (paDailyScanFromQueue.PADailyScanCustIDs.IsNotNullOrEmpty())
             {
-                custIdToString = string.Join(",", paDailyScanFromQueue.PADailyScanCustIDs.Distinct());
+                custIdToString = string.Join(",", paDailyScanFromQueue.PADailyScanCustIDs.Select(x => x.CustID).Distinct());
             }
 
             dailyClassificationDataAccess.CompletePADailyScan(custIdToString);
