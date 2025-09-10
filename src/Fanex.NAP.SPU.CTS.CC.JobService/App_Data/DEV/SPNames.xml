@@ -23,7 +23,7 @@
 	</Function>
 	<Function Name="DailyProblemClassification">
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassification_DailyScanPA_GetFromQueue_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
-		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
+		<Setting Key="CTS_ProblemAccountsClassification_Daily" SpName="CTS_ProblemAccountsClassification_Daily_xtest" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
 		<Setting Key="CTS_DC_CustClassification_ProblemAccountProbation_Insert" SpName="CTS_DC_CustClassification_ProblemAccountProbation_Insert_xtest" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_DailyScanPA_Complete" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
