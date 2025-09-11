@@ -132,6 +132,7 @@
             TVSRequestID = data.TVSRequestID;
             IsParlay = data.IsParlay;
             SportType = data.SportType;
+            DWSportType = data.DWSportType;
             RobotCounter = data.RobotCounter;
             CategoryID = data.CategoryID;
             RoleID = data.RoleID;
