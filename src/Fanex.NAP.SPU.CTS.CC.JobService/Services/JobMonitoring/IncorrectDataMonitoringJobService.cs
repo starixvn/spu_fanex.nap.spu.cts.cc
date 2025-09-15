@@ -60,6 +60,11 @@
                         {
                             systemParameterServices.UpdateTimingExecution(lastScannedID.ToString(), CTS_SystemParameters.JobMonitoring_IncorrectData_LastScanID);
                         }
+
+                        if (result.MaxID.HasValue)
+                        {
+                            systemParameterServices.UpdateTimingExecution(result.MaxID.Value.ToString(), CTS_SystemParameters.JobMonitoring_IncorrectData_MaxID);
+                        }
                     }
                 } while (isContinue);
             }

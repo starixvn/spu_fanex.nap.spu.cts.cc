@@ -7,6 +7,8 @@
     {
         public IEnumerable<GetInvalidDataMonitoringEntity> InvalidDataList { get; set; }
 
+        public ulong? MaxID { get; set; }
+
         public bool IsContinue { get; set; } = false;
     }
 }

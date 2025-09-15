@@ -91,6 +91,7 @@
             ScanReactivatedLatencyCustomer_LastLogTime = 189,
             TWInitialSmartBySportClassification_LastCustID = 196,
             TWInitialSmartBySportClassification_LastScanDate = 197,
+            JobMonitoring_IncorrectData_MaxID = 198,
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
