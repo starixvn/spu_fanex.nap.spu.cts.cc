@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification
 {
     using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification.Entities;
     using System.Collections.Generic;
 
     public interface IDailyProblemClassificationDataAccess
@@ -27,7 +28,7 @@
             
             return new PADailyScanFromQueueModel
             {
-                PADailyScanCustIDs = repository.Fetch<long>(criteria)
+                PADailyScanCustIDs = repository.Fetch<PADailyScanFromQueueEntity>(criteria)
             };
         }
 

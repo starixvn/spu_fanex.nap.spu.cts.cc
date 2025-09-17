@@ -250,7 +250,8 @@
 	</Function>
 
 	<Function name="RealtimeTWInitialSmartClassification">
-		<Setting Key="CTS_DC_CustClassification_InitialSmart_Get" SpName="CTS_DC_CustClassification_InitialSmart_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />		
+		<Setting Key="CTS_DC_CustClassification_InitialSmart_Get" SpName="CTS_DC_CustClassification_InitialSmart_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_InitialSmart_BySport_Get" SpName="CTS_DC_CustClassification_InitialSmart_BySport_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function name="NormalDangerousAssociation">

@@ -191,6 +191,9 @@
                 case JobMonitor_IssueType.LatencyCustomer_Missing:
                     return $"\r\n🆘 Missing Latency Account exceeds {trackingInfo?.Value} records\r\n";
 
+                case JobMonitor_IssueType.TWSmartInitial_InvalidDataBySport:
+                    return $"\r\n🆘 Invalid TWSmart Initial Data By Sport {trackingInfo?.Value} records ({trackingInfo?.TrackingInfo})\r\n";
+
                 default:
                     return string.Empty;
             }

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.DailyProblemClassification.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -13,15 +14,17 @@
     {
         IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId);
 
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<PADailyScanFromQueueEntity> custInfos, FunctionId funcId);
+
         IEnumerable<long> RescanCustomerClassification(IEnumerable<GetRescanCustomerClassificationEntity> custRescans, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName);
 
         IEnumerable<long> InsertProblemAccountPackage(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId, CCInputFlow ccInputFlow, bool isToQueue, string serviceName);
-     
+
         ResultRemoveCustomerClassificationModel RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName);
 
         void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName);
-       
-        void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);        
+
+        void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo);
     }
 
     public class ProblemAccountServices : BaseCustomerClassificationService, IProblemAccountServices
@@ -36,11 +39,18 @@
 
         public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<long> custIds, FunctionId funcId)
         {
-            if (custIds != null && custIds.Any())
-            {
-                var custIdsToString = string.Join(",", custIds);
+            var custInfos = custIds?.Select(x => new PADailyScanFromQueueEntity { CustID = x });
 
-                return problemAccountDataAccess.GetProblemAccountLosingClassification(custIdsToString, funcId);
+            return GetProblemAccountLosingClassification(custInfos, funcId);
+        }
+
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(IEnumerable<PADailyScanFromQueueEntity> custInfos, FunctionId funcId)
+        {
+            if (custInfos.IsNotNullOrEmpty())
+            {
+                var custJson = JsonConvert.SerializeObject(custInfos);
+
+                return problemAccountDataAccess.GetProblemAccountLosingClassification(custJson, funcId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingClassificationEntity>();
@@ -73,14 +83,14 @@
                 {
                     var custUpdatePALogics = insertPaResult.CustInfos.Select(x => new CustInfoEntity { CustID = x.CustID, CTSCustID = x.CTSCustID, IsPA = x.IsPA });
 
-                    InsertPALogics(custUpdatePALogics, serviceName);                    
+                    InsertPALogics(custUpdatePALogics, serviceName);
 
                     return insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
                 }
             }
 
             return Enumerable.Empty<long>();
-        }       
+        }
 
         public ResultRemoveCustomerClassificationModel RemoveProblemAccountPackage(IEnumerable<RemoveProblemAccountEntity> problemAccounts, bool isFromQueue, string serviceName)
         {
@@ -100,17 +110,17 @@
         }
 
         public void InsertPALogics(IEnumerable<CustInfoEntity> customerInfo, string serviceName)
-        {            
+        {
             if (customerInfo != null && customerInfo.Any())
             {
                 var custPas = customerInfo.Where(x => x.IsPA).Distinct();
-               
+
                 CheckNewPAAssociationCustomerForRollback(custPas);
 
                 UpdateBetLimitOfFlaggedCustomer(custPas.Select(x => x.CustID), serviceName);
             }
         }
-        
+
         public void InsertRobotLogics(IEnumerable<CustInfoEntity> customerInfo)
         {
             if (customerInfo != null && customerInfo.Any())
@@ -133,9 +143,16 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountEntity> problemAccounts, FunctionId funcId)
         {
-            var custIds = problemAccounts.Select(c => c.CustID)?.Distinct();
+            var custInfos = problemAccounts
+                                .Select(c =>
+                                    new PADailyScanFromQueueEntity
+                                    {
+                                        CustID = c.CustID,
+                                        DWSportType = c.DWSportType
+                                    })
+                                .DistinctBy(x => new { x.CustID, x.DWSportType });
 
-            var paLosing = GetProblemAccountLosingClassification(custIds, funcId);
+            var paLosing = GetProblemAccountLosingClassification(custInfos, funcId);
 
             return MergePALosingClassification(problemAccounts, paLosing);
         }
@@ -205,13 +222,14 @@
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S103:Lines should not be too long", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1541:The Cyclomatic Complexity of this method is 11 which is greater than 10 authorized", Justification = "<Pending>")]
         private IEnumerable<InsertProblemAccountEntity> MergePALosingClassification(IEnumerable<InsertProblemAccountEntity> problemAccounts, IEnumerable<ProblemAccountLosingClassificationEntity> paLosing)
         {
             if (problemAccounts != null && problemAccounts.Any())
             {
                 return problemAccounts.GroupJoin(paLosing ?? Enumerable.Empty<ProblemAccountLosingClassificationEntity>(),
-                                                 pa => pa.CustID,
-                                                 pl => pl.CustId,
+                                                 pa => $"{pa.CustID}_{pa.DWSportType}",
+                                                 pl => $"{pl.CustId}_{pl.SportGroup}",
                                                 (pa, pl) => new { pa, pl })
                                                 .SelectMany(
                                                         group => group.pl.DefaultIfEmpty(),
@@ -237,6 +255,7 @@
                                                             IsFromTW = group.pa.IsFromTW,
                                                             TVSReasonID = group.pa.TVSReasonID,
                                                             SportType = group.pa.SportType,
+                                                            DWSportType = group.pa.DWSportType,
                                                             SportName = group.pa.SportName,
                                                             GBTicketCount = group.pa.GBTicketCount,
                                                             DetectedDate = group.pa.DetectedDate,
@@ -256,7 +275,7 @@
 
             return Enumerable.Empty<InsertProblemAccountEntity>();
         }
-        
+
         #endregion Private Methods
     }
 }

@@ -5,8 +5,8 @@
 
     public class ProblemAccountLosingClassificationGetCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ListCustIds")]
-        public string ListCustIds { get; set; }
+        [SpParam(SqlParamName = "ListCustInfo")]
+        public string CustJson { get; set; }
 
         [SpParam(SqlParamName = "FunctionId")]
         public int FunctionId { get; set; }

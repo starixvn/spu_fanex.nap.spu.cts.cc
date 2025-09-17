@@ -10,7 +10,7 @@
 
     public interface IProblemAccountDataAccess
     {       
-        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId);
+        IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custJson, FunctionId funcId);
              
         int CheckNewPAAssociationCustomerForRollback(string custInfoJson);
 
@@ -28,11 +28,11 @@
             repository = new DynamicRepository();
         }       
 
-        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custIds, FunctionId funcId)
+        public IEnumerable<ProblemAccountLosingClassificationEntity> GetProblemAccountLosingClassification(string custJson, FunctionId funcId)
         {
             var criteria = new ProblemAccountLosingClassificationGetCriteria
             {
-                ListCustIds = custIds,
+                CustJson = custJson,
                 FunctionId = (int)funcId
             };
 

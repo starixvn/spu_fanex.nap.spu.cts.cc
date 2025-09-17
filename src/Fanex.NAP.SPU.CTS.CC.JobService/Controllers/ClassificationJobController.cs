@@ -33,6 +33,7 @@
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
         private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
         private readonly IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService;
+        private readonly IRealtimeTWInitialSmartBySportJobService realtimeTWInitialSmartBySportJobService;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
         public ClassificationJobController(
@@ -56,7 +57,8 @@
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
             IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
-            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService)
+            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService,
+            IRealtimeTWInitialSmartBySportJobService realtimeTWInitialSmartBySportJobService)
         {
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
 
@@ -79,6 +81,7 @@
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
             this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
             this.realtimeTWInitialSmartJobService = realtimeTWInitialSmartJobService;
+            this.realtimeTWInitialSmartBySportJobService = realtimeTWInitialSmartBySportJobService;
         }
 
         [HttpPost("scanningDailyNormalClassification")]
@@ -213,6 +216,12 @@
         public async Task<bool> RealtimeTWInitialSmartClassification([FromForm] int batchSize)
         {
             return await this.realtimeTWInitialSmartJobService.Execute(batchSize);
+        }
+
+        [HttpPost("scanningMinutelyTWInitialSmartBySportClassification")]
+        public async Task<bool> RealtimeTWInitialSmartBySportClassification([FromForm] int internalBatchSize, [FromForm] int externalBatchSize)
+        {
+            return await this.realtimeTWInitialSmartBySportJobService.Execute(internalBatchSize, externalBatchSize);
         }
 
         [HttpPost("normalDangerousAssociationCheck")]

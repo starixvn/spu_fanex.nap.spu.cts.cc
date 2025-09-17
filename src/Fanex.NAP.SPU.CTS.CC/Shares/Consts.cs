@@ -88,7 +88,10 @@
             NormalDangerousAssociationScan_LastScannedID = 184,
             JobMonitoring_ReactivatedCustomerLastScannedTime = 185,
             ScanLatencyCustomer_FromCustID = 188,
-            ScanReactivatedLatencyCustomer_LastLogTime = 189
+            ScanReactivatedLatencyCustomer_LastLogTime = 189,
+            TWInitialSmartBySportClassification_LastCustID = 196,
+            TWInitialSmartBySportClassification_LastScanDate = 197,
+            JobMonitoring_IncorrectData_MaxID = 198,
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
@@ -216,11 +219,12 @@
             Realtime_ExcessiveGerneralChanges = 102,
             Realtime_ExcessiveBySportChanges = 103,
             Classification_ExcessiveGeneralPool = 200,
-            Classification_ExcessiveBySportPool = 201, 
+            Classification_ExcessiveBySportPool = 201,
             Classification_MissingTVSProblemAccount = 202,
             Classification_ExcessiveGerneralNormalInsert = 203,
             Classification_ExcessiveBySportNormalInsert = 204,
             LatencyCustomer_Missing = 300,
+            TWSmartInitial_InvalidDataBySport = 301,
             DCSTransaction_LastLoginProcessStatus = 500
         };
 

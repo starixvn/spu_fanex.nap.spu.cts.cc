@@ -2,6 +2,7 @@
 {
     using Fanex.Data.Repository;
     using System.Collections.Generic;
+    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IIncorrectDataMonitoringDataAccess
@@ -24,12 +25,13 @@
         {
             var criteria = new NotificationMonitoringGetCriteria();
 
-            var invalidDataList = repository.Fetch<GetInvalidDataMonitoringEntity>(criteria);
+            (var invalidDataList, var maxIds) = repository.FetchMultiple<GetInvalidDataMonitoringEntity, ulong?>(criteria);
 
             return new GetNotificationMonitoringEntity
             {
                 IsContinue = criteria.IsContinue,
-                InvalidDataList = invalidDataList ?? new List<GetInvalidDataMonitoringEntity>()
+                InvalidDataList = invalidDataList ?? new List<GetInvalidDataMonitoringEntity>(),
+                MaxID = maxIds?.FirstOrDefault()
             };
         }
 
