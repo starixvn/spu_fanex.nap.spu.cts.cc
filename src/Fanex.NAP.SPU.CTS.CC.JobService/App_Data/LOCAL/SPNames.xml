@@ -247,8 +247,7 @@
 		<Setting Key="CTS_DC_DangerousDetection_GetLatest" SpName="CTS_DC_DangerousDetection_GetLatest" DbName="CTSMain.CTS_DataCenter.ctsService" />
 	</Function>
 
-	<Function name="RealtimeTWInitialSmartClassification">
-		<Setting Key="CTS_DC_CustClassification_InitialSmart_Get" SpName="CTS_DC_CustClassification_InitialSmart_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
+	<Function name="RealtimeTWInitialSmartClassification">	
 		<Setting Key="CTS_DC_CustClassification_InitialSmart_BySport_Get" SpName="CTS_DC_CustClassification_InitialSmart_BySport_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
 	</Function>
 
