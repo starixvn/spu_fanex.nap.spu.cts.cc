@@ -28,7 +28,6 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialGroupBetting;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartBySportService;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeTWInitialSmartService;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RescanCustomerClassification;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RobotAccountInsert;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.TVSProblemAccountInsert;
@@ -126,9 +125,7 @@
 
             RegisterDailyDangerousClassification(services);
 
-            RegisterTWInitialGroupBetting(services);
-
-            RegisterTWInitialSmartClassification(services);
+            RegisterTWInitialGroupBetting(services);        
 
             RegisterTWInitialSmartClassificationBySport(services);
 
@@ -176,14 +173,7 @@
 
             services.AddSingleton<IBaseCustomerClassificationBySportDataAccess, BaseCustomerClassificationBySportDataAccess>();
             services.AddSingleton<IBaseCustomerClassificationBySportService, BaseCustomerClassificationBySportService>();
-        }
-
-        private static void RegisterTWInitialSmartClassification(IServiceCollection services)
-        {
-            services.AddSingleton<ITWInitialSmartDataAccess, TWInitialSmartDataAccess>();
-            services.AddSingleton<ITWInitialSmartService, TWInitialSmartService>();
-            services.AddSingleton<IRealtimeTWInitialSmartJobService, RealtimeTWInitialSmartJobService>();
-        }
+        }        
 
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
         {

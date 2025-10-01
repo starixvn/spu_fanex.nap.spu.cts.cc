@@ -31,8 +31,7 @@
         private readonly IMatchMonitorClassificationJobService mmClassificationJobService;
         private readonly IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService;
         private readonly IDailyDangerousClassificationJobService dailyDangerousClassificationJobService;
-        private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;
-        private readonly IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService;
+        private readonly IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService;      
         private readonly IRealtimeTWInitialSmartBySportJobService realtimeTWInitialSmartBySportJobService;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "<Pending>")]
@@ -56,8 +55,7 @@
             IMatchMonitorClassificationJobService mmClassificationJobService,
             IDetectUnauthorizedLoginCustomerJobService detectUnauthorizedLoginCustJobService,
             IDailyDangerousClassificationJobService dailyDangerousClassificationJobService,
-            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,
-            IRealtimeTWInitialSmartJobService realtimeTWInitialSmartJobService,
+            IRealtimeTWInitialGroupBettingJobService realtimeTWInitialGroupBettingJobService,           
             IRealtimeTWInitialSmartBySportJobService realtimeTWInitialSmartBySportJobService)
         {
             this.dailyProblemClassificationServices = dailyProblemClassificationServices;
@@ -79,8 +77,7 @@
             this.mmClassificationJobService = mmClassificationJobService;
             this.detectUnauthorizedLoginCustJobService = detectUnauthorizedLoginCustJobService;
             this.dailyDangerousClassificationJobService = dailyDangerousClassificationJobService;
-            this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;
-            this.realtimeTWInitialSmartJobService = realtimeTWInitialSmartJobService;
+            this.realtimeTWInitialGroupBettingJobService = realtimeTWInitialGroupBettingJobService;           
             this.realtimeTWInitialSmartBySportJobService = realtimeTWInitialSmartBySportJobService;
         }
 
@@ -210,13 +207,7 @@
         public async Task<bool> RealtimeTWInitialGBClassification([FromForm] int batchSize)
         {
             return await this.realtimeTWInitialGroupBettingJobService.Execute(batchSize);
-        }
-
-        [HttpPost("scanningMinutelyTWInitialSmartClassification")]
-        public async Task<bool> RealtimeTWInitialSmartClassification([FromForm] int batchSize)
-        {
-            return await this.realtimeTWInitialSmartJobService.Execute(batchSize);
-        }
+        }        
 
         [HttpPost("scanningMinutelyTWInitialSmartBySportClassification")]
         public async Task<bool> RealtimeTWInitialSmartBySportClassification([FromForm] int internalBatchSize, [FromForm] int externalBatchSize)
