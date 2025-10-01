@@ -154,7 +154,7 @@
 		<Setting Key="CTS_DC_CustClassification_Queue_Get" SpName="CTS_DC_CustClassification_Queue_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />								
 		<Setting Key="CTS_DC_CustClassification_Insert" SpName="CTS_DC_CustClassification_Insert" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
 		<Setting Key="CTS_DC_CustClassification_Remove" SpName="CTS_DC_CustClassification_Remove" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" TimeOut="600" />
-		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_Rescan_Get" SpName="CTS_DC_CustClassification_Rescan_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_GetRescanNewCust" SpName="CTS_DC_CustClassification_GetRescanNewCust" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_Category_GetByCategoryTypeName" SpName="CTS_DC_Category_GetByCategoryTypeName" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 	</Function>
@@ -250,7 +250,7 @@
 	</Function>
 
 	<Function name="RealtimeTWInitialSmartClassification">		
-		<Setting Key="CTS_DC_CustClassification_InitialSmart_BySport_Get" SpName="CTS_DC_CustClassification_InitialSmart_BySport_Get_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_InitialSmart_BySport_Get" SpName="CTS_DC_CustClassification_InitialSmart_BySport_Get" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 	</Function>
 
 	<Function name="NormalDangerousAssociation">
