@@ -41,7 +41,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
 
             services.AddFanexLogSentry(Configuration);
             services.AddSingleton<IAppSettings>(appSettings);
-            services.AddSingleton<INapSettings>(new NapSettings(Configuration));
 
             services.AddControllers();
             services
@@ -85,10 +84,6 @@ namespace Fanex.NAP.SPU.CTS.CC.JobService
             {
                 endpoints.MapControllers();
             });
-
-            NapClientManager
-                .UseConfig(app.ApplicationServices.GetService<INapSettings>())
-                .UseSession(app.ApplicationServices.GetService<INapSession>());
         }
 
         private void FanexDataConfig(IAppSettings appSettings)

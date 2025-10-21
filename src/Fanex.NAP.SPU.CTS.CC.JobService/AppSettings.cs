@@ -82,9 +82,6 @@
             environment = GetValue<string>(nameof(Environment));
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
-            afcInsertAccountURL = GetValue<string>("AntiFraudCenter:AFCInsertAccountURL");
-            afcDeleteAccountURL = GetValue<string>("AntiFraudCenter:AFCDeleteAccountURL");
-            isSyncAFCData = GetValue<bool>("AntiFraudCenter:IsSyncAFCData");
             insertVIPURL = GetValue<string>("InsertVIP_BA_API:InsertVIPURL");
             insertBAURL = GetValue<string>("InsertVIP_BA_API:InsertBAURL");
             agencyApiUrl = GetValue<string>("AgencyApiUrl:AgencyApiUrl");
