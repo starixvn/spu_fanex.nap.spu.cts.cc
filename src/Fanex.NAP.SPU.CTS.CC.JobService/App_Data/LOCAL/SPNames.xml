@@ -70,9 +70,9 @@
 	<Function Name="MatchMonitorClassification">
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_MatchMonitor_Classify" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Completed" SpName="CTS_DC_CustClassification_MatchMonitor_Completed" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Get" SpName="CTS_DC_CustClassification_MatchMonitor_Get" DbName="CTSMain.CTS_DataCenter.ctsService"></Setting>
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_Get" SpName="CTS_DC_CustClassification_MatchMonitor_Get_xpre" DbName="CTSMain.CTS_DataCenter.ctsService"></Setting>
 		<Setting Key="CTS_MatchInfo_Get" SpName="CTS_MatchInfo_Get" DbName="DBCTS.bodb02.wsv_cts"></Setting>
-		<Setting Key="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" SpName="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin"></Setting>
+		<Setting Key="CTS_DC_CustClassification_MatchMonitor_UpdateMatch" SpName="CTS_DC_CustClassification_MatchMonitor_UpdateMatch_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin"></Setting>
 	</Function>
 	<Function Name="RobotUsers">
 		<Setting Key="CTS_Customer_RobotListSel" SpName="CTS_Customer_RobotListSel" DbName="DBONUSER.ON_USER.wsv_cts" TimeOut="900" />
