@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB
 {
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB.Model;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;
     using System.Collections.Generic;
@@ -21,7 +21,7 @@
         #endregion
 
         #region BySport
-        bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize);
+        bool PushCCBySportToMainDB(IEnumerable<BaseCustomerInfoBySportModel> custInfos, string serviceName, int batchExternalSize);
 
         bool RetryPushCCBySportToMainDB(IEnumerable<GetCustomerClassificationBySportEntity> classificationBySports, int retryTime, string serviceName);
 
@@ -139,7 +139,7 @@
 
         #region Public methods - BySport
 
-        public bool PushCCBySportToMainDB(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos, string serviceName, int batchExternalSize)
+        public bool PushCCBySportToMainDB(IEnumerable<BaseCustomerInfoBySportModel> custInfos, string serviceName, int batchExternalSize)
         {
             var custInfoChunks = custInfos.Chunk(batchExternalSize).ToList();
 
@@ -349,7 +349,7 @@
             return true;
         }
 
-        private IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<InsertNormalAccountCustInfoEntity> custInfos)
+        private IEnumerable<GetCustomerClassificationBySportEntity> GetCustomerClassificationBySports(IEnumerable<BaseCustomerInfoBySportModel> custInfos)
         {
             if (custInfos != null && custInfos.Any())
             {

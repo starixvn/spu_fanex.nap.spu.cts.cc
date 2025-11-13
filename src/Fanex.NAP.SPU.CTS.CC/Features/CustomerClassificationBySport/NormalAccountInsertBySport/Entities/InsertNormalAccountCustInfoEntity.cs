@@ -1,8 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB.Model;
 
-    public class InsertNormalAccountCustInfoEntity
+    public class InsertNormalAccountCustInfoEntity : BaseCustomerInfoBySportModel
     {
         public InsertNormalAccountCustInfoEntity(CustInfoClassificationBySportEntity custInfo)
         {
@@ -15,9 +16,5 @@
             CustID = custInfo.CustId;
             SportGroup = custInfo.SportGroup;
         }
-
-        public long CustID { get; set; }
-
-        public int SportGroup { get; set; }
     }
 }

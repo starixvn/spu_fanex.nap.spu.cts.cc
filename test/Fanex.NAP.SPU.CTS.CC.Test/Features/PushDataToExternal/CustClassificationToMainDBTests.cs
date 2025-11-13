@@ -3,7 +3,9 @@
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB.Model;
     using Fanex.NAP.SPU.CTS.CC.Tests.Infrastructure.Extensions;
     using Fanex.NAP.SPU.CTS.Shares;
     using NSubstitute;
@@ -251,17 +253,17 @@
         public void GetCustomerClassificationBySports_WhenSuccess()
         {
             // Arrange
-            var data = new List<InsertNormalAccountCustInfoEntity>() { new InsertNormalAccountCustInfoEntity(new NormalAccountBySportEntity()) };
+            var data = new List<InsertProblemAccountInfoBySportModel>() { new InsertProblemAccountInfoBySportModel() };
 
             var getCustomerClassificationBySportsMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.GetCustomerClassificationBySports);
 
             // Act
-            _dataAccess.GetCustomerClassificationBySports(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>()).Returns(new List<GetCustomerClassificationBySportEntity>());
+            _dataAccess.GetCustomerClassificationBySports(Arg.Any<IEnumerable<BaseCustomerInfoBySportModel>>()).Returns(new List<GetCustomerClassificationBySportEntity>());
 
             var result = getCustomerClassificationBySportsMethod.Invoke(_service, new object[] { data });
 
             // Assert
-            _dataAccess.Received(1).GetCustomerClassificationBySports(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>());
+            _dataAccess.Received(1).GetCustomerClassificationBySports(Arg.Any<IEnumerable<BaseCustomerInfoBySportModel>>());
 
             Assert.NotNull(result);
         }
@@ -287,17 +289,17 @@
         public void GetCustomerClassificationBySports_ThrowException()
         {
             // Arrange
-            var data = new List<InsertNormalAccountCustInfoEntity>() { new InsertNormalAccountCustInfoEntity(new NormalAccountBySportEntity()) };
+            var data = new List<InsertProblemAccountInfoBySportModel>() { new InsertProblemAccountInfoBySportModel() };
 
             var getCustomerClassificationBySportsMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.GetCustomerClassificationBySports);
 
             // Act
-            _dataAccess.GetCustomerClassificationBySports(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>()).Throws<Exception>();
+            _dataAccess.GetCustomerClassificationBySports(Arg.Any<IEnumerable<BaseCustomerInfoBySportModel>>()).Throws<Exception>();
 
             Action action = () => getCustomerClassificationBySportsMethod.Invoke(_service, new object[] { data });
 
             // Assert
-            _dataAccess.Received(0).GetCustomerClassificationBySports(Arg.Any<IEnumerable<InsertNormalAccountCustInfoEntity>>());
+            _dataAccess.Received(0).GetCustomerClassificationBySports(Arg.Any<IEnumerable<BaseCustomerInfoBySportModel>>());
 
             Assert.Throws<TargetInvocationException>(action);
         }

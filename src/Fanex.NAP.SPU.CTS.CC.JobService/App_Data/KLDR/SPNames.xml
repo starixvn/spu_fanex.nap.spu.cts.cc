@@ -262,4 +262,14 @@
 		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
+
+	<Function name="PADailyClassificationBySport">
+		<Setting Key="CTS_DC_CustClassificationBySport_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassificationBySport_DailyScanPA_GetFromQueue" DbName="CTSMain.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_DC_CustClassificationBySport_DailyScanPA_Insert" SpName="CTS_DC_CustClassificationBySport_DailyScanPA_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassificationBySport_DailyScanPA_Complete" SpName="CTS_DC_CustClassificationBySport_DailyScanPA_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+	</Function>
+
+	<Function name="PAInsertBySport">
+		<Setting Key="CTS_ProblemAccountsClassificationBySport_Daily" SpName="CTS_ProblemAccountsClassificationBySport_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
+	</Function>
 </Functions>
