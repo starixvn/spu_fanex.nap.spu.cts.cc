@@ -11,7 +11,7 @@
 
     public interface IMatchMonitorClassificationBySportJobService
     {
-        Task<bool> ClassifyMatchMonitorBySport();
+        Task<bool> Execute();
     }
 
     public class MatchMonitorClassificationBySportJobService : IMatchMonitorClassificationBySportJobService
@@ -30,7 +30,7 @@
             this.mmClassificationService = mmClassificationService;         
         }
 
-        public Task<bool> ClassifyMatchMonitorBySport()
+        public Task<bool> Execute()
         {
             try
             {

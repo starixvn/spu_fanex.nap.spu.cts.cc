@@ -15,7 +15,7 @@
         private readonly IProbationClassificationBySportJobService _probationClassificationBySportJobService;
         private readonly IDailyNormalClassificationBySportJobService _dailyNormalClassificationBySportJobService;
         private readonly IDailyProblemClassificationBySportJobService _dailyProblemClassificationBySportJobService;
-        private readonly IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService;
+        private readonly IMatchMonitorClassificationBySportJobService _mmClassificationBySportJobService;
 
         public ClassificationBySportJobController(
             INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService,
@@ -25,12 +25,12 @@
             IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService,
             IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService)
         {
-            this.normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
-            this.normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
-            this.realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;
-            this.probationClassificationBySportJobService = probationClassificationBySportJobService;
-            this.dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
-            this.mmClassificationBySportJobService = mmClassificationBySportJobService;
+            _normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
+            _normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
+            _realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;
+            _probationClassificationBySportJobService = probationClassificationBySportJobService;
+            _dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
+            _mmClassificationBySportJobService = mmClassificationBySportJobService;
         }
 
         [HttpPost("NormalAccountClassificationBySport")]
@@ -71,7 +71,7 @@
         [HttpPost("ClassifyMatchMonitorBySport")]
         public async Task<bool> ClassifyMatchMonitorBySport()
         {
-            return await mmClassificationBySportJobService.ClassifyMatchMonitorBySport();
+            return await _mmClassificationBySportJobService.Execute();
         }
     }
 }
