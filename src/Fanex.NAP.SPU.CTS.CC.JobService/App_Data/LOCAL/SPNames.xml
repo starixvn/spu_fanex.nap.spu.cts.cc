@@ -212,7 +212,9 @@
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-	</Function>
+    <Setting Key="CTS_DC_CustClassificationBySport_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassificationBySport_DailyScanPA_InsertToQueue_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+    <Setting Key="CTS_DC_CustClassification_BySport_Realtime_GetCategory" SpName="CTS_DC_CustClassification_BySport_Realtime_GetCategory_xpre" DbName="CTSMain.CTS_DataCenter.ctsService" />
+  </Function>
 
 	<Function Name="ProbationClassificationBySport">
 		<Setting Key="CTS_BySportNormalClassification_Probation_Preprocess" SpName="CTS_BySportNormalClassification_Probation_Preprocess" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
