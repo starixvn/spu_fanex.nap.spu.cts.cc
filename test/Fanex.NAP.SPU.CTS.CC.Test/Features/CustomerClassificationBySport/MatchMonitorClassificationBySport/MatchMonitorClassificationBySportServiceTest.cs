@@ -1,0 +1,215 @@
+﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport
+{
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
+    using Xunit;
+
+    public class MatchMonitorClassificationBySportServiceTest
+    {
+        private readonly IMatchMonitorClassificationBySportDataAccess _matchDataAccess;
+        private readonly ICustClassToMainDBService _custClassToMainDBService;
+        private readonly IProblemAccountBySportService _problemAccountBySportService;
+        private readonly IMatchMonitorClassificationBySportService _service;
+
+        public MatchMonitorClassificationBySportServiceTest()
+        {
+            _matchDataAccess = Substitute.For<IMatchMonitorClassificationBySportDataAccess>();
+            _custClassToMainDBService = Substitute.For<ICustClassToMainDBService>();
+            _problemAccountBySportService = Substitute.For<IProblemAccountBySportService>();
+
+            _service = new MatchMonitorClassificationBySportService(
+                _custClassToMainDBService,
+                _matchDataAccess,
+                _problemAccountBySportService);
+        }
+
+        #region ClassifyMatchMonitor
+        [Fact]
+        public void ClassifyMatchMonitor_WhenSuccess()
+        {
+            // Arrange
+            var expectedModel = new ClassifyGBMatchMonitorBySportModel
+            {
+                CustInfos = new List<ClassifyGBMMCustInfosBySportEntity>
+                {
+                    new ClassifyGBMMCustInfosBySportEntity { CustID = 1, MatchID = 100 }
+                },
+                MatchID = 100,
+                MMDetailIDList = "1,2,3"
+            };
+
+            _matchDataAccess.ClassifyMatchMonitor().Returns(expectedModel);
+
+            // Act
+            var result = _service.ClassifyMatchMonitor();
+
+            // Assert
+            _matchDataAccess.Received(1).ClassifyMatchMonitor();
+            Assert.NotNull(result);
+            Assert.Equal(expectedModel.MatchID, result.MatchID);
+            Assert.Equal(expectedModel.MMDetailIDList, result.MMDetailIDList);
+            Assert.NotNull(result.CustInfos);
+        }
+
+        [Fact]
+        public void ClassifyMatchMonitor_ThrowException()
+        {
+            // Arrange
+            _matchDataAccess.ClassifyMatchMonitor().Throws<Exception>();
+
+            // Act
+            Action action = () => _service.ClassifyMatchMonitor();
+
+            // Assert
+            _matchDataAccess.Received(0).ClassifyMatchMonitor();
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+
+        #region ClassifyMatchMonitorCompleted
+        [Fact]
+        public void ClassifyMatchMonitorCompleted_WhenSuccess()
+        {
+            // Arrange
+            var model = new ClassifyGBMatchMonitorBySportModel
+            {
+                MatchID = 123,
+                MMDetailIDList = "1,2,3"
+            };
+
+            // Act
+            _service.ClassifyMatchMonitorCompleted(model);
+
+            // Assert
+            _matchDataAccess.Received(1).ClassifyMatchMonitorCompleted(123, "1,2,3");
+        }
+
+        [Fact]
+        public void ClassifyMatchMonitorCompleted_NoAction_WhenMatchIDIsNull()
+        {
+            // Arrange
+            var model = new ClassifyGBMatchMonitorBySportModel
+            {
+                MatchID = null,
+                MMDetailIDList = "1,2,3"
+            };
+
+            // Act
+            _service.ClassifyMatchMonitorCompleted(model);
+
+            // Assert
+            _matchDataAccess.Received(0).ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>());
+        }
+
+        [Fact]
+        public void ClassifyMatchMonitorCompleted_ThrowException()
+        {
+            // Arrange
+            var model = new ClassifyGBMatchMonitorBySportModel
+            {
+                MatchID = 123,
+                MMDetailIDList = "1,2,3"
+            };
+
+            _matchDataAccess.When(x => x.ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>())).Throw<Exception>();
+
+            // Act
+            Action action = () => _service.ClassifyMatchMonitorCompleted(model);
+
+            // Assert
+            _matchDataAccess.Received(0).ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>());
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+
+        #region InsertProblemAccount
+        [Fact]
+        public void InsertProblemAccount_WhenSuccess()
+        {
+            // Arrange
+            var paBySports = new List<InsertProblemAccountBySportEntity>
+            {
+                new InsertProblemAccountBySportEntity
+                {
+                    CustID = 1,
+                    CTSCustID = 100,
+                    MatchID = 200,
+                    SportGroup = 1
+                }
+            };
+
+            var paras = new PushDataToExternalEntity
+            {
+                ServiceName = "TestService"
+            };
+
+            var expectedCustIDs = new List<long> { 1, 2, 3 };
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+                .Returns(expectedCustIDs);
+
+            // Act
+            var result = _service.InsertProblemAccount(paBySports, paras);
+
+            // Assert
+            _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
+                Arg.Is<IEnumerable<InsertProblemAccountBySportEntity>>(x => x.Count() == 1),
+                Arg.Any<CCInputFlow>());
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void InsertProblemAccount_WhenEmptyList_ShouldStillReturnTrue()
+        {
+            // Arrange
+            var paBySports = new List<InsertProblemAccountBySportEntity>();
+            var paras = new PushDataToExternalEntity
+            {
+                ServiceName = "TestService"
+            };
+
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+                .Returns(Enumerable.Empty<long>());
+
+            // Act
+            var result = _service.InsertProblemAccount(paBySports, paras);
+
+            // Assert
+            _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
+                Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(),
+                Arg.Any<CCInputFlow>());
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void InsertProblemAccount_ThrowException()
+        {
+            // Arrange
+            var paBySports = new List<InsertProblemAccountBySportEntity>
+            {
+                new InsertProblemAccountBySportEntity { CustID = 1 }
+            };
+
+            var paras = new PushDataToExternalEntity
+            {
+                ServiceName = "TestService"
+            };
+
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+                .Throws<Exception>();
+
+            // Act
+            Action action = () => _service.InsertProblemAccount(paBySports, paras);
+
+            // Assert
+            Assert.Throws<Exception>(action);
+        }
+        #endregion
+    }
+}

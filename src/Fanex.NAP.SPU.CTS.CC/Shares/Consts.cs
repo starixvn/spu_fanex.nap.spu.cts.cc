@@ -285,11 +285,13 @@
             RemovePACategory = 225,
             [Description("BySportInsertSpecialCC")]
             BySportInsertSpecialCC = 332,
-            [Description("BySportInsertNormal")]
+            [Description("BySportInsertPA")]
+            BySportInsertPA = 335,
+           [Description("BySportInsertNormal")]
             BySportInsertNormal = 339,
             [Description("BySportRemoveSpecialCC")]
             BySportRemoveSpecialCC = 442
-        }
+        }       
 
         public enum RoleGroupType
         {

@@ -1,44 +1,41 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport
-{
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.BaseCustomerClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
+{  
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using System.Collections.Generic;
-    using System.Linq;
     using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IMatchMonitorClassificationBySportService
     {
-        ClassifyGBMatchMonitorModel ClassifyMatchMonitor();
+        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
 
-        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel);
+        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);
 
-        bool InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> pas, PushDataToExternalEntity paras);
+        bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras);
     }
 
-    public class MatchMonitorClassificationBySportService : ProblemAccountServices, IMatchMonitorClassificationBySportService
+    public class MatchMonitorClassificationBySportService : IMatchMonitorClassificationBySportService
     {
         private readonly IMatchMonitorClassificationBySportDataAccess matchDataAccess;
         private readonly ICustClassToMainDBService custClassToMainDBService;
+        private readonly IProblemAccountBySportService problemAccountBySportService;
 
-        public MatchMonitorClassificationBySportService(
-            IBaseCustomerClassificationDataAccess baseDataAccess,
-            IProblemAccountDataAccess problemAccountDataAccess,
+        public MatchMonitorClassificationBySportService(           
             ICustClassToMainDBService custClassToMainDBService,
-            IMatchMonitorClassificationBySportDataAccess matchDataAccess) : base(baseDataAccess, problemAccountDataAccess)
+            IMatchMonitorClassificationBySportDataAccess matchDataAccess,
+            IProblemAccountBySportService problemAccountBySportService)
         {
             this.matchDataAccess = matchDataAccess;
             this.custClassToMainDBService = custClassToMainDBService;
+            this.problemAccountBySportService = problemAccountBySportService;
         }
 
-        public ClassifyGBMatchMonitorModel ClassifyMatchMonitor()
+        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor()
         {
             return matchDataAccess.ClassifyMatchMonitor();
         }
 
-        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorModel classifyGBMMModel)
+        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
         {
             if (classifyGBMMModel.MatchID.HasValue)
             {
@@ -46,11 +43,11 @@
             }
         }
 
-        public bool InsertProblemAccount(IEnumerable<InsertProblemAccountEntity> pas, PushDataToExternalEntity paras)
-        {
-            var paCustIDs = InsertProblemAccountPackage(pas, FunctionId.ClassifyGBMatchMonitor, CCInputFlow.InsertPACategory, false, paras.ServiceName);
+        public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras)
+        {                        
+            var paCustIDs = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA);
 
-            custClassToMainDBService.PushExternalProblemAcountPackage(paCustIDs.Distinct(), paras);
+            //custClassToMainDBService.PushExternalProblemAcountPackage(paCustIDs.Distinct(), paras);
 
             return true;
         }

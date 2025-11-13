@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using System;    
@@ -38,7 +39,7 @@
 
                 if (classifyMMModel.CustInfos != null && classifyMMModel.CustInfos.Any())
                 {    
-                    var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountEntity(x));
+                    var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountBySportEntity(x));
 
                     mmClassificationService.InsertProblemAccount(problemAccounts,
                         new PushDataToExternalEntity

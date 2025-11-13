@@ -44,8 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Features\CustomerClassificationBySport\MatchMonitorClassificationBySport\Entities\" />
-	  <Folder Include="Features\CustomerClassificationBySport\MatchMonitorClassificationBySport\Model\" />
 	  <Folder Include="Features\CustomerClassification\NormalDangerousAssociation\NormalDangerousAssociationScan\Entities\" />
 	</ItemGroup>
 </Project>

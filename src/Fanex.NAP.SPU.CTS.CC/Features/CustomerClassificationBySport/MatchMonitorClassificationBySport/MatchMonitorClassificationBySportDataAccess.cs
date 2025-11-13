@@ -1,12 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.MatchMonitorClassification;
     using Fanex.Data.Repository;
     using System.Linq;
 
     public interface IMatchMonitorClassificationBySportDataAccess
     {
-        ClassifyGBMatchMonitorModel ClassifyMatchMonitor();
+        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
 
         void ClassifyMatchMonitorCompleted(int matchID, string mmDetailIDs);
     }
@@ -20,13 +19,13 @@
             repository = new DynamicRepository();
         }
 
-        public ClassifyGBMatchMonitorModel ClassifyMatchMonitor()
+        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor()
         {
             var criteria = new ClassifyMatchMonitorBySportCriteria();
 
-            var (custInfos, MMDetailIDs, matchIDs) = repository.FetchMultiple<ClassifyGBMMCustInfosEntity, string, int?>(criteria);
+            var (custInfos, MMDetailIDs, matchIDs) = repository.FetchMultiple<ClassifyGBMMCustInfosBySportEntity, string, int?>(criteria);
 
-            return new ClassifyGBMatchMonitorModel
+            return new ClassifyGBMatchMonitorBySportModel
             {
                 CustInfos = custInfos,
                 MMDetailIDList = MMDetailIDs != null ? MMDetailIDs.FirstOrDefault() : null,

@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.ProblemAccountInsertBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
@@ -14,12 +14,14 @@
     public class ProblemAccountBySportServiceTest
     {
         private readonly IProblemAccountBySportDataAccess _dataAccess;
+        private readonly IBaseCustomerClassificationBySportDataAccess _baseDataAccess;
         private readonly IProblemAccountBySportService _service;
 
         public ProblemAccountBySportServiceTest()
         {
             _dataAccess = Substitute.For<IProblemAccountBySportDataAccess>();
-            _service = new ProblemAccountBySportService(_dataAccess);
+            _baseDataAccess = Substitute.For<IBaseCustomerClassificationBySportDataAccess>();
+            _service = new ProblemAccountBySportService(_dataAccess, _baseDataAccess);
         }
 
         #region Constructor Tests
