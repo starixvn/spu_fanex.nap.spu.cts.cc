@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.RealtimeClassification;
+    using System.Collections.Generic;
     using System.Linq;
 
     public interface IRealtimeClassificationBySportServices
@@ -11,7 +11,7 @@
 
         IRealtimeClassificationBySportServices GetCustomerCategory(int batchSize);
 
-        IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int internalBatchSize);
+        IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int batchSize);
 
         IRealtimeClassificationBySportServices InsertPADailyScanQueue(int batchSize);
 
@@ -71,17 +71,12 @@
 
         public IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int batchSize)
         {
-            var hasCustomers = customers?.CustomerNewPlaceBets?.Any() ?? false;
-            var hasCustomerNormals = customerCategories?.CustomerNormals?.Any() ?? false;
-
-            if (!hasCustomers || !hasCustomerNormals)
+            if (!HasValidInput())
             {
                 return this;
             }
 
-            var joinedCustomers = customers.CustomerNewPlaceBets
-                .Where(c => customerCategories.CustomerNormals.Contains(c.CustId))
-                .ToList();
+            var joinedCustomers = GetJoinedCustomers();
 
             if (!joinedCustomers.Any())
             {
@@ -96,6 +91,21 @@
             }
 
             return this;
+        }
+
+        private bool HasValidInput()
+        {
+            var hasCustomers = customers?.CustomerNewPlaceBets?.Any() ?? false;
+            var hasCustomerNormals = customerCategories?.CustomerNormals?.Any() ?? false;
+
+            return hasCustomers && hasCustomerNormals;
+        }
+
+        private List<CustClassificationRealtimeBySportEntity> GetJoinedCustomers()
+        {
+            return customers.CustomerNewPlaceBets
+                .Where(c => customerCategories.CustomerNormals.Contains(c.CustId))
+                .ToList();
         }       
 
         public IRealtimeClassificationBySportServices InsertPADailyScanQueue(int batchSize)
