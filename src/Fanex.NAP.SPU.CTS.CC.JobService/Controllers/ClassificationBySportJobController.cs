@@ -15,6 +15,7 @@
         private readonly IProbationClassificationBySportJobService _probationClassificationBySportJobService;
         private readonly IDailyNormalClassificationBySportJobService _dailyNormalClassificationBySportJobService;
         private readonly IDailyProblemClassificationBySportJobService _dailyProblemClassificationBySportJobService;
+        private readonly IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService;
 
         public ClassificationBySportJobController(
             INormalAccountClassificationBySportJobService normalAccountClassificationBySportJobService,
@@ -22,14 +23,14 @@
             IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService,
             IProbationClassificationBySportJobService probationClassificationBySportJobService,
             IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService,
-            IDailyProblemClassificationBySportJobService problemClassificationBySportJobService)
+            IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService)
         {
-            _normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
-            _normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
-            _realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;
-            _probationClassificationBySportJobService = probationClassificationBySportJobService;
-            _dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
-            _dailyProblemClassificationBySportJobService = problemClassificationBySportJobService;
+            this.normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
+            this.normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
+            this.realtimeClassificationBySportJobService = realtimeClassificationBySportJobService;
+            this.probationClassificationBySportJobService = probationClassificationBySportJobService;
+            this.dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
+            this.mmClassificationBySportJobService = mmClassificationBySportJobService;
         }
 
         [HttpPost("NormalAccountClassificationBySport")]
@@ -66,6 +67,11 @@
         public async Task<bool> ScanProblemClassificationBySport([FromForm] int batchSize)
         {
             return await _dailyProblemClassificationBySportJobService.Excute(batchSize);
+        }
+        [HttpPost("ClassifyMatchMonitorBySport")]
+        public async Task<bool> ClassifyMatchMonitorBySport()
+        {
+            return await mmClassificationBySportJobService.ClassifyMatchMonitorBySport();
         }
     }
 }

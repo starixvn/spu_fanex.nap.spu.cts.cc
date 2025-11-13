@@ -271,4 +271,9 @@
 	<Function name="PAInsertBySport">
 		<Setting Key="CTS_ProblemAccountsClassificationBySport_Daily" SpName="CTS_ProblemAccountsClassificationBySport_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
 	</Function>
+
+  <Function Name="MatchMonitorClassificationBySport">
+    <Setting Key="CTS_DC_CustClassificationBySport_MatchMonitor_Classify" SpName="CTS_DC_CustClassificationBySport_MatchMonitor_Classify_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+    <Setting Key="CTS_DC_CustClassificationBySport_MatchMonitor_Completed" SpName="CTS_DC_CustClassificationBySport_MatchMonitor_Completed_xpre" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+  </Function>
 </Functions>
