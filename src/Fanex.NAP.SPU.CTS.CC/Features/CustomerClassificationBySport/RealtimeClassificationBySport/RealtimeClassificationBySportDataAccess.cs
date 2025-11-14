@@ -9,7 +9,7 @@
     {
         GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
 
-        GetCustomerCategoryBySportModel GetCustomerCategory(string custIdList);
+        GetCustomerCategoryBySportModel GetCustomerCategory(string custInfoList);
 
         void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
@@ -40,11 +40,11 @@
             };
         }       
 
-        public GetCustomerCategoryBySportModel GetCustomerCategory(string custIdList)
+        public GetCustomerCategoryBySportModel GetCustomerCategory(string custInfoList)
         {
             var criteria = new GetCustomerCategoryRealtimeBySportCriteria
             {
-                CustIdList = custIdList
+                CustInfoList = custInfoList
             };
 
             var (normalCusts, paCusts) = repository.FetchMultiple<long, long>(criteria);

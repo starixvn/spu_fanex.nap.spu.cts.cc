@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
+    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -56,10 +57,8 @@
                 var customerChunks = customers.CustomerNewPlaceBets.Chunk(batchSize);
 
                 foreach (var custBatch in customerChunks)
-                {
-                    var custIDs = string.Join(",", custBatch.Select(c => c.CustId).Distinct());
-
-                    var custCategory = dataAccess.GetCustomerCategory(custIDs);
+                {                   
+                    var custCategory = dataAccess.GetCustomerCategory(JsonConvert.SerializeObject(custBatch));
 
                     customerCategories.CustomerNormals.AddRange(custCategory.CustomerNormals);
                     customerCategories.CustomerPADailyScans.AddRange(custCategory.CustomerPADailyScans);

@@ -5,8 +5,8 @@
 
     public class GetCustomerCategoryRealtimeBySportCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIdList { get; set; }
+        [SpParam(SqlParamName = "ip_CustInfoList")]
+        public string CustInfoList { get; set; }
 
         public override string GetSettingKey()
         {
@@ -15,7 +15,7 @@
 
         public override bool IsValid()
         {
-            return !string.IsNullOrEmpty(CustIdList);
+            return !string.IsNullOrEmpty(CustInfoList);
         }
     }
 }
