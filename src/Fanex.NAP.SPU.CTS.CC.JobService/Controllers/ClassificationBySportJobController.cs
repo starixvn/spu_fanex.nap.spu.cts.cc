@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Mvc;
-    
+
     using System.Threading.Tasks;
 
     [ApiController]
@@ -64,9 +64,9 @@
         }
 
         [HttpPost("ScanDailyProblemClassiciationBySport")]
-        public async Task<bool> ScanProblemClassificationBySport([FromForm] int batchSize)
+        public async Task<bool> ScanProblemClassificationBySport([FromForm] int batchInternalSize, [FromForm] int batchExternalSize)
         {
-            return await _dailyProblemClassificationBySportJobService.Excute(batchSize);
+            return await _dailyProblemClassificationBySportJobService.Excute(batchInternalSize, batchExternalSize);
         }
         [HttpPost("ClassifyMatchMonitorBySport")]
         public async Task<bool> ClassifyMatchMonitorBySport()

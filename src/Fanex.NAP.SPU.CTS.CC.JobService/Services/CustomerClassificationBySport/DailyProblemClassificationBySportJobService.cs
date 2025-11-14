@@ -8,7 +8,7 @@
 
     public interface IDailyProblemClassificationBySportJobService
     {
-        Task<bool> Excute(int batchSize);
+        Task<bool> Excute(int batchInternalSize, int batchExternalSize);
     }
 
     public class DailyProblemClassificationBySportJobService : IDailyProblemClassificationBySportJobService
@@ -24,17 +24,17 @@
             _serviceName = "DailyProblemClassificationBySport";
         }
 
-        public Task<bool> Excute(int batchSize)
+        public Task<bool> Excute(int batchInternalSize, int batchExternalSize)
         {
             try
             {
-                if (batchSize > 0)
+                if (batchInternalSize > 0 && batchExternalSize > 0)
                 {
-                    JobRun(batchSize);
+                    JobRun(batchInternalSize, batchExternalSize);
                 }
                 else
                 {
-                    LogExtension.LogError($"{_serviceName} Invalid Batch size {{{batchSize}}}");
+                    LogExtension.LogError($"{_serviceName} Invalid Batch size Internal: {{{batchInternalSize}}}, External: {{{batchExternalSize}}}");
                 }
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@
             return Task.FromResult(true);
         }
 
-        private void JobRun(int batchSize)
+        private void JobRun(int batchInternalSize, int batchExternalSize)
         {
             var isContinue = true;
 
@@ -56,17 +56,17 @@
                 var paClassificationBySport =
                     _service
                         .Start()
-                        .GetDailyPAFromQueue()
+                        .GetDailyPAFromQueue(batchInternalSize)
                         .GetProblemAccountLosingClassification();
 
                 if (paClassificationBySport.IsNotNullOrEmpty())
                 {
-                    foreach (var paBatch in paClassificationBySport.Chunk(batchSize))
+                    foreach (var paBatch in paClassificationBySport.Chunk(batchExternalSize))
                     {
                         var isPushCC = _service
                             .GetInstanceProblemWLClassificationBySportService()
                             .InsertPAWLClassificationBySport(paBatch)
-                            .PushCCBySportToExternal(_serviceName, batchSize);
+                            .PushCCBySportToExternal(_serviceName, batchExternalSize);
 
                         if (!isPushCC)
                         {

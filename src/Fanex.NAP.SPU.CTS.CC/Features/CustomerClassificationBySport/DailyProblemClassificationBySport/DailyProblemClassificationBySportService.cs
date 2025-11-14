@@ -13,7 +13,7 @@
     {
         IDailyProblemClassificationBySportService Start();
 
-        IDailyProblemClassificationBySportService GetDailyPAFromQueue();
+        IDailyProblemClassificationBySportService GetDailyPAFromQueue(int batchSize);
 
         IEnumerable<ProblemAccountLosingBySportEntity> GetProblemAccountLosingClassification();
 
@@ -47,9 +47,9 @@
             return this;
         }
 
-        public IDailyProblemClassificationBySportService GetDailyPAFromQueue()
+        public IDailyProblemClassificationBySportService GetDailyPAFromQueue(int batchSize)
         {
-            PACustomers = _dataAccess.GetPADailyFromQueue();
+            PACustomers = _dataAccess.GetPADailyFromQueue(batchSize);
 
             return this;
         }

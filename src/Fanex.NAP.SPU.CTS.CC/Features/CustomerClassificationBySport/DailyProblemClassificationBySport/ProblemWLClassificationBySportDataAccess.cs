@@ -9,7 +9,7 @@
 
     public interface IProblemWLClassificationBySportDataAccess
     {
-        IEnumerable<ProblemAccountInfoFromDailyQueueModel> GetPADailyFromQueue();
+        IEnumerable<ProblemAccountInfoFromDailyQueueModel> GetPADailyFromQueue(int batchSize);
 
         void CompletePADailyFromQueue(string custInfos);
 
@@ -25,9 +25,12 @@
             _repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProblemAccountInfoFromDailyQueueModel> GetPADailyFromQueue()
+        public IEnumerable<ProblemAccountInfoFromDailyQueueModel> GetPADailyFromQueue(int batchSize)
         {
-            var criteria = new PADailyScanFromQueueBySportGetCriteria();
+            var criteria = new PADailyScanFromQueueBySportGetCriteria
+            {
+                BatchSize = batchSize,
+            };
 
             var entities = _repository.Fetch<ProblemAccountInfoFromDailyQueueEntity>(criteria);
 

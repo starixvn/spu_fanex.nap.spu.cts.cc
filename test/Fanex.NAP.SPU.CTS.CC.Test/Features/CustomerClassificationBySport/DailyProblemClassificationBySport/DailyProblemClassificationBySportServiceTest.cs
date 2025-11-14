@@ -77,13 +77,13 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 2, SportGroup = 2 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(expectedData);
+            _dataAccess.GetPADailyFromQueue(500).Returns(expectedData);
 
             // Act
-            var result = _service.GetDailyPAFromQueue();
+            var result = _service.GetDailyPAFromQueue(500);
 
             // Assert
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             Assert.NotNull(result);
             Assert.IsType<DailyProblemClassificationBySportService>(result);
             Assert.Same(_service, result);
@@ -94,13 +94,13 @@
         {
             // Arrange
             var expectedData = new List<ProblemAccountInfoFromDailyQueueModel>();
-            _dataAccess.GetPADailyFromQueue().Returns(expectedData);
+            _dataAccess.GetPADailyFromQueue(500).Returns(expectedData);
 
             // Act
-            var result = _service.GetDailyPAFromQueue();
+            var result = _service.GetDailyPAFromQueue(500);
 
             // Assert
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             Assert.NotNull(result);
             Assert.IsType<DailyProblemClassificationBySportService>(result);
         }
@@ -109,13 +109,13 @@
         public void GetDailyPAFromQueue_WhenDataAccessReturnsNull_ShouldReturnService()
         {
             // Arrange
-            _dataAccess.GetPADailyFromQueue().Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
+            _dataAccess.GetPADailyFromQueue(500).Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
 
             // Act
-            var result = _service.GetDailyPAFromQueue();
+            var result = _service.GetDailyPAFromQueue(500);
 
             // Assert
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             Assert.NotNull(result);
             Assert.IsType<DailyProblemClassificationBySportService>(result);
         }
@@ -124,11 +124,11 @@
         public void GetDailyPAFromQueue_WhenDataAccessThrowsException_ShouldPropagateException()
         {
             // Arrange
-            _dataAccess.GetPADailyFromQueue().Throws<InvalidOperationException>();
+            _dataAccess.GetPADailyFromQueue(500).Throws<InvalidOperationException>();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetDailyPAFromQueue());
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetDailyPAFromQueue(500));
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             Assert.NotNull(exception);
         }
 
@@ -144,13 +144,13 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 4, SportGroup = 1 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(expectedData);
+            _dataAccess.GetPADailyFromQueue(500).Returns(expectedData);
 
             // Act
-            var result = _service.GetDailyPAFromQueue();
+            var result = _service.GetDailyPAFromQueue(500);
 
             // Assert
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             Assert.NotNull(result);
             Assert.IsType<DailyProblemClassificationBySportService>(result);
         }
@@ -167,8 +167,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 2, SportGroup = 2 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
             {
@@ -208,8 +208,8 @@
         public void GetProblemAccountLosingClassification_WithNullPACustomers_ShouldReturnEmpty_DoesNotCallPAService()
         {
             // Arrange
-            _dataAccess.GetPADailyFromQueue().Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
+            _service.GetDailyPAFromQueue(500);
 
             // Act
             var result = _service.GetProblemAccountLosingClassification();
@@ -229,8 +229,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             var expectedResult = Enumerable.Empty<ProblemAccountLosingBySportEntity>();
             _paService.GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>()).Returns(expectedResult);
@@ -253,8 +253,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             _paService.GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>()).Throws<InvalidOperationException>();
 
@@ -273,8 +273,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 100, SportGroup = 5 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
             {
@@ -356,8 +356,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 2, SportGroup = 2 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             // Act
             var result = _service.UpdateComplete();
@@ -385,8 +385,8 @@
         public void UpdateComplete_WithNullPACustomers_ShouldNotCallDataAccess_ReturnsFalse()
         {
             // Arrange
-            _dataAccess.GetPADailyFromQueue().Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
+            _service.GetDailyPAFromQueue(500);
 
             // Act
             var result = _service.UpdateComplete();
@@ -405,8 +405,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             _dataAccess.When(x => x.CompletePADailyFromQueue(Arg.Any<string>())).Throw<InvalidOperationException>();
 
@@ -425,8 +425,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 100, SportGroup = 5 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             // Act
             var result = _service.UpdateComplete();
@@ -451,8 +451,8 @@
                 new ProblemAccountInfoFromDailyQueueModel { CustID = 1, SportGroup = 1 } // Duplicate
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
-            _service.GetDailyPAFromQueue();
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
+            _service.GetDailyPAFromQueue(500);
 
             // Act
             var result = _service.UpdateComplete();
@@ -480,12 +480,12 @@
                 new ProblemAccountLosingBySportEntity { CustId = 2, SportGroup = 2, WinlossStatus = 2 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
             _paService.GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>()).Returns(expectedResult);
 
             // Act
             var startResult = _service.Start();
-            var queueResult = _service.GetDailyPAFromQueue();
+            var queueResult = _service.GetDailyPAFromQueue(500);
             var classificationResult = _service.GetProblemAccountLosingClassification();
 
             // Assert
@@ -493,7 +493,7 @@
             Assert.NotNull(queueResult);
             Assert.NotNull(classificationResult);
             Assert.Equal(2, classificationResult.Count());
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             _paService.Received(1).GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>());
         }
 
@@ -511,12 +511,12 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1, WinlossStatus = 1 }
             };
 
-            _dataAccess.GetPADailyFromQueue().Returns(paCustomers);
+            _dataAccess.GetPADailyFromQueue(500).Returns(paCustomers);
             _paService.GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>()).Returns(expectedResult);
 
             // Act
             _service.Start();
-            _service.GetDailyPAFromQueue();
+            _service.GetDailyPAFromQueue(500);
             var classificationResult = _service.GetProblemAccountLosingClassification();
             var updateResult = _service.UpdateComplete();
 
@@ -524,7 +524,7 @@
             Assert.NotNull(classificationResult);
             Assert.Single(classificationResult);
             Assert.True(updateResult);
-            _dataAccess.Received(1).GetPADailyFromQueue();
+            _dataAccess.Received(1).GetPADailyFromQueue(500);
             _dataAccess.Received(1).CompletePADailyFromQueue(Arg.Any<string>());
             _paService.Received(1).GetPALosingBySport(Arg.Any<IEnumerable<ProblemAccountInfoFromDailyQueueModel>>());
         }
