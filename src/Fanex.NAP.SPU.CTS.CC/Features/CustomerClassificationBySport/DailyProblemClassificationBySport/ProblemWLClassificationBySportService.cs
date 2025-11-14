@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
@@ -20,7 +20,7 @@
         private readonly IProblemWLClassificationBySportDataAccess _dataAccess;
         private readonly ICustClassToMainDBService _custClassToMainDB;
 
-        private IEnumerable<InsertPAProbationBySportResultModel> PAWLs;
+        private IEnumerable<InsertPABySportResultModel> PAWLs;
 
         public ProblemWLClassificationBySportService(
             IProblemWLClassificationBySportDataAccess dataAccess,
@@ -29,7 +29,7 @@
             _dataAccess = dataAccess;
             _custClassToMainDB = custClassToMainDB;
 
-            PAWLs = new List<InsertPAProbationBySportResultModel>();
+            PAWLs = new List<InsertPABySportResultModel>();
         }
 
         public IProblemWLClassificationBySportService InsertPAWLClassificationBySport(IEnumerable<ProblemAccountLosingBySportEntity> paWLClassification)

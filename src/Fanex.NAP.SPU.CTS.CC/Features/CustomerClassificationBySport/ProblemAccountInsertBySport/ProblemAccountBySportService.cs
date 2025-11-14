@@ -2,6 +2,7 @@
 {   
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB.Model;
     using Fanex.NAP.SPU.CTS.Shares;   
     using Newtonsoft.Json;
@@ -13,7 +14,7 @@
     {
         IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(IEnumerable<BaseCustomerInfoBySportModel> custInfos);
 
-        IEnumerable<long> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow);
+        IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow);
     }
 
     public class ProblemAccountBySportService : IProblemAccountBySportService
@@ -40,7 +41,7 @@
             return Enumerable.Empty<ProblemAccountLosingBySportEntity>();
         }
 
-        public IEnumerable<long> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow)
+        public IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow)
         {
             if (paBySports.IsNotNullOrEmpty())
             {
@@ -55,11 +56,15 @@
 
                 if (insertPaResult.CustInfos.IsNotNullOrEmpty())
                 {
-                    return insertPaResult.CustInfos.Select(x => x.CustID).Distinct();
+                    return insertPaResult.CustInfos.Select(x => new InsertPABySportResultModel
+                    {
+                        CustID = x.CustID,
+                        SportGroup = x.SportGroup
+                    }).Distinct();
                 }
             }
 
-            return Enumerable.Empty<long>();
+            return Enumerable.Empty<InsertPABySportResultModel>();
         }
 
         #region Private Methods

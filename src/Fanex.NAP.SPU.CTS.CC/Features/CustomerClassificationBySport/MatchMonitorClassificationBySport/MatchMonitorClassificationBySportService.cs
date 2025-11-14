@@ -11,7 +11,7 @@
 
         bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras);
 
-        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);        
+        void ClassifyCompletedMatchMonitor(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);        
     }
 
     public class MatchMonitorClassificationBySportService : IMatchMonitorClassificationBySportService
@@ -44,11 +44,11 @@
             return true;
         }
 
-        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
+        public void ClassifyCompletedMatchMonitor(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
         {
             if (classifyGBMMModel.MatchID.HasValue)
             {
-                matchDataAccess.ClassifyMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
+                matchDataAccess.ClassifyCompletedMatchMonitor(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
             }
         }        
     }

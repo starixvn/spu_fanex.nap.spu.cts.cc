@@ -39,10 +39,10 @@
         public void GetPALosingBySport_WithValidCustInfos_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 },
-                new InsertProblemAccountInfoBySportModel { CustID = 2, SportGroup = 2 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 },
+                new InsertPAInfoBySportModel { CustID = 2, SportGroup = 2 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -68,9 +68,9 @@
         public void GetPALosingBySport_WithSingleCustInfo_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 100, SportGroup = 5 }
+                new InsertPAInfoBySportModel { CustID = 100, SportGroup = 5 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -105,7 +105,7 @@
         public void GetPALosingBySport_WithEmptyCustInfos_ShouldReturnEmpty_DoesNotCallDataAccess()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>();
+            var custInfos = new List<InsertPAInfoBySportModel>();
 
             // Act
             var result = _service.GetPALosingBySport(custInfos);
@@ -120,7 +120,7 @@
         public void GetPALosingBySport_WithNullCustInfos_ShouldReturnEmpty_DoesNotCallDataAccess()
         {
             // Arrange
-            IEnumerable<InsertProblemAccountInfoBySportModel> custInfos = null;
+            IEnumerable<InsertPAInfoBySportModel> custInfos = null;
 
             // Act
             var result = _service.GetPALosingBySport(custInfos);
@@ -135,9 +135,9 @@
         public void GetPALosingBySport_WhenDataAccessReturnsEmpty_ShouldReturnEmpty()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
             var expectedResult = Enumerable.Empty<ProblemAccountLosingBySportEntity>();
@@ -156,9 +156,9 @@
         public void GetPALosingBySport_WhenDataAccessReturnsNull_ShouldReturnNull()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns((IEnumerable<ProblemAccountLosingBySportEntity>)null);
@@ -175,9 +175,9 @@
         public void GetPALosingBySport_WhenDataAccessThrowsException_ShouldPropagateException()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.GetPALosingBySport(Arg.Any<string>()).Throws<InvalidOperationException>();
@@ -192,9 +192,9 @@
         public void GetPALosingBySport_WhenDataAccessThrowsDatabaseException_ShouldPropagateException()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.GetPALosingBySport(Arg.Any<string>()).Throws<Exception>();
@@ -210,12 +210,12 @@
         public void GetPALosingBySport_WithMultipleCustInfos_ShouldSerializeAndCallDataAccess_ReturnsAllData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 },
-                new InsertProblemAccountInfoBySportModel { CustID = 2, SportGroup = 2 },
-                new InsertProblemAccountInfoBySportModel { CustID = 3, SportGroup = 3 },
-                new InsertProblemAccountInfoBySportModel { CustID = 4, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 },
+                new InsertPAInfoBySportModel { CustID = 2, SportGroup = 2 },
+                new InsertPAInfoBySportModel { CustID = 3, SportGroup = 3 },
+                new InsertPAInfoBySportModel { CustID = 4, SportGroup = 1 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -244,10 +244,10 @@
         public void GetPALosingBySport_WithCustInfosHavingSameCustID_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 1 },
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 2 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 },
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 2 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -272,9 +272,9 @@
         public void GetPALosingBySport_WithZeroCustID_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 0, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = 0, SportGroup = 1 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -298,9 +298,9 @@
         public void GetPALosingBySport_WithZeroSportGroup_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = 1, SportGroup = 0 }
+                new InsertPAInfoBySportModel { CustID = 1, SportGroup = 0 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>
@@ -324,9 +324,9 @@
         public void GetPALosingBySport_WithNegativeCustID_ShouldCallDataAccess_ReturnsData()
         {
             // Arrange
-            var custInfos = new List<InsertProblemAccountInfoBySportModel>
+            var custInfos = new List<InsertPAInfoBySportModel>
             {
-                new InsertProblemAccountInfoBySportModel { CustID = -1, SportGroup = 1 }
+                new InsertPAInfoBySportModel { CustID = -1, SportGroup = 1 }
             };
 
             var expectedResult = new List<ProblemAccountLosingBySportEntity>

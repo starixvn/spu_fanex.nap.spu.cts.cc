@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Tests.Features.CustomerClassificationBySport.DailyProblemClassificationBySport
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport;
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Entities;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
@@ -45,10 +45,10 @@
                 new ProblemAccountLosingBySportEntity { CustId = 2, SportGroup = 2, WinlossStatus = 2 }
             };
 
-            var expectedResult = new List<InsertPAProbationBySportResultModel>
+            var expectedResult = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 2, SportGroup = 2 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 2, SportGroup = 2 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(expectedResult);
@@ -82,9 +82,9 @@
                 }
             };
 
-            var expectedResult = new List<InsertPAProbationBySportResultModel>
+            var expectedResult = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 100, SportGroup = 5 }
+                new InsertPABySportResultModel { CustID = 100, SportGroup = 5 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(expectedResult);
@@ -138,7 +138,7 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var expectedResult = Enumerable.Empty<InsertPAProbationBySportResultModel>();
+            var expectedResult = Enumerable.Empty<InsertPABySportResultModel>();
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(expectedResult);
 
             // Act
@@ -159,7 +159,7 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns((IEnumerable<InsertPAProbationBySportResultModel>)null);
+            _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns((IEnumerable<InsertPABySportResultModel>)null);
 
             // Act
             var result = _service.InsertPAWLClassificationBySport(paWLClassification);
@@ -199,12 +199,12 @@
                 new ProblemAccountLosingBySportEntity { CustId = 4, SportGroup = 1, WinlossStatus = 2 }
             };
 
-            var expectedResult = new List<InsertPAProbationBySportResultModel>
+            var expectedResult = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 2, SportGroup = 2 },
-                new InsertPAProbationBySportResultModel { CustID = 3, SportGroup = 3 },
-                new InsertPAProbationBySportResultModel { CustID = 4, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 2, SportGroup = 2 },
+                new InsertPABySportResultModel { CustID = 3, SportGroup = 3 },
+                new InsertPABySportResultModel { CustID = 4, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(expectedResult);
@@ -231,10 +231,10 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 2, WinlossStatus = 2 }
             };
 
-            var expectedResult = new List<InsertPAProbationBySportResultModel>
+            var expectedResult = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 2 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 2 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(expectedResult);
@@ -259,10 +259,10 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 2, SportGroup = 2 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 2, SportGroup = 2 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -271,14 +271,14 @@
             var serviceName = "TestService";
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Is<IEnumerable<InsertPAProbationBySportResultModel>>(x => x.Count() == 2),
+                Arg.Is<IEnumerable<InsertPABySportResultModel>>(x => x.Count() == 2),
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -296,7 +296,7 @@
 
             // Assert
             _custClassToMainDB.DidNotReceive().PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 Arg.Any<string>(),
                 Arg.Any<int>());
             Assert.True(result);
@@ -311,9 +311,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -322,14 +322,14 @@
             var serviceName = "TestService";
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(false);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(false);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.False(result);
@@ -344,9 +344,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -355,12 +355,12 @@
             var serviceName = "TestService";
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Throws<InvalidOperationException>();
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Throws<InvalidOperationException>();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidOperationException>(() => _service.PushCCBySportToExternal(serviceName, batchExternalSize));
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.NotNull(exception);
@@ -375,11 +375,11 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }, // Duplicate
-                new InsertPAProbationBySportResultModel { CustID = 2, SportGroup = 2 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }, // Duplicate
+                new InsertPABySportResultModel { CustID = 2, SportGroup = 2 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -388,14 +388,14 @@
             var serviceName = "TestService";
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Is<IEnumerable<InsertPAProbationBySportResultModel>>(x => x.Count() <= 3), // Distinct may reduce count
+                Arg.Is<IEnumerable<InsertPABySportResultModel>>(x => x.Count() <= 3), // Distinct may reduce count
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -410,9 +410,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -421,14 +421,14 @@
             var serviceName = "TestService";
             var batchExternalSize = 0;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -443,9 +443,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -454,14 +454,14 @@
             var serviceName = "TestService";
             var batchExternalSize = -10;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -476,9 +476,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -487,14 +487,14 @@
             string serviceName = null;
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -509,9 +509,9 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 1 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
@@ -520,14 +520,14 @@
             var serviceName = string.Empty;
             var batchExternalSize = 50;
 
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), serviceName, batchExternalSize).Returns(true);
 
             // Act
             var result = _service.PushCCBySportToExternal(serviceName, batchExternalSize);
 
             // Assert
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(),
+                Arg.Any<IEnumerable<InsertPABySportResultModel>>(),
                 serviceName,
                 batchExternalSize);
             Assert.True(result);
@@ -545,14 +545,14 @@
                 new ProblemAccountLosingBySportEntity { CustId = 2, SportGroup = 2, WinlossStatus = 2 }
             };
 
-            var paWLs = new List<InsertPAProbationBySportResultModel>
+            var paWLs = new List<InsertPABySportResultModel>
             {
-                new InsertPAProbationBySportResultModel { CustID = 1, SportGroup = 1 },
-                new InsertPAProbationBySportResultModel { CustID = 2, SportGroup = 2 }
+                new InsertPABySportResultModel { CustID = 1, SportGroup = 1 },
+                new InsertPABySportResultModel { CustID = 2, SportGroup = 2 }
             };
 
             _dataAccess.InsertPAWLPerformanceBySport(Arg.Any<string>()).Returns(paWLs);
-            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPAProbationBySportResultModel>>(), Arg.Any<string>(), Arg.Any<int>()).Returns(true);
+            _custClassToMainDB.PushCCBySportToMainDB(Arg.Any<IEnumerable<InsertPABySportResultModel>>(), Arg.Any<string>(), Arg.Any<int>()).Returns(true);
 
             var serviceName = "TestService";
             var batchExternalSize = 50;
@@ -566,7 +566,7 @@
             Assert.IsType<ProblemWLClassificationBySportService>(insertResult);
             _dataAccess.Received(1).InsertPAWLPerformanceBySport(Arg.Any<string>());
             _custClassToMainDB.Received(1).PushCCBySportToMainDB(
-                Arg.Is<IEnumerable<InsertPAProbationBySportResultModel>>(x => x.Count() == 2),
+                Arg.Is<IEnumerable<InsertPABySportResultModel>>(x => x.Count() == 2),
                 serviceName,
                 batchExternalSize);
             Assert.True(pushResult);

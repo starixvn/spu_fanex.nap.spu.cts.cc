@@ -253,7 +253,7 @@
         public void GetCustomerClassificationBySports_WhenSuccess()
         {
             // Arrange
-            var data = new List<InsertProblemAccountInfoBySportModel>() { new InsertProblemAccountInfoBySportModel() };
+            var data = new List<InsertPAInfoBySportModel>() { new InsertPAInfoBySportModel() };
 
             var getCustomerClassificationBySportsMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.GetCustomerClassificationBySports);
 
@@ -289,7 +289,7 @@
         public void GetCustomerClassificationBySports_ThrowException()
         {
             // Arrange
-            var data = new List<InsertProblemAccountInfoBySportModel>() { new InsertProblemAccountInfoBySportModel() };
+            var data = new List<InsertPAInfoBySportModel>() { new InsertPAInfoBySportModel() };
 
             var getCustomerClassificationBySportsMethod = TestExtension.GetPrivateMethod(typeof(CustClassToMainDBService), PrivateMethodName.GetCustomerClassificationBySports);
 

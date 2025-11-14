@@ -4,6 +4,7 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport.Criteria;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport.Model;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -13,7 +14,7 @@
 
         void CompletePADailyFromQueue(string custInfos);
 
-        IEnumerable<InsertPAProbationBySportResultModel> InsertPAWLPerformanceBySport(string paJson);
+        IEnumerable<InsertPABySportResultModel> InsertPAWLPerformanceBySport(string paJson);
     }
 
     public class ProblemWLClassificationBySportDataAccess : IProblemWLClassificationBySportDataAccess
@@ -47,7 +48,7 @@
             _repository.Execute(criteria);
         }
 
-        public IEnumerable<InsertPAProbationBySportResultModel> InsertPAWLPerformanceBySport(string paJson)
+        public IEnumerable<InsertPABySportResultModel> InsertPAWLPerformanceBySport(string paJson)
         {
             var criteria = new ProblemAccountProbationBySportInsertCriteria
             {
@@ -56,7 +57,7 @@
 
             var entities = _repository.Fetch<InsertPAProbationBySportResultEntity>(criteria);
 
-            return entities.Select(x => new InsertPAProbationBySportResultModel(x));
+            return entities.Select(x => new InsertPABySportResultModel(x));
         }
     }
 }

@@ -52,7 +52,7 @@
                         });                               
                 }
 
-                mmClassificationService.ClassifyMatchMonitorCompleted(classifyMMModel);
+                mmClassificationService.ClassifyCompletedMatchMonitor(classifyMMModel);
 
                 return Task.FromResult(true);
             }

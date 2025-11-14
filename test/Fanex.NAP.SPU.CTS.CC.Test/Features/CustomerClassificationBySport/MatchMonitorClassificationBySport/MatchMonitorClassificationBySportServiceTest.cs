@@ -2,14 +2,15 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport.Model;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static Fanex.NAP.SPU.CTS.Shares.Constants;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class MatchMonitorClassificationBySportServiceTest
     {
@@ -85,10 +86,10 @@
             };
 
             // Act
-            _service.ClassifyMatchMonitorCompleted(model);
+            _service.ClassifyCompletedMatchMonitor(model);
 
             // Assert
-            _matchDataAccess.Received(1).ClassifyMatchMonitorCompleted(123, "1,2,3");
+            _matchDataAccess.Received(1).ClassifyCompletedMatchMonitor(123, "1,2,3");
         }
 
         [Fact]
@@ -102,14 +103,14 @@
             };
 
             // Act
-            _service.ClassifyMatchMonitorCompleted(model);
+            _service.ClassifyCompletedMatchMonitor(model);
 
             // Assert
-            _matchDataAccess.Received(0).ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>());
+            _matchDataAccess.Received(0).ClassifyCompletedMatchMonitor(Arg.Any<int>(), Arg.Any<string>());
         }
 
         [Fact]
-        public void ClassifyMatchMonitorCompleted_ThrowException()
+        public void ClassifyCompletedMatchMonitor_ThrowException()
         {
             // Arrange
             var model = new ClassifyGBMatchMonitorBySportModel
@@ -118,13 +119,13 @@
                 MMDetailIDList = "1,2,3"
             };
 
-            _matchDataAccess.When(x => x.ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>())).Throw<Exception>();
+            _matchDataAccess.When(x => x.ClassifyCompletedMatchMonitor(Arg.Any<int>(), Arg.Any<string>())).Throw<Exception>();
 
             // Act
-            Action action = () => _service.ClassifyMatchMonitorCompleted(model);
+            Action action = () => _service.ClassifyCompletedMatchMonitor(model);
 
             // Assert
-            _matchDataAccess.Received(0).ClassifyMatchMonitorCompleted(Arg.Any<int>(), Arg.Any<string>());
+            _matchDataAccess.Received(0).ClassifyCompletedMatchMonitor(Arg.Any<int>(), Arg.Any<string>());
             Assert.Throws<Exception>(action);
         }
         #endregion
@@ -150,7 +151,7 @@
                 ServiceName = "TestService"
             };
 
-            var expectedCustIDs = new List<long> { 1, 2, 3 };
+            var expectedCustIDs = new List<InsertPABySportResultModel> {  };
             _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
                 .Returns(expectedCustIDs);
 
@@ -175,7 +176,7 @@
             };
 
             _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
-                .Returns(Enumerable.Empty<long>());
+                .Returns(Enumerable.Empty<InsertPABySportResultModel>());
 
             // Act
             var result = _service.InsertProblemAccount(paBySports, paras);

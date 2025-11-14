@@ -7,7 +7,7 @@
     {
         ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
 
-        void ClassifyMatchMonitorCompleted(int matchID, string mmDetailIDs);
+        void ClassifyCompletedMatchMonitor(int matchID, string mmDetailIDs);
     }
 
     public class MatchMonitorClassificationBySportDataAccess : IMatchMonitorClassificationBySportDataAccess
@@ -33,9 +33,9 @@
             };
         }
 
-        public void ClassifyMatchMonitorCompleted(int matchID, string mmDetailIDs)
+        public void ClassifyCompletedMatchMonitor(int matchID, string mmDetailIDs)
         {
-            var criteria = new ClassifyMatchMonitorBySportCompletedCriteria
+            var criteria = new ClassifyCompletedMatchMonitorBySportCriteria
             {
                 MatchID = matchID,
                 MMDetailsJson = mmDetailIDs

@@ -2,7 +2,7 @@
 {
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB.Model;
 
-    public class InsertProblemAccountInfoBySportModel : BaseCustomerInfoBySportModel
+    public class InsertPAInfoBySportModel : BaseCustomerInfoBySportModel
     {
     }
 }
