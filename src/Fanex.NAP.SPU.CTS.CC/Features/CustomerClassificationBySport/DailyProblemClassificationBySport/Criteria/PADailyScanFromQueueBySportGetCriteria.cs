@@ -6,7 +6,7 @@
     {
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassificationBySport_DailyScanPA_GetFromQueue";
+            return "CTS_DC_CustClassification_BySport_DailyScanPA_GetFromQueue";
         }
 
         public override bool IsValid()

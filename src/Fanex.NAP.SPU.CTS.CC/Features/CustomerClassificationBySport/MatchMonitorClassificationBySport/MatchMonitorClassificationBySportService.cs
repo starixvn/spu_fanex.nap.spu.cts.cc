@@ -9,9 +9,9 @@
     {
         ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
 
-        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);
-
         bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras);
+
+        void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);        
     }
 
     public class MatchMonitorClassificationBySportService : IMatchMonitorClassificationBySportService
@@ -35,21 +35,21 @@
             return matchDataAccess.ClassifyMatchMonitor();
         }
 
-        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
-        {
-            if (classifyGBMMModel.MatchID.HasValue)
-            {
-                matchDataAccess.ClassifyMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
-            }
-        }
-
         public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras)
-        {                        
+        {
             var paCustIDs = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA);
 
             //custClassToMainDBService.PushExternalProblemAcountPackage(paCustIDs.Distinct(), paras);
 
             return true;
         }
+
+        public void ClassifyMatchMonitorCompleted(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
+        {
+            if (classifyGBMMModel.MatchID.HasValue)
+            {
+                matchDataAccess.ClassifyMatchMonitorCompleted(classifyGBMMModel.MatchID.Value, classifyGBMMModel.MMDetailIDList);
+            }
+        }        
     }
 }

@@ -6,7 +6,7 @@
     {
         public override string GetSettingKey()
         {
-            return "CTS_DC_CustClassificationBySport_MatchMonitor_Classify";
+            return "CTS_DC_CustClassification_BySport_MatchMonitor_Classify";
         }
 
         public override bool IsValid()
