@@ -5,7 +5,7 @@
 
     public interface IMatchMonitorClassificationBySportDataAccess
     {
-        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
+        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor(int batchSize);
 
         void ClassifyCompletedMatchMonitor(int matchID, string mmDetailIDs);
     }
@@ -19,9 +19,9 @@
             repository = new DynamicRepository();
         }
 
-        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor()
+        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor(int batchSize)
         {
-            var criteria = new ClassifyMatchMonitorBySportCriteria();
+            var criteria = new ClassifyMatchMonitorBySportCriteria { BatchSize = batchSize };
 
             var (custInfos, MMDetailIDs, matchIDs) = repository.FetchMultiple<ClassifyGBMMCustInfosBySportEntity, string, int?>(criteria);
 

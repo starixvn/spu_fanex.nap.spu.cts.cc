@@ -7,7 +7,7 @@
 
     public interface IMatchMonitorClassificationBySportService
     {
-        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor();
+        ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor(int batchSize);
 
         bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras);
 
@@ -30,18 +30,16 @@
             this.problemAccountBySportService = problemAccountBySportService;
         }
 
-        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor()
+        public ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor(int batchSize)
         {
-            return matchDataAccess.ClassifyMatchMonitor();
+            return matchDataAccess.ClassifyMatchMonitor(batchSize);
         }
 
         public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras)
         {
-            var paCustIDs = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA);
+            var paCustBySports = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA);
 
-            //custClassToMainDBService.PushExternalProblemAcountPackage(paCustIDs.Distinct(), paras);
-
-            return true;
+            return custClassToMainDBService.PushCCBySportToMainDB(paCustBySports, paras.ServiceName, paras.ExternalBatchSize);
         }
 
         public void ClassifyCompletedMatchMonitor(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)

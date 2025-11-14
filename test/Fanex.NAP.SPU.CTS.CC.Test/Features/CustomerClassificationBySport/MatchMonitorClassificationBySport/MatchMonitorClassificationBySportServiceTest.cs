@@ -46,13 +46,13 @@
                 MMDetailIDList = "1,2,3"
             };
 
-            _matchDataAccess.ClassifyMatchMonitor().Returns(expectedModel);
+            _matchDataAccess.ClassifyMatchMonitor(500).Returns(expectedModel);
 
             // Act
-            var result = _service.ClassifyMatchMonitor();
+            var result = _service.ClassifyMatchMonitor(500);
 
             // Assert
-            _matchDataAccess.Received(1).ClassifyMatchMonitor();
+            _matchDataAccess.Received(1).ClassifyMatchMonitor(500);
             Assert.NotNull(result);
             Assert.Equal(expectedModel.MatchID, result.MatchID);
             Assert.Equal(expectedModel.MMDetailIDList, result.MMDetailIDList);
@@ -63,13 +63,13 @@
         public void ClassifyMatchMonitor_ThrowException()
         {
             // Arrange
-            _matchDataAccess.ClassifyMatchMonitor().Throws<Exception>();
+            _matchDataAccess.ClassifyMatchMonitor(500).Throws<Exception>();
 
             // Act
-            Action action = () => _service.ClassifyMatchMonitor();
+            Action action = () => _service.ClassifyMatchMonitor(500);
 
             // Assert
-            _matchDataAccess.Received(0).ClassifyMatchMonitor();
+            _matchDataAccess.Received(0).ClassifyMatchMonitor(500);
             Assert.Throws<Exception>(action);
         }
         #endregion
@@ -162,11 +162,12 @@
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
                 Arg.Is<IEnumerable<InsertProblemAccountBySportEntity>>(x => x.Count() == 1),
                 Arg.Any<CCInputFlow>());
-            Assert.True(result);
+
+            Assert.False(result);
         }
 
         [Fact]
-        public void InsertProblemAccount_WhenEmptyList_ShouldStillReturnTrue()
+        public void InsertProblemAccount_WhenEmptyList_ShouldStillReturnFalse()
         {
             // Arrange
             var paBySports = new List<InsertProblemAccountBySportEntity>();
@@ -185,7 +186,8 @@
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
                 Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(),
                 Arg.Any<CCInputFlow>());
-            Assert.True(result);
+
+            Assert.False(result);
         }
 
         [Fact]

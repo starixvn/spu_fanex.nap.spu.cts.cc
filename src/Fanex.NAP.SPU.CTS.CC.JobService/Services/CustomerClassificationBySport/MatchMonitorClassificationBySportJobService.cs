@@ -12,15 +12,14 @@
 
     public interface IMatchMonitorClassificationBySportJobService
     {
-        Task<bool> Execute();
+        Task<bool> Execute(int batchSize);
     }
 
     public class MatchMonitorClassificationBySportJobService : IMatchMonitorClassificationBySportJobService
     {
         private readonly IMatchMonitorClassificationBySportService mmClassificationService;     
         private readonly IAppSettings appSettings;
-        private readonly string serviceName;
-        private const int batchSize = 500;
+        private readonly string serviceName;       
 
         public MatchMonitorClassificationBySportJobService(
             IAppSettings appSettings,
@@ -31,22 +30,21 @@
             this.mmClassificationService = mmClassificationService;         
         }
 
-        public Task<bool> Execute()
+        public Task<bool> Execute(int batchSize)
         {
             try
             {
-                var classifyMMModel = mmClassificationService.ClassifyMatchMonitor();
+                var classifyMMModel = mmClassificationService.ClassifyMatchMonitor(batchSize);
 
                 if (classifyMMModel.CustInfos != null && classifyMMModel.CustInfos.Any())
                 {    
-                    var problemAccounts = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountBySportEntity(x));
+                    var paBySports = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountBySportEntity(x));
 
-                    mmClassificationService.InsertProblemAccount(problemAccounts,
+                    mmClassificationService.InsertProblemAccount(paBySports,
                         new PushDataToExternalEntity
                         {
                             RoleGroup = RoleGroupType.Member,
-                            ExternalBatchSize = batchSize,
-                            IsUpdateDangerToMainDB = true,
+                            ExternalBatchSize = batchSize,                          
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
                         });                               
