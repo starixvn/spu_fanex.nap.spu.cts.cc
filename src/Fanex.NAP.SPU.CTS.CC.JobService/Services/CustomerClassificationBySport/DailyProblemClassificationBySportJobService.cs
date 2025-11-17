@@ -5,6 +5,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyProblemClassificationBySportJobService
     {
@@ -57,7 +58,7 @@
                     _service
                         .Start()
                         .GetDailyPAFromQueue(batchInternalSize)
-                        .GetProblemAccountLosingClassification();
+                        .GetProblemAccountLosingClassification(BySport_FunctionId.ProblemDailyJob);
 
                 if (paClassificationBySport.IsNotNullOrEmpty())
                 {

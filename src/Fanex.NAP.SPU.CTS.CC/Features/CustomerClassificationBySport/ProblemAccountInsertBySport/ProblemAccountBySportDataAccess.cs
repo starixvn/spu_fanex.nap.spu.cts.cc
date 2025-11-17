@@ -10,7 +10,7 @@
 
     public interface IProblemAccountBySportDataAccess
     {
-        IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(string custInfosJson);
+        IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(string custInfosJson, BySport_FunctionId functionId);
     }
 
     public class ProblemAccountBySportDataAccess : IProblemAccountBySportDataAccess
@@ -22,13 +22,14 @@
             _repository = new DynamicRepository();
         }
 
-        public IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(string custInfosJson)
+        public IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(string custInfosJson, BySport_FunctionId functionId)
         {
             if (custInfosJson.IsNotNullOrEmpty())
             {
                 var criteria = new ProblemAccountClassificationBySportGetCriteria
                 {
-                    CustJson = custInfosJson
+                    CustJson = custInfosJson,
+                    FunctionId = (int) functionId,
                 };
 
                 return _repository.Fetch<ProblemAccountLosingBySportEntity>(criteria);

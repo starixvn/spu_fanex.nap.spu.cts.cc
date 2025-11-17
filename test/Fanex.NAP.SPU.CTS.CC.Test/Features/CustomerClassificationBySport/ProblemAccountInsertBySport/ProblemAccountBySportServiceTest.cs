@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Xunit;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public class ProblemAccountBySportServiceTest
     {
@@ -51,13 +52,13 @@
                 new ProblemAccountLosingBySportEntity { CustId = 2, SportGroup = 2, WinlossStatus = 2, TurnoverRM = 2000, WinlossRM = -1000 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ProblemDailyJob);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)));
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
             Assert.Equal(1, result.First().CustId);
@@ -88,13 +89,13 @@
                 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)));
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(100, result.First().CustId);
@@ -108,10 +109,10 @@
             var custInfos = new List<InsertPAInfoBySportModel>();
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Empty(result);
         }
@@ -123,10 +124,10 @@
             IEnumerable<InsertPAInfoBySportModel> custInfos = null;
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Empty(result);
         }
@@ -141,13 +142,13 @@
             };
 
             var expectedResult = Enumerable.Empty<ProblemAccountLosingBySportEntity>();
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)));
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Empty(result);
         }
@@ -161,13 +162,13 @@
                 new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns((IEnumerable<ProblemAccountLosingBySportEntity>)null);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns((IEnumerable<ProblemAccountLosingBySportEntity>)null);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)));
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
             Assert.Null(result);
         }
 
@@ -180,11 +181,11 @@
                 new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Throws<InvalidOperationException>();
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Throws<InvalidOperationException>();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetPALosingBySport(custInfos));
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory));
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(exception);
         }
 
@@ -197,13 +198,13 @@
                 new InsertPAInfoBySportModel { CustID = 1, SportGroup = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Throws<Exception>();
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Throws<Exception>();
             // Act
-            var action = () => _service.GetPALosingBySport(custInfos);
+            var action = () => _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Act & Assert
             Assert.Throws<Exception>(action);
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
         }
 
         [Fact]
@@ -226,16 +227,17 @@
                 new ProblemAccountLosingBySportEntity { CustId = 4, SportGroup = 1, WinlossStatus = 2 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json =>
                 !string.IsNullOrEmpty(json) &&
                 json.Contains("CustID") &&
-                json.Contains("SportGroup")));
+                json.Contains("SportGroup")),
+                Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Equal(4, result.Count());
         }
@@ -256,13 +258,13 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 2, WinlossStatus = 2 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
             Assert.All(result, r => Assert.Equal(1, r.CustId));
@@ -282,13 +284,13 @@
                 new ProblemAccountLosingBySportEntity { CustId = 0, SportGroup = 1, WinlossStatus = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(0, result.First().CustId);
@@ -308,13 +310,13 @@
                 new ProblemAccountLosingBySportEntity { CustId = 1, SportGroup = 0, WinlossStatus = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(0, result.First().SportGroup);
@@ -334,13 +336,13 @@
                 new ProblemAccountLosingBySportEntity { CustId = -1, SportGroup = 1, WinlossStatus = 1 }
             };
 
-            _dataAccess.GetPALosingBySport(Arg.Any<string>()).Returns(expectedResult);
+            _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
 
             // Assert
-            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>());
+            _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(-1, result.First().CustId);

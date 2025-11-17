@@ -151,8 +151,8 @@
                 ServiceName = "TestService"
             };
 
-            var expectedCustIDs = new List<InsertPABySportResultModel> {  };
-            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+            var expectedCustIDs = new List<InsertPABySportResultModel> { };
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.InsertPACategory)
                 .Returns(expectedCustIDs);
 
             // Act
@@ -161,7 +161,8 @@
             // Assert
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
                 Arg.Is<IEnumerable<InsertProblemAccountBySportEntity>>(x => x.Count() == 1),
-                Arg.Any<CCInputFlow>());
+                Arg.Any<CCInputFlow>(),
+                BySport_FunctionId.InsertPACategory);
 
             Assert.False(result);
         }
@@ -176,7 +177,7 @@
                 ServiceName = "TestService"
             };
 
-            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.InsertPACategory)
                 .Returns(Enumerable.Empty<InsertPABySportResultModel>());
 
             // Act
@@ -185,7 +186,8 @@
             // Assert
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
                 Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(),
-                Arg.Any<CCInputFlow>());
+                Arg.Any<CCInputFlow>(),
+                BySport_FunctionId.InsertPACategory);
 
             Assert.False(result);
         }
@@ -204,7 +206,7 @@
                 ServiceName = "TestService"
             };
 
-            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>())
+            _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.InsertPACategory)
                 .Throws<Exception>();
 
             // Act

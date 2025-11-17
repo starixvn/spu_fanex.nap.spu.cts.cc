@@ -162,7 +162,10 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum BySport_FunctionId
         {
-            InsertNewCustJob = 4
+            InsertNewCustJob = 4,
+            InsertPACategory = 5,
+            ProblemDailyJob = 12,
+
         };
 
         public enum RescanNormalType

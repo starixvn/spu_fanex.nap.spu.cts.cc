@@ -12,9 +12,9 @@
 
     public interface IProblemAccountBySportService
     {
-        IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(IEnumerable<BaseCustomerInfoBySportModel> custInfos);
+        IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(IEnumerable<BaseCustomerInfoBySportModel> custInfos, BySport_FunctionId functionId);
 
-        IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow);
+        IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow, BySport_FunctionId functionId);
     }
 
     public class ProblemAccountBySportService : IProblemAccountBySportService
@@ -29,23 +29,23 @@
             _baseDataAccess = baseDataAccess;
         }
 
-        public IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(IEnumerable<BaseCustomerInfoBySportModel> custInfos)
+        public IEnumerable<ProblemAccountLosingBySportEntity> GetPALosingBySport(IEnumerable<BaseCustomerInfoBySportModel> custInfos, BySport_FunctionId functionId)
         {
             if (custInfos.IsNotNullOrEmpty())
             {
                 var custInfosJson = JsonConvert.SerializeObject(custInfos);
 
-                return _dataAccess.GetPALosingBySport(custInfosJson);
+                return _dataAccess.GetPALosingBySport(custInfosJson, functionId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingBySportEntity>();
         }
 
-        public IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow)
+        public IEnumerable<InsertPABySportResultModel> InsertProblemAccountBySport(IEnumerable<InsertProblemAccountBySportEntity> paBySports, CCInputFlow cCInputFlow, BySport_FunctionId functionId)
         {
             if (paBySports.IsNotNullOrEmpty())
             {
-                var paBySportClassification = CombinePAWithLosingPerformace(paBySports);
+                var paBySportClassification = CombinePAWithLosingPerformace(paBySports, functionId);
 
                 var modelInsert = new InsertCustomerClassificationBySportModel
                 {
@@ -68,7 +68,7 @@
         }
 
         #region Private Methods
-        private IEnumerable<InsertProblemAccountBySportEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountBySportEntity> paBySports)
+        private IEnumerable<InsertProblemAccountBySportEntity> CombinePAWithLosingPerformace(IEnumerable<InsertProblemAccountBySportEntity> paBySports, BySport_FunctionId functionId)
         {
             var custInfos = paBySports.Select(x => new BaseCustomerInfoBySportModel
             {
@@ -76,7 +76,7 @@
                 SportGroup = x.SportGroup
             }).DistinctBy(x => new { x.CustID, x.SportGroup });
 
-            var paBySportLosings = GetPALosingBySport(custInfos);
+            var paBySportLosings = GetPALosingBySport(custInfos, functionId);
 
             return MergePALosingClassification(paBySports, paBySportLosings);
         }

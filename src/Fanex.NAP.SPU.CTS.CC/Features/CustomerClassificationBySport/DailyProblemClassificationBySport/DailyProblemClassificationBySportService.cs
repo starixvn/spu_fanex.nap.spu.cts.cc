@@ -8,6 +8,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static Fanex.NAP.SPU.CTS.Shares.Constants;
 
     public interface IDailyProblemClassificationBySportService
     {
@@ -15,7 +16,7 @@
 
         IDailyProblemClassificationBySportService GetDailyPAFromQueue(int batchSize);
 
-        IEnumerable<ProblemAccountLosingBySportEntity> GetProblemAccountLosingClassification();
+        IEnumerable<ProblemAccountLosingBySportEntity> GetProblemAccountLosingClassification(BySport_FunctionId functionId);
 
         IProblemWLClassificationBySportService GetInstanceProblemWLClassificationBySportService();
 
@@ -54,11 +55,11 @@
             return this;
         }
 
-        public IEnumerable<ProblemAccountLosingBySportEntity> GetProblemAccountLosingClassification()
+        public IEnumerable<ProblemAccountLosingBySportEntity> GetProblemAccountLosingClassification(BySport_FunctionId functionId)
         {
             if (PACustomers.IsNotNullOrEmpty())
             {
-                return _paService.GetPALosingBySport(PACustomers);
+                return _paService.GetPALosingBySport(PACustomers, functionId);
             }
 
             return Enumerable.Empty<ProblemAccountLosingBySportEntity>();
