@@ -10,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "CTS_ProblemAccountsClassificationBySport_Daily";
+            return "CTS_ProblemAccountsClassification_BySport_Daily";
         }
 
         public override bool IsValid()

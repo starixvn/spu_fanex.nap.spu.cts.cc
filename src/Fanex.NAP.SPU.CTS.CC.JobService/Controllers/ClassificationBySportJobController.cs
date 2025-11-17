@@ -23,7 +23,8 @@
             IRealtimeClassificationBySportJobService realtimeClassificationBySportJobService,
             IProbationClassificationBySportJobService probationClassificationBySportJobService,
             IDailyNormalClassificationBySportJobService dailyNormalClassificationBySportJobService,
-            IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService)
+            IMatchMonitorClassificationBySportJobService mmClassificationBySportJobService,
+            IDailyProblemClassificationBySportJobService dailyProblemClassificationBySportJobService)
         {
             _normalAccountClassificationBySportJobService = normalAccountClassificationBySportJobService;
             _normalAccountInsertBySportJobService = normalAccountInsertBySportJobService;
@@ -31,6 +32,7 @@
             _probationClassificationBySportJobService = probationClassificationBySportJobService;
             _dailyNormalClassificationBySportJobService = dailyNormalClassificationBySportJobService;
             _mmClassificationBySportJobService = mmClassificationBySportJobService;
+            _dailyProblemClassificationBySportJobService = dailyProblemClassificationBySportJobService;
         }
 
         [HttpPost("NormalAccountClassificationBySport")]

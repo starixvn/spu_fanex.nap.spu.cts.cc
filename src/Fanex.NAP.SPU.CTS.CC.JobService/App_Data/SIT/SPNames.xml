@@ -270,7 +270,7 @@
 	</Function>
 
 	<Function name="PAInsertBySport">
-		<Setting Key="CTS_ProblemAccountsClassificationBySport_Daily" SpName="CTS_ProblemAccountsClassificationBySport_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
+		<Setting Key="CTS_ProblemAccountsClassification_BySport_Daily" SpName="CTS_ProblemAccountsClassification_BySport_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
 	</Function>
 
   <Function Name="MatchMonitorClassificationBySport">
