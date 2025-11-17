@@ -23,13 +23,13 @@
         {
             var criteria = new ClassifyMatchMonitorBySportCriteria { BatchSize = batchSize };
 
-            var (custInfos, MMDetailIDs, matchIDs) = repository.FetchMultiple<ClassifyGBMMCustInfosBySportEntity, string, int?>(criteria);
+            var (custInfos, mMDetailsIDList, matchID) = repository.FetchMultiple<ClassifyGBMMCustInfosBySportEntity, string, int?>(criteria);
 
             return new ClassifyGBMatchMonitorBySportModel
             {
                 CustInfos = custInfos,
-                MMDetailIDList = MMDetailIDs != null ? MMDetailIDs.FirstOrDefault() : null,
-                MatchID = matchIDs != null ? matchIDs.FirstOrDefault() : null
+                MMDetailIDList = mMDetailsIDList != null ? mMDetailsIDList.FirstOrDefault() : null,
+                MatchID = matchID != null ? matchID.FirstOrDefault() : null
             };
         }
 

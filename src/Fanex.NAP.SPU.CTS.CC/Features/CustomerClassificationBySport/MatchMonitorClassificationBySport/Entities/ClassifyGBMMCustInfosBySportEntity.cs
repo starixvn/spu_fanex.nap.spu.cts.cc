@@ -8,6 +8,8 @@
 
         public int MatchID { get; set; }
 
+        public int SportGroup { get; set; }
+
         public int RoleID { get; set; }
 
         public int SubscriberID { get; set; }

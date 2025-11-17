@@ -36,7 +36,7 @@
             {
                 var classifyMMModel = mmClassificationService.ClassifyMatchMonitor(batchSize);
 
-                if (classifyMMModel.CustInfos != null && classifyMMModel.CustInfos.Any())
+                if (classifyMMModel.CustInfos.IsNotNullOrEmpty())
                 {    
                     var paBySports = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountBySportEntity(x));
 
@@ -44,13 +44,14 @@
                         new PushDataToExternalEntity
                         {
                             RoleGroup = RoleGroupType.Member,
-                            ExternalBatchSize = batchSize,                          
+                            ExternalBatchSize = batchSize,      
+                            IsUpdateDangerToMainDB = false,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName
-                        });                               
+                        });
                 }
 
-                mmClassificationService.ClassifyCompletedMatchMonitor(classifyMMModel);
+                //mmClassificationService.ClassifyCompletedMatchMonitor(classifyMMModel);
 
                 return Task.FromResult(true);
             }
