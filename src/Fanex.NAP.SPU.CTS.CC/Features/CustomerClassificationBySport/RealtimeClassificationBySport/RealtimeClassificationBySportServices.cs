@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport
 {
+    using Fanex.NAP.SPU.CTS.Shares;
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
@@ -69,53 +70,29 @@
         }
 
         public IRealtimeClassificationBySportServices PreprocessCustomerClassRealtime(int batchSize)
-        {
-            if (!HasValidInput())
+        {                       
+            if (customerCategories.CustomerNormals.IsNotNullOrEmpty())
             {
-                return this;
-            }
+                var customerChunks = customerCategories.CustomerNormals.Chunk(batchSize);
 
-            var joinedCustomers = GetJoinedCustomers();
-
-            if (!joinedCustomers.Any())
-            {
-                return this;
-            }
-
-            var customerChunks = joinedCustomers.Chunk(batchSize);
-
-            foreach (var custBatch in customerChunks)
-            {
-                dataAccess.PreprocessCustomerClassRealtime(custBatch);
-            }
+                foreach (var custBatch in customerChunks)
+                {
+                    dataAccess.PreprocessCustomerClassRealtime(custBatch);
+                }
+            }            
 
             return this;
-        }
-
-        private bool HasValidInput()
-        {
-            var hasCustomers = customers?.CustomerNewPlaceBets?.Any() ?? false;
-            var hasCustomerNormals = customerCategories?.CustomerNormals?.Any() ?? false;
-
-            return hasCustomers && hasCustomerNormals;
-        }
-
-        private List<CustClassificationRealtimeBySportEntity> GetJoinedCustomers()
-        {
-            return customers.CustomerNewPlaceBets
-                .Where(c => customerCategories.CustomerNormals.Contains(c.CustId))
-                .ToList();
-        }       
+        }          
 
         public IRealtimeClassificationBySportServices InsertPADailyScanQueue(int batchSize)
         {
-            if (customerCategories.CustomerPADailyScans.Any())
+            if (customerCategories.CustomerPADailyScans.IsNotNullOrEmpty())
             {
                 var customerChunks = customerCategories.CustomerPADailyScans.Chunk(batchSize);
 
                 foreach (var custBatch in customerChunks)
                 {
-                    dataAccess.InsertPADailyScanQueue(string.Join(",", custBatch));
+                    dataAccess.InsertPADailyScanQueue(JsonConvert.SerializeObject(custBatch));
                 }
             }
 

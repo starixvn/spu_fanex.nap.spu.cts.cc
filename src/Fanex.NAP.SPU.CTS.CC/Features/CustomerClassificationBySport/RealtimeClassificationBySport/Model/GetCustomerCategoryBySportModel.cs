@@ -6,12 +6,12 @@
     {
         public GetCustomerCategoryBySportModel() 
         {
-            CustomerNormals = new List<long>();
-            CustomerPADailyScans = new List<long>();
+            CustomerNormals = new List<CustClassificationRealtimeBySportEntity>();
+            CustomerPADailyScans = new List<CustClassificationRealtimeBySportEntity>();
         }
 
-        public List<long> CustomerNormals { get; set; }
+        public List<CustClassificationRealtimeBySportEntity> CustomerNormals { get; set; }
 
-        public List<long> CustomerPADailyScans { get; set; }
+        public List<CustClassificationRealtimeBySportEntity> CustomerPADailyScans { get; set; }
     }
 }

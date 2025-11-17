@@ -5,8 +5,8 @@
 
     public class InsertQueuePADailyBySportCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_CustIDs")]
-        public string CustIDList { get; set; }
+        [SpParam(SqlParamName = "ip_CustInfoList")]
+        public string CustInfoList { get; set; }
 
         public override string GetSettingKey()
         {

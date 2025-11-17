@@ -6,7 +6,7 @@
     public class CustClassificationRealtimeBySportEntity
     {
         [XName("CustId")]
-        public long CustId { get; set; }
+        public long CustID { get; set; }
 
         [XName("SportGroup")]
         public int SportGroup { get; set; }

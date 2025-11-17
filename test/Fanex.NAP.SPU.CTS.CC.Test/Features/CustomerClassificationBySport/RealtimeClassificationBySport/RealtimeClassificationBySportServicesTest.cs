@@ -35,21 +35,25 @@
         public void PreprocessCustomerClassRealtime_WhenHasCustomersAndCustomerNormals_ShouldCallPreprocessCustomerClassRealtime()
         {
             // Arrange
+            var customer1 = new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 };
+            var customer2 = new CustClassificationRealtimeBySportEntity { CustID = 2, SportGroup = 2 };
+            var customer3 = new CustClassificationRealtimeBySportEntity { CustID = 3, SportGroup = 1 };
+
             var modelCustomers = new GetNewPlaceBetCustomerModel()
             {
                 CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
                 {
-                    new CustClassificationRealtimeBySportEntity { CustId = 1, SportGroup = 1 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 2, SportGroup = 2 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 3, SportGroup = 1 }
+                    customer1,
+                    customer2,
+                    customer3
                 },
                 ScannedMaxId = 7
             };
 
             var modelCategory = new GetCustomerCategoryBySportModel
             {
-                CustomerNormals = new List<long> { 1, 2 },
-                CustomerPADailyScans = new List<long>()
+                CustomerNormals = new List<CustClassificationRealtimeBySportEntity> { customer1, customer2 },
+                CustomerPADailyScans = new List<CustClassificationRealtimeBySportEntity>()
             };
 
             realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
@@ -65,8 +69,8 @@
             realtimeDataAccess.Received(1).PreprocessCustomerClassRealtime(
                 Arg.Is<IEnumerable<CustClassificationRealtimeBySportEntity>>(x => 
                     x.Count() == 2 && 
-                    x.Any(c => c.CustId == 1) && 
-                    x.Any(c => c.CustId == 2)));
+                    x.Any(c => c.CustID == 1 && c.SportGroup == 1) && 
+                    x.Any(c => c.CustID == 2 && c.SportGroup == 2)));
         }
 
         [Fact]
@@ -77,12 +81,6 @@
             {
                 CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>(),
                 ScannedMaxId = 0
-            };
-
-            var modelCategory = new GetCustomerCategoryBySportModel
-            {
-                CustomerNormals = new List<long> { 1, 2 },
-                CustomerPADailyScans = new List<long>()
             };
 
             realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
@@ -104,8 +102,8 @@
             {
                 CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
                 {
-                    new CustClassificationRealtimeBySportEntity { CustId = 1, SportGroup = 1 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 2, SportGroup = 2 }
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 },
+                    new CustClassificationRealtimeBySportEntity { CustID = 2, SportGroup = 2 }
                 },
                 ScannedMaxId = 7
             };
@@ -129,16 +127,16 @@
             {
                 CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
                 {
-                    new CustClassificationRealtimeBySportEntity { CustId = 1, SportGroup = 1 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 2, SportGroup = 2 }
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 },
+                    new CustClassificationRealtimeBySportEntity { CustID = 2, SportGroup = 2 }
                 },
                 ScannedMaxId = 7
             };
 
             var modelCategory = new GetCustomerCategoryBySportModel
             {
-                CustomerNormals = new List<long> { 3, 4 },
-                CustomerPADailyScans = new List<long>()
+                CustomerNormals = new List<CustClassificationRealtimeBySportEntity>(),
+                CustomerPADailyScans = new List<CustClassificationRealtimeBySportEntity>()
             };
 
             realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
@@ -158,22 +156,27 @@
         public void PreprocessCustomerClassRealtime_WhenBatchSizeIsSmallerThanCustomers_ShouldCallPreprocessCustomerClassRealtimeMultipleTimes()
         {
             // Arrange
+            var customer1 = new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 };
+            var customer2 = new CustClassificationRealtimeBySportEntity { CustID = 2, SportGroup = 2 };
+            var customer3 = new CustClassificationRealtimeBySportEntity { CustID = 3, SportGroup = 1 };
+            var customer4 = new CustClassificationRealtimeBySportEntity { CustID = 4, SportGroup = 2 };
+
             var modelCustomers = new GetNewPlaceBetCustomerModel()
             {
                 CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
                 {
-                    new CustClassificationRealtimeBySportEntity { CustId = 1, SportGroup = 1 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 2, SportGroup = 2 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 3, SportGroup = 1 },
-                    new CustClassificationRealtimeBySportEntity { CustId = 4, SportGroup = 2 }
+                    customer1,
+                    customer2,
+                    customer3,
+                    customer4
                 },
                 ScannedMaxId = 7
             };
 
             var modelCategory = new GetCustomerCategoryBySportModel
             {
-                CustomerNormals = new List<long> { 1, 2, 3, 4 },
-                CustomerPADailyScans = new List<long>()
+                CustomerNormals = new List<CustClassificationRealtimeBySportEntity> { customer1, customer2, customer3, customer4 },
+                CustomerPADailyScans = new List<CustClassificationRealtimeBySportEntity>()
             };
 
             realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
@@ -190,27 +193,76 @@
         }
 
         [Fact]
-        public void CompleteCustomerRealtime_WhenSuccess_NotException()
+        public void CompleteCustomerRealtime_WhenSuccess_ShouldCallCompleteCustomerRealtime()
         {
             // Arrange
             var modelCustomers = new GetNewPlaceBetCustomerModel()
             {
-                CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>() {
-                    new CustClassificationRealtimeBySportEntity {  CustId = 1, SportGroup = 1},
-                    new CustClassificationRealtimeBySportEntity{  CustId = 1, SportGroup = 2}
+                CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
+                {
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 },
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 2 }
                 },
                 ScannedMaxId = 7
             };
 
-            // Act  
             realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
 
+            // Act
             realtimeService.Start()
                 .GetNewPlaceBetCustomers()
                 .CompleteCustomerRealtime();
 
             // Assert
             realtimeDataAccess.Received(1).CompleteCustomerRealtime(modelCustomers.ScannedMaxId);
+        }
+
+        [Fact]
+        public void CompleteCustomerRealtime_WhenScannedMaxIdIsZero_ShouldNotCallCompleteCustomerRealtime()
+        {
+            // Arrange
+            var modelCustomers = new GetNewPlaceBetCustomerModel()
+            {
+                CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
+                {
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 }
+                },
+                ScannedMaxId = 0
+            };
+
+            realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
+
+            // Act
+            realtimeService.Start()
+                .GetNewPlaceBetCustomers()
+                .CompleteCustomerRealtime();
+
+            // Assert
+            realtimeDataAccess.DidNotReceive().CompleteCustomerRealtime(Arg.Any<long>());
+        }
+
+        [Fact]
+        public void CompleteCustomerRealtime_WhenScannedMaxIdIsNegative_ShouldNotCallCompleteCustomerRealtime()
+        {
+            // Arrange
+            var modelCustomers = new GetNewPlaceBetCustomerModel()
+            {
+                CustomerNewPlaceBets = new List<CustClassificationRealtimeBySportEntity>()
+                {
+                    new CustClassificationRealtimeBySportEntity { CustID = 1, SportGroup = 1 }
+                },
+                ScannedMaxId = -1
+            };
+
+            realtimeDataAccess.GetNewPlaceBetCustomers().Returns(modelCustomers);
+
+            // Act
+            realtimeService.Start()
+                .GetNewPlaceBetCustomers()
+                .CompleteCustomerRealtime();
+
+            // Assert
+            realtimeDataAccess.DidNotReceive().CompleteCustomerRealtime(Arg.Any<long>());
         }
         
     }

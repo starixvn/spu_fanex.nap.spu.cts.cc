@@ -13,7 +13,7 @@
 
         void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
 
-        void InsertPADailyScanQueue(string custIDList);      
+        void InsertPADailyScanQueue(string custInfoList);      
 
         void CompleteCustomerRealtime(long scannedMaxId);
     }
@@ -47,7 +47,7 @@
                 CustInfoList = custInfoList
             };
 
-            var (normalCusts, paCusts) = repository.FetchMultiple<long, long>(criteria);
+            var (normalCusts, paCusts) = repository.FetchMultiple<CustClassificationRealtimeBySportEntity, CustClassificationRealtimeBySportEntity>(criteria);
             
             return new GetCustomerCategoryBySportModel
             {
@@ -66,11 +66,11 @@
             repository.Execute(criteria);
         }
 
-        public void InsertPADailyScanQueue(string custIDList)
+        public void InsertPADailyScanQueue(string custInfoList)
         {
             var criteria = new InsertQueuePADailyBySportCriteria
             {
-                CustIDList = custIDList
+                CustInfoList = custInfoList
             };
 
             repository.Execute(criteria);
