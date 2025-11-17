@@ -32,9 +32,7 @@
         public bool IsLicensee { get; set; }
 
         public Int64? CreatedBy { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+    
         public int? WinlossStatus { get; set; }
 
         public int SportGroup { get; set; }
@@ -42,5 +40,7 @@
         public int? MatchID { get; set; }
 
         public string Remark { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
     }
 }

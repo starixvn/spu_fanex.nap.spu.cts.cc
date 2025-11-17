@@ -76,7 +76,7 @@
                 SportGroup = x.SportGroup
             }).DistinctBy(x => new { x.CustID, x.SportGroup });
 
-            var paBySportLosings = GetPALosingBySport(custInfos, functionId);
+            var paBySportLosings = GetPALosingBySport(custInfos, functionId);           
 
             return MergePALosingClassification(paBySports, paBySportLosings);
         }
@@ -102,7 +102,7 @@
                               CategoryGroupID = group.pa.CategoryGroupID,
                               IsLicensee = group.pa.IsLicensee,
                               CreatedBy = group.pa.CreatedBy,
-                              LastModifiedDate = group.pa.LastModifiedDate,
+                              CreatedDate = group.pa.CreatedDate,
                               Remark = group.pa.Remark,
                               MatchID = group.pa.MatchID,
                               SportGroup = group.pa.SportGroup,
