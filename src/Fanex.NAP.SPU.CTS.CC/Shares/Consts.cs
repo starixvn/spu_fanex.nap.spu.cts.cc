@@ -163,9 +163,8 @@
         public enum BySport_FunctionId
         {
             InsertNewCustJob = 4,
-            InsertPACategory = 5,
             ProblemDailyJob = 12,
-
+            ClassifyGBMatchMonitor = 54,
         };
 
         public enum RescanNormalType

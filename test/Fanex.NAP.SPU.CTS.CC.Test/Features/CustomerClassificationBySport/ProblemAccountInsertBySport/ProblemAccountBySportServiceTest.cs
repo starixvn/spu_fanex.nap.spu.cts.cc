@@ -92,7 +92,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
@@ -109,7 +109,7 @@
             var custInfos = new List<InsertPAInfoBySportModel>();
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
@@ -124,7 +124,7 @@
             IEnumerable<InsertPAInfoBySportModel> custInfos = null;
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.DidNotReceive().GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
@@ -145,7 +145,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
@@ -165,7 +165,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns((IEnumerable<ProblemAccountLosingBySportEntity>)null);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json => !string.IsNullOrEmpty(json)), Arg.Any<BySport_FunctionId>());
@@ -184,7 +184,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Throws<InvalidOperationException>();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory));
+            var exception = Assert.Throws<InvalidOperationException>(() => _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor));
             _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
             Assert.NotNull(exception);
         }
@@ -200,7 +200,7 @@
 
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Throws<Exception>();
             // Act
-            var action = () => _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var action = () => _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Act & Assert
             Assert.Throws<Exception>(action);
@@ -230,7 +230,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Is<string>(json =>
@@ -261,7 +261,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
@@ -287,7 +287,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
@@ -313,7 +313,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());
@@ -339,7 +339,7 @@
             _dataAccess.GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>()).Returns(expectedResult);
 
             // Act
-            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.InsertPACategory);
+            var result = _service.GetPALosingBySport(custInfos, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             // Assert
             _dataAccess.Received(1).GetPALosingBySport(Arg.Any<string>(), Arg.Any<BySport_FunctionId>());

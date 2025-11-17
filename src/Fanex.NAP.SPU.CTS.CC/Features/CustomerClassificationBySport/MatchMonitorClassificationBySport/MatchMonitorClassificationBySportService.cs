@@ -37,7 +37,7 @@
 
         public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras)
         {
-            var paCustBySports = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA, BySport_FunctionId.InsertPACategory);
+            var paCustBySports = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA, BySport_FunctionId.ClassifyGBMatchMonitor);
 
             return custClassToMainDBService.PushCCBySportToMainDB(paCustBySports, paras.ServiceName, paras.ExternalBatchSize);
         }
