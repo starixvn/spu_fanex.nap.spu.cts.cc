@@ -369,7 +369,7 @@
         }
 
         [Fact]
-        public void UpdateComplete_WithEmptyPACustomers_ShouldNotCallDataAccess_ReturnsFalse()
+        public void UpdateComplete_WithEmptyPACustomers_ShouldCallDataAccess_ReturnsFalse()
         {
             // Arrange
             _service.Start();
@@ -378,12 +378,12 @@
             var result = _service.UpdateComplete();
 
             // Assert
-            _dataAccess.DidNotReceive().CompletePADailyFromQueue(Arg.Any<string>());
+            _dataAccess.Received(1).CompletePADailyFromQueue(Arg.Any<string>());
             Assert.False(result);
         }
 
         [Fact]
-        public void UpdateComplete_WithNullPACustomers_ShouldNotCallDataAccess_ReturnsFalse()
+        public void UpdateComplete_WithNullPACustomers_ShouldCallDataAccess_ReturnsFalse()
         {
             // Arrange
             _dataAccess.GetPADailyFromQueue(500).Returns((IEnumerable<ProblemAccountInfoFromDailyQueueModel>)null);
@@ -393,7 +393,7 @@
             var result = _service.UpdateComplete();
 
             // Assert
-            _dataAccess.DidNotReceive().CompletePADailyFromQueue(Arg.Any<string>());
+            _dataAccess.Received(1).CompletePADailyFromQueue(Arg.Any<string>());
             Assert.False(result);
         }
 

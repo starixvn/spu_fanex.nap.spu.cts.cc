@@ -77,9 +77,9 @@
             if (PACustomers.IsNotNullOrEmpty())
             {
                 completeCustInfos = JsonConvert.SerializeObject(PACustomers);
-
-                _dataAccess.CompletePADailyFromQueue(completeCustInfos);
             }
+
+            _dataAccess.CompletePADailyFromQueue(completeCustInfos);
 
             return PACustomers.IsNotNullOrEmpty();
         }
