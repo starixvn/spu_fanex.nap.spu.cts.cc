@@ -66,7 +66,7 @@
         [HttpPost("ScanDailyProblemClassiciationBySport")]
         public async Task<bool> ScanProblemClassificationBySport([FromForm] int batchInternalSize, [FromForm] int batchExternalSize)
         {
-            return await _dailyProblemClassificationBySportJobService.Excute(batchInternalSize, batchExternalSize);
+            return await _dailyProblemClassificationBySportJobService.Execute(batchInternalSize, batchExternalSize);
         }
 
         [HttpPost("ClassifyMatchMonitorBySport")]

@@ -8,7 +8,7 @@
 
     public interface IDailyProblemClassificationBySportJobService
     {
-        Task<bool> Excute(int batchInternalSize, int batchExternalSize);
+        Task<bool> Execute(int batchInternalSize, int batchExternalSize);
     }
 
     public class DailyProblemClassificationBySportJobService : IDailyProblemClassificationBySportJobService
@@ -24,7 +24,7 @@
             _serviceName = "DailyProblemClassificationBySport";
         }
 
-        public Task<bool> Excute(int batchInternalSize, int batchExternalSize)
+        public Task<bool> Execute(int batchInternalSize, int batchExternalSize)
         {
             try
             {
