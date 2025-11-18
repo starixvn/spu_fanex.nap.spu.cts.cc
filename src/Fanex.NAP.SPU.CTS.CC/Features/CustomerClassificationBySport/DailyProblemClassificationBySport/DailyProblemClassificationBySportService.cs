@@ -72,7 +72,7 @@
 
         public bool UpdateComplete()
         {
-            var completeCustInfos = string.Empty;
+            var completeCustInfos = "[]";
 
             if (PACustomers.IsNotNullOrEmpty())
             {
