@@ -8,8 +8,6 @@
 
         public int? CategoryID { get; set; }
 
-        public int? CategoryGroupID { get; set; }
-
         public decimal? TurnoverRM { get; set; }
 
         public decimal? WinlossRM { get; set; }

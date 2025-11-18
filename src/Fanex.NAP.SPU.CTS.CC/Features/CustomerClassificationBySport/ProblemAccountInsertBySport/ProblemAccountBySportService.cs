@@ -96,10 +96,8 @@
                           {
                               CTSCustID = group.pa.CTSCustID,
                               CustID = group.pa.CustID,
-                              RoleID = group.pa.RoleID,
                               SubscriberID = group.pa.SubscriberID,
                               CategoryID = group.pa.CategoryID,
-                              CategoryGroupID = group.pa.CategoryGroupID,
                               IsLicensee = group.pa.IsLicensee,
                               CreatedBy = group.pa.CreatedBy,
                               CreatedDate = group.pa.CreatedDate,

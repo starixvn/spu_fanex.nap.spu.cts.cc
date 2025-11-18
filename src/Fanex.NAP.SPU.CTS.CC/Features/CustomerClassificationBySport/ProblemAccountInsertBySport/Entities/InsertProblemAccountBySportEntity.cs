@@ -12,11 +12,9 @@
         {
             CTSCustID = gbMMCust.CTSCustID;
             CustID = gbMMCust.CustID;
-            RoleID = gbMMCust.RoleID;
             SportGroup = gbMMCust.SportGroup;
             SubscriberID = gbMMCust.SubscriberID;
             CategoryID = gbMMCust.CategoryID;
-            CategoryGroupID = gbMMCust.CategoryGroup;
             IsLicensee = gbMMCust.IsLicensee;
             MatchID = gbMMCust.MatchID;
             CreatedBy = Constants.StarixITId;
@@ -25,11 +23,9 @@
 
         public Int64 CTSCustID { get; set; }
 
-        public int? RoleID { get; set; }
+        public int? SubscriberID { get; set; }
 
-        public int SubscriberID { get; set; }
-
-        public bool IsLicensee { get; set; }
+        public bool? IsLicensee { get; set; }
 
         public Int64? CreatedBy { get; set; }
     
