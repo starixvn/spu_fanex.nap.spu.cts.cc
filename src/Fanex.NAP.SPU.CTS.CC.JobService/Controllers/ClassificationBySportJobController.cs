@@ -65,7 +65,7 @@
             return await _dailyNormalClassificationBySportJobService.Execute();
         }
 
-        [HttpPost("ScanDailyProblemClassiciationBySport")]
+        [HttpPost("ScanDailyProblemClassificationBySport")]
         public async Task<bool> ScanProblemClassificationBySport([FromForm] int batchInternalSize, [FromForm] int batchExternalSize)
         {
             return await _dailyProblemClassificationBySportJobService.Execute(batchInternalSize, batchExternalSize);
