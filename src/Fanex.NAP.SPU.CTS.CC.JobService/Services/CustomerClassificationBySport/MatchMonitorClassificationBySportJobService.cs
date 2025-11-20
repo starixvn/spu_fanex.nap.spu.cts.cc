@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport
 {
-    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassification.ProblemAccountInsert.Entities;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.PushDataToExternal.CustClassificationToMainDB;
@@ -12,7 +11,7 @@
 
     public interface IMatchMonitorClassificationBySportJobService
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute(int batchInternalSize, int batchExternalSize);
     }
 
     public class MatchMonitorClassificationBySportJobService : IMatchMonitorClassificationBySportJobService
@@ -30,11 +29,11 @@
             this.mmClassificationService = mmClassificationService;         
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute(int batchInternalSize, int batchExternalSize)
         {
             try
             {
-                var classifyMMModel = mmClassificationService.ClassifyMatchMonitor(batchSize);
+                var classifyMMModel = mmClassificationService.ClassifyMatchMonitor(batchInternalSize);
 
                 if (classifyMMModel.CustInfos.IsNotNullOrEmpty())
                 {    
@@ -44,7 +43,7 @@
                         new PushDataToExternalEntity
                         {
                             RoleGroup = RoleGroupType.Member,
-                            ExternalBatchSize = batchSize,      
+                            ExternalBatchSize = batchExternalSize,      
                             IsUpdateDangerToMainDB = false,
                             IsWriteLog = appSettings.ProblemAccountIsWriteLog,
                             ServiceName = serviceName

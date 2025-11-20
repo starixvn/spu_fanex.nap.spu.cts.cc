@@ -72,9 +72,9 @@
         }
 
         [HttpPost("ClassifyMatchMonitorBySport")]
-        public async Task<bool> ClassifyMatchMonitorBySport([FromForm] int batchSize)
+        public async Task<bool> ClassifyMatchMonitorBySport([FromForm] int batchInternalSize, [FromForm] int batchExternalSize)
         {
-            return await _mmClassificationBySportJobService.Execute(batchSize);
+            return await _mmClassificationBySportJobService.Execute(batchInternalSize, batchExternalSize);
         }
     }
 }
