@@ -28,8 +28,8 @@
             return new ClassifyGBMatchMonitorBySportModel
             {
                 CustInfos = custInfos,
-                MMDetailIDList = mMDetailsIDList != null ? mMDetailsIDList.FirstOrDefault() : null,
-                MatchID = matchID != null ? matchID.FirstOrDefault() : null
+                MMDetailIDList = mMDetailsIDList?.FirstOrDefault(),
+                MatchID = matchID?.FirstOrDefault()
             };
         }
 

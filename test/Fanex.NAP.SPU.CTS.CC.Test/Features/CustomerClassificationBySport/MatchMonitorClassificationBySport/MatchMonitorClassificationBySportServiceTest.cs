@@ -144,19 +144,14 @@
                     MatchID = 200,
                     SportGroup = 1
                 }
-            };
-
-            var paras = new PushDataToExternalEntity
-            {
-                ServiceName = "TestService"
-            };
+            };          
 
             var expectedCustIDs = new List<InsertPABySportResultModel> { };
             _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.ClassifyGBMatchMonitor)
                 .Returns(expectedCustIDs);
 
             // Act
-            var result = _service.InsertProblemAccount(paBySports, paras);
+            var result = _service.InsertProblemAccount(paBySports, "TestService", 500);
 
             // Assert
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
@@ -171,17 +166,13 @@
         public void InsertProblemAccount_WhenEmptyList_ShouldStillReturnFalse()
         {
             // Arrange
-            var paBySports = new List<InsertProblemAccountBySportEntity>();
-            var paras = new PushDataToExternalEntity
-            {
-                ServiceName = "TestService"
-            };
+            var paBySports = new List<InsertProblemAccountBySportEntity>();          
 
             _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.ClassifyGBMatchMonitor)
                 .Returns(Enumerable.Empty<InsertPABySportResultModel>());
 
             // Act
-            var result = _service.InsertProblemAccount(paBySports, paras);
+            var result = _service.InsertProblemAccount(paBySports, "TestService", 500);
 
             // Assert
             _problemAccountBySportService.Received(1).InsertProblemAccountBySport(
@@ -199,18 +190,13 @@
             var paBySports = new List<InsertProblemAccountBySportEntity>
             {
                 new InsertProblemAccountBySportEntity { CustID = 1 }
-            };
-
-            var paras = new PushDataToExternalEntity
-            {
-                ServiceName = "TestService"
-            };
+            };          
 
             _problemAccountBySportService.InsertProblemAccountBySport(Arg.Any<IEnumerable<InsertProblemAccountBySportEntity>>(), Arg.Any<CCInputFlow>(), BySport_FunctionId.ClassifyGBMatchMonitor)
                 .Throws<Exception>();
 
             // Act
-            Action action = () => _service.InsertProblemAccount(paBySports, paras);
+            Action action = () => _service.InsertProblemAccount(paBySports, "TestService", 500);
 
             // Assert
             Assert.Throws<Exception>(action);

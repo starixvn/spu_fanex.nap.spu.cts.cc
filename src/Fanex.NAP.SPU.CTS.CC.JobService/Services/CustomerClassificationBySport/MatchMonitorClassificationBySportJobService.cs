@@ -39,15 +39,7 @@
                 {    
                     var paBySports = classifyMMModel.CustInfos.Select(x => new InsertProblemAccountBySportEntity(x));
 
-                    mmClassificationService.InsertProblemAccount(paBySports,
-                        new PushDataToExternalEntity
-                        {
-                            RoleGroup = RoleGroupType.Member,
-                            ExternalBatchSize = batchExternalSize,      
-                            IsUpdateDangerToMainDB = false,
-                            IsWriteLog = appSettings.ProblemAccountIsWriteLog,
-                            ServiceName = serviceName
-                        });
+                    mmClassificationService.InsertProblemAccount(paBySports, serviceName, batchExternalSize);
                 }
 
                 mmClassificationService.ClassifyCompletedMatchMonitor(classifyMMModel);

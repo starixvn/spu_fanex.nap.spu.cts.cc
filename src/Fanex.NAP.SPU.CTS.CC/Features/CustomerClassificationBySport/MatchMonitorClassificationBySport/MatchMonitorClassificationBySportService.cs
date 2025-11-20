@@ -9,7 +9,7 @@
     {
         ClassifyGBMatchMonitorBySportModel ClassifyMatchMonitor(int batchSize);
 
-        bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras);
+        bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, string serviceName, int externalBatchSize);
 
         void ClassifyCompletedMatchMonitor(ClassifyGBMatchMonitorBySportModel classifyGBMMModel);        
     }
@@ -35,11 +35,11 @@
             return matchDataAccess.ClassifyMatchMonitor(batchSize);
         }
 
-        public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, PushDataToExternalEntity paras)
+        public bool InsertProblemAccount(IEnumerable<InsertProblemAccountBySportEntity> paBySports, string serviceName, int externalBatchSize)
         {
             var paCustBySports = problemAccountBySportService.InsertProblemAccountBySport(paBySports, CCInputFlow.BySportInsertPA, BySport_FunctionId.ClassifyGBMatchMonitor);
 
-            return custClassToMainDBService.PushCCBySportToMainDB(paCustBySports, paras.ServiceName, paras.ExternalBatchSize);
+            return custClassToMainDBService.PushCCBySportToMainDB(paCustBySports, serviceName, externalBatchSize);
         }
 
         public void ClassifyCompletedMatchMonitor(ClassifyGBMatchMonitorBySportModel classifyGBMMModel)
