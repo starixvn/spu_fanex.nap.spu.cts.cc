@@ -214,7 +214,7 @@
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-    <Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_InsertToQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_InsertToQueue_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
+    <Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_InsertQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_InsertQueue_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
     <Setting Key="CTS_DC_CustClassification_BySport_Realtime_GetCategory" SpName="CTS_DC_CustClassification_BySport_Realtime_GetCategory_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 	</Function>
 
@@ -265,7 +265,7 @@
 	</Function>
 
 	<Function name="PADailyClassificationBySport">
-		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_GetFromQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_GetFromQueue_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
+		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_GetQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_GetQueue_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_Insert" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_Insert_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_Complete_xpre" DbName="CTSMain_DEV.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
