@@ -162,7 +162,9 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2342:Enumeration types should comply with a naming convention", Justification = "<Pending>")]
         public enum BySport_FunctionId
         {
-            InsertNewCustJob = 4
+            InsertNewCustJob = 4,
+            ProblemDailyJob = 12,
+            ClassifyGBMatchMonitor = 54,
         };
 
         public enum RescanNormalType
@@ -285,11 +287,13 @@
             RemovePACategory = 225,
             [Description("BySportInsertSpecialCC")]
             BySportInsertSpecialCC = 332,
-            [Description("BySportInsertNormal")]
+            [Description("BySportInsertPA")]
+            BySportInsertPA = 335,
+           [Description("BySportInsertNormal")]
             BySportInsertNormal = 339,
             [Description("BySportRemoveSpecialCC")]
             BySportRemoveSpecialCC = 442
-        }
+        }       
 
         public enum RoleGroupType
         {

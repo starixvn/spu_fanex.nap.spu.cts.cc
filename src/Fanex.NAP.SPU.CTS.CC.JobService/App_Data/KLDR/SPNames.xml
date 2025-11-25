@@ -213,7 +213,9 @@
 		<Setting Key="CTS_BySportNormalClassification_RealTime_GetChanges" SpName="CTS_BySportNormalClassification_RealTime_GetChanges" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
 		<Setting Key="CTS_BySportNormalClassification_Realtime_Preprocess" SpName="CTS_BySportNormalClassification_Realtime_Preprocess" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="600" />
 		<Setting Key="CTS_BySportNormalClassification_RealTime_Complete" SpName="CTS_BySportNormalClassification_RealTime_Complete" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
-	</Function>
+    <Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_InsertQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_InsertQueue" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+    <Setting Key="CTS_DC_CustClassification_BySport_Realtime_GetCategory" SpName="CTS_DC_CustClassification_BySport_Realtime_GetCategory" DbName="CTSMain.CTS_DataCenter.ctsService" />
+  </Function>
 
 	<Function Name="ProbationClassificationBySport">
 		<Setting Key="CTS_BySportNormalClassification_Probation_Preprocess" SpName="CTS_BySportNormalClassification_Probation_Preprocess" DbName="DBVR2.bodb_VR2Model.wsv_cts" />
@@ -260,4 +262,19 @@
 		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Get" SpName="CTS_DC_SpecialLicSubCC_Response_Get" DbName="CTSMain.CTS_DataCenter.ctsService" />
 		<Setting Key="CTS_DC_SpecialLicSubCC_Response_Complete" SpName="CTS_DC_SpecialLicSubCC_Response_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
 	</Function>
+
+	<Function name="PADailyClassificationBySport">
+		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_GetQueue" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_GetQueue" DbName="CTSMain.CTS_DataCenter.ctsService" TimeOut="600" />
+		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_Insert" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_Insert" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_BySport_DailyScanPA_Complete" SpName="CTS_DC_CustClassification_BySport_DailyScanPA_Complete" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+	</Function>
+
+	<Function name="PAInsertBySport">
+		<Setting Key="CTS_ProblemAccountsClassification_BySport_Daily" SpName="CTS_ProblemAccountsClassification_BySport_Daily" DbName="DBVR2.bodb_VR2Model.wsv_cts" TimeOut="1200" />
+	</Function>
+  
+  <Function Name="MatchMonitorClassificationBySport">
+    <Setting Key="CTS_DC_CustClassification_BySport_MatchMonitor_Classify" SpName="CTS_DC_CustClassification_BySport_MatchMonitor_Classify" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />
+    <Setting Key="CTS_DC_CustClassification_BySport_MatchMonitor_Completed" SpName="CTS_DC_CustClassification_BySport_MatchMonitor_Completed" DbName="CTSMain.CTS_DataCenter.ctsServiceAdmin" />   
+  </Function>
 </Functions>

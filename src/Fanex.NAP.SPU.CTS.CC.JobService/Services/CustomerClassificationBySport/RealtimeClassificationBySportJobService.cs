@@ -42,10 +42,20 @@
 
         private void JobRun(int batchInternalSize)
         {
-            this.realtimeClassificationServices.Start()
+            realtimeClassificationServices.Start()
                 .GetNewPlaceBetCustomers()
-                .PreprocessCustomerClassRealtime(batchInternalSize)
-                .CompleteCustomerRealtime();
+                .GetCustomerCategory(batchInternalSize);
+
+            Parallel.Invoke(() =>
+            {
+                realtimeClassificationServices.PreprocessCustomerClassRealtime(batchInternalSize);
+            },
+            () =>
+            {
+                realtimeClassificationServices.InsertPADailyScanQueue(batchInternalSize);
+            });
+
+            realtimeClassificationServices.CompleteCustomerRealtime();            
         }
     }
 }

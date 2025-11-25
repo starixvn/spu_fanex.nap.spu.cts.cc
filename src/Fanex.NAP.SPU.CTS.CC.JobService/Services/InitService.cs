@@ -34,9 +34,12 @@
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationAgency;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.BaseCustomerClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyNormalClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.DailyProblemClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.MatchMonitorClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.NormalAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProbationClassificationBySport;
+    using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.ProblemAccountInsertBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RealtimeClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.CustomerClassificationBySport.RescanNormalClassificationBySport;
     using Fanex.NAP.SPU.CTS.CC.Features.DataLogTracking;
@@ -55,7 +58,6 @@
     using Fanex.NAP.SPU.CTS.CC.JobService.Services.CustomerClassificationBySport;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
 
     public static class InitService
     {
@@ -125,7 +127,7 @@
 
             RegisterDailyDangerousClassification(services);
 
-            RegisterTWInitialGroupBetting(services);        
+            RegisterTWInitialGroupBetting(services);
 
             RegisterTWInitialSmartClassificationBySport(services);
 
@@ -136,7 +138,13 @@
             RegisterNormalDangerousAssociationScan(services);
 
             RegisterTWClassification(services);
-        }
+
+            RegisterDailyProblemClassificationBySport(services);
+
+            RegisterProblemAccountBySport(services);
+
+            RegisterClassifyMatchMonitorBySport(services);
+        }     
 
         private static void RegisterTWInitialSmartClassificationBySport(IServiceCollection services)
         {
@@ -173,7 +181,7 @@
 
             services.AddSingleton<IBaseCustomerClassificationBySportDataAccess, BaseCustomerClassificationBySportDataAccess>();
             services.AddSingleton<IBaseCustomerClassificationBySportService, BaseCustomerClassificationBySportService>();
-        }        
+        }
 
         private static void RegisterDetectUnauthorizedLoginCustomer(IServiceCollection services)
         {
@@ -430,6 +438,27 @@
             services.AddSingleton<IRealtimeTWInitialGroupBettingJobService, RealtimeTWInitialGroupBettingJobService>();
             services.AddSingleton<ITWInitialGroupBettingDataAccess, TWInitialGroupBettingDataAccess>();
             services.AddSingleton<ITWInitialGroupBettingService, TWInitialGroupBettingService>();
+        }
+
+        private static void RegisterDailyProblemClassificationBySport(IServiceCollection services)
+        {
+            services.AddSingleton<IProblemWLClassificationBySportDataAccess, ProblemWLClassificationBySportDataAccess>();
+            services.AddTransient<IProblemWLClassificationBySportService, ProblemWLClassificationBySportService>();
+            services.AddSingleton<IDailyProblemClassificationBySportService,  DailyProblemClassificationBySportService>();
+            services.AddSingleton<IDailyProblemClassificationBySportJobService,  DailyProblemClassificationBySportJobService>();
+        }
+
+        private static void RegisterProblemAccountBySport(IServiceCollection services)
+        {           
+            services.AddSingleton<IProblemAccountBySportDataAccess, ProblemAccountBySportDataAccess>();
+            services.AddSingleton<IProblemAccountBySportService, ProblemAccountBySportService>();
+        }
+
+        private static void RegisterClassifyMatchMonitorBySport(IServiceCollection services)
+        {
+            services.AddSingleton<IMatchMonitorClassificationBySportDataAccess, MatchMonitorClassificationBySportDataAccess>();
+            services.AddSingleton<IMatchMonitorClassificationBySportService, MatchMonitorClassificationBySportService>();
+            services.AddSingleton<IMatchMonitorClassificationBySportJobService, MatchMonitorClassificationBySportJobService>();
         }
     }
 }

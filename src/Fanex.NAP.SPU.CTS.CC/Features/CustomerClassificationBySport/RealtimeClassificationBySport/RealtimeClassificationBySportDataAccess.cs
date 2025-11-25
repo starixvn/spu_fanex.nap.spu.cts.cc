@@ -3,12 +3,17 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.CTS.Shares;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IRealtimeClassificationBySportDataAccess
     {
         GetNewPlaceBetCustomerModel GetNewPlaceBetCustomers();
-        
+
+        GetCustomerCategoryBySportModel GetCustomerCategory(string custInfoList);
+
         void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers);
+
+        void InsertPADailyScanQueue(string custInfoList);      
 
         void CompleteCustomerRealtime(long scannedMaxId);
     }
@@ -35,11 +40,37 @@
             };
         }       
 
+        public GetCustomerCategoryBySportModel GetCustomerCategory(string custInfoList)
+        {
+            var criteria = new GetCustomerCategoryRealtimeBySportCriteria
+            {
+                CustInfoList = custInfoList
+            };
+
+            var (normalCusts, paCusts) = repository.FetchMultiple<CustClassificationRealtimeBySportEntity, CustClassificationRealtimeBySportEntity>(criteria);
+            
+            return new GetCustomerCategoryBySportModel
+            {
+                  CustomerNormals = normalCusts?.ToList(),
+                  CustomerPADailyScans = paCusts?.ToList()
+            };
+        }
+
         public void PreprocessCustomerClassRealtime(IEnumerable<CustClassificationRealtimeBySportEntity> customers)
         {
             var criteria = new PreprocessCustomerRealtimeBySportCriteria
             {
                 CustomersXML = customers.ToXmlString()
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void InsertPADailyScanQueue(string custInfoList)
+        {
+            var criteria = new InsertQueuePADailyBySportCriteria
+            {
+                CustInfoList = custInfoList
             };
 
             repository.Execute(criteria);
